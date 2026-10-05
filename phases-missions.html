@@ -1,0 +1,1748 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les phases et les missions · 2EMNB</title>
+<meta name="description" content="World café « Les phases et les missions dans l’acte de construire » (1re Bac Pro TEBAA) : acteurs, programmation et conception, missions de la maîtrise d’œuvre, chantier, réception et garanties, puis quiz final.">
+<meta name="theme-color" content="#f7f4ec">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Les phases et les missions · 2EMNB">
+<meta property="og:description" content="Du besoin du client aux clés remises : comprendre qui intervient, quand et pour faire quoi.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M6 25l2-7 5 5z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* =====================================================================
+   2EMNB — World café « Les phases et les missions dans l'acte de construire » (style « carnet de croquis »)
+   Papier quadrillé, crayon graphite, crayon rouge, crayon bleu, surligneur.
+   ===================================================================== */
+:root{
+  --papier:#f7f4ec;--fiche:#fffdf7;--kraft:#e6d3b0;--kraft2:#c9ad7d;
+  --gr:#2a2a2a;--gr2:rgba(42,42,42,.66);--gr3:rgba(42,42,42,.2);
+  --rouge:#c93b31;--rouge2:#d6453a;--bleu:#2f6fd6;--vert:#3d9a5f;--jaune:rgba(255,222,40,.72);--orange:rgba(255,164,79,.55);
+  --pj:#fff1a8;--pr:#ffd8cf;--pb:#d8e7ff;--pv:#d5f0da;--po:#ffe6cc;
+  --main:"Architects Daughter","Segoe Print","Comic Sans MS",cursive;
+  --texte:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --gut:clamp(16px,4vw,56px);--maxw:1240px;--nav:70px;
+  --e-out:cubic-bezier(.16,1,.3,1);--e-io:cubic-bezier(.65,0,.35,1);--e-ressort:cubic-bezier(.34,1.56,.64,1);
+  --ombre:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);
+  --crayon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M3 29l3-9L22 4l6 6L12 26z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M3 29l3-9 6 6z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M3 29l1.4-4 2.6 2.6z' fill='%232a2a2a'/%3E%3C/svg%3E") 3 29;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{overflow-x:clip;scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;min-height:100vh;overflow-x:clip;color:var(--gr);font-family:var(--texte);font-size:17.5px;line-height:1.6;
+  background-color:var(--papier);background-image:linear-gradient(rgba(47,111,214,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(47,111,214,.085) 1px,transparent 1px);background-size:22px 22px;
+  cursor:var(--crayon),auto;-webkit-font-smoothing:antialiased}
+a,button,[role="button"]{cursor:pointer}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0}
+svg,canvas{display:block}
+::selection{background:var(--jaune);color:var(--gr)}
+:focus-visible{outline:2.5px dashed var(--bleu);outline-offset:4px;border-radius:6px}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.evite{position:fixed;left:16px;top:-80px;z-index:1000;padding:12px 18px;border-radius:8px;background:var(--gr);color:var(--papier);font-weight:700;transition:top .3s}
+.evite:focus{top:16px}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+.trace{position:fixed;left:0;top:0;z-index:40;pointer-events:none}
+main,.pied{position:relative;z-index:1}
+b,strong{font-weight:700}
+
+/* ---------- Trait de progression et navigation ---------- */
+.progres{position:fixed;left:0;top:0;z-index:120;width:100%;height:8px;pointer-events:none}
+.progres path{fill:none;stroke:var(--rouge2);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1 2;stroke-dashoffset:1.01;filter:url(#crayon)}
+.nav{position:fixed;left:0;right:0;top:0;z-index:110;height:var(--nav);display:flex;align-items:center;gap:22px;padding:0 var(--gut);transition:transform .55s var(--e-out),background .4s}
+.nav::after{content:"";position:absolute;left:var(--gut);right:var(--gut);bottom:6px;height:8px;opacity:0;transition:opacity .4s;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5C80 2 160 7 240 4S360 3 399 5' fill='none' stroke='%232a2a2a' stroke-opacity='.45' stroke-width='1.4'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+.nav.solide{background:rgba(247,244,236,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.nav.solide::after{opacity:1}
+.nav.cachee{transform:translateY(-104%)}
+.logo{display:flex;align-items:center;gap:10px;margin-right:auto;line-height:1}
+.logo b{font:400 30px/1 var(--main)}
+.logo small{display:block;margin-top:3px;font:400 13px var(--texte);color:var(--gr2)}
+.logo svg{width:34px;height:34px;transition:transform .8s var(--e-ressort)}
+.logo:hover svg{transform:rotate(-14deg) translateY(-3px)}
+.nav__liens{display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px;font:400 19px/1 var(--main)}
+.nav__liens a{position:relative;padding:6px 0}
+.nav__liens a.actif{color:var(--rouge)}
+.gribouille{position:absolute;left:-6px;bottom:-6px;width:calc(100% + 12px);height:12px;overflow:visible;pointer-events:none}
+.gribouille path{fill:none;stroke:var(--rouge2);stroke-width:2;stroke-linecap:round;stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset .5s var(--e-io)}
+a:hover>.gribouille path,a:focus-visible>.gribouille path,a.actif>.gribouille path{stroke-dashoffset:0}
+.nav__pres{position:relative;display:flex;align-items:center;gap:8px;padding:8px 14px;font:400 18px/1 var(--main);isolation:isolate}
+.nav__pres svg.ecran{width:22px;height:20px}
+.nav__pres kbd{font:400 13px var(--texte);color:var(--gr2)}
+.cadre{position:absolute;left:-5px;top:-5px;width:calc(100% + 10px);height:calc(100% + 10px);overflow:visible;z-index:-1;filter:url(#crayon);pointer-events:none}
+.cadre path{fill:none;stroke:var(--gr);stroke-width:1.6;stroke-linecap:round}
+.nav__burger{display:none;width:46px;height:46px;place-items:center}
+.nav__burger svg{width:28px;height:28px}
+.mmenu{position:fixed;inset:0;z-index:105;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:var(--nav) var(--gut) 30px;background:var(--papier);overflow:auto}
+.mmenu a{font:400 clamp(1.5rem,6.4vw,2.3rem)/1.2 var(--main);opacity:0;translate:-16px 0;transition:opacity .5s var(--e-out),translate .6s var(--e-out);transition-delay:calc(var(--i) * 40ms)}
+.mmenu.ouvert a{opacity:1;translate:none}
+.mmenu a span{display:inline-block;min-width:2.2em;font-size:.55em;color:var(--rouge)}
+
+/* ---------- Éléments communs ---------- */
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:13px 22px;font:400 21px/1 var(--main);isolation:isolate}
+.btn::before{content:"";position:absolute;left:3px;right:3px;top:18%;bottom:14%;z-index:-2;background:var(--jaune);transform:scaleX(0) skewX(-10deg);transform-origin:0 50%;transition:transform .45s var(--e-out)}
+.btn:hover::before,.btn:focus-visible::before{transform:scaleX(1) skewX(-10deg)}
+.btn--plein{color:var(--rouge)}
+.btn--plein .cadre path{stroke:var(--rouge2);stroke-width:2}
+.btn svg.fl{width:18px;height:18px;transition:transform .4s var(--e-ressort)}
+.btn:hover svg.fl{transform:translate(3px,-3px) rotate(-8deg)}
+.btn svg.lect{width:18px;height:18px}
+.note{margin:14px 0 0;font:400 16px/1.4 var(--main);color:var(--bleu);transform:rotate(-1deg);transform-origin:0 50%}
+mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune) 4%,var(--jaune) 96%,transparent 98%) 0 72%/0% 58% no-repeat;transition:background-size 1s var(--e-io)}
+.pret .hero mark,.vu mark,mark.vu{background-size:100% 58%}
+.pret .hero mark:nth-of-type(1){transition-delay:1.2s}.pret .hero mark:nth-of-type(2){transition-delay:1.6s}
+.surl{background:linear-gradient(100deg,transparent 1%,var(--orange) 2%,var(--orange) 98%,transparent 99%) 0 78%/100% 52% no-repeat;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.lien{position:relative;display:inline-flex;align-items:center;gap:8px;font:400 19px var(--main);color:var(--bleu)}
+.lien svg.fl{width:16px;height:16px;transition:transform .4s var(--e-ressort)}
+.lien:hover svg.fl{transform:translate(3px,-3px)}
+.lien-texte{color:var(--bleu);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.lien-texte:hover{color:var(--rouge)}
+.case{flex:none;width:22px;height:22px;overflow:visible}
+.case path{fill:none;stroke:var(--gr);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.case .coche{stroke:var(--rouge2);stroke-width:2.4;stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset .45s var(--e-out)}
+.fleche-ronde{position:relative;display:grid;place-items:center;width:54px;height:54px;color:var(--rouge);transition:transform .5s var(--e-ressort)}
+.fleche-ronde svg{width:54px;height:54px;overflow:visible;filter:url(#crayon)}
+.fleche-ronde path{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
+/* une fiche de papier scotchée */
+.fiche{--r:-.6deg;--rt:-3deg;position:relative;padding:28px 30px 24px;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(var(--r))}
+.fiche::before{content:"";position:absolute;top:-12px;left:50%;width:100px;height:26px;margin-left:-50px;background:rgba(255,222,40,.55);transform:rotate(var(--rt));box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.fiche h3{margin:0 0 8px;font:400 clamp(1.5rem,2.2vw,1.95rem)/1.12 var(--main)}
+.fiche h4{margin:16px 0 6px;font:400 21px var(--main);color:var(--rouge)}
+.fiche p{margin:0 0 10px;color:var(--gr2)}
+.fiche p:last-child{margin-bottom:0}
+.fiche--seyes{background-color:var(--fiche);background-image:repeating-linear-gradient(transparent 0 29px,rgba(47,111,214,.22) 29px 30px);background-position:0 18px}
+/* liste à cases (cochées quand la fiche apparaît) */
+.coches{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:7px}
+.coches li{display:flex;gap:11px;align-items:flex-start;font-size:16.5px;line-height:1.45}
+.coches .case{margin-top:1px}
+.coches.vu .coche{stroke-dashoffset:0;transition-delay:calc(var(--k,0) * 170ms + .35s)}
+.puces{margin:4px 0 0;padding-left:1.15em;display:grid;gap:5px}
+.puces li{padding-left:2px}
+.puces li::marker{color:var(--rouge2)}
+/* post-it */
+.postit{position:relative;display:inline-block;padding:14px 16px 12px;background:var(--pj);font:400 18px/1.3 var(--main);box-shadow:0 10px 14px -10px rgba(0,0,0,.45);transform:rotate(var(--r,-2deg));transition:transform .45s var(--e-ressort)}
+.postit::before{content:"";position:absolute;top:-10px;left:50%;width:62px;height:20px;margin-left:-31px;background:rgba(214,230,255,.75);transform:rotate(3deg)}
+.postit:hover{transform:rotate(0) translateY(-3px) scale(1.03)}
+.postit b{font-weight:400;color:var(--rouge)}
+
+/* ---------- Sections ---------- */
+.section{position:relative;max-width:var(--maxw);margin:0 auto;padding:clamp(70px,9vw,120px) var(--gut);scroll-margin-top:10px}
+.entete{max-width:960px}
+.entete__haut{display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px;margin:0 0 10px}
+.sur{display:inline-flex;align-items:center;gap:10px;margin:0;font:400 21px var(--main);color:var(--rouge);transform:rotate(-1.5deg);transform-origin:0 50%}
+.sur svg{width:34px;height:20px;overflow:visible}
+.sur svg path{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.titre{margin:0;font:400 clamp(2.2rem,5vw,4.3rem)/1.06 var(--main)}
+.souligne{position:relative;display:inline-block}
+.souligne svg{position:absolute;left:-2%;bottom:-.18em;width:104%;height:.3em;overflow:visible;pointer-events:none}
+.souligne path{fill:none;stroke:var(--rouge2);stroke-width:3;stroke-linecap:round;stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset 1.1s .5s var(--e-io)}
+.vu .souligne path,.souligne.vu path{stroke-dashoffset:0}
+.chapo-sec{max-width:62ch;margin:18px 0 0;color:var(--gr2);font-size:18px}
+.js .mt{display:inline-block;clip-path:inset(-10% 100% -20% 0);transition:clip-path .55s var(--e-io);transition-delay:calc(var(--i) * 110ms)}
+.js .vu .mt,.js .vu.mt{clip-path:inset(-10% -4% -20% 0)}
+.js .rv{opacity:0;translate:0 34px;transition:opacity .9s var(--e-out),translate 1.1s var(--e-out);transition-delay:calc(var(--i,0) * 90ms)}
+.js .rv.vu{opacity:1;translate:none}
+/* chronomètre : la durée prévue de chaque partie (l'arc rouge = minutes sur un cadran d'une heure) */
+.chrono{display:inline-flex;align-items:center;gap:8px;font:400 18px var(--main);color:var(--gr2);transform:rotate(1.5deg)}
+.chrono svg{width:32px;height:36px;overflow:visible;filter:url(#crayon)}
+.chrono .cadran{fill:var(--fiche);stroke:var(--gr);stroke-width:1.6}
+.chrono .pique{fill:none;stroke:var(--gr);stroke-width:1.6;stroke-linecap:round}
+.chrono .arc{fill:none;stroke:var(--rouge2);stroke-width:5;stroke-linecap:butt;stroke-dasharray:1 2;stroke-dashoffset:1.01;opacity:.8;transition:stroke-dashoffset 1.4s .3s var(--e-io)}
+.chrono.vu .arc{stroke-dashoffset:var(--fin,1)}
+
+/* ---------- Accueil ---------- */
+.hero{position:relative;max-width:1400px;margin:0 auto;padding:calc(var(--nav) + 18px) var(--gut) 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(20px,4vw,60px);align-items:center;min-height:min(100svh,960px)}
+.lycee{margin:0 0 14px;font:400 17px var(--main);color:var(--gr2);transform:rotate(-1.5deg);transform-origin:0 50%}
+.hero h1{margin:0 0 14px;font:400 clamp(2.5rem,min(5.6vw,9vh),5.4rem)/1.04 var(--main);letter-spacing:.005em}
+.entoure{position:relative;display:inline-block;color:var(--rouge)}
+.entoure svg{position:absolute;left:-7%;top:-14%;width:114%;height:128%;overflow:visible;pointer-events:none}
+.entoure path{fill:none;stroke:var(--rouge2);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset 1.3s .7s var(--e-io)}
+.pret .entoure path{stroke-dashoffset:0}
+.formation-nom{margin:0 0 18px;font:400 clamp(1.25rem,1.9vw,1.7rem)/1.25 var(--main);color:var(--bleu)}
+.formation-nom b{font-weight:400;color:var(--rouge)}
+.chapo{max-width:50ch;margin:0 0 22px;font-size:clamp(16.5px,1.25vw,18.5px);line-height:1.62}
+.chapo strong{font:400 1.12em var(--main);color:var(--rouge)}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:18px 22px}
+
+/* ---------- Pied de page ---------- */
+.pied{max-width:var(--maxw);margin:0 auto;padding:clamp(70px,9vw,110px) var(--gut) 40px}
+.pied__mot{position:relative;display:block;width:max-content;max-width:100%;margin:0 auto;font:400 clamp(3.4rem,11vw,10rem)/1 var(--main);text-align:center}
+.pied__mot svg{position:absolute;left:2%;bottom:-.02em;width:96%;height:.22em;overflow:visible}
+.pied__mot path{fill:none;stroke:var(--rouge2);stroke-width:4;stroke-linecap:round;stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset 1.4s var(--e-io)}
+.pied__mot.vu path{stroke-dashoffset:0}
+.pied__cols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:34px;margin-top:60px}
+.pied h4{margin:0 0 12px;font:400 21px var(--main);color:var(--rouge)}
+.pied p{margin:0;max-width:38ch;color:var(--gr2);font-size:15.5px}
+.pied ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pied ul a,.pied ul button{position:relative;font:400 18px var(--main);color:var(--gr);text-align:left}
+.pied ul a:hover,.pied ul button:hover{color:var(--rouge)}
+.pied__base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:50px;padding-top:16px;border-top:1px dashed var(--gr3);font:400 16px var(--main);color:var(--gr2)}
+
+/* ---------- Mode présentation : une partie par écran, au clavier ---------- */
+.pres{position:fixed;left:0;right:0;bottom:0;z-index:300;display:flex;align-items:center;gap:12px 16px;padding:10px var(--gut) 12px;background:rgba(247,244,236,.95);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);border-top:1.5px dashed var(--gr3)}
+.pres button{font:400 18px/1 var(--main);color:var(--gr)}
+.pres__fl{display:grid;place-items:center;width:40px;height:40px;border:1.6px solid var(--gr);border-radius:50% 46% 52% 48%}
+.pres__fl:hover{color:var(--rouge);border-color:var(--rouge2)}
+.pres__fl svg{width:20px;height:20px}
+.pres__frise{flex:1;display:flex;gap:3px;min-width:0;height:26px}
+.pres__seg{position:relative;flex:var(--m) 1 0;min-width:10px;border:1.5px solid var(--gr2);border-radius:3px 6px 4px 5px;overflow:hidden}
+.pres__seg span{position:absolute;left:5px;right:3px;top:50%;transform:translateY(-50%);font:400 12.5px/1 var(--main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;color:var(--gr2)}
+.pres__seg.fait{background:repeating-linear-gradient(-45deg,rgba(61,154,95,.3) 0 1.5px,transparent 1.5px 6px)}
+.pres__seg.ici{background:var(--jaune);border-color:var(--gr)}
+.pres__seg.ici span{color:var(--gr)}
+.pres__seg:hover{border-color:var(--rouge2)}
+.pres__chrono{display:flex;align-items:center;gap:8px;min-width:150px;font:400 19px/1 var(--main);white-space:nowrap}
+.pres__chrono svg{width:30px;height:30px;overflow:visible}
+.pres__chrono circle{fill:var(--fiche);stroke:var(--gr);stroke-width:1.6}
+.pres__chrono path{fill:none;stroke:var(--vert);stroke-width:4.5}
+.pres__chrono.depasse{color:var(--rouge)}
+.pres__chrono.depasse path{stroke:var(--rouge2)}
+.pres__num{font:400 17px var(--main);color:var(--gr2);white-space:nowrap}
+.pres__quitter{padding:8px 12px;border:1.5px dashed var(--gr2);border-radius:10px}
+.pres__quitter:hover{color:var(--rouge);border-color:var(--rouge2)}
+.pres__suite{position:fixed;left:50%;bottom:76px;z-index:301;padding:6px 14px;font:400 16px/1 var(--main);color:var(--rouge);background:rgba(247,244,236,.96);border:1.5px dashed var(--rouge2);border-radius:14px;transform:translateX(-50%);box-shadow:0 8px 14px -10px rgba(0,0,0,.35);pointer-events:none;animation:sautille 1.6s var(--e-io) infinite}
+@keyframes sautille{50%{translate:0 4px}}
+.presente,.presente body{overflow:hidden}
+.presente .nav,.presente .progres,.presente .pied,.presente .mmenu,.presente .evite{display:none!important}
+.presente main>section{display:none!important}
+.presente main>section.ici{display:block!important;position:fixed;inset:0 0 64px 0;z-index:5;overflow:auto;overscroll-behavior:contain;max-width:none;min-height:0;margin:0;
+  padding:clamp(26px,5vh,64px) max(var(--gut),calc((100vw - var(--maxw)) / 2 + var(--gut))) 40px;background-color:var(--papier);background-image:linear-gradient(rgba(47,111,214,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(47,111,214,.085) 1px,transparent 1px);background-size:22px 22px;animation:tourne .75s var(--e-out)}
+.presente main>section.hero.ici{display:grid!important;align-content:center}
+.presente main>section.ici.recule{animation-name:tourne-r}
+@keyframes tourne{from{opacity:0;transform:translateX(60px) rotate(.8deg)}to{opacity:1;transform:none}}
+@keyframes tourne-r{from{opacity:0;transform:translateX(-60px) rotate(-.8deg)}to{opacity:1;transform:none}}
+
+
+/* ---------- Le parcours : l'introduction, puis les quatre tables ---------- */
+.intro-carte{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;max-width:960px;margin-top:44px;padding:20px 24px;background:var(--pb);box-shadow:var(--ombre);transform:rotate(-.5deg);transition:transform .5s var(--e-ressort),box-shadow .4s}
+.intro-carte:hover,.intro-carte:focus-visible{transform:rotate(0) translateY(-4px);box-shadow:0 2px 2px rgba(0,0,0,.05),0 28px 40px -24px rgba(0,0,0,.55)}
+.intro-carte svg{flex:none;width:58px;height:58px;overflow:visible;filter:url(#crayon)}
+.intro-carte svg *{fill:none;stroke:var(--gr);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.intro-carte .txt{flex:1 1 300px}
+.intro-carte small{display:block;font:400 15px var(--main);letter-spacing:.06em;color:var(--rouge)}
+.intro-carte b{display:block;font:400 clamp(1.3rem,2vw,1.65rem)/1.15 var(--main)}
+.intro-carte .d{display:block;margin-top:4px;color:var(--gr2);font-size:16px}
+.intro-carte .va{font:400 19px var(--main);color:var(--bleu)}
+.tables{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:34px}
+.table-wc{--r:0deg;position:relative;display:flex;flex-direction:column;padding:16px 16px 14px;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(var(--r));transition:transform .5s var(--e-ressort),box-shadow .4s}
+.table-wc:hover,.table-wc:focus-visible{transform:rotate(0) translateY(-6px);box-shadow:0 2px 2px rgba(0,0,0,.05),0 28px 40px -24px rgba(0,0,0,.55)}
+.table-wc svg{width:100%;height:auto;margin-bottom:8px;overflow:visible;filter:url(#crayon)}
+.table-wc svg path,.table-wc svg ellipse{fill:none;stroke:var(--gr);stroke-width:1.6;stroke-linecap:round}
+.table-wc svg .plateau{fill:var(--c,var(--pb))}
+.table-wc svg text{font:400 22px var(--main);fill:var(--rouge);text-anchor:middle}
+.table-wc .etq{font:400 15px var(--main);color:var(--ca)}
+.table-wc h3{margin:2px 0 6px;font:400 clamp(1.25rem,1.7vw,1.5rem)/1.1 var(--main)}
+.table-wc p{margin:0 0 8px;color:var(--gr2);font-size:15px;line-height:1.45}
+.table-wc .duree{margin-top:auto;font:400 15.5px var(--main);color:var(--gr2)}
+.table-wc .tampon-fait{position:absolute;right:12px;top:14px}
+.tables__total{margin:22px 0 0;font:400 18px var(--main);color:var(--gr2)}
+.tables__total b{font-weight:400;color:var(--rouge)}
+.tampon-fait{display:inline-block;padding:1px 10px;font:400 17px var(--main);letter-spacing:.08em;color:var(--vert);border:2.2px solid currentColor;border-radius:5px;transform:rotate(-7deg);opacity:0;scale:1.4;transition:opacity .3s,scale .5s var(--e-ressort);pointer-events:none}
+.tampon-fait.on{opacity:.92;scale:1}
+
+/* ---------- Une partie : l'introduction ou un atelier ---------- */
+.atelier .sur{color:var(--ca)}
+.colonne{display:grid;gap:clamp(36px,4vw,52px);max-width:1080px;margin-top:40px}
+.colonne>*{min-width:0}
+.probleme{--r:-1.4deg;display:flex;gap:14px;align-items:flex-start;max-width:880px;padding:16px 18px 14px;font:400 19px/1.35 var(--main)}
+.probleme svg{flex:none;width:34px;height:34px;overflow:visible}
+.probleme svg path,.probleme svg circle{fill:none;stroke:var(--rouge2);stroke-width:2;stroke-linecap:round}
+.probleme small{display:block;margin-bottom:2px;font-size:14px;letter-spacing:.06em;color:var(--rouge)}
+.probleme:hover{transform:rotate(-.4deg)}
+.bloc-titre{margin:0 0 14px;font:400 clamp(1.35rem,2vw,1.7rem)/1.15 var(--main)}
+.consigne{margin:-6px 0 16px;font:400 16.5px var(--main);color:var(--bleu);transform:rotate(-.6deg);transform-origin:0 50%}
+.definition{--r:.4deg;max-width:880px}
+.definition p{font-size:17.5px;color:var(--gr)}
+.definition strong,.texte strong,.duo-cartes strong{color:var(--ca)}
+.aide{display:flex;gap:16px;align-items:center;max-width:880px;padding:14px 18px;background:var(--fiche);border-left:4px solid var(--ca);box-shadow:0 1px 1px rgba(0,0,0,.05),0 12px 22px -16px rgba(0,0,0,.4)}
+.aide svg{flex:none;width:44px;height:44px;overflow:visible;filter:url(#crayon)}
+.aide svg *{fill:none;stroke:var(--ca);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.aide b{display:block;font:400 18px var(--main)}
+.aide span{color:var(--gr2);font-size:16px}
+/* étapes numérotées : le trait se remplit au fil de la lecture */
+.etapes{position:relative;list-style:none;margin:0;padding:0;display:grid;gap:18px;--p:0}
+.etapes::before,.etapes::after{content:"";position:absolute;left:23px;top:30px;bottom:30px;border-left:2px dashed var(--gr3)}
+.etapes::after{border-left:3px solid var(--ca);transform-origin:0 0;transform:scaleY(var(--p))}
+.etape{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);gap:16px;align-items:start}
+.etape__n{position:relative;z-index:1;display:grid;place-items:center;width:48px;height:48px;margin-top:8px;font:400 22px var(--main);color:var(--ca);background:var(--fiche);border:2px solid var(--ca);border-radius:52% 48% 55% 45%/48% 55% 45% 52%;transition:background .4s,color .4s,transform .5s var(--e-ressort)}
+.etape.atteinte .etape__n{background:var(--ca);color:#fff;transform:rotate(-8deg) scale(1.06)}
+.etape .fiche{--r:0deg;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:4px 26px;padding:16px 20px 14px}
+.etape .fiche::before{display:none}
+.etape h4{grid-column:1;display:flex;align-items:center;gap:10px;margin:0;font:400 clamp(1.2rem,1.7vw,1.45rem)/1.15 var(--main);color:var(--gr)}
+.etape h4 svg{flex:none;width:28px;height:28px;overflow:visible;filter:url(#crayon)}
+.etape h4 svg *{fill:none;stroke:var(--ca);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.etape p{grid-column:1;margin:0;color:var(--gr)}
+.etape ul{grid-column:2;grid-row:1/span 2;align-self:center;margin:0;padding-left:1.15em;display:grid;gap:2px;font-size:15.5px;color:var(--gr2)}
+.etape li::marker{color:var(--ca)}
+/* fiches punaisées */
+.grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 24px}
+.carte{--r:0deg;position:relative;padding:20px 18px 14px;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(var(--r));transition:transform .5s var(--e-ressort),box-shadow .4s}
+.carte::before{content:"";position:absolute;top:-7px;left:50%;width:15px;height:15px;margin-left:-7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.7),transparent 45%),var(--ca,var(--rouge2));box-shadow:0 2px 3px rgba(0,0,0,.3)}
+.carte:hover{transform:rotate(0) translateY(-4px);box-shadow:0 2px 2px rgba(0,0,0,.05),0 28px 40px -24px rgba(0,0,0,.55)}
+.carte svg{width:40px;height:40px;margin-bottom:6px;overflow:visible;filter:url(#crayon)}
+.carte svg *{fill:none;stroke:var(--ca,var(--gr));stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.carte h4{margin:0 0 6px;font:400 clamp(1.15rem,1.5vw,1.35rem)/1.15 var(--main)}
+.carte p{margin:0;color:var(--gr2);font-size:15.5px;line-height:1.5}
+.familles .carte{--ca:var(--c);text-align:center}
+.familles .carte svg{display:block;width:54px;height:54px;margin:0 auto 8px}
+.familles .carte h4{color:var(--c)}
+.duo-cartes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.duo-cartes .fiche h4,.texte h4{margin:0 0 8px;font:400 clamp(1.25rem,1.8vw,1.5rem)/1.2 var(--main);color:var(--ca)}
+.duo-cartes .fiche p,.texte p{color:var(--gr)}
+.texte{--r:-.4deg;max-width:880px}
+.alerte{--r:-.8deg;display:block;max-width:880px;padding:18px 22px 16px;background:var(--pr);font:400 18px/1.45 var(--main)}
+.alerte:hover{transform:rotate(0)}
+.alerte h4{margin:0 0 6px;font:400 21px var(--main);color:var(--rouge)}
+.alerte p{margin:0}
+.alerte strong{font-weight:400;color:var(--rouge)}
+.reflexe{--r:.6deg;max-width:960px}
+.reflexe h3{color:var(--rouge)}
+.reflexe p{color:var(--gr)}
+.trois-q{list-style:none;margin:12px 0 16px;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.trois-q li{position:relative;padding:12px 14px 12px 52px;font:400 19px/1.25 var(--main);background:var(--pj);transform:rotate(var(--r));box-shadow:0 8px 12px -10px rgba(0,0,0,.45)}
+.trois-q li b{position:absolute;left:12px;top:50%;display:grid;place-items:center;width:30px;height:30px;margin-top:-15px;font-weight:400;color:var(--rouge);border:1.8px solid var(--rouge2);border-radius:50% 46% 52% 48%}
+/* la carte des acteurs autour de l'ouvrage, et la fiche de l'acteur choisi */
+.carte-zone{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:clamp(22px,3vw,40px);align-items:start}
+.carte-acteurs{position:relative;height:clamp(440px,40vw,500px)}
+.carte-acteurs__fils{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;filter:url(#crayon)}
+.carte-acteurs__fils path{fill:none;stroke:var(--gr3);stroke-width:1.8;stroke-dasharray:5 6;stroke-linecap:round;transition:stroke .3s}
+.carte-acteurs__fils path.chaud{stroke:var(--c,var(--rouge2));stroke-dasharray:none;stroke-width:2.6}
+.carte-acteurs__centre{position:absolute;left:50%;top:50%;z-index:1;display:grid;justify-items:center;gap:2px;width:136px;padding:12px 8px;text-align:center;font:400 15.5px/1.1 var(--main);color:var(--rouge);background:var(--fiche);border:2px solid var(--rouge2);border-radius:50% 46% 52% 48%/55% 50% 50% 45%;transform:translate(-50%,-50%) rotate(-2deg);box-shadow:0 10px 18px -12px rgba(0,0,0,.4)}
+.carte-acteurs__centre svg{width:44px;height:44px;overflow:visible;filter:url(#crayon)}
+.carte-acteurs__centre svg *{fill:none;stroke:var(--gr);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.noeud{position:absolute;left:var(--gx);top:var(--gy);z-index:2;display:grid;justify-items:center;gap:1px;width:128px;padding:10px 8px 8px;text-align:center;background:linear-gradient(170deg,#efe2c6,#e4d1ab);border-radius:5px 9px 6px 8px;box-shadow:0 4px 8px -3px rgba(0,0,0,.28);transform:translate(-50%,-50%) rotate(var(--r,0deg));transition:transform .45s var(--e-ressort),box-shadow .3s,background .3s}
+.noeud svg{width:34px;height:34px;overflow:visible;filter:url(#crayon)}
+.noeud svg *{fill:none;stroke:var(--c,var(--gr));stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.noeud b{font:400 15px/1.15 var(--main)}
+.noeud small{font:400 13px var(--main);letter-spacing:.08em;color:var(--c,var(--gr2))}
+.noeud:hover,.noeud:focus-visible{transform:translate(-50%,-50%) rotate(0) scale(1.07);box-shadow:0 12px 16px -8px rgba(0,0,0,.35)}
+.noeud[aria-pressed="true"]{background:linear-gradient(170deg,#fff3b0,#ffe680);box-shadow:0 0 0 2px var(--c,var(--rouge2)),0 12px 16px -8px rgba(0,0,0,.35)}
+.fiche-acteur{--r:.5deg;padding:22px 22px 18px;border-top:4px solid var(--c,var(--gr3));transition:border-color .3s}
+.fiche-acteur .vide{margin:0;font:400 17px var(--main);color:var(--gr2)}
+.fiche-acteur__tete{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.fiche-acteur__tete svg{flex:none;width:48px;height:48px;overflow:visible;filter:url(#crayon)}
+.fiche-acteur__tete svg *{fill:none;stroke:var(--c,var(--gr));stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.fiche-acteur h4{margin:0;font:400 clamp(1.35rem,2vw,1.7rem)/1.1 var(--main);color:var(--gr)}
+.fiche-acteur .sigle{display:inline-block;margin-top:3px;padding:0 9px;font:400 14.5px var(--main);letter-spacing:.06em;color:var(--c);border:1.5px solid currentColor;border-radius:9px}
+.fiche-acteur .role{margin:0 0 8px;font:400 17px var(--main);color:var(--c)}
+.fiche-acteur h5{margin:14px 0 6px;font:400 15px var(--main);letter-spacing:.05em;color:var(--gr2)}
+.fiche-acteur ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fiche-acteur li{padding:3px 0 3px 12px;border-left:3px solid var(--c);font-size:15.5px;line-height:1.45}
+.outils{display:flex;flex-wrap:wrap;gap:6px}
+.outils span{padding:2px 10px;font:400 15px var(--main);border:1.5px dashed var(--c);border-radius:10px}
+/* tableaux */
+.tableau-zone{overflow-x:auto;padding:4px 4px 14px}
+.tableau{width:100%;min-width:620px;border-collapse:separate;border-spacing:0;background:var(--fiche);box-shadow:var(--ombre);font-size:15.5px;line-height:1.45}
+.tableau th{padding:12px;text-align:left;font:400 18px var(--main);color:var(--ca);border-bottom:2px solid var(--gr)}
+.tableau td{padding:10px 12px;vertical-align:top;border-bottom:1px dashed var(--gr3)}
+.tableau tr:last-child td{border-bottom:0}
+.tableau td:first-child{font:400 17px var(--main);color:var(--ca);white-space:nowrap}
+.tableau tbody tr{transition:background .2s}
+.tableau tbody tr:hover{background:rgba(255,222,40,.16)}
+/* deux organisations comparées */
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.compare .fiche{padding:22px 22px 18px}
+.compare h4{display:flex;align-items:center;gap:10px;margin:0 0 8px;font:400 clamp(1.25rem,1.8vw,1.5rem)/1.2 var(--main);color:var(--gr)}
+.compare h4 svg{flex:none;width:34px;height:34px;overflow:visible;filter:url(#crayon)}
+.compare h4 svg *{fill:none;stroke:var(--ca);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.compare p{color:var(--gr)}
+.compare strong{color:var(--ca)}
+.compare ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px;font-size:15.5px;line-height:1.4}
+.compare li{display:flex;gap:10px;align-items:flex-start}
+.compare li svg{flex:none;width:19px;height:19px;margin-top:1px;overflow:visible}
+.compare li svg path{fill:none;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.compare li.plus svg path{stroke:var(--vert)}
+.compare li.moins svg path{stroke:#d9822b}
+/* flashcards : des fiches bristol qui se retournent */
+.cartes-memo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.memo-carte{display:block;width:100%;height:210px;perspective:1100px;text-align:center}
+.memo-carte__in{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s var(--e-out)}
+.memo-carte[aria-pressed="true"] .memo-carte__in{transform:rotateY(180deg)}
+.memo-face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:30px 22px 14px;-webkit-backface-visibility:hidden;backface-visibility:hidden;
+  background-color:var(--fiche);background-image:linear-gradient(transparent 26px,rgba(214,69,58,.5) 26px 27.5px,transparent 27.5px),repeating-linear-gradient(transparent 0 25px,rgba(47,111,214,.13) 25px 26px);box-shadow:var(--ombre);transition:box-shadow .3s}
+.memo-face--dos{transform:rotateY(180deg);background-color:#fbf8e6}
+.memo-carte:hover .memo-face{box-shadow:0 2px 2px rgba(0,0,0,.05),0 26px 36px -22px rgba(0,0,0,.55)}
+.memo-face .marque{position:absolute;top:5px;left:14px;font:400 13px var(--main);letter-spacing:.1em;color:var(--ca)}
+.memo-face--dos .marque{color:var(--vert)}
+.memo-face .txt{display:block;font:400 18px/1.35 var(--main);color:var(--gr)}
+.memo-face--dos .txt{font:400 15.5px/1.5 var(--texte)}
+.memo-face small{font:400 14px var(--main);color:var(--gr2)}
+/* missions à cocher */
+.avance__barre{position:relative;flex:1 1 200px;height:16px;border:1.6px solid var(--gr);border-radius:3px 8px 4px 6px;overflow:hidden;background:var(--fiche)}
+.avance__barre i{position:absolute;left:0;top:0;bottom:0;width:0;background:repeating-linear-gradient(-45deg,var(--ca) 0 2px,transparent 2px 6px);transition:width .6s var(--e-out)}
+.missions{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;align-items:start}
+.mission{padding:20px 20px 16px}
+.mission__tete{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.mission__tete svg{flex:none;width:34px;height:34px;overflow:visible;filter:url(#crayon)}
+.mission__tete svg *{fill:none;stroke:var(--ca);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.mission__tete small{display:block;font:400 13.5px var(--main);letter-spacing:.06em;color:var(--ca)}
+.mission__tete h4{margin:0;font:400 19px/1.15 var(--main);color:var(--gr)}
+.mission__avance{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.mission__avance .avance__barre{height:11px}
+.mission__avance b{min-width:3.2em;font:400 17px var(--main);color:var(--ca);text-align:right}
+.taches{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:4px}
+.tache{display:flex;gap:10px;align-items:flex-start;width:100%;padding:4px 2px;text-align:left;font-size:15px;line-height:1.4;border-radius:4px;transition:background .2s}
+.tache:hover{background:rgba(255,222,40,.18)}
+.tache .case{margin-top:1px}
+.tache[aria-checked="true"] .coche{stroke-dashoffset:0}
+.tache[aria-checked="true"] span{color:var(--gr2);text-decoration:line-through;text-decoration-color:rgba(214,69,58,.6)}
+.tuto-btn{font:400 16.5px var(--main);color:var(--ca);padding:4px 0}
+.tuto-btn:hover{color:var(--rouge)}
+.tuto{margin:10px 0 0;padding:12px 14px;background:rgba(255,222,40,.14);border-left:3px solid var(--ca);font-size:15px}
+.tuto h5{margin:0 0 8px;font:400 17px/1.2 var(--main)}
+.tuto ol{margin:0;padding-left:1.4em;display:grid;gap:6px}
+.tuto li::marker{font:400 15px var(--main);color:var(--rouge)}
+/* bas d'atelier : on circule, on marque « terminé » */
+.atelier__pied{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px 22px;padding-top:20px;border-top:1.5px dashed var(--gr3)}
+.atelier__pied nav{display:flex;flex-wrap:wrap;gap:6px 24px}
+.atelier__pied .lien{font-size:18px}
+.lien:hover{color:var(--rouge)}
+.btn .case{width:20px;height:20px}
+.btn-fait[aria-pressed="true"]{color:var(--vert)}
+.btn-fait[aria-pressed="true"] .cadre path{stroke:var(--vert)}
+.btn-fait[aria-pressed="true"] .coche{stroke-dashoffset:0}
+
+/* ---------- Quiz final : le cadenas, puis la copie ---------- */
+.verrou{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(20px,4vw,48px);align-items:center;max-width:780px;margin:44px 0 0;padding:26px 28px}
+.verrou svg{width:110px;height:auto;overflow:visible;filter:url(#crayon)}
+.verrou svg path,.verrou svg rect,.verrou svg circle{fill:none;stroke:var(--gr);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.verrou svg .corps{fill:var(--pj)}
+.verrou svg .anse{transform-box:fill-box;transform-origin:85% 100%;transition:transform .8s var(--e-ressort)}
+.verrou.ouvert svg .anse{transform:translate(0,-12px) rotate(28deg)}
+.verrou.non{animation:secoue .5s}
+@keyframes secoue{20%,60%{transform:translateX(-8px) rotate(-.6deg)}40%,80%{transform:translateX(8px) rotate(.6deg)}}
+.verrou h3{margin:0 0 6px;font:400 clamp(1.5rem,2.3vw,2rem)/1.1 var(--main)}
+.verrou p{margin:0 0 12px;color:var(--gr2)}
+.code-zone{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.code-zone input{width:min(250px,100%);padding:8px 12px;font:400 21px/1 var(--main);letter-spacing:.14em;text-align:center;text-transform:uppercase;color:var(--gr);background:#fff;border:1.8px solid var(--gr);border-radius:4px 9px 5px 7px;outline:none}
+.code-zone input:focus-visible{outline:2.5px dashed var(--bleu);outline-offset:3px}
+.code-msg{min-height:1.4em;margin:10px 0 0!important;font:400 17px var(--main)}
+.code-msg.ok{color:var(--vert)}.code-msg.ko{color:var(--rouge)}
+.copie{position:relative;max-width:900px;margin:34px 0 0;padding:34px 34px 30px 104px;background-color:var(--fiche);
+  background-image:linear-gradient(90deg,transparent 78px,rgba(214,69,58,.55) 78px 80px,transparent 80px),repeating-linear-gradient(transparent 0 31px,rgba(47,111,214,.25) 31px 32px);box-shadow:var(--ombre)}
+.question{margin:0 0 24px;padding:0;border:0}
+.question legend{padding:0;margin-bottom:8px;font:400 18.5px/1.35 var(--main)}
+.question legend small{display:block;font-size:14px;color:var(--rouge);letter-spacing:.05em}
+.question__atelier{color:var(--c,var(--gr2))}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px}
+.option{position:relative;display:flex;gap:10px;align-items:center;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:15.5px;line-height:1.35;transition:background .2s}
+.option:hover{background:rgba(255,222,40,.2)}
+.option input{position:absolute;opacity:0;width:1px;height:1px}
+.option .rond{flex:none;width:20px;height:20px;border:1.8px solid var(--gr);border-radius:50% 46% 52% 48%;display:grid;place-items:center}
+.option .rond::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--rouge2);transform:scale(0);transition:transform .25s var(--e-ressort)}
+.option input:checked+.rond::after{transform:scale(1)}
+.option input:focus-visible+.rond{outline:2.5px dashed var(--bleu);outline-offset:3px}
+.option b{font:400 15px var(--main);color:var(--gr2)}
+.option.juste{background:rgba(61,154,95,.16)}
+.option.faux{background:rgba(214,69,58,.12);text-decoration:line-through;text-decoration-color:var(--rouge2)}
+.option .marque{margin-left:auto;font:400 20px var(--main)}
+.option.juste .marque{color:var(--vert)}.option.faux .marque{color:var(--rouge)}
+.explication{margin:10px 0 0;padding:9px 14px 10px;font-size:15px;line-height:1.45;background:rgba(61,154,95,.1);border-left:3px solid var(--vert)}
+.explication b{display:block;font:400 13.5px var(--main);letter-spacing:.06em;color:var(--vert)}
+.copie__pied{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:10px}
+.copie__pied span{font:400 17px var(--main);color:var(--gr2)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.note-prof{position:absolute;right:28px;top:20px;display:grid;place-items:center;width:118px;height:84px;font:400 34px/1 var(--main);color:var(--rouge);transform:rotate(-8deg)}
+.note-prof svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.note-prof svg path{fill:none;stroke:var(--rouge2);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset 1s .2s var(--e-io)}
+.note-prof.vu svg path{stroke-dashoffset:0}
+.note-prof small{position:absolute;top:100%;left:-20px;right:-20px;font-size:17px;text-align:center}
+.resultat{max-width:600px;margin:0 0 26px;font:400 19px/1.35 var(--main)}
+.resultat a{color:var(--bleu);text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- Écrans moyens et petits ---------- */
+@media (max-width:1180px){
+  .nav__liens{gap:6px 14px;font-size:17px}
+  .tables{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pied__cols{grid-template-columns:1fr 1fr}
+}
+@media (max-width:980px){
+  .nav__liens{display:none}
+  .nav__burger{display:grid}
+  .nav__pres span,.nav__pres kbd{display:none}
+  .hero{grid-template-columns:minmax(0,1fr);min-height:0}
+  .carte-zone,.duo-cartes,.compare,.cartes-memo{grid-template-columns:minmax(0,1fr)}
+  .grille{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .carte-acteurs{height:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .carte-acteurs__fils{display:none}
+  .carte-acteurs__centre{position:static;grid-column:1/-1;justify-self:center;transform:rotate(-2deg)}
+  .noeud{position:static;width:auto;transform:rotate(var(--r,0deg))}
+  .noeud:hover,.noeud:focus-visible{transform:scale(1.03)}
+  .copie{padding:30px 22px 26px 64px;background-image:linear-gradient(90deg,transparent 46px,rgba(214,69,58,.55) 46px 48px,transparent 48px),repeating-linear-gradient(transparent 0 31px,rgba(47,111,214,.25) 31px 32px)}
+  .pres__frise span{display:none}
+}
+@media (max-width:700px){
+  body{font-size:16.5px}
+  .tables,.grille,.trois-q,.options{grid-template-columns:minmax(0,1fr)}
+  .etapes::before,.etapes::after{left:19px}
+  .etape{grid-template-columns:40px minmax(0,1fr);gap:12px}
+  .etape__n{width:40px;height:40px;font-size:19px}
+  .etape .fiche{grid-template-columns:minmax(0,1fr)}
+  .etape ul{grid-column:1;grid-row:auto;margin-top:6px}
+  .memo-carte{height:250px}
+  .verrou{grid-template-columns:minmax(0,1fr);justify-items:start}
+  .verrou svg{width:80px}
+  .note-prof{position:static;margin:0 0 30px auto}
+  .pied__cols{grid-template-columns:1fr}
+  .pres{flex-wrap:wrap;padding-bottom:10px}
+  .pres__frise{order:-1;flex-basis:100%}
+  .pres__chrono{min-width:0}
+  .presente main>section.ici{bottom:104px}
+  .pres__suite{bottom:116px}
+}
+
+/* ---------- Mouvement réduit : tout est lisible, rien ne bouge seul ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0ms!important}
+  .js .rv{opacity:1!important;translate:none!important}
+  .js .mt{clip-path:none!important}
+}
+.noscript{position:relative;z-index:200;max-width:640px;margin:90px auto;padding:24px;background:var(--fiche);text-align:center}
+.noscript a{color:var(--bleu);text-decoration:underline}
+
+
+/* ---------- Accueil : le projet dans le temps, du besoin aux clés ---------- */
+.hero h1{font-size:clamp(2.1rem,min(4vw,7.4vh),4rem)}
+.auteur{margin:-8px 0 16px;font:400 16px var(--main);color:var(--gr2);transform:rotate(-1deg);transform-origin:0 50%}
+.parcours-bar{--ca:var(--vert);display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;max-width:520px;margin:0 0 24px}
+.parcours-bar span{font:400 17px var(--main);color:var(--gr2)}
+.parcours-bar b{font-weight:400;color:var(--vert)}
+.parcours-bar .avance__barre{flex:1 1 150px}
+.temps{position:relative;margin:0}
+.temps__cadre{position:relative;padding:10px 10px 12px;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(-.6deg)}
+.temps__cadre::before{content:"";position:absolute;top:-12px;left:42%;z-index:2;width:110px;height:26px;background:rgba(255,222,40,.55);transform:rotate(2deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.temps__titre{position:absolute;left:24px;top:16px;z-index:1;font:400 16px var(--main);color:var(--gr2);transform:rotate(-2deg);pointer-events:none}
+.temps svg{width:100%;height:auto;overflow:hidden;filter:url(#crayon)}   /* sur le dessin entier, comme les croquis de plans */
+.souris .temps svg{cursor:ew-resize}
+.temps svg path{fill:none;stroke:var(--gr);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.temps svg .fin{stroke:rgba(42,42,42,.42);stroke-width:1.1}
+.temps svg .tb{stroke:var(--bleu);stroke-width:1.4}
+.temps svg .tr{stroke:var(--rouge2)}
+.temps svg .tf{stroke-width:3.4}
+.temps svg .tirets{stroke-dasharray:6 4}
+.temps svg .papier{fill:var(--fiche)}
+.temps svg .corps{fill:var(--cc,var(--fiche))}
+.temps svg .lj{fill:rgba(255,222,40,.65)}
+.temps svg .lb{fill:rgba(47,111,214,.2)}
+.temps svg .lr{fill:rgba(214,69,58,.5)}
+.temps svg .lo{fill:rgba(214,170,110,.3)}
+.temps svg .lt{fill:rgba(176,74,52,.45)}
+.temps svg .lv{fill:rgba(61,154,95,.4)}
+.temps svg .lg{fill:rgba(42,42,42,.12)}
+.temps svg .lc{fill:rgba(42,143,176,.4)}
+.temps svg .lp{fill:rgba(123,85,199,.4)}
+.temps svg .trait{stroke-dasharray:1 2;stroke-dashoffset:1.01}
+.temps svg text{font:400 12px var(--main);fill:var(--gr2);stroke:none}
+.temps svg .t-r{fill:var(--rouge)}
+.temps svg .t-b{fill:var(--bleu)}
+.temps svg .petit{font-size:10.5px}
+.temps svg .sigle{font-size:13px;letter-spacing:.06em;fill:rgba(42,42,42,.28);text-anchor:middle;transition:fill .3s}
+.temps svg .sigle.lu{fill:var(--rouge)}
+.temps__frise{margin:6px 6px 0}
+.temps__curseur{display:block;width:100%;margin:0 0 2px;accent-color:var(--rouge2);cursor:pointer}
+.temps__phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.temps__phase{position:relative;padding:6px 4px 2px;text-align:left;font:400 15px/1.1 var(--main);color:var(--gr2);border-top:3px solid var(--gr3);transition:color .3s,border-color .3s}
+.temps__phase small{display:block;margin-top:2px;font:400 12.5px/1.2 var(--texte);color:var(--gr2)}
+.temps__phase.passee{border-top-color:var(--c)}
+.temps__phase.ici{color:var(--gr);border-top-color:var(--c)}
+.temps__phase.ici::after{content:"";position:absolute;left:0;right:0;top:-5px;height:5px;border-radius:2px;background:var(--c)}
+.temps__phase:hover{color:var(--rouge)}
+.temps__legende{min-height:2.9em;margin:8px 6px 0;font-size:15px;line-height:1.4;color:var(--gr)}
+.temps__legende b{font:400 17px var(--main);color:var(--rouge)}
+
+/* ---------- Compléments propres à cette page ---------- */
+.etape h4{flex-wrap:wrap}
+.etape h4 .qui{margin-left:auto;padding:0 9px;font:400 14px/1.6 var(--main);color:var(--ca);border:1.5px solid currentColor;border-radius:9px}
+.compare li.point svg path{stroke:#d9822b}
+.alerte p+p{margin-top:8px}
+.alerte strong{font-weight:400;color:var(--rouge);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.consigne .compte{margin-left:4px;color:var(--gr2)}
+.avance{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;max-width:880px;margin:0 0 18px}
+.avance span{font:400 17px var(--main);color:var(--gr2)}
+.avance b{font:400 22px var(--main);color:var(--ca)}
+/* l'explorateur des missions de maîtrise d'œuvre */
+.filtres{display:flex;flex-wrap:wrap;gap:8px 12px;margin:0 0 16px}
+.filtre{padding:6px 14px 7px;font:400 16.5px var(--main);color:var(--gr2);border:1.6px dashed var(--gr3);border-radius:12px 14px 11px 13px;transition:color .3s,border-color .3s,background .3s}
+.filtre:hover{color:var(--gr);border-color:var(--gr2)}
+.filtre[aria-pressed="true"]{color:var(--gr);background:var(--pj);border-style:solid;border-color:var(--gr)}
+.explorateur{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(22px,3vw,40px);align-items:start}
+.sigles{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:16px 12px;align-content:start;padding-top:8px}
+.sigle-btn{--r:0deg;position:relative;display:grid;justify-items:center;gap:2px;padding:10px 8px 9px;text-align:center;background:linear-gradient(170deg,#efe2c6,#e4d1ab);border-radius:5px 9px 6px 8px;box-shadow:0 3px 6px -3px rgba(0,0,0,.28);transform:rotate(var(--r));transition:transform .4s var(--e-ressort),box-shadow .3s,background .3s}
+.sigle-btn svg{width:28px;height:28px;overflow:visible;filter:url(#crayon)}
+.sigle-btn svg *{fill:none;stroke:var(--c);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sigle-btn b{font:400 21px/1 var(--main);letter-spacing:.04em;color:var(--c)}
+.sigle-btn small{font:400 12.5px/1.15 var(--texte);color:#5b4a33}
+.sigle-btn .base{position:absolute;top:-9px;right:-6px;padding:0 6px;font:400 12px/1.5 var(--main);background:var(--fiche);border-radius:7px;transform:rotate(6deg)}
+.sigle-btn .base--oui{color:var(--vert);border:1.5px solid var(--vert)}
+.sigle-btn .base--non{color:#d9822b;border:1.5px dashed #d9822b}
+.sigle-btn:hover,.sigle-btn:focus-visible{transform:rotate(0) translateY(-3px);box-shadow:0 10px 14px -8px rgba(0,0,0,.35)}
+.sigle-btn[aria-pressed="true"]{background:linear-gradient(170deg,#fff3b0,#ffe680);box-shadow:0 0 0 2px var(--c),0 10px 14px -8px rgba(0,0,0,.35)}
+.fiche-acteur .statut{display:inline-block;margin:0 0 10px;padding:1px 10px;font:400 14px var(--main);letter-spacing:.05em;border-radius:9px}
+.fiche-acteur .statut--oui{color:var(--vert);border:1.6px solid var(--vert)}
+.fiche-acteur .statut--non{color:#d9822b;border:1.6px dashed #d9822b}
+
+/* ---------- Écrans moyens et petits (compléments) ---------- */
+@media (max-width:980px){
+  .explorateur{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:700px){
+  .temps__phases{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px}   /* « Programmation » ne tient pas dans un quart d'écran */
+  .temps__phase{font-size:14px}
+  .temps__phase small{display:none}
+  .etape h4 .qui{margin-left:0}
+}
+
+</style>
+</head>
+<body>
+<a class="evite" href="#tables">Aller au parcours</a>
+<svg class="defs" aria-hidden="true">
+  <filter id="crayon" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence id="crayon-bruit" type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="2" result="b"/><feDisplacementMap in="SourceGraphic" in2="b" scale="2.4" xChannelSelector="R" yChannelSelector="G"/></filter>
+</svg>
+<canvas class="trace" id="trace" aria-hidden="true"></canvas>
+<svg class="progres" viewBox="0 0 1000 8" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 4C160 2 320 6 500 4S840 3 998 5"/></svg>
+
+<header class="nav" id="nav">
+  <a class="logo" href="index.html" aria-label="2EMNB, retour à l’accueil du carnet">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l2.6-8.4L21.5 4.7l5.8 5.8L13.4 24.4z" fill="#f2c14e" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l2.6-8.4 5.8 5.8z" fill="#f1dfc0" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l1.2-3.9 2.7 2.7z" fill="#2a2a2a"/><path d="M18.6 7.6l5.8 5.8" stroke="#2a2a2a" stroke-width="1.4"/></svg>
+    <span><b>2EMNB</b><small>world café · les phases</small></span>
+  </a>
+  <nav class="nav__liens" id="nav-liens" aria-label="Parties"></nav>
+  <button class="nav__pres" type="button" data-presenter aria-label="Présenter en plein écran, une partie par écran (touche P)">
+    <svg class="ecran" viewBox="0 0 22 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2.5h18v11H2zM11 13.5V18M7 18h8"/><path d="M9 5.6l4.4 2.4L9 10.4z"/></svg>
+    <span>Présenter</span><kbd>P</kbd>
+  </button>
+  <button class="nav__burger" type="button" aria-expanded="false" aria-controls="mmenu" aria-label="Ouvrir le menu">
+    <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8c6-1 13 1 20-.5M4 14.2c7 .8 13-.6 20 .3M4 20.5c6-.8 14 .9 20-.3"/></svg>
+  </button>
+</header>
+<div class="mmenu" id="mmenu" hidden></div>
+
+<main>
+  <!-- ===================== ACCUEIL ===================== -->
+  <section class="hero" id="accueil" data-diapo="Phases et missions" aria-labelledby="t-accueil">
+    <div class="hero__texte">
+      <p class="lycee" id="public"></p>
+      <h1 id="t-accueil">Les <span class="entoure">phases<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 160 0 188 26C212 50 140 80 60 72C10 66 2 40 34 18C56 6 96 6 124 9"/></svg></span> et les missions dans l’acte de construire</h1>
+      <p class="chapo"><strong>Du besoin du client aux clés remises</strong>&nbsp;: comprendre qui intervient, quand et pour faire quoi.</p>
+      <p class="auteur" id="auteur"></p>
+      <div class="parcours-bar">
+        <span>Ateliers terminés</span>
+        <div class="avance__barre" id="parcours-barre" role="progressbar" aria-label="Ateliers terminés" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><i></i></div>
+        <span><b id="parcours-n">0 / 4</b></span>
+      </div>
+      <div class="cta">
+        <a class="btn btn--plein" href="#intro">Commencer&nbsp;: l’introduction</a>
+        <button class="btn" type="button" data-presenter><svg class="lect" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.2l10 5.8-10 5.8z"/></svg>Présenter</button>
+      </div>
+    </div>
+    <figure class="temps" id="temps" aria-labelledby="temps-legende">
+      <div class="temps__cadre">
+        <span class="temps__titre" aria-hidden="true">un projet, du besoin aux clés</span>
+        <svg viewBox="0 0 560 400" id="temps-svg" aria-hidden="true"></svg>
+        <div class="temps__frise">
+          <input class="temps__curseur" id="temps-curseur" type="range" min="0" max="1000" step="1" value="0" aria-label="Avancement du projet dans le temps">
+          <div class="temps__phases" id="temps-phases"></div>
+        </div>
+        <p class="temps__legende" id="temps-legende"></p>
+      </div>
+      <p class="note">↔ Promène la souris sur le dessin, ou fais glisser le curseur&nbsp;: le projet avance du besoin aux clés.</p>
+    </figure>
+  </section>
+
+  <!-- ===================== LE PARCOURS ===================== -->
+  <section class="section" id="tables" data-diapo="Le parcours" aria-labelledby="t-tables">
+    <header class="entete">
+      <div class="entete__haut"><p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>le world café</p></div>
+      <h2 class="titre" id="t-tables" data-ecrit>Une introduction, <span class="souligne">quatre ateliers<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 8C50 3 120 11 197 5"/></svg></span></h2>
+      <p class="chapo-sec rv">Commence par l’introduction, puis passe d’une table à l’autre. À la fin de chaque atelier, marque-le «&nbsp;terminé&nbsp;»&nbsp;: la progression se garde sur cet ordinateur.</p>
+    </header>
+    <a class="intro-carte rv" href="#intro" id="intro-carte"></a>
+    <div class="tables" id="tables-liste"></div>
+    <p class="tables__total rv" id="tables-total"></p>
+  </section>
+
+  <!-- ===================== INTRODUCTION ===================== -->
+  <section class="section atelier" id="intro" data-diapo="Introduction" aria-labelledby="t-intro" style="--ca:#2a8fb0">
+    <header class="entete">
+      <div class="entete__haut"><p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>introduction générale</p><span class="chrono" data-chrono="intro"></span></div>
+      <h2 class="titre" id="t-intro" data-ecrit>L’acte de construire, <span class="souligne">mode d’emploi<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 6C60 10 130 2 197 7"/></svg></span></h2>
+    </header>
+    <div class="colonne" id="intro-corps"></div>
+  </section>
+
+  <!-- les quatre ateliers s'insèrent ici, construits depuis DONNEES -->
+
+  <!-- ===================== QUIZ FINAL ===================== -->
+  <section class="section" id="quiz" data-diapo="Quiz final" aria-labelledby="t-quiz">
+    <header class="entete">
+      <div class="entete__haut"><p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>évaluation finale</p></div>
+      <h2 class="titre" id="t-quiz" data-ecrit>Quiz final · <span class="souligne">phases et missions<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 6C60 10 130 2 197 7"/></svg></span></h2>
+      <p class="chapo-sec rv" id="quiz-chapo"></p>
+    </header>
+    <div class="fiche verrou rv" id="verrou">
+      <svg viewBox="0 0 110 130" aria-hidden="true"><path class="anse" d="M28 62V40a27 27 0 0 1 54 0v22"/><rect class="corps" x="14" y="60" width="82" height="64" rx="10"/><circle cx="55" cy="88" r="8"/><path d="M55 96v12"/></svg>
+      <div>
+        <h3 id="verrou-titre"></h3>
+        <p>Saisis le code d’accès communiqué par ton professeur.</p>
+        <form class="code-zone" id="code-form" autocomplete="off"><label class="sr" for="code">Code d’accès</label><input id="code" type="text" placeholder="CODE D’ACCÈS" maxlength="16" spellcheck="false"><button class="btn btn--plein" type="submit">Déverrouiller</button></form>
+        <p class="code-msg" id="code-msg" aria-live="polite"></p>
+      </div>
+    </div>
+    <form class="copie" id="copie" hidden></form>
+  </section>
+</main>
+
+<!-- ===================== PIED DE PAGE ===================== -->
+<footer class="pied">
+  <span class="pied__mot rv" aria-hidden="true">Les phases<svg viewBox="0 0 400 20" preserveAspectRatio="none"><path pathLength="1" d="M4 12C100 4 230 18 396 8"/></svg></span>
+  <div class="pied__cols">
+    <div><h4>World café</h4><p id="pied-texte"></p></div>
+    <div><h4>Les ateliers</h4><ul id="pied-ateliers"></ul></div>
+    <div><h4>Le carnet</h4><ul><li><a id="pied-carnet">Accueil du carnet</a></li><li><a href="acteurs-construire.html">Les acteurs</a></li><li><a href="lecture-de-plans.html">Lecture de plans</a></li></ul></div>
+    <div><h4>Présenter</h4><ul><li><button type="button" data-presenter>Une partie par écran</button></li><li><a id="pied-origine" target="_blank" rel="noopener">Version d’origine<span class="sr"> (nouvel onglet)</span></a></li></ul></div>
+  </div>
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main</span><a href="#accueil">Haut de page ↑</a></div>
+</footer>
+
+<!-- ===================== BARRE DE PRÉSENTATION ===================== -->
+<div class="pres" id="pres" hidden>
+  <button class="pres__fl" type="button" id="pres-prec" aria-label="Partie précédente (flèche gauche)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 4L6.5 10l6 6"/></svg></button>
+  <div class="pres__frise" id="pres-frise" role="group" aria-label="Aller à une partie"></div>
+  <button class="pres__fl" type="button" id="pres-suiv" aria-label="Partie suivante (flèche droite ou espace)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 4l6 6-6 6"/></svg></button>
+  <span class="pres__chrono" id="pres-chrono" title="Temps passé sur cette partie / durée prévue"><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="12"/><path id="pres-arc" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1.01" d="M15 3a12 12 0 1 1-.01 0"/></svg><span id="pres-temps">0:00</span></span>
+  <span class="pres__num" id="pres-num"></span>
+  <button class="pres__quitter" type="button" id="pres-quitter">Quitter <small>(Échap)</small></button>
+</div>
+<p class="pres__suite" id="pres-suite" hidden aria-hidden="true">↓ la suite de la partie&nbsp;: espace, molette ou flèche ↓</p>
+<p class="sr" id="pres-annonce" aria-live="polite"></p>
+
+<noscript><div class="noscript">Cette page a besoin de JavaScript pour ses ateliers et son quiz. <a href="https://claude.ai/public/artifacts/249d2ae9-83ee-4a24-afd0-c25d92943c5f">Ouvrir la version d’origine</a>.</div></noscript>
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+   1. DONNÉES — tout le contenu du World café est ici (repris de l'application
+   d'origine). Modifier une étape, une carte, une mission ou une question
+   = modifier une ligne ; la page se reconstruit seule.
+   Dans les textes : **gras** et *italique*.
+   ===================================================================== */
+const DONNEES = {
+  origine: 'https://claude.ai/public/artifacts/249d2ae9-83ee-4a24-afd0-c25d92943c5f',
+  carnet: 'index.html',
+  public: '1re Bac Pro TEBAA',
+  auteur: 'Jean-Philippe Amat',
+  signature: 'Jean-Philippe Amat — PLP génie civil — lycée Urbain Vitry, Toulouse',
+  annee: '2026-2027',
+  codeQuiz: 'PHASES2026',   // le code que le professeur donne pour ouvrir le quiz final
+  dureeIntro: 10,           // minutes
+
+  // les quatre ateliers (durée en minutes ; couleur : le crayon de l'atelier ; papier : la couleur de sa table)
+  ateliers: [
+    { id: 1, court: 'Acteurs', titre: 'Qui fait quoi ?', sousTitre: 'Les acteurs de l’acte de construire', duree: 20, couleur: 'var(--bleu)', papier: 'var(--pb)',
+      problematique: 'Un bâtiment n’est jamais l’œuvre d’une seule personne : qui commande, qui conçoit, qui construit et qui contrôle ?' },
+    { id: 2, court: 'Conception', titre: 'Du besoin au permis', sousTitre: 'Programmation et conception', duree: 20, couleur: '#7b55c7', papier: '#ebe2f8',
+      problematique: 'Comment passe-t-on d’une simple idée (« j’ai besoin d’un bâtiment ») à un projet dessiné, chiffré et autorisé ?' },
+    { id: 3, court: 'Missions', titre: 'Les missions de la maîtrise d’œuvre', sousTitre: 'De l’ESQ à l’AOR (loi MOP)', duree: 20, couleur: 'var(--vert)', papier: 'var(--pv)',
+      problematique: 'Que contient exactement le contrat d’un maître d’œuvre, et que veulent dire ces sigles : APS, APD, PRO, DET, AOR ?' },
+    { id: 4, court: 'Chantier', titre: 'Construire et réceptionner', sousTitre: 'Chantier, réception et garanties', duree: 20, couleur: '#c77a1e', papier: 'var(--po)',
+      problematique: 'Quand un chantier est-il vraiment terminé, et que se passe-t-il si un désordre apparaît après la livraison ?' },
+  ],
+
+  // les 4 grandes périodes d'une opération (l'introduction, et le dessin de l'accueil)
+  periodes: [
+    { titre: 'Programmation', qui: 'Maître d’ouvrage', picto: 'idee', texte: 'Définir le besoin, vérifier la faisabilité, fixer le budget et le calendrier, rédiger le programme.',
+      details: ['Émergence du besoin', 'Études de faisabilité (site, PLU, sol)', 'Programme + enveloppe financière', 'Choix du maître d’œuvre'] },
+    { titre: 'Conception', qui: 'Maître d’œuvre', picto: 'conception', texte: 'Traduire le programme en projet : dessins, choix techniques, autorisations et pièces écrites.',
+      details: ['ESQ → APS → APD', 'Dépôt du permis de construire', 'PRO : plans et CCTP', 'DCE : dossier de consultation'] },
+    { titre: 'Réalisation', qui: 'Entreprises', picto: 'execution', texte: 'Consulter, choisir les entreprises, préparer puis exécuter les travaux sous la direction du maître d’œuvre.',
+      details: ['Consultation et choix des entreprises', 'Période de préparation', 'Exécution des travaux (DET)', 'Réception de l’ouvrage (AOR)'] },
+    { titre: 'Exploitation', qui: 'Maître d’ouvrage / usagers', picto: 'reception', texte: 'Le bâtiment est utilisé, entretenu et maintenu ; les garanties légales courent à partir de la réception.',
+      details: ['Remise du DOE et du DIUO', 'Garantie de parfait achèvement (1 an)', 'Garantie biennale (2 ans)', 'Garantie décennale (10 ans)'] },
+  ],
+
+  // le dessin de l'accueil : ce qui se passe à chaque moment (t de 0 = le besoin, à 1 = le bâtiment en service)
+  moments: [
+    [0, 'Le maître d’ouvrage exprime un besoin.'],
+    [0.09, 'Il fait rédiger le programme et vérifie la faisabilité : terrain, PLU, étude de sol.'],
+    [0.25, 'Le maître d’œuvre esquisse une première réponse au programme (ESQ).'],
+    [0.33, 'APS : le projet se précise, en plan et en volume.'],
+    [0.39, 'APD : les choix sont arrêtés, c’est la base du permis de construire.'],
+    [0.44, 'Le permis de construire est accordé.'],
+    [0.46, 'PRO et DCE : le projet est décrit lot par lot pour les entreprises.'],
+    [0.5, 'Consultation : le maître d’ouvrage choisit les entreprises (ACT).'],
+    [0.55, 'Préparation, implantation, fondations : le chantier démarre.'],
+    [0.59, 'Les entreprises construisent, le maître d’œuvre dirige (VISA, DET).'],
+    [0.77, 'OPR puis réception : le maître d’ouvrage accepte l’ouvrage et reçoit les clés (AOR).'],
+    [0.84, 'Le bâtiment vit ; les garanties courent depuis la réception : 1, 2 et 10 ans.'],
+  ],
+
+  // l'introduction générale, bloc par bloc (mêmes types que les ateliers)
+  intro: [
+    { type: 'texte', textes: ['Construire un bâtiment ne commence pas avec la première pelleteuse et ne s’arrête pas à la pose de la dernière poignée de porte. Une opération de construction est une **succession de phases**, chacune confiée à des acteurs précis, avec des documents et des décisions à produire. Comprendre cet enchaînement, c’est comprendre à quel moment on intervient, avec qui on travaille et quel document on doit produire. C’est le cœur du métier de technicien d’études du bâtiment.'] },
+    { type: 'periodes', titre: 'Les 4 grandes périodes d’une opération' },
+    { type: 'grille', titre: 'Six repères à connaître', items: [
+      { titre: 'Loi MOP (1985)', picto: 'balance', texte: 'Loi du 12 juillet 1985 sur la maîtrise d’ouvrage publique. Depuis 2019, ses règles sont intégrées au Code de la commande publique. Elle fixe le rôle du MOA, du MOE et le contenu des missions.' },
+      { titre: 'Marché public', picto: 'administrations', texte: 'La commande publique (mairie, région, État, bailleur social) applique obligatoirement ces règles : programme, mission de base, appel d’offres.' },
+      { titre: 'Marché privé', picto: 'maison', texte: 'Un particulier ou une entreprise privée est libre du contenu du contrat, mais l’organisation en phases reste la même en pratique.' },
+      { titre: 'Contrat = pièce clé', picto: 'contrat', texte: 'Chaque acteur est lié aux autres par un contrat (marché de maîtrise d’œuvre, marché de travaux) qui définit sa mission, son prix et ses délais.' },
+      { titre: 'Un ordre imposé', picto: 'horloge', texte: 'On ne peut pas consulter les entreprises avant d’avoir un projet chiffré, ni démarrer les travaux sans permis purgé de tout recours.' },
+      { titre: 'Le coût se fige', picto: 'financer', texte: 'Plus on avance dans les phases, plus une modification coûte cher. Les choix les plus décisifs se prennent au début, à l’esquisse.' },
+    ] },
+    { type: 'alerte', titre: 'Ne pas confondre', textes: [
+      '**Maître d’ouvrage (MOA)** = celui pour qui on construit. Il commande et il paie.',
+      '**Maître d’œuvre (MOE)** = celui qui conçoit le projet et dirige les travaux pour le compte du MOA. Moyen mnémotechnique : le maître d’ouvr**Age** a l’ar**Gent**, le maître d’œuv**rE** fait les **É**tudes.',
+    ] },
+  ],
+
+  // atelier 1 : le schéma des acteurs autour de l'opération
+  acteurs: [
+    { id: 'moa', picto: 'moa', abbr: 'MOA', label: 'Maître d’ouvrage', role: 'Le commanditaire', couleur: 'var(--bleu)',
+      description: 'C’est la personne physique ou morale pour laquelle l’ouvrage est construit. Il est le propriétaire du projet : il définit le besoin, finance l’opération et prend toutes les décisions importantes.',
+      points: ['Définit le besoin et rédige le programme', 'Choisit le terrain et finance l’opération', 'Choisit le maître d’œuvre et signe les marchés', 'Prononce la réception des travaux'],
+      exemples: ['Commune', 'Bailleur social', 'Promoteur', 'Particulier'] },
+    { id: 'amo', picto: 'mandat', abbr: 'AMO', label: 'Assistant à maîtrise d’ouvrage', role: 'Le conseil du client', couleur: '#2a8fb0',
+      description: 'Il aide le maître d’ouvrage à faire ses choix quand celui-ci n’a pas les compétences techniques. Attention : il conseille, mais il ne conçoit pas le bâtiment.',
+      points: ['Aide à rédiger le programme', 'Conseille sur le budget et le planning', 'Assiste au choix du maître d’œuvre', 'Ne se substitue jamais au MOE'],
+      exemples: ['Programmiste', 'AMO énergie', 'Conducteur d’opération'] },
+    { id: 'moe', picto: 'moe', abbr: 'MOE', label: 'Maître d’œuvre', role: 'Le concepteur et le chef d’orchestre', couleur: '#7b55c7',
+      description: 'Il conçoit le projet à partir du programme, établit les plans et les pièces écrites, consulte les entreprises et dirige l’exécution des travaux pour le compte du maître d’ouvrage.',
+      points: ['Conçoit le projet (ESQ → APD → PRO)', 'Constitue le dossier de permis de construire', 'Rédige le DCE et analyse les offres', 'Dirige et contrôle l’exécution des travaux'],
+      exemples: ['Architecte', 'BET structure', 'BET fluides', 'Économiste'] },
+    { id: 'ent', picto: 'entreprises', abbr: 'ENT', label: 'Entreprises de travaux', role: 'Les constructeurs', couleur: '#c77a1e',
+      description: 'Elles réalisent physiquement l’ouvrage. Elles sont titulaires d’un marché de travaux : soit une entreprise générale pour tout le chantier, soit une entreprise par lot (allotissement).',
+      points: ['Exécutent les travaux de leur lot', 'Établissent les études d’exécution (plans EXE)', 'Rédigent leur PPSPS', 'Peuvent sous-traiter une partie des travaux'],
+      exemples: ['Gros œuvre', 'Charpente', 'Plomberie', 'Électricité'] },
+    { id: 'ct', picto: 'controle', abbr: 'CT', label: 'Contrôleur technique', role: 'Le garant de la sécurité', couleur: 'var(--vert)',
+      description: 'Missionné par le maître d’ouvrage, il donne un avis sur les risques techniques : solidité de l’ouvrage et sécurité des personnes. Il est obligatoire pour de nombreuses constructions (ERP, IGH, bâtiments complexes).',
+      points: ['Mission L : solidité des ouvrages', 'Mission S : sécurité des personnes', 'Examine les plans et visite le chantier', 'Rédige un rapport final (RFCT)'],
+      exemples: ['Apave', 'Socotec', 'Bureau Veritas', 'Qualiconsult'] },
+    { id: 'sps', picto: 'sps', abbr: 'SPS', label: 'Coordonnateur SPS', role: 'Le coordonnateur sécurité', couleur: 'var(--rouge2)',
+      description: 'Désigné par le maître d’ouvrage dès la conception dès qu’au moins deux entreprises interviennent, il organise la prévention des risques liés à la coprésence des entreprises sur le chantier.',
+      points: ['Rédige le PGC (plan général de coordination)', 'Tient le registre-journal', 'Harmonise les PPSPS des entreprises', 'Constitue le DIUO pour l’exploitation future'],
+      exemples: ['Coordonnateur niveau 1, 2 ou 3'] },
+  ],
+
+  // atelier 3 : les missions normalisées de la maîtrise d'œuvre (base : dans la mission de base)
+  missionsMOE: [
+    { id: 'diag', sigle: 'DIAG', nom: 'Diagnostic', couleur: '#2a8fb0', base: false, picto: 'diag', quand: 'Uniquement sur bâtiment existant',
+      description: 'Établir un état des lieux technique du bâtiment avant de définir le projet de réhabilitation.',
+      livrables: ['Relevé de l’existant', 'État sanitaire du bâti', 'Repérage des désordres', 'Faisabilité de la transformation'] },
+    { id: 'esq', sigle: 'ESQ', nom: 'Esquisse', couleur: 'var(--bleu)', base: true, picto: 'conception', quand: 'Conception — début',
+      description: 'Proposer une première réponse au programme et vérifier qu’il est réalisable dans l’enveloppe financière.',
+      livrables: ['Parti architectural', 'Plans de principe et volumétrie', 'Insertion dans le site', 'Estimation sommaire'] },
+    { id: 'aps', sigle: 'APS', nom: 'Avant-projet sommaire', couleur: 'var(--bleu)', base: true, picto: 'moe', quand: 'Conception',
+      description: 'Préciser la composition générale en plan et en volume et proposer les dispositions techniques.',
+      livrables: ['Plans au 1/200', 'Principes de structure et de fluides', 'Calendrier prévisionnel', 'Estimation provisoire des travaux'] },
+    { id: 'apd', sigle: 'APD', nom: 'Avant-projet définitif', couleur: '#7b55c7', base: true, picto: 'cible', quand: 'Conception — choix figés',
+      description: 'Arrêter définitivement les formes, dimensions et matériaux, et déterminer le coût prévisionnel définitif des travaux.',
+      livrables: ['Plans, coupes, façades au 1/100', 'Surfaces définitives', 'Choix des matériaux', 'Base du dossier de permis de construire'] },
+    { id: 'pro', sigle: 'PRO', nom: 'Projet', couleur: '#7b55c7', base: true, picto: 'reglage', quand: 'Fin de conception',
+      description: 'Décrire le projet lot par lot avec assez de précision pour que les entreprises puissent le chiffrer et le réaliser.',
+      livrables: ['Plans détaillés et détails d’exécution', 'CCTP par lot', 'Coût prévisionnel par lot', 'Échéancier des travaux'] },
+    { id: 'act', sigle: 'ACT', nom: 'Assistance aux contrats de travaux', couleur: 'var(--vert)', base: true, picto: 'consultation', quand: 'Consultation des entreprises',
+      description: 'Aider le maître d’ouvrage à choisir les entreprises et à mettre au point les marchés de travaux.',
+      livrables: ['Constitution du DCE', 'Analyse comparative des offres', 'Rapport d’analyse et avis', 'Mise au point des marchés'] },
+    { id: 'visa', sigle: 'VISA', nom: 'Visa des études d’exécution', couleur: 'var(--vert)', base: true, picto: 'visa', quand: 'Avant et pendant les travaux',
+      description: 'Vérifier que les plans d’exécution établis par les entreprises sont conformes au projet du maître d’œuvre.',
+      livrables: ['Examen des plans EXE de l’entreprise', 'Visa, visa avec observations ou refus', 'Suivi des reprises'] },
+    { id: 'exe', sigle: 'EXE', nom: 'Études d’exécution', couleur: '#c77a1e', base: false, picto: 'plans', quand: 'Mission complémentaire',
+      description: 'Réaliser les plans d’exécution à la place des entreprises. Le plus souvent, ce sont les entreprises qui les font (le MOE se limite alors au VISA).',
+      livrables: ['Plans de coffrage et de ferraillage', 'Plans de réseaux et de réservations', 'Notes de calcul', 'Nomenclatures'] },
+    { id: 'det', sigle: 'DET', nom: 'Direction de l’exécution des travaux', couleur: '#c77a1e', base: true, picto: 'execution', quand: 'Pendant le chantier',
+      description: 'Diriger le chantier pour le compte du maître d’ouvrage et vérifier la conformité des travaux au marché.',
+      livrables: ['Réunions de chantier et comptes rendus', 'Vérification des situations de travaux', 'Ordres de service', 'Information du MOA'] },
+    { id: 'opc', sigle: 'OPC', nom: 'Ordonnancement, pilotage, coordination', couleur: '#c2477f', base: false, picto: 'opc', quand: 'Mission complémentaire',
+      description: 'Organiser dans le temps l’intervention des différentes entreprises et faire respecter le planning général.',
+      livrables: ['Planning général d’exécution', 'Coordination des interfaces entre lots', 'Relances et alertes de retard'] },
+    { id: 'aor', sigle: 'AOR', nom: 'Assistance aux opérations de réception', couleur: 'var(--vert)', base: true, picto: 'reception', quand: 'Fin de chantier',
+      description: 'Assister le maître d’ouvrage lors de la réception de l’ouvrage et pendant l’année de garantie de parfait achèvement.',
+      livrables: ['Opérations préalables à la réception (OPR)', 'Proposition de réception au MOA', 'Suivi de la levée des réserves', 'Examen du DOE'] },
+  ],
+
+  // le contenu propre à chaque atelier, bloc par bloc
+  // (types : texte, periodes, etapes, grille, carte, compare, alerte, explorateur)
+  contenus: {
+    1: [
+      { type: 'carte', cle: 'acteurs', liste: 'acteurs', titre: 'Schéma des acteurs', consigne: 'Clique sur chaque intervenant.', centre: 'OPÉRATION DE CONSTRUCTION', picto: 'ouvrage' },
+      { type: 'grille', titre: 'Les autres intervenants de l’opération', items: [
+        { titre: 'Géomètre-expert', picto: 'geometre', texte: 'Relève le terrain, borne la propriété, implante le bâtiment. Seul habilité à fixer les limites de propriété.' },
+        { titre: 'Géotechnicien', picto: 'geotech', texte: 'Réalise l’étude de sol (missions G1, G2…) qui conditionne le choix et le dimensionnement des fondations.' },
+        { titre: 'Service instructeur', picto: 'instructeur', texte: 'Service urbanisme de la mairie : il instruit le permis de construire et vérifie la conformité au PLU.' },
+        { titre: 'Concessionnaires', picto: 'concession', texte: 'Gestionnaires des réseaux (électricité, eau, gaz, télécom, assainissement) qui raccordent le bâtiment.' },
+        { titre: 'Assureurs', picto: 'garanties', texte: 'Assurance dommages-ouvrage souscrite par le MOA, assurance décennale obligatoire pour les constructeurs.' },
+        { titre: 'Usagers et riverains', picto: 'chefEquipe', texte: 'Futurs occupants consultés en amont, voisins concernés par l’affichage du permis et les nuisances de chantier.' },
+      ] },
+    ],
+    2: [
+      { type: 'etapes', titre: 'De l’idée au dossier de consultation', items: [
+        { titre: 'Émergence du besoin', qui: 'MOA', picto: 'idee', texte: 'Un besoin apparaît : agrandir une école, créer des logements, remplacer un bâtiment vétuste.', details: ['Analyse des usages et des effectifs', 'Recherche d’un terrain ou d’un bâtiment à réhabiliter', 'Première estimation de l’enveloppe financière'] },
+        { titre: 'Études de faisabilité', qui: 'MOA / AMO', picto: 'loupe', texte: 'On vérifie que le projet est possible sur ce terrain, dans ce budget et dans ce délai.', details: ['Consultation du PLU : zonage, hauteur, emprise, recul', 'Étude de sol (mission géotechnique G1)', 'Contraintes de site : accès, réseaux, servitudes, risques'] },
+        { titre: 'Le programme', qui: 'MOA', picto: 'programme', texte: 'Document écrit qui décrit tout ce que le bâtiment doit permettre de faire. C’est le cahier des charges du maître d’œuvre.', details: ['Liste et surface de chaque local', 'Liaisons et fonctionnement entre les locaux', 'Exigences techniques, environnementales et de confort', 'Enveloppe financière et calendrier prévisionnel'] },
+        { titre: 'Choix du maître d’œuvre', qui: 'MOA', picto: 'contrat', texte: 'Le MOA sélectionne l’équipe de conception, par concours d’architecture ou par appel d’offres selon le montant.', details: ['Signature du contrat de maîtrise d’œuvre', 'Définition de la mission confiée (mission de base + compléments)', 'Fixation des honoraires'] },
+        { titre: 'Esquisse (ESQ)', qui: 'MOE', picto: 'conception', texte: 'Première réponse au programme : le parti architectural, l’implantation, les volumes.', details: ['Croquis, plans de principe, insertion dans le site', 'Vérification de la faisabilité du programme', 'Estimation sommaire du coût des travaux'] },
+        { titre: 'Avant-projet sommaire (APS)', qui: 'MOE', picto: 'moe', texte: 'Le projet se précise : composition générale en plan et en volume, principes techniques.', details: ['Plans au 1/200 environ', 'Propositions de dispositions techniques (structure, énergie)', 'Estimation provisoire des travaux et calendrier'] },
+        { titre: 'Avant-projet définitif (APD)', qui: 'MOE', picto: 'cible', texte: 'Les choix sont arrêtés : formes, dimensions, matériaux. C’est la base du dossier de permis de construire.', details: ['Plans, coupes et façades au 1/100', 'Choix des matériaux et des équipements', 'Coût prévisionnel définitif des travaux', 'Surfaces définitives du bâtiment'] },
+        { titre: 'Permis de construire (PCMI ou PC)', qui: 'MOA (déposé par le MOE)', picto: 'administrations', texte: 'Demande d’autorisation d’urbanisme déposée en mairie, instruite au regard du PLU.', details: ['Dossier PC : plans de situation, masse, coupe, façades, notice, insertion', 'Instruction : 2 mois pour une maison, 3 mois pour les autres cas', 'Affichage sur le terrain + délai de recours des tiers de 2 mois'] },
+        { titre: 'Projet (PRO) et DCE', qui: 'MOE', picto: 'reglage', texte: 'Le projet est décrit lot par lot avec assez de précision pour que les entreprises puissent chiffrer.', details: ['Plans détaillés et carnets de détails', 'CCTP : description technique lot par lot', 'Cadre de DPGF / décomposition des prix', 'Coût prévisionnel des travaux par lot'] },
+      ] },
+      { type: 'compare', titre: 'APS ou APD : ne plus confondre', items: [
+        { titre: 'APS — Avant-projet sommaire', picto: 'moe', texte: 'On explore encore : le projet prend forme mais tout n’est pas figé.',
+          points: ['•Échelle de travail : environ 1/200', '•Composition générale en plan et en volume', '•Dispositions techniques proposées', '•Estimation provisoire du coût des travaux', '•Le MOA peut encore faire évoluer le projet'] },
+        { titre: 'APD — Avant-projet définitif', picto: 'cible', texte: 'On arrête les choix : ce qui est décidé ici part au permis de construire.',
+          points: ['+Échelle de travail : environ 1/100', '+Formes, dimensions et matériaux arrêtés', '+Surfaces définitives (surface de plancher, emprise au sol)', '+Coût prévisionnel définitif des travaux', '+Base du dossier de permis de construire'] },
+      ] },
+    ],
+    3: [
+      { type: 'texte', textes: ['Le contrat de maîtrise d’œuvre découpe le travail du MOE en **missions normalisées**, désignées par des sigles. En marché public, la **mission de base** pour un bâtiment neuf forme un tout indissociable : ESQ, APS, APD, PRO, ACT, VISA (ou EXE), DET et AOR. Les autres missions (DIAG, EXE, OPC) sont des **missions complémentaires**, ajoutées au cas par cas.'] },
+      { type: 'explorateur', titre: 'Les missions une par une', consigne: 'Clique sur un sigle pour ouvrir sa fiche, ou trie les missions.', defaut: 'esq' },
+    ],
+    4: [
+      { type: 'etapes', titre: 'Du choix des entreprises à la remise des clés', items: [
+        { titre: 'Consultation et choix des entreprises', qui: 'MOA assisté du MOE (ACT)', picto: 'consultation', texte: 'Le DCE est envoyé aux entreprises, qui remettent une offre. Le MOE analyse et le MOA attribue.', details: ['Remise des offres à date limite', 'Analyse technique et financière', 'Attribution puis signature des marchés'] },
+        { titre: 'Ordre de service (OS) et période de préparation', qui: 'MOA / entreprises', picto: 'contrat', texte: 'L’OS de démarrage lance officiellement le chantier. La période de préparation précède les travaux.', details: ['Plan d’installation de chantier', 'PPSPS de chaque entreprise', 'Plannings d’exécution', 'Déclaration d’ouverture de chantier (DOC)'] },
+        { titre: 'Implantation et travaux préparatoires', qui: 'Entreprises / géomètre', picto: 'implantation', texte: 'Le bâtiment est matérialisé sur le terrain avant tout terrassement.', details: ['Piquetage et chaises d’implantation', 'Installation de la base vie et des clôtures', 'Déclaration DT-DICT sur les réseaux existants'] },
+        { titre: 'Exécution des travaux', qui: 'Entreprises, dirigées par le MOE (DET)', picto: 'execution', texte: 'Les lots s’enchaînent selon le planning : gros œuvre, clos et couvert, second œuvre, finitions.', details: ['Réunions de chantier hebdomadaires + comptes rendus', 'Situations de travaux mensuelles', 'Contrôles du CT et visites du CSPS', 'Gestion des aléas et des travaux modificatifs'] },
+        { titre: 'OPR — Opérations préalables à la réception', qui: 'MOE (AOR)', picto: 'loupe', texte: 'Le maître d’œuvre parcourt l’ouvrage avec les entreprises et liste tout ce qui n’est pas conforme.', details: ['Visite détaillée local par local', 'Liste des réserves', 'Essais et vérifications de fonctionnement', 'Proposition de réception au MOA'] },
+        { titre: 'Réception des travaux', qui: 'MOA', picto: 'reception', texte: 'Acte juridique majeur par lequel le MOA accepte l’ouvrage, avec ou sans réserves. Il signe le procès-verbal de réception.', details: ['PV de réception daté et signé', 'Point de départ de toutes les garanties', 'Transfert de la garde de l’ouvrage au MOA', 'Remise des clés'] },
+        { titre: 'Levée des réserves et documents finaux', qui: 'Entreprises / MOE', picto: 'dossier', texte: 'Les réserves sont reprises dans le délai fixé, puis les documents de l’ouvrage sont remis au maître d’ouvrage.', details: ['DOE : dossier des ouvrages exécutés', 'DIUO : dossier d’intervention ultérieure sur l’ouvrage', 'DGD : décompte général et définitif', 'PV de levée des réserves'] },
+      ] },
+      { type: 'compare', titre: 'Réception avec ou sans réserves', items: [
+        { titre: 'Réception avec réserves', picto: 'sps', texte: 'Le MOA accepte l’ouvrage mais liste les points non conformes ou inachevés.',
+          points: ['•Les réserves sont annexées au PV de réception', '•Un délai est fixé pour les lever', '•Une retenue de garantie peut être conservée', '•Les garanties courent malgré tout dès la date de réception'] },
+        { titre: 'Réception sans réserve', picto: 'visa', texte: 'L’ouvrage est accepté tel quel : aucune non-conformité n’est relevée.',
+          points: ['+PV signé sans annexe de réserves', '+Solde du marché libéré selon le contrat', '+Départ immédiat des garanties légales', '+Situation rare sur un chantier de bâtiment'] },
+      ] },
+      { type: 'grille', titre: 'Après la réception : garanties et documents', items: [
+        { titre: 'Parfait achèvement — 1 an', picto: 'reglage', texte: 'L’entreprise doit réparer tous les désordres signalés pendant l’année qui suit la réception, quelle que soit leur importance.' },
+        { titre: 'Bon fonctionnement (biennale) — 2 ans', picto: 'boulon', texte: 'Couvre les éléments d’équipement dissociables du bâtiment : volets, radiateurs, portes, robinetterie, VMC…' },
+        { titre: 'Décennale — 10 ans', picto: 'administrations', texte: 'Couvre les désordres compromettant la solidité de l’ouvrage ou le rendant impropre à sa destination : fissures structurelles, infiltrations en toiture…' },
+        { titre: 'Dommages-ouvrage', picto: 'garanties', texte: 'Assurance souscrite par le maître d’ouvrage avant l’ouverture du chantier : elle préfinance les réparations décennales sans attendre le procès.' },
+        { titre: 'DOE', picto: 'dossier', texte: 'Dossier des ouvrages exécutés : plans conformes à l’exécution, notices, fiches produits. Indispensable pour entretenir le bâtiment.' },
+        { titre: 'DIUO', picto: 'sps', texte: 'Dossier d’intervention ultérieure sur l’ouvrage, établi par le CSPS : il explique comment intervenir en sécurité sur le bâtiment plus tard.' },
+      ] },
+    ],
+  },
+
+  // flashcards : [question, réponse] (0 = l'introduction)
+  memo: {
+    0: [
+      ['Que veut dire l’expression « acte de construire » ?', 'L’ensemble des opérations, des acteurs et des phases qui permettent de passer d’un besoin à un bâtiment livré et utilisé.'],
+      ['Quelles sont les 4 grandes périodes d’une opération de construction ?', 'Programmation → Conception → Réalisation → Exploitation.'],
+      ['Que signifient les sigles MOA et MOE ?', 'MOA = **M**aître d’**O**uvr**A**ge (le client, celui pour qui on construit). MOE = **M**aître d’**Œ**uvr**E** (celui qui conçoit et dirige les travaux).'],
+      ['À quoi sert la loi MOP ?', 'Elle définit les rôles du maître d’ouvrage et du maître d’œuvre et le contenu des missions dans la commande publique. Ses règles sont aujourd’hui codifiées dans le Code de la commande publique.'],
+      ['À quel moment les choix coûtent-ils le moins cher à modifier ?', 'Au tout début, en phase de programmation et d’esquisse : plus le projet avance, plus une modification est longue et coûteuse.'],
+    ],
+    1: [
+      ['Qui est le maître d’ouvrage ?', 'La personne (publique ou privée) pour laquelle l’ouvrage est construit : il définit le besoin, finance et réceptionne. C’est le client.'],
+      ['Quelle est la différence entre AMO et MOE ?', 'L’AMO conseille et assiste le maître d’ouvrage dans ses décisions ; le MOE conçoit le projet et dirige l’exécution des travaux.'],
+      ['Qui compose l’équipe de maîtrise d’œuvre ?', 'L’architecte (mandataire le plus souvent), les bureaux d’études techniques (structure, fluides, thermique) et l’économiste de la construction.'],
+      ['Quelles sont les deux missions de base du contrôleur technique ?', 'La mission L (solidité des ouvrages) et la mission S (sécurité des personnes).'],
+      ['Quand faut-il désigner un coordonnateur SPS ?', 'Dès la phase de conception, dès qu’au moins deux entreprises (y compris sous-traitants) interviennent sur le chantier.'],
+      ['Qui signe les marchés de travaux avec les entreprises ?', 'Le maître d’ouvrage. Le maître d’œuvre l’assiste (mission ACT) mais ne signe pas à sa place.'],
+    ],
+    2: [
+      ['Qu’est-ce que le programme ?', 'Le document rédigé par le maître d’ouvrage qui décrit les besoins, les locaux, les surfaces, les exigences techniques, le budget et le calendrier. C’est le cahier des charges du maître d’œuvre.'],
+      ['Que vérifie-t-on lors des études de faisabilité ?', 'Que le projet est réalisable : règles du PLU, nature du sol, accès et réseaux, contraintes du site, budget et délai.'],
+      ['Quelle phase sert de base au dossier de permis de construire ?', 'L’APD (avant-projet définitif), car les formes, dimensions, matériaux et surfaces y sont arrêtés.'],
+      ['Quelle est la différence principale entre APS et APD ?', 'L’APS propose des solutions générales et une estimation provisoire ; l’APD arrête définitivement les choix et donne le coût prévisionnel définitif des travaux.'],
+      ['Que contient le DCE ?', 'Le **D**ossier de **C**onsultation des **E**ntreprises : règlement de consultation, acte d’engagement, CCAP, CCTP, plans et décomposition des prix. Il permet aux entreprises de remettre une offre.'],
+      ['Combien de temps dure le délai de recours des tiers après affichage du permis ?', '2 mois à compter du premier jour d’affichage régulier du permis sur le terrain.'],
+    ],
+    3: [
+      ['Que contient la mission de base d’un maître d’œuvre pour un bâtiment neuf ?', 'ESQ, APS, APD, PRO, ACT, VISA (ou EXE), DET et AOR. Elle forme un ensemble indissociable pour la commande publique.'],
+      ['Quelles sont les principales missions complémentaires ?', 'L’OPC (ordonnancement, pilotage, coordination), les études d’exécution (EXE) si le MOE les réalise, et le DIAG pour les bâtiments existants.'],
+      ['Quelle est la différence entre EXE et VISA ?', 'EXE = réaliser les plans d’exécution. VISA = vérifier et approuver les plans d’exécution réalisés par l’entreprise. Le MOE fait l’un ou l’autre, pas les deux sur le même lot.'],
+      ['Que fait le maître d’œuvre pendant la mission ACT ?', 'Il prépare le dossier de consultation, analyse les offres des entreprises, remet un rapport d’analyse au maître d’ouvrage et met au point les marchés.'],
+      ['En quoi consiste la mission DET ?', 'Diriger l’exécution des travaux : animer les réunions de chantier, vérifier la conformité des ouvrages au marché, contrôler les situations de travaux et informer le maître d’ouvrage.'],
+      ['Quelle mission couvre l’année qui suit la réception ?', 'L’AOR : elle comprend les OPR, l’assistance à la réception, le suivi de la levée des réserves et le suivi pendant la garantie de parfait achèvement.'],
+    ],
+    4: [
+      ['Qu’est-ce qu’un ordre de service (OS) ?', 'Un document écrit notifié à l’entreprise par le maître d’ouvrage (via le MOE) pour lui donner une instruction : démarrage des travaux, arrêt, reprise, travaux modificatifs.'],
+      ['À quoi sert la période de préparation de chantier ?', 'À organiser le chantier avant les travaux : plan d’installation, PPSPS, plannings d’exécution, commandes et approvisionnements.'],
+      ['Que sont les OPR ?', 'Les opérations préalables à la réception : le maître d’œuvre visite l’ouvrage avec les entreprises, liste les réserves et propose la réception au maître d’ouvrage.'],
+      ['Qui prononce la réception des travaux ?', 'Le maître d’ouvrage, et lui seul. Le maître d’œuvre l’assiste et lui propose la réception, mais ne la prononce pas.'],
+      ['Pourquoi la réception est-elle une date capitale ?', 'Parce qu’elle marque le transfert de la garde de l’ouvrage au maître d’ouvrage et le point de départ de toutes les garanties légales.'],
+      ['Quelles sont les durées des trois garanties légales ?', 'Parfait achèvement : 1 an. Bon fonctionnement (biennale) : 2 ans. Décennale : 10 ans. Toutes partent de la date de réception.'],
+      ['Quelle est la différence entre le DOE et le DIUO ?', 'Le DOE décrit l’ouvrage réellement exécuté (plans, notices). Le DIUO, établi par le CSPS, explique comment intervenir en sécurité sur le bâtiment plus tard.'],
+    ],
+  },
+
+  // les missions pratiques de chaque atelier (cochées sur cet ordinateur)
+  missions: {
+    1: [
+      { id: 'm1', etape: 'Mission 1 — Identifier', titre: 'Repérer les acteurs d’une opération réelle', picto: 'loupe',
+        taches: ['Repérer le panneau de permis de construire d’un chantier proche du lycée', 'Relever le nom du maître d’ouvrage et celui de l’architecte', 'Classer chaque nom relevé dans la bonne famille : MOA, MOE, entreprise', 'Noter la nature et la surface du projet indiquées sur le panneau'],
+        tuto: { titre: 'Comment lire un panneau de chantier', etapes: ['Le panneau réglementaire est visible depuis la voie publique pendant toute la durée du chantier.', 'En haut : le numéro et la date du permis, ainsi que le nom du bénéficiaire (= le maître d’ouvrage).', 'Au milieu : la nature des travaux, la surface de plancher et la hauteur du bâtiment.', 'En bas : le nom de l’architecte (obligatoire au-delà de 150 m² de surface de plancher).', 'Photographier le panneau, puis recopier les informations dans un tableau à 3 colonnes : MOA / MOE / Entreprises.'] } },
+      { id: 'm2', etape: 'Mission 2 — Organiser', titre: 'Construire l’organigramme des acteurs', picto: 'carte',
+        taches: ['Placer le MOA en haut de la feuille et le relier au MOE et aux entreprises', 'Ajouter le contrôleur technique et le coordonnateur SPS reliés au MOA', 'Tracer en trait plein les liens contractuels, en pointillés les liens de contrôle', 'Vérifier qu’aucun lien contractuel direct ne relie le MOE aux entreprises'],
+        tuto: { titre: 'Règle d’or de l’organigramme', etapes: ['Tous les contrats partent du maître d’ouvrage : c’est lui qui paie, donc lui qui signe.', 'Le MOE a un contrat avec le MOA, pas avec les entreprises.', 'Les entreprises ont chacune un marché de travaux avec le MOA.', 'Le MOE dirige les entreprises pour le compte du MOA : c’est un lien de direction, pas un lien contractuel.', 'Le CT et le CSPS sont eux aussi missionnés directement par le MOA.'] } },
+    ],
+    2: [
+      { id: 'm3', etape: 'Mission 3 — Analyser', titre: 'Décoder un programme de construction', picto: 'programme',
+        taches: ['Lister les locaux demandés dans le programme fourni et leur surface', 'Calculer la surface utile totale demandée', 'Repérer trois exigences techniques imposées par le maître d’ouvrage', 'Identifier l’enveloppe financière annoncée et le délai souhaité'],
+        tuto: { titre: 'Méthode de lecture d’un programme', etapes: ['Repérer le sommaire : le programme est toujours organisé par entités fonctionnelles.', 'Extraire le tableau des surfaces : un local = une ligne = une surface utile.', 'Additionner les surfaces utiles, puis appliquer le coefficient de circulation annoncé.', 'Surligner les exigences imposées (niveau d’isolation, accessibilité, matériaux biosourcés…).', 'Noter à part le budget travaux HT et la date de livraison souhaitée : ce sont deux contraintes non négociables.'] } },
+      { id: 'm4', etape: 'Mission 4 — Situer', titre: 'Replacer des documents dans la bonne phase', picto: 'boussole',
+        taches: ['Classer 6 documents fournis dans l’ordre chronologique des phases', 'Associer chaque document à son auteur (MOA ou MOE)', 'Justifier l’échelle de représentation de chaque plan', 'Repérer le document qui déclenche le dépôt du permis de construire'],
+        tuto: { titre: 'Reconnaître une phase à partir d’un plan', etapes: ['Regarder d’abord le cartouche : la phase (ESQ, APS, APD, PRO, EXE) y est presque toujours indiquée.', 'Observer l’échelle : 1/500 ou 1/200 = amont ; 1/100 = APD/PC ; 1/50 et détails = PRO/EXE.', 'Compter le niveau de détail : cotes intérieures et réservations n’apparaissent qu’à partir du PRO.', 'Vérifier la présence du tableau des surfaces : caractéristique de l’APD et du dossier de PC.', 'Conclure en associant le document à un auteur et à un destinataire.'] } },
+    ],
+    3: [
+      { id: 'm5', etape: 'Mission 5 — Ordonner', titre: 'Remettre les missions dans l’ordre', picto: 'ordre',
+        taches: ['Écrire dans l’ordre chronologique les 8 missions de la mission de base', 'Entourer les missions qui se déroulent avant le dépôt du permis de construire', 'Souligner les missions qui se déroulent pendant le chantier', 'Ajouter à part les missions complémentaires possibles'],
+        tuto: { titre: 'Astuce de mémorisation', etapes: ['La conception va du plus flou au plus précis : ESQ → APS → APD → PRO.', 'Vient ensuite tout ce qui touche aux entreprises : ACT (les choisir) puis VISA (vérifier leurs plans).', 'Puis le chantier : DET (diriger).', 'Enfin la fin : AOR (réceptionner).', 'Phrase repère : « Esquisser, Préciser, Arrêter, Projeter, Consulter, Viser, Diriger, Réceptionner ».'] } },
+      { id: 'm6', etape: 'Mission 6 — Décider', titre: 'Composer une mission de maîtrise d’œuvre', picto: 'balance',
+        taches: ['Lire les 3 situations de projet proposées par le professeur', 'Pour chaque situation, cocher les missions à confier au MOE', 'Justifier l’ajout ou non de la mission OPC', 'Justifier l’ajout du DIAG dans le cas d’une réhabilitation'],
+        tuto: { titre: 'Comment raisonner', etapes: ['Le projet porte-t-il sur un bâtiment existant ? Si oui, ajouter DIAG.', 'Combien de lots séparés ? Au-delà de 8 à 10 lots, l’OPC devient indispensable.', 'Qui réalise les plans d’exécution ? Si ce sont les entreprises → VISA ; si c’est le MOE → EXE.', 'En marché public, la mission de base ne peut pas être découpée : elle est confiée en totalité.', 'Rédiger une phrase de justification par mission ajoutée.'] } },
+    ],
+    4: [
+      { id: 'm7', etape: 'Mission 7 — Contrôler', titre: 'Préparer une visite d’OPR', picto: 'dossier',
+        taches: ['Établir une grille de contrôle pour un local type (sol, murs, plafond, menuiseries, équipements)', 'Réaliser la visite d’un local du lycée avec cette grille', 'Rédiger 5 réserves en localisant précisément chaque désordre', 'Classer les réserves par lot concerné'],
+        tuto: { titre: 'Comment rédiger une réserve', etapes: ['Une réserve = un désordre = une ligne dans le tableau.', 'Indiquer le local et sa localisation précise (niveau, repère de porte, mur nord…).', 'Décrire le constat de façon factuelle : « éclat de 3 cm sur l’angle du dormant ».', 'Indiquer le lot responsable : menuiserie intérieure, peinture, électricité…', 'Ne jamais écrire la solution technique à la place de l’entreprise : décrire le défaut, pas la réparation.'] } },
+      { id: 'm8', etape: 'Mission 8 — Situer dans le temps', titre: 'Construire la frise des garanties', picto: 'horloge',
+        taches: ['Tracer une frise chronologique de 12 ans à partir de la date de réception', 'Placer les trois garanties légales avec leurs durées', 'Placer 4 désordres fournis sur la frise et indiquer la garantie applicable', 'Repérer un désordre non couvert et expliquer pourquoi'],
+        tuto: { titre: 'Quelle garantie pour quel désordre ?', etapes: ['Le désordre est-il signalé dans la première année ? → garantie de parfait achèvement.', 'Concerne-t-il un équipement démontable sans abîmer le bâtiment (volet, radiateur) ? → garantie biennale.', 'Compromet-il la solidité ou rend-il le bâtiment impropre à son usage (fissure structurelle, infiltration) ? → décennale.', 'S’agit-il d’usure normale ou d’un défaut d’entretien ? → aucune garantie, c’est à la charge du propriétaire.', 'Toujours vérifier la date : c’est la réception qui fait courir les délais.'] } },
+    ],
+  },
+
+  // quiz final (bonne : rang de la bonne réponse, à partir de 0 ; atelier : l'atelier où se trouve la réponse, rattachement ajouté pour la correction)
+  quiz: [
+    { atelier: 1, question: 'Qui définit le besoin, finance l’opération et réceptionne l’ouvrage ?', options: ['Le maître d’œuvre', 'Le maître d’ouvrage', 'L’entreprise générale', 'Le contrôleur technique'], bonne: 1,
+      explication: 'Le maître d’ouvrage (MOA) est le client : il définit le besoin, finance et prononce la réception.' },
+    { atelier: 1, question: 'Quel est le rôle exact de l’AMO ?', options: ['Concevoir le bâtiment à la place de l’architecte', 'Diriger les entreprises sur le chantier', 'Assister et conseiller le maître d’ouvrage dans ses choix', 'Contrôler la solidité des ouvrages'], bonne: 2,
+      explication: 'L’AMO conseille le maître d’ouvrage ; il ne conçoit pas et ne dirige pas les travaux.' },
+    { atelier: 2, question: 'Dans quel ordre se déroulent les phases de conception ?', options: ['APD → ESQ → APS → PRO', 'ESQ → APS → APD → PRO', 'PRO → APS → APD → ESQ', 'ESQ → APD → APS → PRO'], bonne: 1,
+      explication: 'On va du plus général au plus précis : esquisse, avant-projet sommaire, avant-projet définitif, projet.' },
+    { atelier: 2, question: 'Quelle phase sert de base au dossier de permis de construire ?', options: ['L’esquisse (ESQ)', 'L’avant-projet sommaire (APS)', 'L’avant-projet définitif (APD)', 'Le projet (PRO)'], bonne: 2,
+      explication: 'À l’APD, les formes, dimensions, matériaux et surfaces sont arrêtés : c’est la base du dossier de PC.' },
+    { atelier: 2, question: 'Que signifie le sigle DCE ?', options: ['Dossier de Consultation des Entreprises', 'Document de Contrôle de l’Exécution', 'Descriptif Commun des Équipements', 'Dossier de Conformité Environnementale'], bonne: 0,
+      explication: 'Le DCE réunit toutes les pièces permettant aux entreprises de remettre une offre chiffrée.' },
+    { atelier: 3, question: 'Quelle mission correspond à la direction de l’exécution des travaux ?', options: ['ACT', 'VISA', 'DET', 'AOR'], bonne: 2,
+      explication: 'DET = Direction de l’Exécution des Travaux : réunions de chantier, contrôle de conformité, situations de travaux.' },
+    { atelier: 3, question: 'Parmi ces missions, laquelle est une mission complémentaire (hors mission de base) ?', options: ['APD', 'OPC', 'ACT', 'AOR'], bonne: 1,
+      explication: 'L’OPC (ordonnancement, pilotage, coordination) est une mission complémentaire, comme l’EXE et le DIAG.' },
+    { atelier: 3, question: 'Que fait le maître d’œuvre dans la mission VISA ?', options: ['Il dessine les plans d’exécution', 'Il vérifie les plans d’exécution établis par les entreprises', 'Il signe le permis de construire', 'Il assure la sécurité du chantier'], bonne: 1,
+      explication: 'Le VISA consiste à examiner et approuver les études d’exécution réalisées par les entreprises.' },
+    { atelier: 1, question: 'Qui est chargé de rédiger le PGC et le DIUO ?', options: ['Le contrôleur technique', 'L’économiste de la construction', 'Le coordonnateur SPS', 'Le géomètre-expert'], bonne: 2,
+      explication: 'Le coordonnateur SPS rédige le plan général de coordination et constitue le DIUO.' },
+    { atelier: 4, question: 'Quel événement marque le point de départ des garanties légales ?', options: ['La signature du marché de travaux', 'L’ordre de service de démarrage', 'La réception des travaux', 'La levée des dernières réserves'], bonne: 2,
+      explication: 'La réception est l’acte fondateur : elle transfère la garde de l’ouvrage et fait courir toutes les garanties.' },
+    { atelier: 4, question: 'Quelle est la durée de la garantie de parfait achèvement ?', options: ['6 mois', '1 an', '2 ans', '10 ans'], bonne: 1,
+      explication: 'La garantie de parfait achèvement dure 1 an après la réception et couvre tous les désordres signalés.' },
+    { atelier: 4, question: 'Une fissure importante compromettant la solidité du bâtiment apparaît 6 ans après la réception. Quelle garantie s’applique ?', options: ['Parfait achèvement', 'Garantie biennale', 'Garantie décennale', 'Aucune garantie'], bonne: 2,
+      explication: 'La garantie décennale couvre pendant 10 ans les désordres qui compromettent la solidité ou rendent l’ouvrage impropre à sa destination.' },
+  ],
+  // les messages du résultat (min : nombre de bonnes réponses à atteindre)
+  resultats: [
+    { min: 9, mot: 'Excellent', texte: 'Excellent : tu maîtrises les phases et les missions de l’acte de construire.' },
+    { min: 6, mot: 'Bon niveau', texte: 'Bon niveau : revois les ateliers correspondant à tes erreurs.' },
+    { min: 0, mot: 'À retravailler', texte: 'À retravailler : reprends les flashcards des 4 ateliers avant de recommencer.' },
+  ],
+};
+
+/* =====================================================================
+   2. OUTILS ET PICTOGRAMMES
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const borne = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
+const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SOURIS = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const NB = String.fromCharCode(160);   // espace insécable de la typographie française
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])).replace(/ ([?!:;»])/g, NB + '$1').replace(/« /g, '«' + NB);
+const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');   // **gras**, *italique*
+const alea = s => () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const lire = (cle, defaut) => { try { return JSON.parse(localStorage.getItem(cle)) ?? defaut; } catch { return defaut; } };
+const ecrire = (cle, v) => { try { localStorage.setItem(cle, JSON.stringify(v)); } catch { /* navigation privée : on garde en mémoire */ } };
+const GRIB = '<svg class="gribouille" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 7C20 3 40 10 60 6S90 4 98 7"/></svg>';
+const FL = '<svg class="fl" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15C7 11 10 8 15 3M7.5 3.2c2.6-.3 5-.2 7.5 0 .2 2.5.3 5 0 7.6"/></svg>';
+const FLECHE = '<svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>';
+const CASE = '<svg class="case" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 4.5C8 3.6 14 4.2 18.6 3.8c.4 4.6.2 9.4.6 14-5 .5-10 .1-15 .5-.6-4.6-.3-9.2-.6-13.8z"/><path class="coche" pathLength="1" d="M5 11.5l4.2 4.6L20 2.5"/></svg>';
+const PLUS = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 10.5l4 4 9-10"/></svg>';
+const ATTN = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l8.5 15h-17z"/><path d="M10 8v4.5M10 14.8v.2"/></svg>';
+const LOSANGE = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4.5l5.5 5.5-5.5 5.5L4.5 10z"/></svg>';
+const ROT = [-1.2, .9, -.6, 1.1, -.8, .7];
+function cadre(el, graine) {   // cadre « tracé à main levée » autour d'un élément
+  el.querySelector(':scope > .cadre')?.remove();
+  const w = el.offsetWidth, h = el.offsetHeight; if (!w) return;
+  const r = alea(graine), j = () => +((r() - .5) * 3).toFixed(1);
+  el.insertAdjacentHTML('beforeend', `<svg class="cadre" viewBox="-5 -5 ${w + 10} ${h + 10}" aria-hidden="true"><path d="M${-4 + j()} ${1 + j()}L${w + 5} ${-1 + j()}M${w + j()} ${-5}L${w - 1 + j()} ${h + 4}M${w + 5} ${h - 1 + j()}L-4 ${h + 1 + j()}M${1 + j()} ${h + 4}L${1 + j()} -5"/></svg>`);
+}
+const cadres = () => $$('.btn, .nav__pres').forEach((el, i) => cadre(el, 40 + i));
+// pictogrammes (24 × 24) des acteurs, des étapes, des fiches et des missions
+const PICTO = {
+  ouvrage: '<path d="M4 21V10l8-6 8 6v11z"/><path d="M9.5 21v-6h5v6M2.5 21h19"/>',
+  carte: '<circle cx="12" cy="12" r="3"/><circle cx="12" cy="3.5" r="1.8"/><circle cx="19.4" cy="7.8" r="1.8"/><circle cx="19.4" cy="16.2" r="1.8"/><circle cx="12" cy="20.5" r="1.8"/><circle cx="4.6" cy="16.2" r="1.8"/><circle cx="4.6" cy="7.8" r="1.8"/><path d="M12 9V5.3M14.6 10.5l3.2-1.8M14.6 13.5l3.2 1.8M12 15v3.7M9.4 13.5l-3.2 1.8M9.4 10.5L6.2 8.7"/>',
+  moa: '<rect x="3" y="7.5" width="18" height="12.5" rx="2"/><path d="M8.5 7.5V5.6c0-.9.7-1.6 1.6-1.6h3.8c.9 0 1.6.7 1.6 1.6v1.9M3 12.5h18M10.5 11.5v2.4h3v-2.4"/>',
+  moe: '<path d="M4 20V4l16 16z"/><path d="M8 16v-4.3l4.3 4.3z"/><path d="M4 8h2.2M4 12h2.2"/>',
+  entreprises: '<path d="M2.5 18.5h19M4.5 18.5a7.5 7.5 0 0 1 15 0M9.5 11.6V8h5v3.6"/>',
+  controle: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20.5 20.5l-5.2-5.2M7.8 10.6l2 2 3.4-4"/>',
+  sps: '<path d="M12 3.5L22 20.5H2z"/><path d="M12 10v5M12 17.6v.3"/>',
+  administrations: '<path d="M3 21h18M5 21V11h14v10M3.5 11L12 6l8.5 5M9 21v-5h6v5M12 6V2.5l3.5 1.2L12 5"/>',
+  mandat: '<circle cx="8" cy="7.5" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.4-3.8 2.6-6 5.5-6s5.1 2.2 5.5 6M14 20c.3-2.8 1.5-4.5 3-4.5s2.7 1.7 3 4.5"/>',
+  economiste: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M11 11h2M14 11h2M8 14.5h2M11 14.5h2M14 14.5h2M8 18h2M11 18h5"/>',
+  opc: '<path d="M3 3.5v17h18"/><path d="M6 6.5h6v2.6H6zM9.5 10.8h7v2.6h-7zM13 15.1h6v2.6h-6z"/>',
+  programme: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 11h7M9 14.5h7M9 18h4"/>',
+  conception: '<path d="M4 20l1.2-4.4L16 4.8l3.2 3.2L8.4 18.8z"/><path d="M14 6.8l3.2 3.2M5.2 15.6l3.2 3.2"/>',
+  consultation: '<rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3.5 7l8.5 6.5L20.5 7"/>',
+  execution: '<path d="M6 21V4h15M6 8l4-4M17 4v6M15.4 10h3.2v2.6h-3.2zM3 21h6"/>',
+  reception: '<circle cx="7.5" cy="14.5" r="4"/><path d="M10.5 11.8L20 3.5M16.6 6.4l2.6 2.6M13.9 8.8l2 2"/>',
+  garanties: '<path d="M12 3l8 3v6c0 4.6-3.4 8-8 9-4.6-1-8-4.4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  financer: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.6a4.4 4.4 0 1 0 0 6.8M7 10.8h6.5M7 13.4h6.5"/>',
+  contrat: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 9h5M9 12h7M8.5 17.5c1.4-2.4 2.4-2.4 2.9-.4s1.6 2 3.1-1"/>',
+  chefEquipe: '<circle cx="12" cy="7" r="2.6"/><circle cx="5.5" cy="10" r="2.2"/><circle cx="18.5" cy="10" r="2.2"/><path d="M7.5 20c.3-3.6 2-5.6 4.5-5.6s4.2 2 4.5 5.6M1.8 19c.3-2.6 1.6-4 3.7-4M22.2 19c-.3-2.6-1.6-4-3.7-4"/>',
+  geometre: '<rect x="8.5" y="3" width="7" height="5.5" rx="1"/><path d="M15.5 5.7H18M12 8.5v3.5M6 21l6-9 6 9M12 12v9"/>',
+  geotech: '<path d="M3 8h18M3 13h18M3 18h18"/><path d="M12 2.5v15M9.5 15.2l2.5 3.3 2.5-3.3"/>',
+  instructeur: '<path d="M9 3h6v4.5l3 3.5H6l3-3.5zM5 14h14v3H5zM4 21h16"/>',
+  concession: '<path d="M13 2.5L5 13h6l-1.5 8.5L18 10h-6z"/>',
+  loupe: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20.5 20.5l-5.2-5.2"/>',
+  horloge: '<circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l3.8 2.4"/>',
+  idee: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2v.5h5V16c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>',
+  balance: '<path d="M12 3v17M6.5 20.5h11M4.5 7h15"/><path d="M7 7l-3.2 7a3.2 3.2 0 0 0 6.4 0zM17 7l-3.2 7a3.2 3.2 0 0 0 6.4 0z"/>',
+  maison: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V21h14V9.5M10 21v-6h4v6"/>',
+  cible: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
+  implantation: '<path d="M3 21V9M7 21V9M2 11h6M17 21V9M21 21V9M16 11h6M5 11h14"/>',
+  dossier: '<path d="M3 7.5V19a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-8l-2-2.5H4a1 1 0 0 0-1 1z"/><path d="M7 13h10M7 16.5h6"/>',
+  boussole: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  diag: '<path d="M6 3v6a5 5 0 0 0 10 0V3M11 14v2.5a4 4 0 0 0 8 0V14"/><circle cx="19" cy="12" r="2"/>',
+  visa: '<circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3 6-7"/>',
+  plans: '<path d="M4 6a2 2 0 0 1 4 0v13a2 2 0 0 0-4 0zM8 6h12v13H8M11 10h6M11 13h6M11 16h4"/>',
+  reglage: '<path d="M15 4a5 5 0 0 0-4.6 6.9L3.5 17.8a1.9 1.9 0 0 0 2.7 2.7l6.9-6.9A5 5 0 0 0 20 9l-3 1-2-2 1-3z"/>',
+  boulon: '<path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z"/><circle cx="12" cy="12" r="3"/>',
+  ordre: '<path d="M4 5h1.6v4.5M3.8 9.5h3.4M4 14.6c0-1.1 3-1.1 3 .3 0 1.1-3 1.8-3 3.4h3.2M11 7h9M11 12h9M11 17h9"/>',
+};
+const picto = n => `<svg viewBox="0 0 24 24" aria-hidden="true">${PICTO[n] || ''}</svg>`;
+const AT = DONNEES.ateliers;
+const DUREES = Object.assign({ intro: DONNEES.dureeIntro }, Object.fromEntries(AT.map(a => ['atelier-' + a.id, a.duree])));
+
+/* =====================================================================
+   3. L'ACCUEIL : un projet qui avance dans le temps
+   La souris (ou le curseur) fait passer le temps : le besoin, le programme,
+   l'esquisse devenue permis, le chantier, puis le bâtiment en service.
+   Chaque trait a son moment : t de 0 (le besoin) à 1 (le bâtiment vit).
+   ===================================================================== */
+const Pc = (d, c) => `<path${c ? ` class="${c}"` : ''} d="${d}"/>`;
+const Tx = (x, y, t, c = '', ancre = '') => `<text x="${x}" y="${y}"${c ? ` class="${c}"` : ''}${ancre ? ` text-anchor="${ancre}"` : ''}>${t}</text>`;
+function personnage(x, y, o = {}) {   // debout, les pieds en (x, y)
+  return Pc(`M${x - 6} ${y}L${x - 3} ${y - 26}M${x + 6} ${y}L${x + 3} ${y - 26}M${x - 6} ${y}h-5M${x + 6} ${y}h5`)
+    + Pc(`M${x - 11} ${y - 25}L${x - 8} ${y - 55}Q${x} ${y - 60} ${x + 8} ${y - 55}L${x + 11} ${y - 25}Z`, 'corps')
+    + (o.extra || '')
+    + Pc(`M${x - 8} ${y - 54}L${x - 16} ${y - 34}M${x + 8} ${y - 54}L${x + 16} ${y - 34}`)
+    + (o.objets || '')
+    + Pc(`M${x + 8} ${y - 68}a8 8 0 1 0 -16 0a8 8 0 1 0 16 0`, 'papier')
+    + Pc(`M${x - 3} ${y - 69}v.4M${x + 3} ${y - 69}v.4M${x - 3} ${y - 64.5}q3 2.4 6 0`, 'fin')
+    + (o.casque ? Pc(`M${x - 9} ${y - 70}a9 9 0 0 1 18 0zM${x - 11.5} ${y - 70}h23`, o.casque) : '');
+}
+const habit = (cc, dessin) => `<g style="--cc:${cc}">${dessin}</g>`;
+const arbre = (x, y) => Pc(`M${x} ${y}V${y - 30}M${x} ${y - 14}l-7-7M${x} ${y - 20}l6-6`) + Pc(`M${x + 18} ${y - 46}a18 18 0 1 0 -36 0a18 18 0 1 0 36 0`, 'lv');
+const FEN = 'M210 285h30v25h-30zM320 285h30v25h-30zM268 290h24v40h-24zM210 222h30v25h-30zM265 222h30v25h-30zM320 222h30v25h-30z';
+const SIGLES = [['ESQ', .27], ['APS', .33], ['APD', .39], ['PRO', .45], ['ACT', .5], ['VISA', .56], ['DET', .6], ['AOR', .78]];
+// k : 't' = un trait qui se trace, 'o' = un objet qui apparaît ; a → b : le moment où il se dessine ; f : [début, fin, opacité restante] s'il s'efface
+const DESSIN = (() => {
+  let mat = 'M420 330', fl = 'M420 92', k = 0, tuiles = '';
+  for (let y = 306; y > 92; y -= 24) mat += `L${++k % 2 ? 432 : 420} ${y}`;
+  k = 0; for (let x = 404; x > 150; x -= 16) fl += `L${x} ${++k % 2 ? 84 : 92}`;
+  for (let x = 192; x < 392; x += 12) { const yS = x < 280 ? 212 - (x - 180) * .52 : 160 + (x - 280) * .433, h = Math.min(14, 208 - yS - 5); if (h > 3) tuiles += `M${x} ${(yS + 4).toFixed(1)}v${h.toFixed(1)}`; }
+  return [
+    // exploitation : les lavis, posés sous les traits (ils n'apparaissent qu'à la fin)
+    { k: 'o', a: .82, b: .87, h: Pc('M190 330V208H390V330Z', 'lo') },
+    { k: 'o', a: .84, b: .89, h: Pc('M180 212L280 160L400 212Z', 'lt') },
+    { k: 'o', a: .86, b: .9, h: Pc(FEN, 'lb') },
+    { k: 'o', a: .93, b: .97, h: Pc('M211 286h28v23h-28zM321 223h28v23h-28z', 'lj') },
+    // le terrain et la parcelle
+    { k: 't', a: 0, b: .03, d: 'M10 330C150 328 400 333 550 329' },
+    { k: 't', a: 0, b: .03, c: 'fin', d: 'M30 341l8-6M90 343l8-6M160 341l8-6M380 343l8-6M440 341l8-6M510 343l8-6' },
+    { k: 'o', a: .02, b: .07, h: Pc('M150 330l-5 9h10zM430 330l-5 9h10z', 'tr') + Pc('M150 334H430', 'tr tirets') },
+    { k: 'o', a: .03, b: .08, f: [.5, .55, 0], h: Tx(290, 350, 'limites de la parcelle', 't-r petit', 'middle') },
+    // programmation : le maître d'ouvrage, son besoin, son programme ; la faisabilité (sol, PLU)
+    { k: 'o', a: 0, b: .05, h: habit('rgba(47,111,214,.3)', personnage(86, 330, { extra: Pc('M86 275.5l-2.2 4.5 2.2 10 2.2-10z', 'lr tr'), objets: Pc('M62 297h16v12H62zM67 297v-3h6v3', 'lo') })) },
+    { k: 'o', a: .03, b: .08, f: [.22, .26, 0], h: Pc('M44 196h122a8 8 0 0 1 8 8v20a8 8 0 0 1-8 8H100l-10 14 1-14H44a8 8 0 0 1-8-8v-20a8 8 0 0 1 8-8z', 'papier') + Tx(105, 211, 'j’ai besoin', '', 'middle') + Tx(105, 226, `d’un bâtiment${NB}!`, '', 'middle') },
+    { k: 'o', a: .09, b: .15, f: [.5, .56, 0], h: Pc('M112 250h30l10 10v40h-40z', 'papier') + Pc('M142 250v10h10M118 268h28M118 276h28M118 284h22M118 292h26', 'fin') + Tx(132, 244, 'PROGRAMME', 't-r petit', 'middle') },
+    { k: 'o', a: .14, b: .2, f: [.27, .31, 0], h: Pc('M352 330l8-28 8 28M355 318h10') + Pc('M360 302V392', 'tb tirets') + Tx(372, 300, `sol${NB}: étude G1`, 't-b petit') },
+    { k: 'o', a: .17, b: .23, f: [.5, .55, 0], h: Pc('M150 140H430', 'tr tirets') + Tx(290, 132, `PLU${NB}: hauteur maximale`, 't-r petit', 'middle') },
+    // conception : l'architecte, l'esquisse qui se précise (ESQ, APS, APD), le permis, le DCE
+    { k: 'o', a: .25, b: .29, h: habit('rgba(123,85,199,.3)', personnage(478, 330, { objets: Pc('M442 284h20v26h-20z', 'papier') + Pc('M446 304v-9l6-5 6 5v9z', 'fin') + Pc('M494 296l5-9', 'tr') })) },
+    { k: 't', a: .27, b: .33, c: 'tb', f: [.5, .62, .1], d: 'M192 331C190 300 193 262 191 212C222 196 252 178 282 158C318 176 354 194 390 211C391 260 388 300 390 331M184 214C220 196 250 178 283 154C318 172 360 194 398 215M198 269C260 271 320 266 384 270' },
+    { k: 't', a: .33, b: .39, c: 'tb', f: [.5, .62, .1], d: 'M190 330V208H390V330M180 212L280 160L400 212M190 268H390' },
+    { k: 't', a: .39, b: .44, c: 'tb', f: [.5, .62, .1], d: FEN },
+    { k: 'o', a: .4, b: .44, f: [.5, .58, 0], h: Pc('M190 354H390M190 349v10M390 349v10M408 330V160M403 330h10M403 160h10', 'tb') + Tx(290, 367, '12,00', 't-b petit', 'middle') + Tx(414, 248, '8,50', 't-b petit') + Tx(196, 386, 'APD · 1/100', 't-b petit') },
+    { k: 'o', a: .44, b: .47, f: [.56, .6, 0], h: `<g transform="rotate(-8 250 181)">${Pc('M192 168h116v26h-116z', 'tr')}${Tx(250, 186, 'PERMIS ACCORDÉ', 't-r', 'middle')}</g>` },
+    { k: 'o', a: .46, b: .5, f: [.56, .6, 0], h: Pc('M508 270h34v26h-34z', 'papier') + Pc('M504 274h34v26h-34z', 'papier') + Pc('M500 278h34v26h-34z', 'papier') + Tx(517, 296, 'DCE', 'petit', 'middle') },
+    // réalisation : la grue, les compagnons, le bâtiment qui monte, la réception
+    { k: 't', a: .5, b: .55, f: [.8, .84, 0], d: 'M420 330V92M432 330V92M150 84H490M150 92H490M150 84V92M426 84V56M426 56L210 84M426 56L490 84' },
+    { k: 't', a: .51, b: .55, c: 'fin', f: [.8, .84, 0], d: mat + fl },
+    { k: 'o', a: .53, b: .56, f: [.8, .84, 0], h: Pc('M470 92h20v18h-20z', 'lg') + Pc('M300 92V150', 'fin') + Pc('M300 150v4M300 154c-4 0-4 7 0 7s3.5-2.5 3.5-4.5') + Pc('M290 161h20l-3 12h-14z', 'lg') + Pc('M412 330v-10h28v10z', 'lg') },
+    { k: 'o', a: .55, b: .58, f: [.79, .82, 0], h: habit('rgba(61,154,95,.38)', personnage(158, 330, { casque: 'lj', objets: Pc('M174 296l8 34M178 331h9') }) + personnage(404, 330, { casque: 'lj', objets: Pc('M388 296l-6 4') + Pc('M382 300l-8-1 3 6z', 'lg') })) },
+    { k: 'o', a: .55, b: .59, h: Pc('M184 330h14v16h-14zM382 330h14v16h-14z', 'lg') + Pc('M184 346H396', 'fin') },
+    { k: 't', a: .59, b: .64, c: 'tf', d: 'M190 330V268M390 330V268' },
+    { k: 'o', a: .64, b: .66, h: Pc('M186 268H394V262H186Z', 'lg') },
+    { k: 't', a: .66, b: .7, c: 'tf', d: 'M190 262V208M390 262V208' },
+    { k: 't', a: .7, b: .73, d: 'M190 208H390M182 212L280 162L398 212M232 208L280 184L328 208M280 162V208' },
+    { k: 't', a: .73, b: .76, c: 'tf', d: 'M178 213L280 159L402 213' },
+    { k: 't', a: .74, b: .77, c: 'fin', d: tuiles },
+    { k: 't', a: .76, b: .79, d: FEN + 'M225 285v25M335 285v25M225 222v25M280 222v25M335 222v25' },
+    { k: 'o', a: .78, b: .81, f: [.92, .96, 0], h: Pc('M106 252h30v36h-30z', 'papier') + Pc('M110 260h22M110 266h22M110 272h14', 'fin') + Pc('M114 281c3-4 5-4 6 0s3 3 6-2', 'tr') + Tx(121, 247, 'PV de réception', 't-r petit', 'middle') },
+    { k: 'o', a: .8, b: .83, h: Pc('M104 298a4 4 0 1 0 -8 0a4 4 0 1 0 8 0M104 298h11M111 298v4M115 298v4', 'tr') },
+    // exploitation : le soleil, des arbres, des usagers, les garanties qui courent depuis la réception
+    { k: 'o', a: .85, b: .9, h: Pc('M518 118a13 13 0 1 0 -26 0a13 13 0 1 0 26 0', 'lj') + Pc('M505 95v-8M505 149v-8M482 118h-8M536 118h-8M489 102l-6-6M527 140l-6-6M521 102l6-6M483 140l6-6', 'fin') },
+    { k: 'o', a: .86, b: .92, h: arbre(150, 330) + arbre(525, 330) },
+    { k: 'o', a: .88, b: .93, h: habit('rgba(214,69,58,.3)', personnage(244, 330)) + habit('rgba(42,143,176,.35)', personnage(345, 330)) },
+    { k: 'o', a: .9, b: .97, h: Pc('M190 358V394', 'tr') + Pc('M190 362h20v6h-20z', 'lc') + Pc('M190 372h40v6h-40z', 'lp') + Pc('M190 382h200v6h-200z', 'lr') + Tx(214, 368, '1 an', 'petit') + Tx(234, 378, '2 ans', 'petit') + Tx(394, 388, '10 ans', 'petit') + Tx(184, 394, 'réception', 't-r petit', 'end') },
+  ];
+})();
+function initTemps() {
+  const svg = $('#temps-svg'), curseur = $('#temps-curseur'), phasesEl = $('#temps-phases'), legende = $('#temps-legende'), P = DONNEES.periodes;
+  svg.innerHTML = DESSIN.map((it, i) => it.k === 't' ? `<path class="${it.c ? it.c + ' ' : ''}trait" pathLength="1" d="${it.d}" data-i="${i}"/>` : `<g data-i="${i}" style="opacity:0">${it.h}</g>`).join('')
+    + SIGLES.map(([s, t], i) => `<text class="sigle" x="${(40 + i * 480 / 7).toFixed(1)}" y="50" data-t="${t}">${s}</text>`).join('');
+  const els = DESSIN.map((_, i) => svg.querySelector(`[data-i="${i}"]`)), avant = DESSIN.map(() => ''), sigles = $$('.sigle', svg);
+  phasesEl.innerHTML = P.map((p, i) => `<button class="temps__phase" type="button" data-i="${i}" style="--c:${['var(--bleu)', '#7b55c7', '#c77a1e', 'var(--vert)'][i]}">${i + 1}. ${esc(p.titre)}<small>${esc(p.qui)}</small></button>`).join('');
+  const boutons = $$('.temps__phase', phasesEl);
+  const S = { t: REDUIT ? 1 : 0, vise: null, attente: 0, pause: 0, visible: true, acc: 0, rendu: -1, phase: -1, moment: -1 };
+  const phaseDe = t => (t < .25 ? 0 : t < .5 ? 1 : t < .8 ? 2 : 3);
+  const rendre = () => {
+    const t = S.t; if (Math.abs(t - S.rendu) < .0015) return; S.rendu = t;
+    DESSIN.forEach((it, i) => {
+      const f = borne((t - it.a) / (it.b - it.a)), o = it.f ? 1 - borne((t - it.f[0]) / (it.f[1] - it.f[0])) * (1 - it.f[2]) : 1;
+      const v = it.k === 't' ? (1.01 * (1 - f)).toFixed(3) + '|' + o.toFixed(2) : (f * o).toFixed(2);
+      if (v === avant[i]) return; avant[i] = v;
+      if (it.k === 't') { const [d, op] = v.split('|'); els[i].style.strokeDashoffset = d; els[i].style.opacity = op === '1.00' ? '' : op; }
+      else els[i].style.opacity = v;
+    });
+    sigles.forEach(s => s.classList.toggle('lu', t >= +s.dataset.t));
+    const ph = phaseDe(t); let m = 0;
+    DONNEES.moments.forEach(([tm], i) => { if (t >= tm) m = i; });
+    if (ph !== S.phase || m !== S.moment) {
+      S.phase = ph; S.moment = m;
+      boutons.forEach((b, i) => { b.classList.toggle('ici', i === ph); b.classList.toggle('passee', i < ph); });
+      legende.innerHTML = `<b>${esc(P[ph].titre)}</b> · pilote${NB}: ${esc(P[ph].qui.toLowerCase())} — ${esc(DONNEES.moments[m][1])}`;
+    }
+    if (document.activeElement !== curseur) curseur.value = Math.round(t * 1000);
+  };
+  // la souris mène le temps : la gauche du dessin = le besoin, la droite = le bâtiment en service
+  svg.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = svg.getBoundingClientRect(); S.vise = borne((e.clientX - r.left - r.width * .04) / (r.width * .92)); });
+  svg.addEventListener('pointerleave', () => { S.vise = null; S.pause = performance.now() + 2500; });
+  curseur.addEventListener('input', () => { S.t = curseur.value / 1000; S.vise = null; S.pause = performance.now() + 12000; rendre(); });
+  boutons.forEach((b, i) => b.addEventListener('click', () => { S.t = [.24, .49, .79, 1][i]; S.vise = null; S.pause = performance.now() + 12000; rendre(); }));
+  new IntersectionObserver(([e]) => (S.visible = e.isIntersecting)).observe(svg);
+  rendre();
+  return {
+    S, rendre,
+    maj(dt, now) {
+      if (!S.visible || PRES_ETAT.on && PRES_ETAT.id !== 'accueil') return;
+      if (S.vise !== null) { S.t += (S.vise - S.t) * Math.min(1, dt * 7); rendre(); return; }
+      if (REDUIT || now < S.pause) return;
+      // sans la souris, le projet avance seul : 20 s du besoin aux clés, 3 s d'arrêt, puis il recommence
+      if (S.t >= 1) { S.attente += dt; if (S.attente > 3) { S.attente = 0; S.t = 0; rendre(); } return; }
+      S.t = Math.min(1, S.t + dt / 20);
+      S.acc += dt; if (S.acc >= 1 / 12) { S.acc = 0; rendre(); }   // 12 images par seconde : le filtre « crayon » n'est recalculé que 12 fois
+    },
+  };
+}
+
+/* =====================================================================
+   4. CONSTRUCTION DE LA PAGE (tout vient de DONNEES)
+   ===================================================================== */
+const titreSouligne = t => { const m = t.replace(/ ([?!:;»])/g, NB + '$1').split(' '), fin = m.pop(); return `${esc(m.join(' '))} <span class="souligne">${esc(fin)}<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 7C60 3 140 10 197 5"/></svg></span>`; };
+const LISTES = {};   // les listes affichées en carte
+const htmlEtapes = items => `<ol class="etapes">${items.map((e, k) => `<li class="etape rv" style="--i:${k % 3}"><span class="etape__n" aria-hidden="true">${k + 1}</span><div class="fiche"><h4>${picto(e.picto)}<span>${esc(e.titre)}</span>${e.qui ? `<span class="qui"><span class="sr">acteur : </span>${esc(e.qui)}</span>` : ''}</h4><p>${esc(e.texte)}</p><ul>${e.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul></div></li>`).join('')}</ol>`;
+function htmlCarte(cle, centre, pictoCentre, liste, couleur) {   // les acteurs en cercle autour d'un centre ; la fiche de l'acteur choisi à côté
+  LISTES[cle] = { liste, couleur };
+  const n = liste.length;
+  return `<div class="carte-zone"><div class="carte-acteurs" id="carte-${cle}" data-carte="${cle}">
+      <svg class="carte-acteurs__fils" aria-hidden="true"></svg>
+      <div class="carte-acteurs__centre" aria-hidden="true">${picto(pictoCentre)}<span>${esc(centre)}</span></div>
+      ${liste.map((a, k) => { const ang = -Math.PI / 2 + k * 2 * Math.PI / n; return `<button class="noeud" type="button" data-id="${a.id}" aria-pressed="false" aria-controls="fiche-${cle}" style="--gx:${(50 + 37 * Math.cos(ang)).toFixed(1)}%;--gy:${(50 + 39 * Math.sin(ang)).toFixed(1)}%;--r:${ROT[k % 6] * 1.6}deg;--c:${a.couleur || couleur}">${picto(a.picto || a.id)}<b>${esc(a.label)}</b>${a.abbr !== a.label ? `<small>${esc(a.abbr)}</small>` : ''}</button>`; }).join('')}
+    </div>
+    <div class="fiche fiche-acteur" id="fiche-${cle}" aria-live="polite"><p class="vide">Clique sur un acteur du schéma pour afficher sa fiche.</p></div></div>`;
+}
+const htmlMemo = (liste, cle) => `<div class="rv"><h3 class="bloc-titre">Flashcards${NB}: vérifier sa mémorisation</h3><p class="consigne">Réponds mentalement à voix haute, puis clique sur la carte pour te corriger. <span class="compte" data-compte="${cle}">(0/${liste.length} retournées)</span></p>
+  <div class="cartes-memo" data-memo="${cle}">${liste.map(([q, r], k) => `<button class="memo-carte rv" type="button" aria-pressed="false" style="--i:${k % 2}"><span class="memo-carte__in">
+    <span class="memo-face memo-face--recto"><span class="marque">QUESTION ${k + 1}</span><span class="txt">${fmt(q)}</span><small>Clique pour la réponse</small></span>
+    <span class="memo-face memo-face--dos" aria-hidden="true"><span class="marque">RÉPONSE</span><span class="txt">${fmt(r)}</span><small>Clique pour revenir</small></span></span></button>`).join('')}</div></div>`;
+const htmlMissions = (liste, cle) => `<div class="rv"><h3 class="bloc-titre">Missions pratiques</h3>
+  <div class="avance"><span>Progression de l’atelier</span><div class="avance__barre" id="barre-at${cle}" role="progressbar" aria-label="Progression des missions de l’atelier" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><b id="pc-at${cle}">0${NB}%</b></div>
+  <div class="missions" data-atelier="${cle}">${liste.map((m, k) => `<article class="fiche mission rv" style="--i:${k % 2};--r:${[-.7, .6][k % 2]}deg;--rt:${[-3, 2][k % 2]}deg">
+    <div class="mission__tete">${picto(m.picto)}<div><small>${esc(m.etape.toUpperCase())}</small><h4>${esc(m.titre)}</h4></div></div>
+    <div class="mission__avance"><div class="avance__barre" id="barre-${m.id}" role="progressbar" aria-label="Avancement de la mission" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><b id="pc-${m.id}">0${NB}%</b></div>
+    <ul class="taches">${m.taches.map((t, i) => `<li><button class="tache" type="button" role="checkbox" aria-checked="false" data-cle="${m.id}-${i}">${CASE}<span>${esc(t)}</span></button></li>`).join('')}</ul>
+    <button class="tuto-btn" type="button" aria-expanded="false" aria-controls="tuto-${m.id}">Voir le tutoriel ↓</button>
+    <div class="tuto" id="tuto-${m.id}" hidden><h5>${esc(m.tuto.titre)}</h5><ol>${m.tuto.etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol></div>
+  </article>`).join('')}</div></div>`;
+const MARQUES = { '+': ['plus', PLUS, ''], '!': ['moins', ATTN, 'Limite : '], '•': ['point', LOSANGE, ''] };
+const BLOCS = {   // un rendu par type de bloc
+  texte: b => `<div class="fiche texte rv">${b.titre ? `<h4>${esc(b.titre)}</h4>` : ''}${b.textes.map(t => `<p>${fmt(t)}</p>`).join('')}</div>`,
+  periodes: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${htmlEtapes(DONNEES.periodes)}</div>`,
+  etapes: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${htmlEtapes(b.items)}</div>`,
+  grille: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><div class="grille">${b.items.map((c, k) => `<article class="carte rv" style="--i:${k % 3};--r:${ROT[k % 6]}deg">${picto(c.picto)}<h4>${esc(c.titre)}</h4><p>${fmt(c.texte)}</p></article>`).join('')}</div></div>`,
+  carte: (b, a) => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><p class="consigne">${esc(b.consigne)}</p>${htmlCarte(b.cle, b.centre, b.picto, DONNEES[b.liste], a.couleur)}</div>`,
+  alerte: b => `<div class="postit alerte rv"><h4>${esc(b.titre)}</h4>${b.textes.map(t => `<p>${fmt(t)}</p>`).join('')}</div>`,
+  compare: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><div class="compare">${b.items.map((c, k) => `<div class="fiche" style="--r:${k ? .6 : -.6}deg;--rt:${k ? 3 : -3}deg"><h4>${picto(c.picto)}<span>${esc(c.titre)}</span></h4><p>${fmt(c.texte)}</p><ul>${c.points.map(p => { const [cl, signe, sr] = MARQUES[p[0]] || MARQUES['•']; return `<li class="${cl}">${signe}<span>${sr ? `<span class="sr">${sr}</span>` : ''}${esc(p.slice(1))}</span></li>`; }).join('')}</ul></div>`).join('')}</div></div>`,
+  explorateur: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><p class="consigne">${esc(b.consigne)}</p>
+      <div class="filtres" role="group" aria-label="Trier les missions">${[['tout', 'Toutes les missions'], ['base', 'Mission de base'], ['comp', 'Missions complémentaires']].map(([k, l], i) => `<button class="filtre" type="button" data-filtre="${k}" aria-pressed="${i === 0}">${esc(l)}</button>`).join('')}</div>
+      <div class="explorateur" data-defaut="${esc(b.defaut || '')}"><div class="sigles">${DONNEES.missionsMOE.map((m, k) => `<button class="sigle-btn" type="button" data-id="${m.id}" data-base="${m.base}" aria-pressed="false" aria-controls="fiche-missions" style="--c:${m.couleur};--r:${ROT[k % 6]}deg"><span class="base ${m.base ? 'base--oui' : 'base--non'}">${m.base ? 'base' : 'complém.'}</span>${picto(m.picto)}<b>${esc(m.sigle)}</b><small>${esc(m.nom)}</small></button>`).join('')}</div>
+      <div class="fiche fiche-acteur" id="fiche-missions" aria-live="polite"></div></div></div>`,
+};
+function htmlIntro() {
+  return DONNEES.intro.map(b => BLOCS[b.type](b, { couleur: '#2a8fb0' })).join('')
+    + htmlMemo(DONNEES.memo[0] || [], 0)
+    + `<div class="atelier__pied rv"><nav aria-label="Circuler dans le world café"><a class="lien" href="#accueil">← Accueil</a><a class="lien" href="#tables">Le parcours</a></nav><a class="btn btn--plein" href="#atelier-1">Commencer l’atelier 1 ${FL}</a></div>`;
+}
+function htmlAtelier(a) {
+  const prec = a.id > 1 ? `#atelier-${a.id - 1}` : '#intro', suiv = a.id < AT.length ? `#atelier-${a.id + 1}` : '#quiz';
+  return `
+  <section class="section atelier" id="atelier-${a.id}" data-diapo="Atelier ${a.id} · ${esc(a.court)}" aria-labelledby="t-at${a.id}" style="--ca:${a.couleur}">
+    <header class="entete">
+      <div class="entete__haut"><p class="sur rv">${FLECHE}atelier ${a.id} · ${esc(a.court.toLowerCase())}</p><span class="chrono" data-chrono="atelier-${a.id}"></span><span class="tampon-fait" data-fait="${a.id}" aria-hidden="true">terminé ✓</span></div>
+      <h2 class="titre" id="t-at${a.id}" data-ecrit>${titreSouligne(a.titre)}</h2>
+      <p class="chapo-sec rv">${esc(a.sousTitre)}</p>
+    </header>
+    <div class="colonne">
+      <p class="postit probleme rv"><svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="14"/><path d="M12.5 13a4.5 4.5 0 1 1 6.6 4c-1.4.8-2.1 1.8-2.1 3.2M17 25v.5"/></svg><span><small>PROBLÉMATIQUE</small>${esc(a.problematique)}</span></p>
+      ${(DONNEES.contenus[a.id] || []).map(b => BLOCS[b.type](b, a)).join('')}
+      ${htmlMemo(DONNEES.memo[a.id] || [], a.id)}
+      ${htmlMissions(DONNEES.missions[a.id] || [], a.id)}
+      <div class="atelier__pied rv"><nav aria-label="Circuler entre les ateliers"><a class="lien" href="#accueil">↑ Accueil</a><a class="lien" href="${prec}">← Précédent</a><a class="lien" href="${suiv}">Suivant →</a></nav><button class="btn btn-fait" type="button" id="fait-${a.id}" data-atelier="${a.id}" aria-pressed="false">${CASE}<span>Marquer comme terminé</span></button></div>
+    </div>
+  </section>`;
+}
+function construirePage() {
+  const D = DONNEES, C = D.carnet;
+  // --- liens, en-tête, navigation, pied de page
+  $('#pied-carnet').href = C; $('#pied-origine').href = D.origine;
+  $('#annee').textContent = new Date().getFullYear();
+  $('#public').innerHTML = `World café · ${esc(D.public).replace(/^(\d)re\b/, '$1<sup>re</sup>')}`;
+  $('#auteur').textContent = `auteur${NB}: ${D.auteur}`;
+  $('#pied-texte').textContent = `Les phases et les missions dans l’acte de construire · ${D.public}. ${D.signature} · année scolaire ${D.annee}. Code du quiz${NB}: communiqué en classe.`;
+  $('#nav-liens').innerHTML = '<a href="#intro">Intro</a>' + AT.map(a => `<a href="#atelier-${a.id}">${esc(a.court)}</a>`).join('') + '<a href="#quiz">Quiz</a>';
+  $$('.nav__liens a').forEach(a => a.insertAdjacentHTML('beforeend', GRIB));
+  $('#pied-ateliers').innerHTML = AT.map(a => `<li><a href="#atelier-${a.id}">${a.id} · ${esc(a.titre)}</a></li>`).join('');
+  if (SOURIS) document.documentElement.classList.add('souris');
+  // --- le parcours : l'introduction, puis les quatre tables
+  $('#intro-carte').innerHTML = `${picto('horloge')}<span class="txt"><small>À COMMENCER EN PREMIER</small><b>Introduction générale</b><span class="d">${esc('Commence ici : les 4 grandes périodes d’une opération, le cadre juridique et le vocabulaire de base.')}</span></span><span class="va">${D.dureeIntro} min →</span>`;
+  $('#tables-liste').innerHTML = AT.map((a, i) => `<a class="table-wc rv" href="#atelier-${a.id}" style="--i:${i};--r:${ROT[i % 6]}deg;--ca:${a.couleur};--c:${a.papier}">
+      <svg viewBox="0 0 120 84" aria-hidden="true"><path d="M14 32c-8 4-8 16 0 20M106 32c8 4 8 16 0 20M42 14c4-8 32-8 36 0M42 70c4 8 32 8 36 0"/><ellipse class="plateau" cx="60" cy="42" rx="38" ry="20"/><text x="60" y="50">${a.id}</text></svg>
+      <span class="tampon-fait" data-fait="${a.id}" aria-hidden="true">terminé ✓</span>
+      <span class="etq">atelier ${a.id} · ${esc(a.court.toLowerCase())}</span><h3>${esc(a.titre)}</h3><p>${esc(a.sousTitre)}</p><span class="duree">durée${NB}: ${a.duree} min</span></a>`).join('');
+  $('#tables-total').innerHTML = `<b>${AT.reduce((t, a) => t + a.duree, 0)} minutes</b> d’ateliers après l’introduction (${D.dureeIntro} min), puis le quiz final (${D.quiz.length} questions), ouvert avec le code du professeur.`;
+  // --- l'introduction et les quatre ateliers (avant le quiz)
+  $('#intro-corps').innerHTML = htmlIntro();
+  $('#quiz').insertAdjacentHTML('beforebegin', AT.map(htmlAtelier).join(''));
+  // --- chronomètres : l'arc rouge couvre la durée prévue sur un cadran d'une heure
+  $$('[data-chrono]').forEach(el => {
+    const m = DUREES[el.dataset.chrono]; if (!m) { el.remove(); return; }
+    el.innerHTML = `<svg viewBox="0 0 32 36" aria-hidden="true"><path class="pique" d="M13 4h6M16 4v5M25 10l2.4-2.4"/><circle class="cadran" cx="16" cy="22" r="12"/><path class="arc" pathLength="1" d="M16 13.5a8.5 8.5 0 1 1-.01 0"/></svg><span class="sr">durée prévue : </span>${m} min`;
+    el.style.setProperty('--fin', (1 - Math.min(m, 60) / 60).toFixed(3));
+  });
+  // --- quiz
+  $('#quiz-chapo').textContent = `${D.quiz.length} questions. Une seule bonne réponse par question. Valide à la fin pour obtenir ton score et les explications.`;
+  $('#verrou-titre').textContent = `Évaluation finale${NB}: ${D.quiz.length} questions`;
+  // --- menu des petits écrans
+  $('#mmenu').innerHTML = `<a href="${esc(C)}" style="--i:0"><span>←</span>Accueil du carnet</a>` +
+    $$('main > section[data-diapo]').map((s, i) => `<a href="#${s.id}" style="--i:${i + 1}"><span>${i ? String(i).padStart(2, '0') : '·'}</span>${esc(s.dataset.diapo)}</a>`).join('');
+}
+
+/* =====================================================================
+   5. LES PARTIES VIVANTES : schéma des acteurs, étapes, flashcards,
+   missions, ateliers terminés, explorateur des missions de maîtrise d'œuvre
+   ===================================================================== */
+const CARTES = {};
+function initCartes() {
+  $$('.carte-acteurs').forEach(el => {
+    const cle = el.dataset.carte, { liste, couleur } = LISTES[cle], svg = $('.carte-acteurs__fils', el), fiche = $('#fiche-' + cle), noeuds = $$('.noeud', el), vide = fiche.innerHTML;
+    const mesurer = () => {   // les fils du centre vers chaque acteur, à la taille réelle du schéma
+      const W = el.clientWidth, H = el.clientHeight;
+      if (!W || getComputedStyle(svg).display === 'none') return;
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      const cx = W / 2, cy = H / 2, choisi = $('.noeud[aria-pressed="true"]', el)?.dataset.id;
+      svg.innerHTML = noeuds.map(b => {
+        const x = b.offsetLeft, y = b.offsetTop, mx = (cx + x) / 2 + (y - cy) * .12, my = (cy + y) / 2 - (x - cx) * .12;
+        return `<path data-id="${b.dataset.id}"${b.dataset.id === choisi ? ' class="chaud"' : ''} style="--c:${b.style.getPropertyValue('--c')}" d="M${cx.toFixed(1)} ${cy.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${x} ${y}"/>`;
+      }).join('');
+    };
+    const choisir = (id, forcer) => {
+      const b = noeuds.find(x => x.dataset.id === id); if (!b) return;
+      const deja = b.getAttribute('aria-pressed') === 'true';
+      noeuds.forEach(x => x.setAttribute('aria-pressed', 'false'));
+      $$('path', svg).forEach(p => p.classList.remove('chaud'));
+      if (deja && !forcer) { fiche.innerHTML = vide; fiche.style.removeProperty('--c'); return; }
+      b.setAttribute('aria-pressed', 'true');
+      $(`path[data-id="${id}"]`, svg)?.classList.add('chaud');
+      const a = liste.find(x => x.id === id);
+      fiche.style.setProperty('--c', a.couleur || couleur);
+      fiche.innerHTML = `<div class="fiche-acteur__tete">${picto(a.picto || a.id)}<div><h4>${esc(a.label)}</h4><span class="sigle">${esc(a.abbr)}</span></div></div>
+        <p class="role">${esc(a.role)}</p><p>${esc(a.description)}</p>
+        <h5>CE QU’IL FAIT</h5><ul>${a.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+        ${a.exemples ? `<h5>EXEMPLES</h5><div class="outils">${a.exemples.map(o => `<span>${esc(o)}</span>`).join('')}</div>` : ''}`;
+    };
+    noeuds.forEach(b => b.addEventListener('click', () => {
+      choisir(b.dataset.id);
+      if (matchMedia('(max-width: 980px)').matches && b.getAttribute('aria-pressed') === 'true') fiche.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'nearest' });
+    }));
+    CARTES[cle] = { mesurer, choisir: id => choisir(id, true) };
+    mesurer();
+  });
+}
+function initEtapes() {   // le trait des étapes se remplit et les numéros s'allument au fil de la lecture
+  const E = $$('.etapes').map(ol => ({ ol, items: $$(':scope > .etape', ol) }));
+  let besoin = true;
+  const demander = () => (besoin = true);
+  document.addEventListener('scroll', demander, { capture: true, passive: true });   // la page, ou une partie en mode présentation
+  addEventListener('resize', demander);
+  return {
+    demander,
+    maj() {
+      if (!besoin) return; besoin = false;
+      const ligne = innerHeight * .62;
+      for (const { ol, items } of E) {
+        const r = ol.getBoundingClientRect(); if (!r.height) continue;
+        ol.style.setProperty('--p', borne((ligne - r.top - 30) / Math.max(1, r.height - 60)).toFixed(3));
+        for (const li of items) li.classList.toggle('atteinte', li.getBoundingClientRect().top + 32 < ligne);
+      }
+    },
+  };
+}
+function initMemo() {   // une flashcard se retourne au clic ; le compteur dit combien sont retournées
+  $$('.cartes-memo').forEach(groupe => {
+    const cartes = $$('.memo-carte', groupe), compte = $(`[data-compte="${groupe.dataset.memo}"]`);
+    cartes.forEach(b => b.addEventListener('click', () => {
+      const v = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', String(v));
+      $('.memo-face--recto', b).setAttribute('aria-hidden', String(v));
+      $('.memo-face--dos', b).setAttribute('aria-hidden', String(!v));
+      if (compte) compte.textContent = `(${cartes.filter(c => c.getAttribute('aria-pressed') === 'true').length}/${cartes.length} retournées)`;
+    }));
+  });
+}
+function initMissions() {   // les tâches se cochent, la progression suit (gardée sur cet ordinateur)
+  const CLE = 'carnet-phases-missions', fait = lire(CLE, {}) || {};
+  const barre = (id, n, total) => {
+    const pc = Math.round(100 * n / Math.max(1, total)), b = $('#barre-' + id);
+    $('#pc-' + id).textContent = pc + NB + '%';
+    b.setAttribute('aria-valuenow', pc); $('i', b).style.width = pc + '%';
+  };
+  const coches = liste => liste.filter(x => x.getAttribute('aria-checked') === 'true').length;
+  const avance = id => {
+    const t = $$(`.tache[data-cle^="${id}-"]`); barre(id, coches(t), t.length);
+    const groupe = $(`.tache[data-cle^="${id}-"]`)?.closest('.missions');
+    if (groupe) { const tout = $$('.tache', groupe); barre('at' + groupe.dataset.atelier, coches(tout), tout.length); }
+  };
+  $$('.tache').forEach(t => {
+    t.setAttribute('aria-checked', String(!!fait[t.dataset.cle]));
+    t.addEventListener('click', () => {
+      const ok = t.getAttribute('aria-checked') !== 'true';
+      t.setAttribute('aria-checked', String(ok)); fait[t.dataset.cle] = ok; ecrire(CLE, fait);
+      avance(t.dataset.cle.split('-')[0]);
+    });
+  });
+  Object.values(DONNEES.missions).flat().forEach(m => avance(m.id));
+  $$('.tuto-btn').forEach(b => b.addEventListener('click', () => {
+    const ouvrir = b.getAttribute('aria-expanded') !== 'true', box = document.getElementById(b.getAttribute('aria-controls'));
+    b.setAttribute('aria-expanded', String(ouvrir)); box.hidden = !ouvrir;
+    b.textContent = ouvrir ? 'Masquer le tutoriel ↑' : 'Voir le tutoriel ↓';
+  }));
+}
+function initParcours() {   // « Marquer comme terminé » : le tampon sur la table, la barre de l'accueil
+  const CLE = 'carnet-phases-ateliers', N = AT.length;
+  const faits = new Set((lire(CLE, []) || []).filter(id => AT.some(a => a.id === id)));
+  const maj = () => {
+    const n = faits.size, barre = $('#parcours-barre');
+    $('#parcours-n').textContent = `${n} / ${N}`;
+    barre.setAttribute('aria-valuenow', n); barre.setAttribute('aria-valuemax', N); $('i', barre).style.width = (100 * n / N) + '%';
+    AT.forEach(a => {
+      const ok = faits.has(a.id), b = $('#fait-' + a.id);
+      $$(`[data-fait="${a.id}"]`).forEach(t => t.classList.toggle('on', ok));
+      if (!b) return;
+      b.setAttribute('aria-pressed', String(ok));
+      $('span', b).textContent = ok ? 'Atelier terminé' : 'Marquer comme terminé';
+    });
+  };
+  $$('.btn-fait').forEach(b => b.addEventListener('click', () => {
+    const id = +b.dataset.atelier;
+    if (faits.has(id)) faits.delete(id); else faits.add(id);
+    ecrire(CLE, [...faits]); maj(); cadre(b, 70 + id);
+  }));
+  maj();
+}
+function initExplorateur() {   // atelier 3 : un sigle cliqué ouvre sa fiche ; les filtres trient base / complémentaires
+  const zone = $('.explorateur'); if (!zone) return;
+  const fiche = $('#fiche-missions'), btns = $$('.sigle-btn', zone), filtres = $$('.filtre');
+  const ouvrir = id => {
+    const m = DONNEES.missionsMOE.find(x => x.id === id); if (!m) return;
+    btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === id)));
+    fiche.style.setProperty('--c', m.couleur);
+    fiche.innerHTML = `<div class="fiche-acteur__tete">${picto(m.picto)}<div><h4>${esc(m.sigle)} — ${esc(m.nom)}</h4></div></div>
+      <p class="role">${esc(m.quand)}</p><span class="statut ${m.base ? 'statut--oui' : 'statut--non'}">${m.base ? 'MISSION DE BASE' : 'MISSION COMPLÉMENTAIRE'}</span>
+      <p>${esc(m.description)}</p><h5>CE QUE PRODUIT LE MAÎTRE D’ŒUVRE</h5><div class="outils">${m.livrables.map(l => `<span>${esc(l)}</span>`).join('')}</div>`;
+  };
+  btns.forEach(b => b.addEventListener('click', () => {
+    ouvrir(b.dataset.id);
+    if (matchMedia('(max-width: 980px)').matches) fiche.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'nearest' });
+  }));
+  filtres.forEach(f => f.addEventListener('click', () => {
+    const k = f.dataset.filtre;
+    filtres.forEach(x => x.setAttribute('aria-pressed', String(x === f)));
+    btns.forEach(b => (b.hidden = k === 'base' ? b.dataset.base !== 'true' : k === 'comp' ? b.dataset.base === 'true' : false));
+    const choisi = btns.find(b => b.getAttribute('aria-pressed') === 'true');
+    if (!choisi || choisi.hidden) ouvrir(btns.find(b => !b.hidden).dataset.id);
+  }));
+  ouvrir(zone.dataset.defaut || DONNEES.missionsMOE[0].id);
+}
+
+/* =====================================================================
+   6. LE QUIZ FINAL : le code ouvre le cadenas, la copie se corrige au stylo rouge
+   ===================================================================== */
+function initQuiz() {
+  const Q = DONNEES.quiz, verrou = $('#verrou'), form = $('#code-form'), champ = $('#code'), msg = $('#code-msg'), copie = $('#copie');
+  const remplir = () => {
+    copie.innerHTML = Q.map((q, i) => { const a = AT.find(x => x.id === q.atelier); return `<fieldset class="question"><legend><small>QUESTION ${i + 1}/${Q.length}${a ? ` <span class="question__atelier" style="--c:${a.couleur}">· atelier ${a.id} (${esc(a.court.toLowerCase())})</span>` : ''}</small>${esc(q.question)}</legend><div class="options">${q.options.map((o, k) => `<label class="option"><input type="radio" name="q${i}" value="${k}"><span class="rond"></span><b>${'ABCD'[k]}.</b> ${esc(o)}<span class="marque" aria-hidden="true"></span></label>`).join('')}</div></fieldset>`; }).join('')
+      + `<div class="copie__pied"><button class="btn btn--plein" type="submit" id="valider" disabled>Valider mes réponses</button><span id="repondues">0/${Q.length} répondues</span></div>`;
+    cadre($('#valider'), 7);
+  };
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (champ.value.trim().toUpperCase() === DONNEES.codeQuiz.toUpperCase()) {
+      verrou.classList.add('ouvert'); msg.className = 'code-msg ok'; msg.textContent = `✓ Le quiz est déverrouillé. Bonne chance${NB}!`;
+      if (copie.hidden) { remplir(); copie.hidden = false; setTimeout(() => copie.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'start' }), 500); }
+    } else {
+      msg.className = 'code-msg ko'; msg.textContent = 'Code incorrect — demande-le à ton professeur.';
+      verrou.classList.remove('non'); void verrou.offsetWidth; verrou.classList.add('non');
+    }
+  });
+  champ.addEventListener('input', () => (champ.value = champ.value.toUpperCase()));
+  copie.addEventListener('change', () => {
+    const n = Q.filter((_, i) => copie.querySelector(`input[name="q${i}"]:checked`)).length;
+    $('#repondues').textContent = `${n}/${Q.length} répondues`;
+    $('#valider').disabled = n < Q.length;
+  });
+  copie.addEventListener('submit', e => {
+    e.preventDefault();
+    const rep = Q.map((_, i) => +(copie.querySelector(`input[name="q${i}"]:checked`)?.value ?? -1));
+    if (rep.includes(-1)) return;
+    const score = Q.reduce((t, q, i) => t + (rep[i] === q.bonne), 0);
+    const R = DONNEES.resultats.find(r => score >= r.min) || DONNEES.resultats[DONNEES.resultats.length - 1];
+    const aRevoir = [...new Set(Q.filter((q, i) => rep[i] !== q.bonne && q.atelier).map(q => q.atelier))].sort((x, y) => x - y);
+    $$('.question', copie).forEach((f, i) => {
+      $$('.option', f).forEach((o, k) => {
+        $('input', o).disabled = true;
+        if (k === Q[i].bonne) { o.classList.add('juste'); $('.marque', o).textContent = '✓'; }
+        else if (k === rep[i]) { o.classList.add('faux'); $('.marque', o).textContent = '✗'; }
+      });
+      f.insertAdjacentHTML('beforeend', `<p class="explication"><b>EXPLICATION</b>${esc(Q[i].explication)}</p>`);
+    });
+    copie.insertAdjacentHTML('afterbegin', `<div class="note-prof" id="note-prof" role="status"><svg viewBox="0 0 118 84" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 98 4 108 30C116 54 70 84 34 74C8 66 4 38 30 20C50 8 80 8 96 12"/></svg>${score}/${Q.length}<small>${esc(R.mot)}</small></div>
+      <p class="resultat">${esc(R.texte)}${aRevoir.length ? ` Questions manquées${NB}: atelier${aRevoir.length > 1 ? 's' : ''} ${aRevoir.map(n => `<a href="#atelier-${n}">${n}</a>`).join(', ')}.` : ''}</p>`);
+    $('.copie__pied', copie).innerHTML = `<button class="btn" type="button" id="recommencer">Recommencer</button><a class="btn" href="#accueil">Retour à l’accueil</a>`;
+    cadre($('#recommencer'), 9); cadre($('.copie__pied a.btn', copie), 11);
+    $('#recommencer').addEventListener('click', () => { remplir(); copie.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'start' }); });
+    requestAnimationFrame(() => $('#note-prof').classList.add('vu'));
+    copie.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'start' });
+  });
+}
+
+/* =====================================================================
+   7. ÉCRITURE DES TITRES, APPARITIONS, NAVIGATION, TRACE DU CRAYON
+   ===================================================================== */
+function ecrireTitres() {   // chaque mot d'un titre se dévoile de gauche à droite, comme tracé à la main
+  $$('[data-ecrit]').forEach(el => {
+    let i = 0;
+    const marche = noeud => {
+      for (const n of [...noeud.childNodes]) {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/([ \t\r\n]+)/).forEach(part => {   // les espaces ordinaires seulement : l'insécable reste dans le mot
+            if (!part) return;
+            if (/^[ \t\r\n]+$/.test(part)) { frag.append(' '); return; }
+            const s = document.createElement('span'); s.className = 'mt'; s.style.setProperty('--i', i++); s.textContent = part; frag.append(s);
+          });
+          n.replaceWith(frag);
+        } else if (n.nodeType === 1 && n.tagName.toLowerCase() !== 'svg') marche(n);
+      }
+    };
+    marche(el);
+  });
+}
+const OBSERVES = '.rv, [data-ecrit], [data-chrono]';
+function apparitions() {
+  const io = new IntersectionObserver(ent => { for (const e of ent) if (e.isIntersecting) { e.target.classList.add('vu'); io.unobserve(e.target); } }, { rootMargin: '0px 0px -8% 0px', threshold: .01 });
+  $$(OBSERVES).forEach(el => io.observe(el));
+}
+function initNav() {
+  const liens = $$('.nav__liens a[href^="#"]');
+  const io = new IntersectionObserver(ent => { for (const e of ent) if (e.isIntersecting) liens.forEach(a => a.classList.toggle('actif', a.getAttribute('href') === '#' + e.target.id)); }, { rootMargin: '-45% 0px -50% 0px' });
+  $$('main > section[data-diapo]').forEach(s => io.observe(s));
+  const burger = $('.nav__burger'), mm = $('#mmenu');
+  const fermer = () => { mm.classList.remove('ouvert'); burger.setAttribute('aria-expanded', 'false'); setTimeout(() => (mm.hidden = true), 300); };
+  burger.addEventListener('click', () => {
+    if (mm.hidden) { mm.hidden = false; requestAnimationFrame(() => mm.classList.add('ouvert')); burger.setAttribute('aria-expanded', 'true'); }
+    else fermer();
+  });
+  $$('a', mm).forEach(a => a.addEventListener('click', fermer));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !mm.hidden) fermer(); });
+}
+function initTrace() {   // la souris laisse un trait de crayon qui s'estompe ; il suit le papier quand la page défile
+  const cv = $('#trace'), c = cv.getContext('2d');
+  let encre = 0, dernier = null, W = 0, H = 0;
+  const taille = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; };
+  taille();
+  if (SOURIS && !REDUIT) addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !(e.target instanceof Element) || e.target.closest('.temps, input, .copie')) { dernier = null; return; }
+    const p = [e.clientX, e.clientY];
+    if (dernier) { c.strokeStyle = 'rgba(42,42,42,.4)'; c.lineWidth = 1.3; c.lineCap = 'round'; c.beginPath(); c.moveTo(dernier[0], dernier[1]); c.lineTo(p[0] + Math.random() - .5, p[1] + Math.random() - .5); c.stroke(); encre = 1; }
+    dernier = p;
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => (dernier = null));
+  return {
+    taille,
+    maj(dt, dy) {
+      if (encre <= 0) return;
+      if (dy) { c.globalCompositeOperation = 'copy'; c.drawImage(cv, 0, -dy); if (dernier) dernier[1] -= dy; }
+      c.globalCompositeOperation = 'destination-out'; c.fillStyle = `rgba(0,0,0,${Math.min(1, dt * 1.3).toFixed(3)})`; c.fillRect(0, 0, W, H);
+      c.globalCompositeOperation = 'source-over';
+      encre -= dt * .4; if (encre <= 0) c.clearRect(0, 0, W, H);
+    },
+  };
+}
+
+/* =====================================================================
+   8. MODE PRÉSENTATION : une partie par écran, avec son chronomètre
+   Flèches pour changer de partie, Espace pour faire défiler puis avancer,
+   Échap pour revenir à la page.
+   ===================================================================== */
+const PRES_ETAT = { on: false, entree: 0, id: '' };
+function initPresentation(crochets) {
+  const html = document.documentElement, diapos = $$('main > section[data-diapo]'), barre = $('#pres'), frise = $('#pres-frise');
+  const chrono = $('#pres-chrono'), temps = $('#pres-temps'), arc = $('#pres-arc'), num = $('#pres-num'), annonce = $('#pres-annonce'), suite = $('#pres-suite');
+  const P = { i: 0, cumul: diapos.map(() => 0), t0: 0, txt: '', plein: false };
+  frise.innerHTML = diapos.map((d, i) => `<button class="pres__seg" type="button" data-i="${i}" style="--m:${DUREES[d.id] || 4}" aria-label="${esc(d.dataset.diapo)}${DUREES[d.id] ? `, ${DUREES[d.id]} minutes` : ''}"><span>${esc(d.dataset.diapo)}</span></button>`).join('');
+  const segs = $$('.pres__seg', frise);
+  const rejouer = d => {   // les apparitions de la partie se rejouent quand elle arrive à l'écran
+    const els = [...$$(OBSERVES, d)];
+    els.forEach(el => el.classList.remove('vu'));
+    void d.offsetWidth;
+    setTimeout(() => els.forEach(el => el.classList.add('vu')), 60);
+  };
+  const montrer = (i, sens = 1) => {
+    i = Math.round(borne(i, 0, diapos.length - 1));
+    const now = performance.now();
+    P.cumul[P.i] += now - P.t0; P.t0 = now;
+    diapos[P.i].classList.remove('ici', 'recule');
+    P.i = i; const d = diapos[i];
+    d.classList.toggle('recule', sens < 0); d.classList.add('ici'); d.scrollTop = 0;
+    PRES_ETAT.id = d.id; PRES_ETAT.entree = now;
+    segs.forEach((s, k) => { s.classList.toggle('ici', k === i); s.classList.toggle('fait', k < i); });
+    num.textContent = `${i + 1} / ${diapos.length}`;
+    annonce.textContent = `Partie ${i + 1} sur ${diapos.length} : ${d.dataset.diapo}`;
+    rejouer(d);
+    setTimeout(() => { crochets[d.id]?.(); crochets.chaque?.(d); }, 30);
+  };
+  const entrer = () => {
+    if (PRES_ETAT.on) return;
+    let i = 0; diapos.forEach((d, k) => { if (d.getBoundingClientRect().top < innerHeight * .4) i = k; });
+    PRES_ETAT.on = true; P.t0 = performance.now(); P.i = i;
+    html.classList.add('presente'); barre.hidden = false;
+    montrer(i);
+    if (html.requestFullscreen && !document.fullscreenElement) html.requestFullscreen().then(() => (P.plein = true)).catch(() => {});
+  };
+  const sortir = () => {
+    if (!PRES_ETAT.on) return;
+    P.cumul[P.i] += performance.now() - P.t0;
+    PRES_ETAT.on = false; PRES_ETAT.id = '';
+    const d = diapos[P.i];
+    diapos.forEach(x => x.classList.remove('ici', 'recule'));
+    html.classList.remove('presente'); barre.hidden = true; suite.hidden = true;
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    P.plein = false;
+    d.scrollIntoView({ behavior: 'instant', block: 'start' });   // on reprend la lecture là où la présentation s'est arrêtée
+    setTimeout(() => crochets.tout?.(), 60);
+  };
+  const suivant = () => montrer(P.i + 1, 1), precedent = () => montrer(P.i - 1, -1);
+  $$('[data-presenter]').forEach(b => b.addEventListener('click', entrer));
+  $('#pres-suiv').addEventListener('click', suivant);
+  $('#pres-prec').addEventListener('click', precedent);
+  $('#pres-quitter').addEventListener('click', sortir);
+  frise.addEventListener('click', e => { const b = e.target.closest('.pres__seg'); if (b) montrer(+b.dataset.i, +b.dataset.i >= P.i ? 1 : -1); });
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && P.plein && PRES_ETAT.on) sortir(); });
+  addEventListener('keydown', e => {
+    const cible = e.target instanceof Element ? e.target : document.body;
+    if (e.ctrlKey || e.metaKey || e.altKey || cible.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const k = e.key;
+    if (!PRES_ETAT.on) { if (k === 'p' || k === 'P') { e.preventDefault(); entrer(); } return; }
+    // une partie plus haute que l'écran défile d'abord ; arrivé en bas, on passe à la suivante
+    const d = diapos[P.i], reste = d.scrollHeight - d.clientHeight - d.scrollTop, glisse = dy => d.scrollBy({ top: dy, behavior: REDUIT ? 'auto' : 'smooth' });
+    if (k === 'PageDown' || (k === ' ' && !cible.closest('button, a, label, [role="button"], [role="checkbox"]'))) { e.preventDefault(); if (reste > 12) glisse(d.clientHeight * .8); else suivant(); }
+    else if (k === 'PageUp') { e.preventDefault(); if (d.scrollTop > 12) glisse(-d.clientHeight * .8); else precedent(); }
+    else if (k === 'ArrowDown' || k === 'ArrowUp') { e.preventDefault(); glisse(k === 'ArrowDown' ? 90 : -90); }
+    else if (k === 'ArrowRight') { e.preventDefault(); suivant(); }
+    else if (k === 'ArrowLeft') { e.preventDefault(); precedent(); }
+    else if (k === 'Home') { e.preventDefault(); montrer(0, -1); }
+    else if (k === 'End') { e.preventDefault(); montrer(diapos.length - 1, 1); }
+    else if (k === 'Escape' || k === 'p' || k === 'P') { e.preventDefault(); sortir(); }
+  });
+  let tx = null;   // sur tablette : un glissement horizontal change de partie
+  addEventListener('touchstart', e => { tx = PRES_ETAT.on && e.touches.length === 1 ? [e.touches[0].clientX, e.touches[0].clientY] : null; }, { passive: true });
+  addEventListener('touchend', e => {
+    if (!tx) return; const t = e.changedTouches[0], dx = t.clientX - tx[0], dy = t.clientY - tx[1]; tx = null;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) (dx < 0 ? suivant : precedent)();
+  }, { passive: true });
+  const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  return {
+    get on() { return PRES_ETAT.on; },
+    entrer, sortir, montrer,
+    maj(now) {
+      if (!PRES_ETAT.on) return;
+      const d = diapos[P.i], m = DUREES[d.id] || 0, s = (P.cumul[P.i] + now - P.t0) / 1000;
+      const txt = mmss(s) + (m ? ` / ${m} min` : '');
+      if (txt !== P.txt) { P.txt = txt; temps.textContent = txt; chrono.classList.toggle('depasse', m > 0 && s > m * 60); }
+      arc.style.strokeDashoffset = m ? (1 - Math.min(1, s / (m * 60))).toFixed(4) : '1.01';
+      const plusBas = d.scrollHeight - d.clientHeight - d.scrollTop > 12;
+      if (suite.hidden === plusBas) suite.hidden = !plusBas;
+    },
+  };
+}
+
+/* =====================================================================
+   9. BOUCLE D'ANIMATION ET DÉMARRAGE
+   ===================================================================== */
+construirePage();
+ecrireTitres();
+const TEMPS = initTemps(), TRACE = initTrace(), ETAPES = initEtapes();
+initCartes(); initMemo(); initMissions(); initParcours(); initExplorateur(); initQuiz();
+apparitions(); initNav();
+const mesurerCartes = () => Object.values(CARTES).forEach(c => c.mesurer());
+const toutMesurer = () => { TRACE.taille(); cadres(); mesurerCartes(); ETAPES.demander(); };
+const PRES = initPresentation({ tout: toutMesurer, chaque: () => { mesurerCartes(); ETAPES.demander(); } });
+cadres();
+const turb = $('#crayon-bruit'), trait = $('.progres path'), nav = $('#nav');
+let tPrec = performance.now(), tBoil = 0, boil = 0, yPrec = scrollY;
+function boucle(now) {
+  const dt = Math.min(.05, Math.max(.001, (now - tPrec) / 1000)); tPrec = now;
+  const y = scrollY, dy = y - yPrec; yPrec = y;
+  // « boil » : le trait frémit comme un dessin animé fait main
+  if (!REDUIT) { tBoil += dt; if (tBoil > .2) { tBoil = 0; boil = (boil + 1) % 3; turb.setAttribute('seed', boil + 1); } }
+  if (!PRES.on) {
+    trait.style.strokeDashoffset = (1.01 * (1 - borne(y / Math.max(1, document.documentElement.scrollHeight - innerHeight)))).toFixed(4);
+    nav.classList.toggle('solide', y > 20);
+    if (y > 160 && dy > 2) nav.classList.add('cachee'); else if (dy < -2 || y <= 160) nav.classList.remove('cachee');
+  }
+  TEMPS.maj(dt, now); ETAPES.maj(); PRES.maj(now);
+  TRACE.maj(dt, PRES.on ? 0 : dy);
+  requestAnimationFrame(boucle);
+}
+requestAnimationFrame(boucle);
+window.PHASES = { TEMPS, PRES, CARTES, ETAPES };   // vérifications
+let pretFait = false;
+const pret = () => { if (pretFait) return; pretFait = true; document.body.classList.add('pret'); toutMesurer(); };
+(document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(pret);
+setTimeout(pret, 1200);
+let tRes;
+addEventListener('resize', () => { clearTimeout(tRes); tRes = setTimeout(toutMesurer, 150); });
+})();
+</script>
+</body>
+</html>
