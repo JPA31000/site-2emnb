@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Découvrir la mécanique des structures · 2EMNB</title>
+<meta name="description" content="Sept séances pour découvrir par la mesure les règles de la mécanique des structures : charges, ELU et ELS, réactions d’appui, moment, flèche, descente de charges, stabilité.">
+<meta name="theme-color" content="#f7f4ec">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M6 25l2-7 5 5z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+  :root{
+    --bg:#0e0e10; --panel:#161618; --panel-2:#1d1d20; --line:#2a2a2e;
+    --ink:#ecebe6; --ink-dim:#9a988f; --ink-faint:#65645e;
+    --accent:#e6a049; --accent-soft:#3a2c16;
+    --cyan:#5fb9c4; --danger:#d06b5a; --ok:#7fb069;
+    --radius:12px;
+    --mono:ui-monospace,'Cascadia Mono','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:'Sora','Segoe UI',system-ui,-apple-system,sans-serif;
+    --display:'Fraunces',Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(900px 520px at 82% -12%, #1b1a17 0%, transparent 60%),
+      radial-gradient(700px 420px at -8% 110%, #14161a 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--sans); font-weight:300;
+    -webkit-font-smoothing:antialiased; padding:18px 20px 60px;
+  }
+  ::-webkit-scrollbar{width:10px}
+  ::-webkit-scrollbar-thumb{background:#2c2c30;border-radius:8px}
+
+  header{max-width:1100px;margin:0 auto 14px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  header h1{font-family:var(--display);font-weight:600;font-size:26px}
+  header h1 .spark{color:var(--accent)}
+  header .sub{color:var(--ink-dim);font-size:13px}
+  header .badge{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--accent);
+    border:1px solid var(--accent-soft);background:rgba(230,160,73,.06);padding:4px 10px;border-radius:999px}
+
+  nav{max-width:1100px;margin:0 auto 8px;display:flex;gap:7px;flex-wrap:wrap}
+  .tab{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    border-radius:999px;padding:7px 14px;font-size:12.5px;cursor:pointer;transition:all .18s;
+    display:flex;align-items:center;gap:7px;font-family:var(--sans)}
+  .tab:hover{color:var(--ink);border-color:var(--ink-faint)}
+  .tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .tab .tick{color:var(--ok);display:none}
+  .tab.done .tick{display:inline}
+  .progress-wrap{max-width:1100px;margin:0 auto 18px;display:flex;align-items:center;gap:12px}
+  .progress{flex:1;height:6px;background:var(--panel-2);border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+  .progress>div{height:100%;background:linear-gradient(90deg,var(--accent-soft),var(--accent));width:0;transition:width .5s}
+  .progress-txt{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);min-width:110px;text-align:right}
+
+  main{max-width:1100px;margin:0 auto}
+  .page{display:none;animation:fadeIn .3s}
+  .page.on{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px}
+  .card h2{font-family:var(--display);font-weight:500;font-size:18px;margin-bottom:8px}
+  .card h3{font-family:var(--display);font-weight:500;font-size:15px;margin:14px 0 8px;color:var(--accent)}
+  .card p{font-size:14px;line-height:1.75;color:var(--ink-dim);margin-bottom:8px}
+  .card p b,.card li b{color:var(--ink);font-weight:500}
+  .pill{display:inline-block;font-family:var(--mono);font-size:10.5px;color:var(--cyan);
+    border:1px solid rgba(95,185,196,.35);border-radius:999px;padding:2px 9px;margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase}
+  .pill.amber{color:var(--accent);border-color:var(--accent-soft)}
+  .reglages{font-family:var(--mono);font-size:12.5px;line-height:1.85;color:var(--ink-dim);
+    background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin:4px 0 10px}
+  .reglages b{color:var(--accent);font-weight:600}
+
+  ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:8px;margin:6px 0}
+  ol.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;
+    font-size:13.5px;line-height:1.6;color:var(--ink-dim);cursor:pointer;transition:all .2s}
+  ol.steps li::before{content:counter(s);font-family:var(--mono);font-size:12px;color:var(--accent);
+    border:1px solid var(--accent-soft);border-radius:50%;min-width:24px;height:24px;
+    display:flex;align-items:center;justify-content:center;margin-top:1px}
+  ol.steps li.ck{border-color:rgba(127,176,105,.45);color:var(--ink-faint)}
+  ol.steps li.ck::before{content:"✓";color:var(--ok);border-color:rgba(127,176,105,.45)}
+  ol.steps li b{color:var(--ink)}
+  ol.steps li.ck b{color:var(--ink-dim)}
+
+  table.mes{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:13.5px}
+  table.mes th{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-transform:uppercase;
+    letter-spacing:.06em;text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+  table.mes td{padding:8px 10px;border-bottom:1px solid var(--line);color:var(--ink-dim)}
+  table.mes input{width:100px;background:var(--bg);border:1px solid var(--line);border-radius:7px;
+    color:var(--ink);font-family:var(--mono);font-size:14px;padding:7px 10px;text-align:right;outline:none;transition:border .2s}
+  table.mes input:focus{border-color:var(--accent)}
+  table.mes input.good{border-color:var(--ok);color:var(--ok)}
+  table.mes input.bad{border-color:var(--danger);color:var(--danger)}
+  table.mes .unit{font-family:var(--mono);color:var(--ink-faint);font-size:12px;padding-left:6px}
+  .mes-result{font-size:13px;margin-top:4px;min-height:20px}
+  .mes-result.good{color:var(--ok)}
+  .mes-result.bad{color:var(--danger)}
+
+  .qcm{margin:10px 0}
+  .qcm .q{font-size:14px;color:var(--ink);margin-bottom:8px;line-height:1.6}
+  .qcm .opts{display:flex;flex-direction:column;gap:7px}
+  .qcm button.opt{text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    border-radius:9px;padding:9px 13px;font-size:13.5px;font-family:var(--sans);cursor:pointer;transition:all .18s}
+  .qcm button.opt:hover{border-color:var(--ink-faint);color:var(--ink)}
+  .qcm button.opt.good{border-color:var(--ok);color:var(--ok);background:rgba(127,176,105,.08)}
+  .qcm button.opt.bad{border-color:var(--danger);color:var(--danger);background:rgba(208,107,90,.07)}
+  .qcm .expl{font-size:12.5px;color:var(--ink-faint);margin-top:7px;display:none;line-height:1.65}
+  .qcm .expl.show{display:block}
+
+  textarea{width:100%;min-height:84px;background:var(--bg);border:1px solid var(--line);border-radius:9px;
+    color:var(--ink);font-family:var(--sans);font-size:13.5px;line-height:1.6;padding:10px 12px;outline:none;resize:vertical}
+  textarea:focus{border-color:var(--accent)}
+  .btn{background:var(--accent);color:#1a1208;border:none;border-radius:9px;padding:9px 18px;
+    font-family:var(--sans);font-size:13.5px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:10px}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.ghost{background:var(--panel-2);color:var(--ink-dim);border:1px solid var(--line)}
+  .btn.ghost:hover{color:var(--ink);border-color:var(--ink-faint)}
+
+  .essentiel{display:none;margin-top:12px;border:1px solid var(--accent-soft);
+    background:rgba(230,160,73,.05);border-radius:10px;padding:14px 16px}
+  .essentiel.show{display:block;animation:fadeIn .35s}
+  .essentiel h4{font-family:var(--display);color:var(--accent);font-size:15px;margin-bottom:8px}
+  .essentiel p,.essentiel li{font-size:13.5px;line-height:1.75;color:var(--ink-dim)}
+  .essentiel ul{margin:6px 0 6px 18px}
+  .essentiel b{color:var(--ink);font-weight:500}
+  .formule{font-family:var(--mono);font-size:14px;color:var(--accent);background:var(--bg);
+    border:1px solid var(--accent-soft);border-radius:8px;padding:8px 14px;display:inline-block;margin:6px 4px 2px 0}
+
+  table.recap{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+  table.recap th{font-family:var(--mono);font-size:10.5px;color:var(--accent);text-transform:uppercase;
+    letter-spacing:.06em;text-align:left;padding:8px 10px;border-bottom:1px solid var(--accent-soft)}
+  table.recap td{padding:8px 10px;border-bottom:1px solid var(--line);color:var(--ink-dim);vertical-align:top}
+  table.recap td:first-child{color:var(--ink)}
+  table.recap .m{font-family:var(--mono);color:var(--cyan)}
+  .scroll-x{overflow-x:auto}
+
+  .score{font-family:var(--mono);font-size:15px;color:var(--accent);margin-top:12px}
+  .simu-link{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#1a1208;
+    border-radius:10px;padding:11px 20px;font-size:14px;font-weight:600;text-decoration:none;transition:transform .2s}
+  .simu-link:hover{transform:translateY(-2px)}
+  .demarche{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+  .demarche>div{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 14px}
+  .demarche .num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+  .demarche .t{font-family:var(--display);font-size:15px;margin:5px 0 5px;color:var(--ink)}
+  .demarche p{font-size:12.5px;line-height:1.6;color:var(--ink-dim)}
+
+  footer{max-width:1100px;margin:26px auto 0;color:var(--ink-faint);font-size:11.5px;display:flex;gap:10px;flex-wrap:wrap}
+  footer .dot{color:var(--accent)}
+  @media (prefers-reduced-motion: reduce){.page,.essentiel.show{animation:none}}
+</style>
+<style>
+/* =====================================================================
+   Habillage « carnet de croquis » : papier quadrillé, crayon graphite, crayon rouge, crayon bleu, surligneur.
+   Les variables du banc d'essai d'origine sont redéfinies ; les règles qui avaient des couleurs écrites en dur sont reprises.
+   ===================================================================== */
+:root{
+  --papier:#f7f4ec;--fiche:#fffdf7;--kraft:#e6d3b0;--kraft2:#c9ad7d;
+  --gr:#2a2a2a;--gr2:rgba(42,42,42,.68);--gr3:rgba(42,42,42,.2);
+  --rouge:#c93b31;--rouge2:#d6453a;--bleu:#2f6fd6;--vert:#3d9a5f;--jaune:rgba(255,222,40,.72);--orange:#c77a1e;--orange-t:#a85d0b;
+  --pj:#fff1a8;--pr:#ffd8cf;--pb:#d8e7ff;--pv:#d5f0da;--po:#ffe6cc;
+  --main:"Architects Daughter","Segoe Print","Comic Sans MS",cursive;
+  --texte:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --ombre:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);
+  --e-ressort:cubic-bezier(.34,1.56,.64,1);
+  /* les noms du pupitre d'origine, redéfinis en crayon sur papier */
+  --bg:var(--papier);--panel:var(--fiche);--panel-2:#faf5e8;--line:var(--gr3);
+  --ink:var(--gr);--ink-dim:var(--gr2);--ink-faint:rgba(42,42,42,.5);
+  --accent:var(--orange-t);--accent-soft:rgba(199,122,30,.14);
+  --cyan:var(--bleu);--danger:var(--rouge);--ok:var(--vert);
+  --radius:4px;
+  --mono:var(--texte);--sans:var(--texte);--display:var(--main);
+  color-scheme:light;
+}
+::selection{background:var(--jaune);color:var(--gr)}
+html{scroll-behavior:smooth}
+body{background-color:var(--papier);background-image:linear-gradient(rgba(47,111,214,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(47,111,214,.085) 1px,transparent 1px);background-size:22px 22px;color:var(--gr);font-family:var(--texte);font-weight:400;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:700}
+::-webkit-scrollbar-thumb{background:rgba(42,42,42,.22)}
+:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,#knob:focus-visible{outline:2.5px dashed var(--bleu);outline-offset:3px;border-radius:6px}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* en-tête : un lien vers l'accueil du carnet, le titre, une étiquette */
+header{align-items:baseline}
+header .retour{order:1;flex:1 1 auto;display:inline-flex;align-items:center;gap:7px;font:400 18px/1 var(--main);color:var(--bleu);transition:color .25s}
+header .retour span{display:inline-block;transition:transform .35s var(--e-ressort)}
+header .retour:hover{color:var(--rouge)}
+header .retour:hover span{transform:translateX(-4px)}
+header::after{content:"";order:3;flex-basis:100%;height:0}   /* retour à la ligne : le lien et l'étiquette en haut, puis le titre */
+header h1{order:4;font:400 clamp(28px,4vw,40px)/1.1 var(--main);letter-spacing:0}
+header h1 .spark{color:var(--rouge)}
+header .sub{order:5;color:var(--gr2);font:400 15px/1.4 var(--texte)}
+header .badge{order:2;margin-left:auto;font:400 16px/1 var(--main);color:var(--bleu);border:1.5px dashed var(--bleu);background:transparent;padding:6px 12px;border-radius:12px 14px 11px 13px;transform:rotate(-1.5deg)}
+header .lien-seq{order:6;font:400 17px/1 var(--main);color:var(--bleu);border-bottom:1.5px dashed currentColor;padding-bottom:2px;transition:color .25s}
+header .lien-seq:hover{color:var(--rouge)}
+footer{color:var(--gr2);font:400 13px/1.5 var(--texte)}
+footer .dot{color:var(--rouge)}
+@media (prefers-reduced-motion:reduce){header .retour span{transition:none}}
+
+/* ---------- Séquence inductive : des fiches de papier, des notes collées, des lignes à remplir au crayon ---------- */
+body{padding:22px 22px 70px}
+nav{gap:8px}
+.tab{font:400 17px/1.1 var(--main);color:var(--gr2);background:transparent;border:1.6px dashed var(--gr3);border-radius:12px 14px 11px 13px;padding:7px 13px 8px;transition:color .25s,border-color .25s,background .25s,transform .35s var(--e-ressort)}
+.tab:hover{color:var(--gr);border-color:var(--gr2)}
+.tab.on{color:var(--gr);border-style:solid;border-color:var(--bleu);background:rgba(47,111,214,.12);transform:rotate(-1deg)}
+.tab .tick{color:var(--vert);font-weight:700}
+.progress-wrap{margin-bottom:22px}
+.progress{height:12px;background:var(--fiche);border:1.5px solid var(--gr2);border-radius:7px 9px 6px 8px}
+.progress>div{background:var(--rouge2);border-radius:0}
+.progress-txt{font:400 17px/1 var(--main);color:var(--rouge)}
+
+.card{position:relative;background:var(--fiche);border:0;border-radius:2px;box-shadow:var(--ombre);padding:22px 24px 20px;margin-bottom:22px}
+.card::before{content:"";position:absolute;top:-11px;left:10%;width:90px;height:22px;background:rgba(255,222,40,.55);transform:rotate(-2deg);box-shadow:0 1px 2px rgba(0,0,0,.08);pointer-events:none}
+.card:nth-child(even)::before{left:auto;right:10%;transform:rotate(2deg)}
+.card h2{font:400 clamp(24px,3vw,30px)/1.15 var(--main);margin-bottom:10px}
+.card h3{font:400 22px/1.2 var(--main);color:var(--bleu);margin:16px 0 8px}
+.card p{font-size:16px;line-height:1.7;color:var(--gr);margin-bottom:10px}
+.card p b,.card li b{color:var(--gr)}
+.pill{font:400 17px/1 var(--main);letter-spacing:0;text-transform:none;color:var(--rouge);border:0;padding:0;margin-bottom:6px}
+.pill::before{content:"→ ";color:var(--gr2)}
+.pill.amber{color:var(--rouge)}
+.reglages{font:400 15px/1.95 var(--texte);color:var(--gr);background:rgba(255,241,168,.5);border:1.5px dashed var(--gr3);border-radius:4px;padding:12px 16px}
+.reglages b{color:var(--rouge);font-weight:700}
+
+ol.steps li{display:block;position:relative;background:var(--fiche);border:1.4px dashed var(--gr3);border-radius:6px 9px 6px 8px;color:var(--gr);font-size:15.5px;line-height:1.55;padding:11px 14px 11px 56px;min-height:52px}
+ol.steps li:hover{border-color:var(--gr2)}
+ol.steps li::before{position:absolute;left:14px;top:11px;margin:0;font:400 17px/1 var(--main);color:var(--rouge);border:1.6px solid var(--rouge);min-width:28px;height:28px}
+ol.steps li.ck{border-style:solid;border-color:var(--vert);background:var(--pv);color:var(--gr2)}
+ol.steps li.ck::before{content:"✓";color:var(--vert);border-color:var(--vert)}
+ol.steps li b{color:var(--gr)}
+ol.steps li.ck b{color:var(--gr2)}
+
+table.mes{font-size:15.5px}
+table.mes th{font:400 18px/1 var(--main);letter-spacing:0;text-transform:none;color:var(--bleu);border-bottom:1.6px dashed var(--gr3);padding:8px 10px}
+table.mes td{border-bottom:1.3px dashed var(--gr3);color:var(--gr);padding:9px 10px}
+table.mes input{width:120px;background:var(--fiche);border:0;border-bottom:2px solid var(--gr2);border-radius:0;color:var(--gr);font:400 21px/1.1 var(--main);padding:4px 8px;text-align:right;transition:border-color .25s,color .25s}
+table.mes input:focus{border-bottom-color:var(--bleu);background:rgba(47,111,214,.06)}
+table.mes input.good{border-bottom-color:var(--vert);color:#1f5c37}
+table.mes input.bad{border-bottom-color:var(--rouge);color:var(--rouge)}
+table.mes .unit{font:400 15px/1 var(--texte);color:var(--gr2)}
+.mes-result{font:400 19px/1.3 var(--main);margin-top:8px}
+.mes-result.good{color:#1f5c37}
+.mes-result.bad{color:var(--rouge)}
+
+.qcm .q{font-size:16px;color:var(--gr);line-height:1.65}
+.qcm button.opt{font:400 15.5px/1.45 var(--texte);color:var(--gr);background:var(--panel-2);border:1.5px solid var(--gr3);border-radius:4px;padding:10px 14px}
+.qcm button.opt:hover{border-color:var(--gr2);color:var(--gr)}
+.qcm button.opt.good{border-color:var(--vert);color:#1f5c37;background:var(--pv)}
+.qcm button.opt.bad{border-color:var(--rouge);color:var(--rouge);background:var(--pr)}
+.qcm .expl{font-size:15px;color:var(--gr2);line-height:1.6}
+
+textarea{min-height:140px;color:var(--gr);font:400 18px/30px var(--main);padding:4px 14px 6px 16px;border:1.5px solid var(--gr3);border-left:3px solid var(--rouge2);border-radius:2px;background:repeating-linear-gradient(transparent 0 29px,rgba(47,111,214,.2) 29px 30px),var(--fiche);background-attachment:local}
+textarea:focus{border-color:var(--bleu);border-left-color:var(--rouge2)}
+.btn{background:var(--jaune);color:var(--gr);border:1.6px solid rgba(42,42,42,.45);border-radius:12px 14px 11px 13px;font:400 17px/1 var(--main);padding:10px 18px;transition:transform .35s var(--e-ressort),background .25s}
+.btn:hover{transform:translateY(-2px) rotate(-.5deg)}
+.btn.ghost{background:transparent;color:var(--gr2);border:1.6px dashed var(--gr3)}
+.btn.ghost:hover{color:var(--gr);border-color:var(--gr2)}
+
+.essentiel{background:var(--pj);border:0;border-radius:2px;box-shadow:var(--ombre);padding:18px 22px 16px;transform:rotate(-.3deg)}
+.essentiel h4{font:400 24px/1.15 var(--main);color:var(--rouge);margin-bottom:8px}
+.essentiel p,.essentiel li{font-size:16px;line-height:1.7;color:var(--gr)}
+.essentiel b{color:var(--gr)}
+.formule{font:400 21px/1.3 var(--main);color:var(--rouge);background:var(--fiche);border:1.6px solid var(--gr);border-radius:5px 8px 6px 9px;padding:6px 15px;margin:8px 6px 4px 0}
+
+table.recap{font-size:15px}
+table.recap th{font:400 18px/1 var(--main);letter-spacing:0;text-transform:none;color:var(--bleu);border-bottom:1.6px dashed var(--gr3);padding:9px 10px}
+table.recap td{border-bottom:1.3px dashed var(--gr3);color:var(--gr2);padding:9px 10px}
+table.recap td:first-child{color:var(--gr)}
+table.recap .m{font-family:var(--main);font-size:17px;color:var(--bleu)}
+.score{font:400 24px/1 var(--main);color:var(--rouge)}
+.simu-link{background:var(--jaune);color:var(--gr);border:1.6px solid rgba(42,42,42,.45);border-radius:12px 14px 11px 13px;font:400 19px/1 var(--main);padding:12px 22px;transition:transform .35s var(--e-ressort)}
+.simu-link:hover{transform:translateY(-2px) rotate(-.5deg)}
+.demarche{gap:16px;margin:16px 0}
+.demarche>div{background:var(--pj);border:0;border-radius:2px;box-shadow:0 12px 18px -14px rgba(0,0,0,.5);padding:15px 16px}
+.demarche>div:nth-child(2){background:var(--pb)}
+.demarche>div:nth-child(3){background:var(--pv)}
+.demarche>div:nth-child(4){background:var(--pr)}
+.demarche>div:nth-child(odd){transform:rotate(-.8deg)}
+.demarche>div:nth-child(even){transform:rotate(.7deg)}
+.demarche .num{font:400 15px/1 var(--main);letter-spacing:0;text-transform:none;color:var(--gr2)}
+.demarche .t{font:400 22px/1.15 var(--main);color:var(--gr);margin:6px 0 6px}
+.demarche p{font-size:14.5px;line-height:1.55;color:var(--gr)}
+@media (max-width:700px){body{padding:16px 14px 60px}.card{padding:20px 16px 16px}table.mes input{width:96px}}
+@media (prefers-reduced-motion:reduce){.tab,.btn,.simu-link{transition:none}.btn:hover,.simu-link:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="retour" href="index.html"><span aria-hidden="true">←</span>Accueil du carnet</a>
+  <h1><span class="spark">▲</span> Découvrir la mécanique des structures</h1>
+  <div class="sub">Séquence inductive · Bac Pro TEBAA — je manipule, je mesure, je conclus</div>
+  <div class="badge">fonctionne hors connexion</div>
+</header>
+
+<nav id="nav"></nav>
+<div class="progress-wrap">
+  <div class="progress"><div id="progBar"></div></div>
+  <div class="progress-txt" id="progTxt">0 / 7 séances</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <span>Séquence « Atelier Structure »</span><span class="dot">·</span>
+  <span>Démarche inductive : la règle se découvre par la mesure, elle n'est donnée qu'après</span><span class="dot">·</span>
+  <span>Support : atelier-structure.html</span>
+</footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   SÉQUENCE INDUCTIVE — compagnon du simulateur « Atelier Structure »
+   Chaque séance : Question → Manip → Mesures (valeurs exactes du
+   simulateur) → Analyse → Conclusion de l'élève → « L'essentiel »
+   révélé seulement après validation des mesures.
+   ===================================================================== */
+
+const SIM = "atelier-structure.html";
+
+const SEANCES = [
+{
+  id:"s1", nav:"1 · Les charges", titre:"Séance 1 — D'où viennent les charges que reçoit une poutre ?",
+  question:"Deux immeubles voisins ont la même poutre. Chez l'un elle fissure, chez l'autre non. Qu'est-ce qui change ?",
+  reglages:`<b>Plancher</b> Dalle BA 20 · <b>Destination</b> Logement · <b>Largeur reprise b</b> 4,0 m ·
+    <b>Portée L</b> 4,00 m · <b>Poutre</b> BA 20×50 · <b>Appuis</b> 2 appuis · <b>Combinaison</b> ELS G+Q ·
+    <b>Capteur R</b> Appui A · <b>Poteau</b> BA 20×20 · <b>h</b> 3,00 m · <b>Étages</b> 0 · <b>Vent</b> Nul · <b>Contreventement</b> Palée triangulée`,
+  steps:[
+    "Ouvre le simulateur et applique les <b>réglages de départ</b>. Repère les flèches orange au-dessus de la poutre : c'est la charge.",
+    "Lis la valeur de <b>q</b> (carte « Appareils de mesure », ligne <b>Charge q</b>) et le cadran <b>Effort</b>, capteur sur l'appui A.",
+    "Fais glisser la <b>largeur de reprise</b> de 4,0 m à 2,0 m. Regarde les flèches de charge et les deux valeurs.",
+    "Remets b = 4,0 m puis change le <b>plancher</b> : passe de la dalle BA 20 au <b>plancher bois</b>. Note q.",
+    "Ouvre la carte « Calculs en direct » : le simulateur détaille G × b, Q × b et le poids propre g₀ de la poutre."
+  ],
+  m:[
+    ["q avec b = 4,0 m (dalle BA 20)", 32.5, 0.12, "kN/m"],
+    ["R(A) avec b = 4,0 m", 65.0, 0.4, "kN"],
+    ["q avec b = 2,0 m", 17.5, 0.12, "kN/m"],
+    ["R(A) avec b = 2,0 m", 35.0, 0.4, "kN"],
+    ["q avec b = 4,0 m et plancher bois", 16.5, 0.12, "kN/m"]
+  ],
+  q:{ q:"Quand tu divises la largeur de reprise par 2, la charge q ne descend pas tout à fait de moitié (32,5 → 17,5 et non 16,25). Pourquoi ?",
+      opts:["Le simulateur arrondit les valeurs",
+            "Le poids propre de la poutre (2,5 kN/m) ne dépend pas de la largeur reprise",
+            "Parce que Q ne compte pas"],
+      ok:1, expl:"q = (G + Q) × b + g₀. Seule la part venant du plancher dépend de b ; le poids propre de la poutre, lui, est toujours là." },
+  consigne:"Explique avec tes mots de quoi dépend la charge q reçue par une poutre. Cite au moins trois éléments.",
+  essentiel:`<h4>💡 L'essentiel — les charges et la surface d'influence</h4>
+    <p>Une poutre ne reçoit pas « le poids du bâtiment » : elle reçoit la charge de la <b>bande de plancher qu'elle porte</b>.</p>
+    <ul>
+      <li><b>G — charges permanentes</b> (kN/m²) : tout ce qui ne bouge jamais — dalle, chape, carrelage, cloisons fixes. Dalle BA 20 cm : G = 6,0 kN/m².</li>
+      <li><b>Q — charges d'exploitation</b> (kN/m²) : ce qui varie — personnes, mobilier, stockage. Fixées par l'Eurocode 1 selon la <b>destination</b> : logement 1,5 · bureaux 2,5 · salle de réunion 4,0 · commerce 5,0.</li>
+      <li><b>b — largeur de reprise</b> (m), aussi appelée <b>surface d'influence</b> : la largeur de plancher qui « tombe » sur la poutre, en général la demi-portée de chaque côté.</li>
+      <li><b>g₀ — poids propre</b> de la poutre elle-même (kN/m) : constant, indépendant de b.</li>
+    </ul>
+    <span class="formule">q = (G + Q) × b + g₀</span>
+    <p>Unités : G et Q en <b>kN/m²</b> (charge surfacique), q en <b>kN/m</b> (charge linéique). 1 kN ≈ 100 kg.</p>` },
+
+{
+  id:"s2", nav:"2 · ELU / ELS", titre:"Séance 2 — Pourquoi majorer les charges ? ELU et ELS",
+  question:"Sur un plan de béton armé, le calcul est fait avec « 1,35 G + 1,5 Q ». Pourquoi ne pas prendre simplement G + Q ?",
+  reglages:`Mêmes réglages que la séance 1, avec <b>b = 4,0 m</b> et <b>L = 4,00 m</b> ·
+    <b>Capteur M</b> Mi-travée · <b>Capteur R</b> Appui A`,
+  steps:[
+    "Combinaison sur <b>ELS G+Q</b> : note q et le cadran <b>Moment</b> (capteur à mi-travée).",
+    "Passe sur <b>ELU 1,35G+1,5Q</b> : note les deux mêmes valeurs. Regarde grandir les flèches de charge.",
+    "Passe sur <b>G seul ⚠</b> : lis l'alerte orange qui apparaît au-dessus du schéma, puis note q.",
+    "Reviens sur ELS et calcule à la calculatrice le rapport <b>q(ELU) ÷ q(ELS)</b>."
+  ],
+  m:[
+    ["q à l'ELS (G + Q)", 32.5, 0.12, "kN/m"],
+    ["q à l'ELU (1,35G + 1,5Q)", 44.775, 0.12, "kN/m"],
+    ["Moment à mi-travée, ELS", 65.0, 0.4, "kN·m"],
+    ["Moment à mi-travée, ELU", 89.55, 0.4, "kN·m"],
+    ["q avec « G seul »", 26.5, 0.12, "kN/m"],
+    ["Rapport q(ELU) ÷ q(ELS)", 1.377, 0.05, "—"]
+  ],
+  q:{ q:"Pourquoi le coefficient sur Q (1,5) est-il plus grand que celui sur G (1,35) ?",
+      opts:["Parce que Q est toujours plus lourd que G",
+            "Parce que Q est bien plus incertain que G : on sait peser une dalle, pas prévoir le monde qu'il y aura dessus",
+            "Parce que c'est plus simple à retenir"],
+      ok:1, expl:"On majore d'autant plus qu'on connaît mal la charge. Le poids d'une dalle se calcule à 5 % près ; le nombre de personnes dans une salle, non." },
+  consigne:"Rédige la différence entre ELU et ELS : à quoi sert chacun, et avec quelles charges les calcule-t-on ?",
+  essentiel:`<h4>💡 L'essentiel — les combinaisons d'actions</h4>
+    <p>On ne vérifie jamais une structure avec une seule charge : on utilise des <b>combinaisons</b>, avec des coefficients de sécurité partiels.</p>
+    <ul>
+      <li><b>ELU — État Limite Ultime</b> : le cas de la <b>ruine</b>. Sert à vérifier la <b>résistance</b> (rupture, écrasement, flambement).
+        <span class="formule">ELU : 1,35 G + 1,5 Q</span></li>
+      <li><b>ELS — État Limite de Service</b> : le cas de l'<b>usage normal</b>. Sert à vérifier la <b>flèche</b>, les fissures, le confort.
+        <span class="formule">ELS : G + Q</span></li>
+    </ul>
+    <p>La charge à l'ELU est environ <b>1,4 fois</b> celle de l'ELS. Oublier Q — la combinaison « G seul » — c'est sous-estimer la charge de près de 40 % : la poutre est alors calculée pour un bâtiment vide.</p>
+    <p><b>À retenir :</b> le simulateur vérifie toujours la résistance à l'ELU, quelle que soit la combinaison affichée. La réalité ne s'adapte pas à ton calcul.</p>` },
+
+{
+  id:"s3", nav:"3 · Les appuis", titre:"Séance 3 — L'équilibre : ce que les appuis renvoient",
+  question:"Où partent les charges d'une poutre ? Et que change la position des appuis ?",
+  reglages:`<b>Plancher</b> Plancher bois · <b>Destination</b> Logement · <b>b</b> 4,0 m · <b>Poutre</b> BA 20×40 ·
+    <b>Combinaison</b> ELS · <b>Portée L</b> 3,00 m (bouton rotatif) · <b>Appuis</b> 2 appuis · <b>Capteur R</b> Appui A`,
+  steps:[
+    "Applique les réglages, vérifie que <b>q = 16,00 kN/m</b>, puis note R(A) et R(B) (déplace le capteur R).",
+    "Calcule <b>R(A) + R(B)</b> et compare avec <b>q × L</b>. Regarde aussi les pointillés orange qui descendent vers les semelles : c'est le cheminement des charges.",
+    "Passe sur <b>3 appuis</b> (un poteau au milieu) : note R(A) et R(appui central). La somme change-t-elle ?",
+    "Reviens sur <b>2 appuis</b> et règle <b>L = 2,00 m</b> : note R(A).",
+    "Passe en <b>Porte-à-faux ⚠</b> (toujours L = 2,00 m) : note la réaction, puis mets le capteur M sur « Sur appui » et note le moment d'encastrement."
+  ],
+  m:[
+    ["q à l'ELS", 16.0, 0.12, "kN/m"],
+    ["L = 3,00 m, 2 appuis : R(A)", 24.0, 0.4, "kN"],
+    ["L = 3,00 m, 2 appuis : R(B)", 24.0, 0.4, "kN"],
+    ["R(A) + R(B) (à la calculatrice)", 48.0, 0.6, "kN"],
+    ["L = 3,00 m, 3 appuis : R(A)", 9.0, 0.4, "kN"],
+    ["L = 3,00 m, 3 appuis : R(appui central)", 30.0, 0.4, "kN"],
+    ["L = 2,00 m, 2 appuis : R(A)", 16.0, 0.4, "kN"],
+    ["L = 2,00 m, porte-à-faux : R(encastrement)", 32.0, 0.4, "kN"]
+  ],
+  q:{ q:"Dans les trois configurations, la somme des réactions vaut toujours q × L. Pourquoi ?",
+      opts:["Parce que les appuis sont identiques",
+            "Parce que la structure est en équilibre : ce qui descend doit être intégralement repris",
+            "C'est un hasard dû aux nombres choisis"],
+      ok:1, expl:"C'est la première équation de la statique : ΣF = 0. Les appuis ne créent rien, ils renvoient exactement ce qu'ils reçoivent. Seule la répartition change." },
+  consigne:"Rédige : que fait un appui ? Pourquoi l'appui central d'une poutre continue reprend-il beaucoup plus que les appuis de rive ?",
+  essentiel:`<h4>💡 L'essentiel — statique et réactions d'appui</h4>
+    <p>Une structure au repos est en <b>équilibre</b> : les deux équations fondamentales de la statique sont vérifiées.</p>
+    <span class="formule">Σ F = 0</span><span class="formule">Σ M = 0</span>
+    <ul>
+      <li><b>Réaction d'appui R</b> (kN) : la force que l'appui renvoie à la poutre. Sur 2 appuis symétriques : <b>R = q L / 2</b> pour chacun.</li>
+      <li><b>Poutre continue sur 3 appuis</b> : l'appui central reprend <b>10/16</b> de la charge totale (ici 30 kN sur 48), les appuis de rive <b>3/16</b> chacun. Ajouter un poteau soulage énormément la poutre… mais charge davantage la fondation centrale.</li>
+      <li><b>Porte-à-faux</b> : un seul appui, qui reprend <b>toute</b> la charge (R = q L) et doit en plus encaisser un <b>moment d'encastrement</b>. C'est le schéma le plus exigeant.</li>
+    </ul>
+    <p>En bureau d'études, la <b>descente de charges</b> consiste précisément à suivre ces réactions : plancher → poutre → poteau → semelle → sol.</p>` },
+
+{
+  id:"s4", nav:"4 · Le moment", titre:"Séance 4 — Le moment fléchissant : découvre la loi cachée",
+  question:"Deux poutres identiques, l'une de 3 m, l'autre de 6 m. La seconde est-elle deux fois plus sollicitée ?",
+  reglages:`<b>Plancher</b> Hourdis 16+4 · <b>Destination</b> Logement · <b>b</b> 2,0 m · <b>Poutre</b> BA 20×50 ·
+    <b>Appuis</b> 2 appuis · <b>Combinaison</b> ELS · <b>Capteur M</b> Mi-travée`,
+  steps:[
+    "Vérifie que <b>q = 13,50 kN/m</b> et qu'il ne change pas de toute la séance : seule la portée va varier.",
+    "Avec le bouton rotatif, règle <b>L = 3,00 m</b> puis note le cadran <b>Moment</b>. Recommence pour 4,00 · 5,00 · 6,00 m.",
+    "Regarde à chaque fois le <b>diagramme M</b> sous le schéma : la parabole se creuse.",
+    "À la calculatrice, calcule <b>M(6,00) ÷ M(3,00)</b>, puis <b>M ÷ (q × L²)</b> pour la portée de 4,00 m.",
+    "Que remarques-tu sur ce dernier rapport ? Refais-le pour une autre portée pour vérifier."
+  ],
+  m:[
+    ["q (constante pendant toute la séance)", 13.5, 0.12, "kN/m"],
+    ["M à mi-travée, L = 3,00 m", 15.1875, 0.3, "kN·m"],
+    ["M à mi-travée, L = 4,00 m", 27.0, 0.3, "kN·m"],
+    ["M à mi-travée, L = 5,00 m", 42.1875, 0.3, "kN·m"],
+    ["M à mi-travée, L = 6,00 m", 60.75, 0.4, "kN·m"],
+    ["Rapport M(6,00 m) ÷ M(3,00 m)", 4.0, 0.2, "—"],
+    ["Rapport M ÷ (q × L²) pour L = 4,00 m", 0.125, 0.008, "—"]
+  ],
+  q:{ q:"Le rapport M ÷ (q × L²) vaut toujours 0,125, c'est-à-dire 1/8. La formule du moment maximal est donc…",
+      opts:["M = q × L / 8", "M = q × L² / 8", "M = 8 × q × L²"],
+      ok:1, expl:"Bravo : tu viens de retrouver M = q L² / 8, la formule la plus utilisée du bâtiment. Et comme L est au carré, doubler la portée multiplie le moment par 4." },
+  consigne:"Écris la règle que tu as découverte entre le moment, la charge et la portée. Explique pourquoi allonger une portée coûte cher.",
+  essentiel:`<h4>💡 L'essentiel — le moment fléchissant M</h4>
+    <p>Le <b>moment fléchissant</b> mesure la tendance de la charge à <b>plier</b> la poutre. Il se lit en <b>kN·m</b> (kilonewton-mètre) : une force multipliée par un bras de levier.</p>
+    <span class="formule">M = q L² / 8</span><span class="formule">V = q L / 2</span>
+    <ul>
+      <li>Poutre sur <b>2 appuis</b>, charge uniforme : M maximal <b>à mi-travée</b>, nul sur les appuis simples (un appui simple ne transmet pas de moment).</li>
+      <li>La <b>portée est au carré</b> : × 2 sur L, c'est × 4 sur M. C'est pourquoi un poteau intermédiaire est si efficace, et pourquoi les grandes portées coûtent cher.</li>
+      <li><b>Porte-à-faux</b> : M = q L² / <b>2</b>, soit 4 fois plus qu'une poutre sur 2 appuis de même longueur, et le maximum est à l'<b>encastrement</b>.</li>
+      <li>L'<b>effort tranchant V</b> (kN), lui, est maximal <b>aux appuis</b> : c'est la tendance au cisaillement. Voir le second diagramme du simulateur.</li>
+    </ul>
+    <p>Vérification de résistance, à l'<b>ELU</b> : <b>M<sub>Ed</sub> ≤ M<sub>Rd</sub></b> — le moment appliqué doit rester sous le moment résistant de la section.</p>` },
+
+{
+  id:"s5", nav:"5 · La flèche", titre:"Séance 5 — La flèche : quand la poutre tient mais ne convient pas",
+  question:"Un plancher neuf ne casse pas, mais il vibre et les cloisons se fissurent. Que s'est-il passé ?",
+  reglages:`<b>Plancher</b> Plancher bois · <b>Destination</b> Logement · <b>b</b> 2,0 m ·
+    <b>Poutre</b> Bois LC 100×300 · <b>Appuis</b> 2 appuis · <b>Combinaison</b> ELS · <b>Critère flèche</b> L/300 plancher.
+    <br>Règle d'abord <b>L = 2,50 m</b> avant de choisir la poutre bois, sinon elle casse à la mise en place.`,
+  steps:[
+    "Règle L = 2,50 m puis note le cadran <b>Flèche</b>. Recommence pour 3,00 · 4,00 · 5,00 m. Observe la déformée bleue en pointillés.",
+    "Calcule <b>f(5,00) ÷ f(2,50)</b> : la portée a doublé, et la flèche ?",
+    "À L = 5,00 m, lis dans « Contrôle du bureau d'études » la ligne <b>Flèche ELS</b> : note la valeur admissible. La poutre casse-t-elle ?",
+    "Change le <b>critère de flèche</b> pour L/200 toiture : l'alerte disparaît. La poutre n'a pourtant pas changé…",
+    "Remets L/300, garde L = 5,00 m et remplace la poutre par une <b>IPE 300</b> (EI sept fois plus grand). Note la nouvelle flèche."
+  ],
+  m:[
+    ["Flèche à L = 2,50 m (poutre bois)", 1.47, 0.06, "mm"],
+    ["Flèche à L = 3,00 m", 3.05, 0.08, "mm"],
+    ["Flèche à L = 4,00 m", 9.63, 0.12, "mm"],
+    ["Flèche à L = 5,00 m", 23.51, 0.25, "mm"],
+    ["Rapport f(5,00 m) ÷ f(2,50 m)", 16.0, 0.8, "—"],
+    ["Flèche admissible à L = 5,00 m (critère L/300)", 16.67, 0.2, "mm"],
+    ["Flèche à L = 5,00 m avec une IPE 300", 3.43, 0.12, "mm"]
+  ],
+  q:{ q:"À L = 5,00 m, la poutre bois ne casse pas mais le contrôle est refusé. Que faut-il en conclure ?",
+      opts:["Le simulateur se trompe, une poutre qui ne casse pas convient",
+            "Résister ne suffit pas : la flèche (ELS) est un critère à part entière, souvent plus sévère que la résistance",
+            "Il faut changer de destination pour la salle de réunion"],
+      ok:1, expl:"Sur les poutres bois et acier, c'est très souvent la flèche qui commande le dimensionnement, pas la rupture. La structure tient — mais le plancher vibre, les portes coincent, les cloisons fissurent." },
+  consigne:"Rédige : de quoi dépend la flèche d'une poutre ? Cite les deux façons de la réduire que tu as testées.",
+  essentiel:`<h4>💡 L'essentiel — la flèche f</h4>
+    <p>La <b>flèche</b> est le déplacement vertical maximal de la poutre sous charge, en <b>mm</b>. Elle se vérifie à l'<b>ELS</b> (G + Q, sans majoration).</p>
+    <span class="formule">f = 5 q L⁴ / (384 E I)</span>
+    <ul>
+      <li><b>L à la puissance 4</b> : doubler la portée multiplie la flèche par <b>16</b>. C'est le paramètre le plus violent de toute la mécanique des structures.</li>
+      <li><b>E I — la rigidité de flexion</b> : E est le module du matériau (bois 11 000 MPa, acier 210 000, béton 30 000), I l'inertie de la section, qui dépend surtout de sa <b>hauteur au cube</b>. Doubler la hauteur d'une poutre, c'est multiplier I par 8.</li>
+      <li><b>Critères réglementaires</b> : L/200 en toiture, <b>L/300</b> en plancher courant, L/500 sous cloisons fragiles. Ils dépendent de l'usage, pas de la poutre.</li>
+    </ul>
+    <p><b>Deux vérifications distinctes, à ne jamais confondre :</b> la <b>résistance</b> à l'ELU (M<sub>Ed</sub> ≤ M<sub>Rd</sub>) et la <b>flèche</b> à l'ELS (f ≤ f<sub>adm</sub>). Une poutre peut être bonne pour l'une et refusée pour l'autre.</p>` },
+
+{
+  id:"s6", nav:"6 · Descente de charges", titre:"Séance 6 — La descente de charges : du plancher à la semelle",
+  question:"Pourquoi les poteaux d'un rez-de-chaussée sont-ils plus gros que ceux du dernier étage ?",
+  reglages:`<b>Plancher</b> Dalle BA 20 · <b>Destination</b> Bureaux · <b>b</b> 3,0 m · <b>Poutre</b> BA 20×50 ·
+    <b>Portée L</b> 4,00 m · <b>Appuis</b> 2 appuis · <b>Combinaison</b> ELS ·
+    <b>Poteau</b> BA 20×20 · <b>h</b> 3,00 m · <b>Liaisons</b> Articulé–articulé · <b>Vent</b> Nul · <b>Étages</b> 0`,
+  steps:[
+    "Vérifie q = 28,00 kN/m, puis note R(B) (capteur R sur l'appui B, celui du poteau instrumenté).",
+    "Mets le capteur R sur <b>Pied poteau</b> : note N. Compare avec « Tête poteau » — d'où vient l'écart ?",
+    "Ajoute des <b>étages au-dessus</b> : 1, puis 2, puis 3. Note N au pied à chaque fois. Regarde le flux orange s'accélérer dans le poteau.",
+    "Calcule l'écart entre deux étages successifs. Est-il constant ?",
+    "Passe le poteau en <b>Tube 60×60×3</b> avec 3 étages : lis l'alerte. Puis reviens au poteau BA et répare."
+  ],
+  m:[
+    ["q à l'ELS", 28.0, 0.12, "kN/m"],
+    ["R(B), réaction reprise par le poteau", 56.0, 0.4, "kN"],
+    ["N au pied du poteau, 0 étage au-dessus", 59.0, 0.4, "kN"],
+    ["N au pied du poteau, 1 étage au-dessus", 118.0, 0.5, "kN"],
+    ["N au pied du poteau, 2 étages au-dessus", 177.0, 0.5, "kN"],
+    ["N au pied du poteau, 3 étages au-dessus", 236.0, 0.6, "kN"],
+    ["Écart entre deux étages successifs (calcul)", 59.0, 1.0, "kN"]
+  ],
+  q:{ q:"Pourquoi l'effort au pied du poteau (59 kN) est-il supérieur à celui en tête (56 kN) ?",
+      opts:["Parce que le poteau ajoute son propre poids (0,20 × 0,20 × 3,00 × 25 = 3 kN)",
+            "Parce que le sol pousse vers le haut",
+            "Parce que la poutre s'est déformée"],
+      ok:0, expl:"Chaque élément traversé ajoute son poids propre. C'est vrai à chaque niveau : la charge ne fait que grossir en descendant." },
+  consigne:"Rédige le chemin complet suivi par la charge d'une personne debout au 3ᵉ étage, jusqu'au sol. Cite chaque élément traversé.",
+  essentiel:`<h4>💡 L'essentiel — la descente de charges</h4>
+    <p>La <b>descente de charges</b> est le suivi, niveau par niveau, de tout ce qui pèse, jusqu'au sol.</p>
+    <span class="formule">plancher → poutre → poteau → semelle → sol</span>
+    <ul>
+      <li><b>Effort normal N</b> (kN) : la compression dans le poteau. Il <b>s'accumule</b> en descendant — ici + 59 kN par étage.</li>
+      <li>À chaque niveau on ajoute : la réaction de la poutre du niveau + le <b>poids propre</b> du poteau traversé.</li>
+      <li>C'est pour cela que les poteaux et les semelles <b>grossissent vers le bas</b>, et que le sol doit être capable d'encaisser le total (contrainte admissible du sol, en kPa).</li>
+      <li>Le poteau peut céder de deux façons : par <b>écrasement</b> (N > N<sub>Rd</sub>, poteau trapu) ou par <b>flambement</b> (poteau élancé) — c'est la séance 7.</li>
+    </ul>` },
+
+{
+  id:"s7", nav:"7 · Stabilité", titre:"Séance 7 — Stabilité : flambement et contreventement",
+  question:"Une règle plate se casse-t-elle en la comprimant ? Non : elle se dérobe sur le côté. Que se passe-t-il pour un poteau ?",
+  reglages:`<b>Partie A</b> — <b>Poteau</b> Tube 60×60×3 · <b>h</b> 3,00 m. Les mesures se lisent dans la carte
+    « Contrôle du bureau d'études », ligne <b>Charge critique de flambement N<sub>cr</sub></b>.
+    <br><b>Partie B</b> — <b>Plancher</b> bois · <b>Destination</b> Logement · <b>b</b> 4,0 m · <b>Poutre</b> BA 20×50 ·
+    <b>L</b> 5,00 m · <b>h</b> 3,00 m · <b>Liaisons</b> Articulé–articulé · <b>Contreventement</b> Palée triangulée`,
+  steps:[
+    "Partie A : parcours les quatre <b>liaisons</b> du poteau et note N<sub>cr</sub> à chaque fois. Regarde la longueur de flambement L<sub>f</sub> affichée juste en dessous.",
+    "Calcule le rapport N<sub>cr</sub>(encastré–encastré) ÷ N<sub>cr</sub>(articulé–articulé). Compare avec le rapport des L<sub>f</sub>.",
+    "Compare avec un <b>poteau BA 20×20</b> : N<sub>cr</sub> devient énorme, c'est N<sub>Rd</sub> qui commande. Un poteau trapu ne flambe pas, il s'écrase.",
+    "Partie B : applique les réglages, remets les <b>liaisons articulées</b>, mets le <b>vent Modéré</b>, capteur R sur <b>Tirant</b> : note l'effort. Passe en <b>Tempête</b> et note à nouveau.",
+    "Enlève le <b>contreventement</b> (Aucun ⚠) avec du vent : que se passe-t-il ? Lis l'alerte, puis repose la palée."
+  ],
+  m:[
+    ["N(cr), articulé–articulé (Lf = 3,00 m)", 85.5, 0.5, "kN"],
+    ["N(cr), encastré–articulé (Lf = 2,10 m)", 174.6, 1.0, "kN"],
+    ["N(cr), encastré–encastré (Lf = 1,50 m)", 342.1, 1.5, "kN"],
+    ["N(cr), encastré–libre (Lf = 6,00 m)", 21.4, 0.4, "kN"],
+    ["Rapport N(cr) encastré–encastré ÷ articulé–articulé", 4.0, 0.2, "—"],
+    ["Effort dans le tirant, vent Modéré", 3.5, 0.15, "kN"],
+    ["Effort dans le tirant, vent Tempête", 8.4, 0.2, "kN"]
+  ],
+  q:{ q:"En divisant la longueur de flambement par 2 (de 3,00 m à 1,50 m), la charge critique est multipliée par 4. La charge critique est donc…",
+      opts:["proportionnelle à Lf", "inversement proportionnelle à Lf²", "indépendante de Lf"],
+      ok:1, expl:"C'est la formule d'Euler : N(cr) = π² E I / Lf². Encastrer un poteau, c'est réduire sa longueur de flambement — donc gagner énormément de charge admissible, sans changer de section." },
+  consigne:"Rédige deux règles que tu retiens : une sur le flambement des poteaux, une sur le contreventement d'une structure.",
+  essentiel:`<h4>💡 L'essentiel — flambement et contreventement</h4>
+    <p><b>1. Le flambement.</b> Un élément comprimé <b>élancé</b> ne s'écrase pas : il se dérobe latéralement, brutalement, bien avant d'atteindre sa résistance à la compression.</p>
+    <span class="formule">N(cr) = π² E I / Lf²</span>
+    <ul>
+      <li><b>L<sub>f</sub> — longueur de flambement</b>, fixée par les <b>liaisons</b> aux extrémités :
+        articulé–articulé L<sub>f</sub> = h · encastré–articulé 0,7 h · encastré–encastré 0,5 h · encastré–libre <b>2 h</b>.</li>
+      <li>L<sub>f</sub> est <b>au carré au dénominateur</b> : diviser L<sub>f</sub> par 2 multiplie la charge critique par 4. Encastrer coûte peu et rapporte beaucoup.</li>
+      <li>La charge admissible est la <b>plus petite</b> de N<sub>Rd</sub> (écrasement) et N<sub>cr</sub> (flambement). Poteau trapu → écrasement ; poteau élancé → flambement.</li>
+    </ul>
+    <p><b>2. Le contreventement.</b> Un cadre rectangulaire articulé est un <b>mécanisme</b> : sous une poussée horizontale (vent, séisme), il se transforme en parallélogramme et s'effondre. Un <b>triangle</b>, lui, est indéformable.</p>
+    <span class="formule">H = w × b × h / 2</span><span class="formule">T = H × d / L</span>
+    <ul>
+      <li><b>Palée triangulée</b> : une diagonale suffit à bloquer la déformation. Elle reprend l'effort T et le renvoie en pied, avec un <b>couple de renversement</b> ΔN = H h / L (compression d'un côté, soulèvement de l'autre).</li>
+      <li>Autres solutions : <b>voiles</b> de béton, <b>noyau</b> d'ascenseur, <b>portiques à nœuds encastrés</b> — plus souples, d'où le critère de déplacement en tête (h/250).</li>
+      <li>Le contreventement se pense dans les <b>deux directions</b> du bâtiment, à chaque niveau.</li>
+    </ul>` }
+];
+
+const BILAN_QCM = [
+  { q:"La charge linéique reçue par une poutre se calcule par…",
+    opts:["q = G + Q", "q = (G + Q) × b + g₀", "q = (G + Q) ÷ b"], ok:1 },
+  { q:"La combinaison ELU s'écrit…",
+    opts:["G + Q", "1,35 G + 1,5 Q", "1,5 G + 1,35 Q"], ok:1 },
+  { q:"Une poutre sur 2 appuis, charge uniforme q, portée L. Le moment maximal vaut…",
+    opts:["q L² / 8, à mi-travée", "q L / 2, sur les appuis", "q L² / 2, à mi-travée"], ok:0 },
+  { q:"Si on double la portée d'une poutre sans rien changer d'autre, la flèche est multipliée par…",
+    opts:["2", "4", "16"], ok:2 },
+  { q:"La flèche d'un plancher courant est limitée à…",
+    opts:["L/100", "L/300", "L/1000"], ok:1 },
+  { q:"L'effort normal dans un poteau, en descendant les étages…",
+    opts:["diminue", "reste constant", "augmente, car chaque niveau ajoute sa charge et son poids propre"], ok:2 },
+  { q:"La charge critique de flambement d'un poteau vaut N(cr) = π² E I / Lf². Encastrer les deux extrémités (Lf = 0,5 h) plutôt que de les articuler (Lf = h)…",
+    opts:["ne change rien", "multiplie la charge critique par 4", "divise la charge critique par 2"], ok:1 },
+  { q:"Un cadre rectangulaire articulé, sans diagonale ni voile, soumis au vent…",
+    opts:["est stable car les poteaux sont solides",
+          "se déforme en parallélogramme : c'est un mécanisme, il s'effondre",
+          "se met en compression"], ok:1 }
+];
+
+/* ---------------------------------------------------------------------
+   ÉTAT + PERSISTANCE
+--------------------------------------------------------------------- */
+let store = { steps:{}, mes:{}, qcm:{}, concl:{}, reveal:{}, bilan:{} };
+function save(){
+  try { localStorage.setItem("seq-structure-inductive", JSON.stringify(store)); } catch(e){}
+}
+(function load(){
+  try {
+    const raw = localStorage.getItem("seq-structure-inductive");
+    if (raw) store = Object.assign(store, JSON.parse(raw));
+  } catch(e){}
+})();
+
+/* ---------------------------------------------------------------------
+   OUTILS
+--------------------------------------------------------------------- */
+const $ = s => document.querySelector(s);
+function h(tag, attrs, html){
+  const e = document.createElement(tag);
+  for (const k in (attrs || {})) {
+    if (k === "class") e.className = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function parseNum(str){
+  if (typeof str !== "string") return NaN;
+  return parseFloat(str.replace(",", ".").replace(/\s/g, ""));
+}
+function seanceDone(s){
+  return !!(store.mes[s.id] && store.mes[s.id].ok && store.reveal[s.id]);
+}
+
+/* ---------------------------------------------------------------------
+   CONSTRUCTION DES PAGES
+--------------------------------------------------------------------- */
+const main = $("#main");
+const nav = $("#nav");
+
+function buildNav(){
+  nav.innerHTML = "";
+  const mk = (id, label) => {
+    const b = h("button", { class: "tab", "data-page": id },
+      `<span>${label}</span><span class="tick">✓</span>`);
+    b.addEventListener("click", () => show(id));
+    nav.appendChild(b);
+    return b;
+  };
+  mk("home", "🏠 Accueil");
+  SEANCES.forEach(s => mk(s.id, s.nav));
+  mk("bilan", "🏁 Bilan");
+}
+
+function buildHome(){
+  const p = h("section", { class: "page", id: "page-home" });
+  p.appendChild(h("div", { class: "card" }, `
+    <span class="pill amber">La démarche</span>
+    <h2>Ici, c'est toi qui découvres les règles de la construction</h2>
+    <p>Pas de cours à apprendre d'abord : tu vas <b>manipuler</b> une structure au simulateur, <b>mesurer</b> les efforts réels, chercher la règle cachée derrière les nombres, puis <b>écrire ta propre conclusion</b>. Le cours n'apparaît qu'après, pour comparer avec ce que tu as trouvé.</p>
+    <div class="demarche">
+      <div><div class="num">Étape 1</div><div class="t">🔬 Je manipule</div><p>Je suis le protocole sur le simulateur, en cochant chaque étape.</p></div>
+      <div><div class="num">Étape 2</div><div class="t">📏 Je mesure</div><p>Je note mes valeurs : le site vérifie qu'elles sont justes.</p></div>
+      <div><div class="num">Étape 3</div><div class="t">🤔 J'analyse</div><p>Je cherche le lien entre les mesures (un mini-quiz m'aide).</p></div>
+      <div><div class="num">Étape 4</div><div class="t">✍️ Je conclus</div><p>J'écris ma règle, puis je la compare à « L'essentiel ».</p></div>
+    </div>
+    <p><b>Organisation conseillée :</b> ouvre le simulateur dans une 2ᵉ fenêtre, côte à côte avec cette page.</p>
+    <a class="simu-link" href="${SIM}" target="_blank" rel="noopener">▲ Ouvrir l'Atelier Structure</a>
+  `));
+  p.appendChild(h("div", { class: "card" }, `
+    <span class="pill">Programme</span>
+    <h2>7 séances, 7 découvertes</h2>
+    <p>1 · Les charges G, Q et la surface d'influence — 2 · Les combinaisons ELU / ELS — 3 · L'équilibre et les réactions d'appui — 4 · Le moment fléchissant M = qL²/8 — 5 · La flèche et le critère L/300 — 6 · La descente de charges jusqu'à la semelle — 7 · La stabilité : flambement et contreventement.</p>
+    <p>Compte environ <b>25 à 35 minutes par séance</b>. Ta progression est enregistrée sur ce poste.</p>
+    <p><b>Deux conseils de manip :</b> écris les nombres avec une <b>virgule</b>, comme sur les cadrans. Et si un élément casse pendant que tu changes les réglages, clique simplement sur « Remplacer… » dans l'alerte rouge : c'est normal, une structure ne se répare pas toute seule.</p>
+  `));
+  main.appendChild(p);
+}
+
+function buildSeance(s, idx){
+  const p = h("section", { class: "page", id: "page-" + s.id });
+
+  p.appendChild(h("div", { class: "card" }, `
+    <span class="pill amber">Séance ${idx + 1} / ${SEANCES.length}</span>
+    <h2>${s.titre}</h2>
+    <h3>🎯 Question de départ</h3>
+    <p><i>« ${s.question} »</i></p>
+    <h3>⚙ Réglages de départ sur le simulateur</h3>
+    <div class="reglages">${s.reglages}</div>
+    <a class="simu-link" href="${SIM}" target="_blank" rel="noopener" style="font-size:13px;padding:9px 16px">▲ Ouvrir le simulateur</a>
+  `));
+
+  const cManip = h("div", { class: "card" }, `<h3 style="margin-top:0">🔬 Je manipule</h3>
+    <p>Coche chaque étape quand elle est faite.</p>`);
+  const ol = h("ol", { class: "steps" });
+  s.steps.forEach((t, i) => {
+    const li = h("li", {}, t);
+    if (store.steps[s.id] && store.steps[s.id][i]) li.classList.add("ck");
+    li.addEventListener("click", () => {
+      li.classList.toggle("ck");
+      store.steps[s.id] = store.steps[s.id] || {};
+      store.steps[s.id][i] = li.classList.contains("ck");
+      save();
+    });
+    ol.appendChild(li);
+  });
+  cManip.appendChild(ol);
+  p.appendChild(cManip);
+
+  const cMes = h("div", { class: "card" }, `<h3 style="margin-top:0">📏 Je mesure</h3>
+    <p>Note tes valeurs (avec une virgule, comme sur les cadrans), puis vérifie.</p>`);
+  const table = h("table", { class: "mes" }, `<thead><tr><th>Mesure</th><th>Ta valeur</th></tr></thead>`);
+  const tbody = h("tbody");
+  const saved = (store.mes[s.id] && store.mes[s.id].vals) || {};
+  s.m.forEach((row, i) => {
+    const tr = h("tr");
+    tr.appendChild(h("td", {}, row[0]));
+    const td = h("td");
+    const inp = h("input", { type: "text", inputmode: "decimal", "data-i": i, autocomplete: "off" });
+    if (saved[i] != null) inp.value = saved[i];
+    td.appendChild(inp);
+    td.appendChild(h("span", { class: "unit" }, row[3]));
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  cMes.appendChild(table);
+  const btnV = h("button", { class: "btn" }, "Vérifier mes mesures");
+  const res = h("div", { class: "mes-result" });
+  if (store.mes[s.id] && store.mes[s.id].ok) { res.textContent = "✓ Mesures validées."; res.className = "mes-result good"; }
+  btnV.addEventListener("click", () => {
+    let nOk = 0;
+    const vals = {};
+    table.querySelectorAll("input").forEach(inp => {
+      const i = +inp.dataset.i;
+      const v = parseNum(inp.value);
+      vals[i] = inp.value;
+      const att = s.m[i][1], tol = s.m[i][2];
+      const good = !isNaN(v) && Math.abs(v - att) <= tol;
+      inp.classList.toggle("good", good);
+      inp.classList.toggle("bad", !good);
+      if (good) nOk++;
+    });
+    const ok = nOk === s.m.length;
+    store.mes[s.id] = { ok, vals };
+    save();
+    res.className = "mes-result " + (ok ? "good" : "bad");
+    res.textContent = ok ? "✓ Toutes les mesures sont justes !"
+      : `${nOk} / ${s.m.length} mesures justes — refais les mesures en rouge sur le simulateur.`;
+    refreshNav();
+  });
+  cMes.appendChild(btnV);
+  cMes.appendChild(res);
+  p.appendChild(cMes);
+
+  const cAna = h("div", { class: "card" }, `<h3 style="margin-top:0">🤔 J'analyse</h3>`);
+  const qcm = h("div", { class: "qcm" }, `<div class="q">${s.q.q}</div>`);
+  const opts = h("div", { class: "opts" });
+  const expl = h("div", { class: "expl" }, s.q.expl);
+  s.q.opts.forEach((o, i) => {
+    const b = h("button", { class: "opt" }, o);
+    if (store.qcm[s.id] === i && i === s.q.ok) { b.classList.add("good"); expl.classList.add("show"); }
+    b.addEventListener("click", () => {
+      opts.querySelectorAll(".opt").forEach(x => x.classList.remove("good", "bad"));
+      b.classList.add(i === s.q.ok ? "good" : "bad");
+      if (i === s.q.ok) { expl.classList.add("show"); store.qcm[s.id] = i; save(); }
+    });
+    opts.appendChild(b);
+  });
+  qcm.appendChild(opts); qcm.appendChild(expl);
+  cAna.appendChild(qcm);
+  p.appendChild(cAna);
+
+  const cCon = h("div", { class: "card" }, `<h3 style="margin-top:0">✍️ Je conclus avec mes mots</h3>
+    <p>${s.consigne}</p>`);
+  const ta = h("textarea", { placeholder: "Écris ta conclusion ici…" });
+  if (store.concl[s.id]) ta.value = store.concl[s.id];
+  ta.addEventListener("input", () => { store.concl[s.id] = ta.value; save(); });
+  cCon.appendChild(ta);
+  const btnR = h("button", { class: "btn ghost" }, "Comparer avec la conclusion du cours");
+  const ess = h("div", { class: "essentiel" }, s.essentiel);
+  btnR.addEventListener("click", () => {
+    if (!(store.mes[s.id] && store.mes[s.id].ok)) {
+      btnR.textContent = "Valide d'abord tes mesures 📏";
+      setTimeout(() => btnR.textContent = "Comparer avec la conclusion du cours", 1800);
+      return;
+    }
+    ess.classList.add("show");
+    store.reveal[s.id] = true; save(); refreshNav();
+  });
+  if (store.reveal[s.id]) ess.classList.add("show");
+  cCon.appendChild(btnR);
+  cCon.appendChild(ess);
+  p.appendChild(cCon);
+
+  main.appendChild(p);
+}
+
+function buildBilan(){
+  const p = h("section", { class: "page", id: "page-bilan" });
+  p.appendChild(h("div", { class: "card" }, `
+    <span class="pill amber">Bilan</span>
+    <h2>Ce que tu as découvert toi-même</h2>
+    <div class="scroll-x">
+    <table class="recap">
+      <thead><tr><th>Grandeur</th><th>Symbole</th><th>Unité</th><th>Où / comment</th><th>À retenir</th></tr></thead>
+      <tbody>
+        <tr><td>Charge permanente</td><td class="m">G</td><td class="m">kN/m²</td><td>Nature du plancher</td><td>Dalle BA 20 : 6,0 kN/m²</td></tr>
+        <tr><td>Charge d'exploitation</td><td class="m">Q</td><td class="m">kN/m²</td><td>Destination (Eurocode 1)</td><td>Logement 1,5 · bureaux 2,5 · commerce 5,0</td></tr>
+        <tr><td>Largeur de reprise</td><td class="m">b</td><td class="m">m</td><td>Surface d'influence</td><td class="m">q = (G + Q) × b + g₀</td></tr>
+        <tr><td>Combinaisons</td><td class="m">ELU · ELS</td><td>—</td><td>Résistance · flèche</td><td class="m">1,35 G + 1,5 Q  ·  G + Q</td></tr>
+        <tr><td>Réaction d'appui</td><td class="m">R</td><td class="m">kN</td><td>Capteur R sur les appuis</td><td class="m">Σ R = q × L  (ΣF = 0)</td></tr>
+        <tr><td>Moment fléchissant</td><td class="m">M</td><td class="m">kN·m</td><td>Capteur M, mi-travée</td><td class="m">M = q L² / 8  ·  M<sub>Ed</sub> ≤ M<sub>Rd</sub> (ELU)</td></tr>
+        <tr><td>Effort tranchant</td><td class="m">V</td><td class="m">kN</td><td>Diagramme V, aux appuis</td><td class="m">V = q L / 2</td></tr>
+        <tr><td>Flèche</td><td class="m">f</td><td class="m">mm</td><td>Cadran Flèche (ELS)</td><td class="m">f = 5 q L⁴ / (384 EI) ≤ L/300</td></tr>
+        <tr><td>Effort normal</td><td class="m">N</td><td class="m">kN</td><td>Capteur R, pied de poteau</td><td>Cumul à chaque niveau + poids propre</td></tr>
+        <tr><td>Longueur de flambement</td><td class="m">L<sub>f</sub></td><td class="m">m</td><td>Liaisons du poteau</td><td class="m">h · 0,7h · 0,5h · 2h</td></tr>
+        <tr><td>Charge critique</td><td class="m">N<sub>cr</sub></td><td class="m">kN</td><td>Contrôle bureau d'études</td><td class="m">N<sub>cr</sub> = π² E I / L<sub>f</sub>²</td></tr>
+        <tr><td>Contreventement</td><td>—</td><td class="m">kN</td><td>Palée, voile, portique</td><td class="m">T = H d / L  ·  le triangle est indéformable</td></tr>
+      </tbody>
+    </table></div>
+  `));
+
+  const cQ = h("div", { class: "card" }, `<h3 style="margin-top:0">🏁 Quiz final — 8 questions</h3>`);
+  const wrap = h("div");
+  BILAN_QCM.forEach((q, qi) => {
+    const box = h("div", { class: "qcm" }, `<div class="q">${qi + 1}. ${q.q}</div>`);
+    const opts = h("div", { class: "opts" });
+    q.opts.forEach((o, i) => {
+      const b = h("button", { class: "opt" }, o);
+      if (store.bilan[qi] === i) b.classList.add(i === q.ok ? "good" : "bad");
+      b.addEventListener("click", () => {
+        opts.querySelectorAll(".opt").forEach(x => x.classList.remove("good", "bad"));
+        b.classList.add(i === q.ok ? "good" : "bad");
+        store.bilan[qi] = i; save(); scoreLine();
+      });
+      opts.appendChild(b);
+    });
+    box.appendChild(opts);
+    wrap.appendChild(box);
+  });
+  cQ.appendChild(wrap);
+  const sc = h("div", { class: "score" });
+  function scoreLine(){
+    const answered = Object.keys(store.bilan).length;
+    const good = BILAN_QCM.reduce((n, q, i) => n + (store.bilan[i] === q.ok ? 1 : 0), 0);
+    sc.textContent = answered ? `Score : ${good} / ${BILAN_QCM.length}` + (good === BILAN_QCM.length ? " — parfait ▲" : "") : "";
+  }
+  scoreLine();
+  cQ.appendChild(sc);
+  p.appendChild(cQ);
+  main.appendChild(p);
+}
+
+/* ---------------------------------------------------------------------
+   NAVIGATION + PROGRESSION
+--------------------------------------------------------------------- */
+function show(id){
+  document.querySelectorAll(".page").forEach(pg => pg.classList.toggle("on", pg.id === "page-" + id));
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.page === id));
+  window.scrollTo({ top: 0 });
+}
+function refreshNav(){
+  let done = 0;
+  SEANCES.forEach(s => {
+    const ok = seanceDone(s);
+    if (ok) done++;
+    const tab = document.querySelector(`.tab[data-page="${s.id}"]`);
+    if (tab) tab.classList.toggle("done", ok);
+  });
+  $("#progBar").style.width = (done / SEANCES.length * 100) + "%";
+  $("#progTxt").textContent = `${done} / ${SEANCES.length} séances`;
+}
+
+/* ---------------------------------------------------------------------
+   DÉMARRAGE
+--------------------------------------------------------------------- */
+buildNav();
+buildHome();
+SEANCES.forEach(buildSeance);
+buildBilan();
+refreshNav();
+show("home");
+</script>
+</body>
+</html>

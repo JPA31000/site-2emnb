@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atelier Structure — banc d'essai du bâtiment</title>
+<title>Atelier Structure · banc d’essai du bâtiment · 2EMNB</title>
+<meta name="description" content="Banc d’essai du bâtiment : poser des charges sur une poutre, lire les efforts sur des cadrans, vérifier la flèche et la résistance, faire flamber un poteau ou s’effondrer une structure sans contreventement.">
+<meta name="theme-color" content="#f7f4ec">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M6 25l2-7 5 5z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
   :root{
     --bg:#0e0e10; --panel:#161618; --panel-2:#1d1d20; --line:#2a2a2e;
@@ -169,13 +175,166 @@
     .taux-marker,.deform{transition:none}
   }
 </style>
+<style>
+/* =====================================================================
+   Habillage « carnet de croquis » : papier quadrillé, crayon graphite, crayon rouge, crayon bleu, surligneur.
+   Les variables du banc d'essai d'origine sont redéfinies ; les règles qui avaient des couleurs écrites en dur sont reprises.
+   ===================================================================== */
+:root{
+  --papier:#f7f4ec;--fiche:#fffdf7;--kraft:#e6d3b0;--kraft2:#c9ad7d;
+  --gr:#2a2a2a;--gr2:rgba(42,42,42,.68);--gr3:rgba(42,42,42,.2);
+  --rouge:#c93b31;--rouge2:#d6453a;--bleu:#2f6fd6;--vert:#3d9a5f;--jaune:rgba(255,222,40,.72);--orange:#c77a1e;--orange-t:#a85d0b;
+  --pj:#fff1a8;--pr:#ffd8cf;--pb:#d8e7ff;--pv:#d5f0da;--po:#ffe6cc;
+  --main:"Architects Daughter","Segoe Print","Comic Sans MS",cursive;
+  --texte:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --ombre:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);
+  --e-ressort:cubic-bezier(.34,1.56,.64,1);
+  /* les noms du pupitre d'origine, redéfinis en crayon sur papier */
+  --bg:var(--papier);--panel:var(--fiche);--panel-2:#faf5e8;--line:var(--gr3);
+  --ink:var(--gr);--ink-dim:var(--gr2);--ink-faint:rgba(42,42,42,.5);
+  --accent:var(--orange-t);--accent-soft:rgba(199,122,30,.14);
+  --cyan:var(--bleu);--danger:var(--rouge);--ok:var(--vert);
+  --radius:4px;
+  --mono:var(--texte);--sans:var(--texte);--display:var(--main);
+  color-scheme:light;
+}
+::selection{background:var(--jaune);color:var(--gr)}
+html{scroll-behavior:smooth}
+body{background-color:var(--papier);background-image:linear-gradient(rgba(47,111,214,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(47,111,214,.085) 1px,transparent 1px);background-size:22px 22px;color:var(--gr);font-family:var(--texte);font-weight:400;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:700}
+::-webkit-scrollbar-thumb{background:rgba(42,42,42,.22)}
+:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,#knob:focus-visible{outline:2.5px dashed var(--bleu);outline-offset:3px;border-radius:6px}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* en-tête : un lien vers l'accueil du carnet, le titre, une étiquette */
+header{align-items:baseline}
+header .retour{order:1;flex:1 1 auto;display:inline-flex;align-items:center;gap:7px;font:400 18px/1 var(--main);color:var(--bleu);transition:color .25s}
+header .retour span{display:inline-block;transition:transform .35s var(--e-ressort)}
+header .retour:hover{color:var(--rouge)}
+header .retour:hover span{transform:translateX(-4px)}
+header::after{content:"";order:3;flex-basis:100%;height:0}   /* retour à la ligne : le lien et l'étiquette en haut, puis le titre */
+header h1{order:4;font:400 clamp(28px,4vw,40px)/1.1 var(--main);letter-spacing:0}
+header h1 .spark{color:var(--rouge)}
+header .sub{order:5;color:var(--gr2);font:400 15px/1.4 var(--texte)}
+header .badge{order:2;margin-left:auto;font:400 16px/1 var(--main);color:var(--bleu);border:1.5px dashed var(--bleu);background:transparent;padding:6px 12px;border-radius:12px 14px 11px 13px;transform:rotate(-1.5deg)}
+header .lien-seq{order:6;font:400 17px/1 var(--main);color:var(--bleu);border-bottom:1.5px dashed currentColor;padding-bottom:2px;transition:color .25s}
+header .lien-seq:hover{color:var(--rouge)}
+footer{color:var(--gr2);font:400 13px/1.5 var(--texte)}
+footer .dot{color:var(--rouge)}
+@media (prefers-reduced-motion:reduce){header .retour span{transition:none}}
+
+/* ---------- Atelier Structure : les fiches, le schéma au crayon, les cadrans ---------- */
+.card{position:relative;background:var(--fiche);border:0;border-radius:2px;box-shadow:var(--ombre);padding:20px 22px 18px}
+.card::before{content:"";position:absolute;top:-11px;left:12%;width:92px;height:22px;background:rgba(255,222,40,.55);transform:rotate(-2deg);box-shadow:0 1px 2px rgba(0,0,0,.08);pointer-events:none}
+.stack .card:nth-child(even)::before{left:auto;right:12%;transform:rotate(2.2deg)}
+.card h2{font:400 clamp(22px,2.4vw,27px)/1.15 var(--main);margin-bottom:4px}
+.card .hint{color:var(--gr2);font-size:14px;line-height:1.5;margin-bottom:12px}
+.ctl-label{font:400 17px/1.2 var(--main);color:var(--bleu);text-transform:none;letter-spacing:0}
+
+/* alertes : des papillons collés sur la fiche */
+.alert{font:400 15px/1.5 var(--texte);color:var(--gr);background:var(--pj);border:0;border-left:5px solid #d9b43a;border-radius:2px;box-shadow:0 8px 14px -12px rgba(0,0,0,.5)}
+.alert.warn{color:var(--gr);border-color:#d9b43a}
+.alert.danger{background:var(--pr);border-left-color:var(--rouge);color:#7a1c14}
+.alert.good{background:var(--pv);border-left-color:var(--vert);color:#1f5c37}
+.alert__txt{flex:1 1 260px;min-width:0}
+.alert button{background:var(--rouge);color:#fff;font:400 16px/1 var(--main);border:0;border-radius:8px 10px 8px 9px;padding:7px 13px}
+.alert.warn button{background:var(--jaune);color:var(--gr);border:1.5px solid rgba(42,42,42,.4)}
+
+/* le schéma, dessiné au crayon */
+#schema,#diag,.gauge svg,#knob{filter:url(#crayon)}
+.sol{stroke:var(--gr)}
+.hatch{stroke:rgba(42,42,42,.4);stroke-width:1.3}
+.comp{stroke:var(--gr)}
+.comp-fill{fill:rgba(42,42,42,.07)}
+.beam{fill:var(--kraft);stroke:var(--gr);stroke-width:2.2}   /* le trait devient rouge quand la poutre est rompue (posé en ligne par le script) */
+.dalle{fill:var(--pj);stroke:var(--gr2)}
+.load{stroke:var(--orange);stroke-width:2.2}
+.load-head{fill:var(--orange)}
+.deform{stroke:var(--bleu)}
+.diago{stroke:var(--vert);stroke-width:4}
+.flow{stroke:var(--orange);stroke-width:2.8}
+.lbl{fill:var(--gr2);font-family:var(--main);font-size:13.5px}
+.lbl-strong{fill:var(--gr);font-family:var(--main);font-weight:400;font-size:16.5px}
+.lbl-danger{fill:var(--rouge);font-family:var(--main);font-size:14.5px}
+.lbl-ok{fill:var(--vert);font-family:var(--main);font-size:14.5px}
+.node{fill:var(--gr)}
+.wind{stroke:var(--bleu)}
+.wind-head{fill:var(--bleu)}
+.blown-x{stroke:var(--rouge)}
+.probe circle,.probe rect{fill:var(--fiche);stroke:var(--gr2)}
+.probe text{font-family:var(--main);font-size:13.5px;font-weight:400;fill:var(--gr2)}
+.probe:hover circle,.probe:hover rect{stroke:var(--gr)}
+.probe.sel-m circle{fill:var(--jaune);stroke:var(--orange)}
+.probe.sel-m text{fill:var(--gr)}
+.probe.sel-r rect{fill:var(--pb);stroke:var(--bleu)}
+.probe.sel-r text{fill:#1d3e7a}
+.dg-axis{stroke:var(--gr2)}
+.dg-m{fill:rgba(199,122,30,.2);stroke:var(--orange)}
+.dg-v{fill:rgba(47,111,214,.14);stroke:var(--bleu)}
+.dg-lbl{fill:var(--gr2);font-family:var(--texte);font-size:11.5px}
+.dg-mark{stroke:var(--gr)}
+
+/* les commandes : des pastilles de crayon, des curseurs rouges */
+.chip{font:400 16px/1.1 var(--main);color:var(--gr2);background:transparent;border:1.6px dashed var(--gr3);border-radius:12px 14px 11px 13px;padding:6px 12px 7px;transition:color .25s,border-color .25s,background .25s,transform .35s var(--e-ressort)}
+.chip:hover:not(:disabled){color:var(--gr);border-color:var(--gr2)}
+.chip.on{color:var(--gr);background:var(--jaune);border:1.6px solid rgba(42,42,42,.45);transform:rotate(-1deg)}
+.chip.danger-chip.on{background:var(--pr);border-color:var(--rouge);color:#7a1c14}
+input[type=range]{accent-color:var(--rouge2)}
+.gen-val,.knob-val{font:400 26px/1 var(--main);color:var(--rouge)}
+.gen-val small,.knob-val small{font:400 13px/1.2 var(--texte);color:var(--gr2)}
+#knob [fill="#222127"]{fill:#efe7d3;stroke:var(--gr3)}
+#knob [stroke="#34333a"]{stroke:rgba(42,42,42,.5)}
+#knob circle:first-child{fill:var(--fiche);stroke:var(--gr2)}
+#knob text{fill:var(--gr2);font-family:var(--main);font-size:12px}
+
+/* les cadrans */
+.gauge{background:var(--fiche);border:1.4px solid var(--gr3);border-radius:4px}
+.g-arc{stroke:rgba(42,42,42,.35)}
+.g-red{stroke:var(--rouge);opacity:.85}
+.g-tick{stroke:var(--gr2)}
+.g-tick-min{stroke:rgba(42,42,42,.35)}
+.g-num{fill:var(--gr2);font-family:var(--texte);font-size:9.5px}
+.g-needle{stroke:var(--rouge)}
+.g-pivot{fill:var(--gr);stroke:var(--gr2)}
+.g-name{fill:var(--gr);font-family:var(--main);font-size:13.5px}
+.g-read{font:400 19px/1.1 var(--main);color:var(--gr)}
+.g-read small{font:400 12px var(--texte);color:var(--gr2)}
+
+/* le contrôle du bureau d'études */
+.taux-track{background:linear-gradient(90deg,#f1ead6,#f3d98a 55%,#eaa24a 70%,#c93b31)}
+.taux-zone{border:1.8px solid var(--vert);background:rgba(61,154,95,.16)}
+.taux-marker{background:var(--gr)}
+.taux-marker::after{border-top-color:var(--gr)}
+.taux-scale{font:400 12px var(--texte);color:var(--gr2)}
+.taux-status{font:400 15px/1.5 var(--texte);background:var(--panel-2);border:1.4px dashed var(--gr3);border-radius:4px}
+.taux-status.ok{background:var(--pv);border:1.4px solid var(--vert);color:#1f5c37}
+.taux-status.low{color:var(--gr)}
+.taux-status.high{background:var(--pr);border:1.4px solid var(--rouge);color:#7a1c14}
+table.check{font-size:14px}
+table.check td{border-bottom:1.3px dashed var(--gr3);color:var(--gr2)}
+table.check td:first-child{color:var(--gr)}
+table.check td.v{font-family:var(--texte);color:var(--gr)}
+table.check tr.ko td{color:var(--rouge)}
+table.check tr.oki td.v{color:#1f5c37}
+.calc{font:400 14.5px/1.95 var(--texte);color:var(--gr2)}
+.calc b{color:var(--orange-t);font-weight:700}
+.calc .res{color:var(--gr);font-weight:700;background:linear-gradient(transparent 55%,var(--jaune) 55% 92%,transparent 92%);padding:0 3px}
+.defis li{font:400 16px/1.35 var(--main);color:var(--gr2);background:transparent;border:1.4px dashed var(--gr3);border-radius:6px 8px 6px 7px}
+.defis li::before{content:"○";color:var(--gr2)}
+.defis li.done{color:#1f5c37;background:var(--pv);border:1.4px solid var(--vert)}
+.defis li.done::before{content:"✓";color:var(--vert)}
+@media (max-width:1050px){.stack .card:nth-child(even)::before{left:12%;right:auto}}
+</style>
 </head>
 <body>
+<svg class="defs" aria-hidden="true"><filter id="crayon" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence id="crayon-bruit" type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="2" result="b"/><feDisplacementMap in="SourceGraphic" in2="b" scale="2.4" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 
 <header>
+  <a class="retour" href="index.html"><span aria-hidden="true">←</span>Accueil du carnet</a>
   <h1><span class="spark">▲</span> Atelier Structure</h1>
   <div class="sub">Banc d'essai du bâtiment — Bac Pro TEBAA · charges, RDM, descente de charges, stabilité</div>
-  <div class="badge">100 % hors-ligne</div>
+  <a class="lien-seq" href="sequence-structure.html">La séquence guidée →</a>
+  <div class="badge">fonctionne hors connexion</div>
 </header>
 
 <div class="wrap">
@@ -1012,9 +1171,9 @@ function update(){
   } else refs.deform.setAttribute("display", "none");
 
   refs.beamBroken.setAttribute("display", state.blown.poutre ? "" : "none");
-  refs.beam.setAttribute("stroke", state.blown.poutre ? "var(--danger)" : "var(--ink)");
+  refs.beam.style.stroke = state.blown.poutre ? "var(--danger)" : "var(--ink)";
   if (refs.diagoBx) refs.diagoBx.setAttribute("display", state.blown.diag ? "" : "none");
-  if (refs.diago) refs.diago.setAttribute("stroke", state.blown.diag ? "#4a4a48" : "var(--ok)");
+  if (refs.diago) refs.diago.style.stroke = state.blown.diag ? "#4a4a48" : "var(--ok)";
   refs.poteauShapes.forEach(p => {
     const fl = state.blown.poteau === "flambe";
     p.flamb.setAttribute("display", fl ? "" : "none");
@@ -1097,7 +1256,7 @@ function renderAlerts(c){
   const add = (cls, html, btnLabel, btnFn) => {
     const d = document.createElement("div");
     d.className = "alert " + cls;
-    d.innerHTML = html;
+    d.innerHTML = `<span class="alert__txt">${html}</span>`;
     if (btnLabel) {
       const b = document.createElement("button");
       b.textContent = btnLabel;
@@ -1210,6 +1369,7 @@ N(pied) = N(tête) + ${fr(COLS[state.poteau].g0,1)} × ${1 + state.etages} = <sp
 --------------------------------------------------------------------- */
 const reduceMotion = typeof window.matchMedia === "function"
   && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let fAcc = 0;
 let lastT = typeof performance !== "undefined" ? performance.now() : 0;
 function tick(t){
   const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t;
@@ -1221,15 +1381,19 @@ function tick(t){
       g.vel *= Math.pow(0.012, dt);
       g.angle += g.vel * 60 * dt * 0.16 + (g.target - g.angle) * 3 * dt;
     }
-    g.gN.setAttribute("transform", `translate(${g.cx},${g.cy}) rotate(${g.angle})`);
+    if (Math.abs(g.angle - (g._a === undefined ? 1e9 : g._a)) > 0.02) { g._a = g.angle; g.gN.setAttribute("transform", `translate(${g.cx},${g.cy}) rotate(${g.angle})`); }
   }
   if (!reduceMotion) {
-    refs.flows.forEach(f => {
-      if (f.current > 0.01 && f.path.classList.contains("on")) {
-        f.offset = (f.offset - Math.min(f.current, 120) * 2.4 * dt) % 15;
-        f.path.setAttribute("stroke-dashoffset", f.offset);
-      }
-    });
+    fAcc += dt;
+    if (fAcc >= 1 / 14) {
+      refs.flows.forEach(f => {
+        if (f.current > 0.01 && f.path.classList.contains("on")) {
+          f.offset = (f.offset - Math.min(f.current, 120) * 2.4 * fAcc) % 15;
+          f.path.setAttribute("stroke-dashoffset", f.offset);
+        }
+      });
+      fAcc = 0;
+    }
   }
   requestAnimationFrame(tick);
 }
@@ -1240,6 +1404,10 @@ function tick(t){
 buildSchema();
 update();
 requestAnimationFrame(tick);
+</script>
+<script>
+/* le trait de crayon « bouillonne » : le bruit du filtre change toutes les 0,22 s (sauf si l'on préfère moins de mouvement) */
+(() => { const b = document.getElementById('crayon-bruit'); if (!b || matchMedia('(prefers-reduced-motion: reduce)').matches) return; let k = 0; setInterval(() => b.setAttribute('seed', (k = (k + 1) % 3) + 1), 220); })();
 </script>
 </body>
 </html>
