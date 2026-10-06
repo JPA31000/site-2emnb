@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Les phases et les missions · 2EMNB</title>
-<meta name="description" content="World café « Les phases et les missions dans l’acte de construire » (1re Bac Pro TEBAA) : acteurs, programmation et conception, missions de la maîtrise d’œuvre, chantier, réception et garanties, puis quiz final.">
+<title>L’urbanisme et le PLU · 2EMNB</title>
+<meta name="description" content="World café « L’urbanisme et le PLU » : l’urbanisme en France, la composition du PLU, le zonage (U, AU, A, N), la lecture du règlement et le parcours d’un permis de construire, avec flashcards, missions de terrain et quiz final.">
 <meta name="theme-color" content="#f7f4ec">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Les phases et les missions · 2EMNB">
-<meta property="og:description" content="Du besoin du client aux clés remises : comprendre qui intervient, quand et pour faire quoi.">
+<meta property="og:title" content="L’urbanisme et le PLU · 2EMNB">
+<meta property="og:description" content="Zones U, AU, A, N, règlement et permis de construire : cinq ateliers pour comprendre le PLU.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M6 25l2-7 5 5z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
 <script>document.documentElement.classList.add('js')</script>
 <style>
 /* =====================================================================
-   2EMNB — World café « Les phases et les missions dans l'acte de construire » (style « carnet de croquis »)
+   2EMNB — World café « L’urbanisme et le PLU » (style « carnet de croquis »)
    Papier quadrillé, crayon graphite, crayon rouge, crayon bleu, surligneur.
    ===================================================================== */
 :root{
@@ -158,12 +158,6 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 /* ---------- Accueil ---------- */
 .hero{position:relative;max-width:1400px;margin:0 auto;padding:calc(var(--nav) + 18px) var(--gut) 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(20px,4vw,60px);align-items:center;min-height:min(100svh,960px)}
 .lycee{margin:0 0 14px;font:400 17px var(--main);color:var(--gr2);transform:rotate(-1.5deg);transform-origin:0 50%}
-.retour{margin:0 0 14px;font:400 19px var(--main)}
-.retour a{display:inline-flex;align-items:center;gap:8px;padding:2px 0;color:var(--bleu);transition:color .3s}
-.retour a span{display:inline-block;transition:transform .4s var(--e-ressort)}
-.retour a:hover,.retour a:focus-visible{color:var(--rouge)}
-.retour a:hover span,.retour a:focus-visible span{transform:translateX(-4px)}
-.presente .retour{display:none}   /* en présentation, une partie par écran : pas de lien de sortie */
 .hero h1{margin:0 0 14px;font:400 clamp(2.5rem,min(5.6vw,9vh),5.4rem)/1.04 var(--main);letter-spacing:.005em}
 .entoure{position:relative;display:inline-block;color:var(--rouge)}
 .entoure svg{position:absolute;left:-7%;top:-14%;width:114%;height:128%;overflow:visible;pointer-events:none}
@@ -513,56 +507,6 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .noscript{position:relative;z-index:200;max-width:640px;margin:90px auto;padding:24px;background:var(--fiche);text-align:center}
 .noscript a{color:var(--bleu);text-decoration:underline}
 
-
-/* ---------- Accueil : le projet dans le temps, du besoin aux clés ---------- */
-.hero h1{font-size:clamp(2.1rem,min(4vw,7.4vh),4rem)}
-.auteur{margin:-8px 0 16px;font:400 16px var(--main);color:var(--gr2);transform:rotate(-1deg);transform-origin:0 50%}
-.parcours-bar{--ca:var(--vert);display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;max-width:520px;margin:0 0 24px}
-.parcours-bar span{font:400 17px var(--main);color:var(--gr2)}
-.parcours-bar b{font-weight:400;color:var(--vert)}
-.parcours-bar .avance__barre{flex:1 1 150px}
-.temps{position:relative;margin:0}
-.temps__cadre{position:relative;padding:10px 10px 12px;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(-.6deg)}
-.temps__cadre::before{content:"";position:absolute;top:-12px;left:42%;z-index:2;width:110px;height:26px;background:rgba(255,222,40,.55);transform:rotate(2deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.temps__titre{position:absolute;left:24px;top:16px;z-index:1;font:400 16px var(--main);color:var(--gr2);transform:rotate(-2deg);pointer-events:none}
-.temps svg{width:100%;height:auto;overflow:hidden;filter:url(#crayon)}   /* sur le dessin entier, comme les croquis de plans */
-.souris .temps svg{cursor:ew-resize}
-.temps svg path{fill:none;stroke:var(--gr);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.temps svg .fin{stroke:rgba(42,42,42,.42);stroke-width:1.1}
-.temps svg .tb{stroke:var(--bleu);stroke-width:1.4}
-.temps svg .tr{stroke:var(--rouge2)}
-.temps svg .tf{stroke-width:3.4}
-.temps svg .tirets{stroke-dasharray:6 4}
-.temps svg .papier{fill:var(--fiche)}
-.temps svg .corps{fill:var(--cc,var(--fiche))}
-.temps svg .lj{fill:rgba(255,222,40,.65)}
-.temps svg .lb{fill:rgba(47,111,214,.2)}
-.temps svg .lr{fill:rgba(214,69,58,.5)}
-.temps svg .lo{fill:rgba(214,170,110,.3)}
-.temps svg .lt{fill:rgba(176,74,52,.45)}
-.temps svg .lv{fill:rgba(61,154,95,.4)}
-.temps svg .lg{fill:rgba(42,42,42,.12)}
-.temps svg .lc{fill:rgba(42,143,176,.4)}
-.temps svg .lp{fill:rgba(123,85,199,.4)}
-.temps svg .trait{stroke-dasharray:1 2;stroke-dashoffset:1.01}
-.temps svg text{font:400 12px var(--main);fill:var(--gr2);stroke:none}
-.temps svg .t-r{fill:var(--rouge)}
-.temps svg .t-b{fill:var(--bleu)}
-.temps svg .petit{font-size:10.5px}
-.temps svg .sigle{font-size:13px;letter-spacing:.06em;fill:rgba(42,42,42,.28);text-anchor:middle;transition:fill .3s}
-.temps svg .sigle.lu{fill:var(--rouge)}
-.temps__frise{margin:6px 6px 0}
-.temps__curseur{display:block;width:100%;margin:0 0 2px;accent-color:var(--rouge2);cursor:pointer}
-.temps__phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-.temps__phase{position:relative;padding:6px 4px 2px;text-align:left;font:400 15px/1.1 var(--main);color:var(--gr2);border-top:3px solid var(--gr3);transition:color .3s,border-color .3s}
-.temps__phase small{display:block;margin-top:2px;font:400 12.5px/1.2 var(--texte);color:var(--gr2)}
-.temps__phase.passee{border-top-color:var(--c)}
-.temps__phase.ici{color:var(--gr);border-top-color:var(--c)}
-.temps__phase.ici::after{content:"";position:absolute;left:0;right:0;top:-5px;height:5px;border-radius:2px;background:var(--c)}
-.temps__phase:hover{color:var(--rouge)}
-.temps__legende{min-height:2.9em;margin:8px 6px 0;font-size:15px;line-height:1.4;color:var(--gr)}
-.temps__legende b{font:400 17px var(--main);color:var(--rouge)}
-
 /* ---------- Compléments propres à cette page ---------- */
 .etape h4{flex-wrap:wrap}
 .etape h4 .qui{margin-left:auto;padding:0 9px;font:400 14px/1.6 var(--main);color:var(--ca);border:1.5px solid currentColor;border-radius:9px}
@@ -599,10 +543,215 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .explorateur{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:700px){
-  .temps__phases{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px}   /* « Programmation » ne tient pas dans un quart d'écran */
-  .temps__phase{font-size:14px}
-  .temps__phase small{display:none}
   .etape h4 .qui{margin-left:0}
+}
+
+
+/* ---------- Accueil : une vitrine dessinée au crayon, des vues à choisir ---------- */
+.vitrine{position:relative;margin:0}
+.vitrine__cadre{position:relative;padding:32px 10px 14px;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(-.6deg)}
+.vitrine__cadre::before{content:"";position:absolute;top:-12px;left:42%;z-index:2;width:110px;height:26px;background:rgba(255,222,40,.55);transform:rotate(2deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.vitrine__titre{position:absolute;left:24px;top:16px;z-index:1;font:400 16px var(--main);color:var(--gr2);transform:rotate(-2deg);pointer-events:none}
+.vitrine svg{width:100%;height:auto;overflow:hidden;filter:url(#crayon)}   /* sur le dessin entier, jamais sur un groupe */
+.vitrine svg path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.vitrine .t{stroke:var(--gr);stroke-width:1.7}
+.vitrine .tf{stroke:var(--gr);stroke-width:3.2}
+.vitrine .t2{stroke:rgba(42,42,42,.42);stroke-width:1.1}
+.vitrine .tb{stroke:var(--bleu);stroke-width:1.7}
+.vitrine .tv{stroke:var(--vert);stroke-width:1.7}
+.vitrine .to{stroke:#c77a1e;stroke-width:1.7}
+.vitrine .tj{stroke:#a98700;stroke-width:1.5}
+.vitrine .tr{stroke:var(--rouge2);stroke-width:1.7}
+.vitrine .tg{stroke:var(--gr);stroke-width:2.1;stroke-dasharray:12 4 2 4}
+.vitrine .fin{stroke-width:1}
+.vitrine .route{stroke:rgba(42,42,42,.13);stroke-width:9}
+.vitrine .axe{stroke:rgba(42,42,42,.5);stroke-width:1;stroke-dasharray:6 5}
+.vitrine .trait{stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset 1s var(--e-io);transition-delay:calc(var(--k,0) * 150ms)}
+.vitrine .go .trait{stroke-dashoffset:0}   /* une classe, pas [pathLength] : Chrome ne réévalue pas ce sélecteur d'attribut */
+.vitrine .fixe,.vitrine .remplir,.vitrine text{opacity:0;transition:opacity .6s;transition-delay:calc(var(--k,0) * 150ms + .5s)}
+.vitrine .go .fixe,.vitrine .go .remplir,.vitrine .go text{opacity:1}
+.vitrine .remplir{stroke:none}
+.vitrine .f-b{fill:rgba(47,111,214,.2)}
+.vitrine .f-v{fill:rgba(61,154,95,.32)}
+.vitrine .f-o{fill:rgba(217,130,43,.34)}
+.vitrine .f-j{fill:rgba(255,222,40,.55)}
+.vitrine .f-r{fill:rgba(214,66,44,.3)}
+.vitrine .f-g{fill:rgba(42,42,42,.1)}
+.vitrine .f-p{fill:var(--fiche)}
+.vitrine text{font:400 13px var(--main);fill:var(--gr);stroke:none}
+.vitrine text.petit{font-size:12px}
+.vitrine text.gros{font:700 30px var(--texte)}
+.vitrine text.moyen{font-size:17px}
+.vitrine text.sigle{font:700 15px var(--texte)}
+.vitrine text.t-b{fill:var(--bleu)}
+.vitrine text.t-v{fill:var(--vert)}
+.vitrine text.t-o{fill:#c77a1e}
+.vitrine text.t-j{fill:#8a6c00}
+.vitrine text.t-r{fill:var(--rouge)}
+.vitrine text.halo{paint-order:stroke;stroke:var(--fiche);stroke-width:4.5px;stroke-linejoin:round}
+.vitrine__onglets{display:flex;flex-wrap:wrap;gap:6px 10px;margin:6px 6px 0}
+.vitrine__onglet{padding:5px 13px 6px;font:400 16.5px/1.1 var(--main);color:var(--gr2);border:1.6px dashed var(--gr3);border-radius:12px 14px 11px 13px;transition:color .3s,border-color .3s,background .3s,transform .4s var(--e-ressort)}
+.vitrine__onglet:hover{color:var(--gr);border-color:var(--c)}
+.vitrine__onglet[aria-selected="true"]{color:var(--gr);border-style:solid;border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);transform:rotate(-1.2deg)}
+.vitrine__legende{min-height:4.4em;margin:12px 6px 0;padding-left:12px;border-left:3px solid var(--c,var(--gr3));font-size:15.5px;line-height:1.45;color:var(--gr);transition:border-color .3s}
+
+/* ---------- Les tables du parcours : de trois à six, bien rangées ---------- */
+@media (min-width:1181px){
+  .tables[data-n="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tables[data-n="5"],.tables[data-n="6"]{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .tables[data-n="5"] .table-wc,.tables[data-n="6"] .table-wc{grid-column:span 2}
+  .tables[data-n="5"] .table-wc:nth-child(4){grid-column:2/4}
+  .tables[data-n="5"] .table-wc:nth-child(5){grid-column:4/6}
+}
+@media (min-width:701px) and (max-width:1180px){
+  .tables[data-n="3"] .table-wc:last-child,.tables[data-n="5"] .table-wc:last-child{grid-column:1/-1;width:calc(50% - 12px);justify-self:center}
+}
+@media (max-width:700px){
+  .vitrine__onglet{font-size:15.5px;padding:5px 11px 6px}
+  .vitrine__legende{min-height:0}
+  .vitrine text.petit{font-size:16px}   /* le dessin est réduit à l'écran d'un téléphone : on grossit les légendes */
+  .vitrine text.moyen{font-size:21px}
+  .vitrine text.valeur{font-size:18px}
+  .vitrine text.sigle{font-size:19px}
+}
+
+/* ---------- Le lien de retour à l'accueil du carnet ---------- */
+.retour{margin:0 0 14px;font:400 19px var(--main)}
+.retour a{display:inline-flex;align-items:center;gap:8px;padding:2px 0;color:var(--bleu);transition:color .3s}
+.retour a span{display:inline-block;transition:transform .4s var(--e-ressort)}
+.retour a:hover,.retour a:focus-visible{color:var(--rouge)}
+.retour a:hover span,.retour a:focus-visible span{transform:translateX(-4px)}
+.presente .retour{display:none}   /* en présentation, une partie par écran : pas de lien de sortie */
+
+/* ---------- Cartes : deux colonnes quand elles sont quatre ---------- */
+.grille--2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:700px){.grille--2{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Blocs repris de la page des métiers (étapes simples, tableaux, doubles cartes, alertes, escalier) ---------- */
+.etape .fiche.simple{grid-template-columns:minmax(0,1fr)}
+.tableau tbody th{padding:10px 12px;text-align:left;vertical-align:top;font:400 17px var(--main);color:var(--ca);white-space:nowrap;border-bottom:1px dashed var(--gr3)}
+.tableau tbody tr:last-child th{border-bottom:0}
+.duo-cartes .fiche h4{display:flex;align-items:center;gap:10px}
+.duo-cartes .fiche h4 svg{flex:none;width:30px;height:30px;overflow:visible;filter:url(#crayon)}
+.duo-cartes .fiche h4 svg *{fill:none;stroke:var(--ca);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.alerte h4+p{margin-top:2px}
+/* le parcours de formation : un escalier, chaque marche plus haute que la précédente */
+.escalier{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:12px;align-items:start}
+.marche{position:relative;margin-top:calc((var(--n) - 1 - var(--k)) * 26px);padding:14px 14px 14px;background:var(--fiche);box-shadow:var(--ombre);border-top:4px solid var(--ca);transform:rotate(calc((var(--k) - 2) * .45deg))}
+.marche::after{content:"";position:absolute;left:100%;top:22px;width:12px;border-top:2px dashed var(--ca)}
+.marche:last-child::after{display:none}
+.marche__etq{display:inline-block;margin-bottom:8px;padding:1px 12px 2px;font:400 18px var(--main);color:#fff;background:var(--ca);border-radius:50% 46% 52% 48%/55% 50% 50% 45%}
+.marche p{margin:0;font-size:14.5px;line-height:1.45;color:var(--gr)}
+@media (max-width:1100px){
+  .escalier{grid-template-columns:minmax(0,1fr);gap:16px}
+  .marche{margin-top:0;transform:none;margin-left:calc(var(--k) * 14px)}
+  .marche::after{display:none}
+}
+@media (max-width:700px){.marche{margin-left:0}}
+
+/* ---------- Les tables : un dessin plus petit quand elles sont peu nombreuses (3 à 6 par ligne) ---------- */
+.tables[data-n="3"] .table-wc svg,.tables[data-n="5"] .table-wc svg,.tables[data-n="6"] .table-wc svg{width:min(100%,180px);margin:0 auto 8px}
+/* les sigles (U, AU, 1AU…) restent lisibles : la police d'écriture dessine le U comme un u */
+.code-lisible{font-family:var(--texte)!important;font-weight:700}
+
+/* ---------- Vitrine : les couleurs et les chiffres des dessins de perspective ---------- */
+.vitrine .tm{stroke:#7b55c7;stroke-width:1.5}
+.vitrine .tk{stroke:#c2417a;stroke-width:1.5}
+.vitrine .f-m{fill:rgba(123,85,199,.2)}
+.vitrine .f-k{fill:rgba(214,66,140,.18)}
+.vitrine text.valeur{font-size:14px}
+.vitrine text.t-m{fill:#7b55c7}
+
+
+/* ---------- PLU : la hiérarchie des documents d'urbanisme (une cascade) ---------- */
+.cascade{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+.niveau{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px;margin-left:calc(var(--k) * clamp(12px,4vw,58px));padding:12px 18px 13px 20px;background:var(--fiche);box-shadow:var(--ombre);border-left:8px solid var(--c);transform:rotate(calc((var(--k) - 1.5) * .35deg))}
+.niveau + .niveau::before{content:"";position:absolute;left:24px;top:-19px;height:17px;border-left:2px dashed var(--gr2)}
+.niveau + .niveau::after{content:"";position:absolute;left:19px;top:-9px;width:8px;height:8px;border-right:2px solid var(--gr2);border-bottom:2px solid var(--gr2);transform:rotate(45deg)}
+.niveau__sigle{font:400 clamp(1.3rem,2vw,1.7rem)/1.1 var(--main);color:var(--c)}
+.niveau__txt{flex:1 1 220px;font-size:16px;color:var(--gr)}
+.niveau__echelle{padding:1px 12px 2px;font:400 15.5px var(--main);color:var(--gr2);border:1.5px dashed var(--gr3);border-radius:50% 46% 52% 48%/55% 50% 50% 45%;white-space:nowrap}
+.niveau--alt{background:transparent;border:2px dashed var(--c);border-left:8px dashed var(--c);box-shadow:none}
+.niveau--alt::before,.niveau--alt::after{display:none}
+.niveau__ou{font:400 20px var(--main);color:var(--c)}
+.cascade__note{margin:16px 0 0;font:400 18px var(--main);color:var(--gr2)}
+.cascade__note::before{content:"↓ "}
+.cascade__note::after{content:" ↓"}
+
+/* ---------- PLU : six pièces + … = le PLU ---------- */
+.equation{display:flex;flex-wrap:wrap;align-items:center;gap:12px 10px}
+.pastille{display:inline-flex;align-items:center;gap:9px;padding:9px 14px 10px;font:400 17px/1.2 var(--main);background:var(--p,var(--pj));box-shadow:0 9px 12px -10px rgba(0,0,0,.5);transform:rotate(var(--r,-1deg))}
+.pastille b{display:grid;place-items:center;flex:none;width:25px;height:25px;font-weight:400;font-size:16px;color:var(--rouge);border:1.6px solid var(--rouge);border-radius:50%}
+.equation i{font:400 30px/1 var(--main);font-style:normal;color:var(--gr2)}
+.pastille--res{font-size:22px;background:var(--pv);box-shadow:0 0 0 2.5px var(--vert),0 12px 16px -12px rgba(0,0,0,.5);transform:rotate(-1.5deg)}
+.equation__note{margin:14px 0 0;font:400 18px var(--main);color:var(--gr2)}
+
+/* ---------- PLU : les quatre zones, une fiche chacune ---------- */
+.zones{display:grid;gap:28px}
+.zone{position:relative;display:grid;grid-template-columns:150px minmax(0,1fr);gap:6px 26px;align-items:start;padding:20px 22px 18px;background:var(--fiche);box-shadow:var(--ombre);border-top:6px solid var(--c)}
+.zone .zone__vignette{grid-row:1/4;width:150px;height:auto;overflow:visible;filter:url(#crayon)}
+.zone__vignette .fond{fill:color-mix(in srgb,var(--c) 18%,transparent);stroke:var(--c);stroke-width:1.6}
+.zone__vignette path{fill:none;stroke:var(--c);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.zone__vignette .bati{stroke-width:1.2}
+.zone__vignette .pointille{stroke-dasharray:3 4}
+.zone__vignette text{font:700 11px var(--texte);fill:var(--c);stroke:none}
+.zone header{display:flex;align-items:center;gap:14px}
+.zone__code{display:inline-grid;place-items:center;min-width:56px;padding:2px 14px 4px;font:700 28px/1.2 var(--texte);color:#fff;background:var(--c);border-radius:50% 46% 52% 48%/55% 50% 50% 45%}
+.zone h4{margin:0;font:400 clamp(1.4rem,2.2vw,1.8rem)/1.1 var(--main)}
+.zone__desc,.zone__constr{margin:0;font-size:16.5px;color:var(--gr)}
+.zone__constr b{margin-right:2px;font:400 18px var(--main);color:var(--c)}
+.zone h5{grid-column:1/-1;margin:12px 0 0;font:400 17px var(--main);color:var(--gr2)}
+.zone__sous{grid-column:1/-1;list-style:none;margin:0;padding:12px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 22px;border:1.6px dashed var(--gr3)}
+.zone__sous li{display:flex;gap:10px;align-items:baseline;font-size:15.5px;color:var(--gr)}
+.zone__sous b{flex:none;min-width:38px;font:700 16.5px var(--texte);color:var(--c)}
+
+/* ---------- PLU : la légende d'un plan de zonage ---------- */
+.legende{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.leg{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--fiche);box-shadow:var(--ombre)}
+.leg svg{flex:none;width:72px;height:50px;padding:3px;overflow:visible;background:var(--papier);border:1.6px dashed var(--gr3);filter:url(#crayon)}
+.leg svg path{fill:none;stroke:var(--gr);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.leg svg .pointille{stroke-dasharray:3 4;stroke:var(--gr2)}
+.leg h4{margin:0 0 2px;font:400 19px/1.25 var(--main)}
+.leg__code{display:inline-block;margin-left:4px;padding:0 8px;font:700 13.5px/1.5 var(--texte);color:var(--rouge);border:1.4px solid var(--rouge);border-radius:6px;white-space:nowrap}
+.leg p{margin:0;font-size:15px;line-height:1.4;color:var(--gr2)}
+
+/* ---------- PLU : les règles du règlement, avec leur exemple chiffré ---------- */
+.regles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.regle{position:relative;display:flex;flex-direction:column;gap:9px;padding:16px 18px 16px;background:var(--fiche);box-shadow:var(--ombre);border-left:6px solid var(--ca,var(--rouge2))}
+.regle:last-child:nth-child(odd){grid-column:1/-1}
+.regle header{display:flex;align-items:center;gap:12px}
+.regle header svg{flex:none;width:34px;height:34px;overflow:visible;filter:url(#crayon)}
+.regle header svg *{fill:none;stroke:var(--ca);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.regle h4{flex:1;margin:0;font:400 clamp(1.1rem,1.5vw,1.3rem)/1.2 var(--main)}
+.regle__art{padding:1px 10px 2px;font:400 15px var(--main);color:var(--ca);border:1.5px solid var(--ca);border-radius:6px;white-space:nowrap}
+.regle p{margin:0;font-size:15.5px;color:var(--gr)}
+.regle .exemple{margin-top:auto;padding:9px 12px 10px;font-size:15px;background:var(--pj);box-shadow:0 8px 10px -9px rgba(0,0,0,.5);transform:rotate(-.4deg)}
+.exemple b{display:block;margin-bottom:1px;font:400 15px var(--main);color:var(--rouge)}
+
+/* ---------- PLU : les autorisations d'urbanisme ---------- */
+.autorisations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.autor{position:relative;display:flex;flex-direction:column;gap:11px;padding:16px 18px 16px;background:var(--fiche);box-shadow:var(--ombre);border-top:6px solid var(--c)}
+.autor header{display:flex;align-items:center;gap:12px}
+.autor header svg{flex:none;width:36px;height:36px;overflow:visible;filter:url(#crayon)}
+.autor header svg *{fill:none;stroke:var(--c);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.autor h4{margin:0;font:400 clamp(1.15rem,1.6vw,1.4rem)/1.15 var(--main)}
+.autor__delai{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline;margin:0;padding:6px 12px 7px;font:400 18px/1.25 var(--main);color:var(--c);background:color-mix(in srgb,var(--c) 11%,transparent);border:1.6px dashed var(--c);border-radius:6px}
+.autor__delai span{font-size:14.5px;color:var(--gr2)}
+.autor ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.autor li{position:relative;padding-left:20px;font-size:15.5px;line-height:1.45;color:var(--gr)}
+.autor li::before{content:"▸";position:absolute;left:2px;top:0;color:var(--c)}
+
+@media (max-width:1100px){
+  .autorisations{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:980px){
+  .regles{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:700px){
+  .autorisations{grid-template-columns:minmax(0,1fr)}
+  .zone{grid-template-columns:minmax(0,1fr);gap:8px}
+  .zone .zone__vignette{grid-row:auto;width:min(100%,220px)}
+  .niveau{margin-left:calc(var(--k) * 12px)}
 }
 
 </style>
@@ -618,7 +767,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 <header class="nav" id="nav">
   <a class="logo" href="index.html" aria-label="2EMNB, retour à l’accueil du carnet">
     <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l2.6-8.4L21.5 4.7l5.8 5.8L13.4 24.4z" fill="#f2c14e" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l2.6-8.4 5.8 5.8z" fill="#f1dfc0" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l1.2-3.9 2.7 2.7z" fill="#2a2a2a"/><path d="M18.6 7.6l5.8 5.8" stroke="#2a2a2a" stroke-width="1.4"/></svg>
-    <span><b>2EMNB</b><small>world café · les phases</small></span>
+    <span><b>2EMNB</b><small>world café · le PLU</small></span>
   </a>
   <nav class="nav__liens" id="nav-liens" aria-label="Parties"></nav>
   <button class="nav__pres" type="button" data-presenter aria-label="Présenter en plein écran, une partie par écran (touche P)">
@@ -633,72 +782,60 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 
 <main>
   <!-- ===================== ACCUEIL ===================== -->
-  <section class="hero" id="accueil" data-diapo="Phases et missions" aria-labelledby="t-accueil">
+  <section class="hero" id="accueil" data-diapo="Le PLU" aria-labelledby="t-accueil">
     <div class="hero__texte">
       <p class="retour"><a href="index.html"><span aria-hidden="true">←</span>Accueil du carnet</a></p>
       <p class="lycee" id="public"></p>
-      <h1 id="t-accueil">Les <span class="entoure">phases<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 160 0 188 26C212 50 140 80 60 72C10 66 2 40 34 18C56 6 96 6 124 9"/></svg></span> et les missions dans l’acte de construire</h1>
-      <p class="chapo"><strong>Du besoin du client aux clés remises</strong>&nbsp;: comprendre qui intervient, quand et pour faire quoi.</p>
+      <h1 id="t-accueil">L’urbanisme et <span class="entoure">le PLU<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 160 0 188 26C212 50 140 80 60 72C10 66 2 40 34 18C56 6 96 6 124 9"/></svg></span></h1>
+      <p class="chapo"><strong>Où peut-on construire, et comment&nbsp;?</strong> Le plan local d’urbanisme répond. Parcourez les cinq ateliers, retournez les flashcards, accomplissez les missions de terrain, puis testez vos connaissances.</p>
       <p class="auteur" id="auteur"></p>
       <div class="parcours-bar">
-        <span>Ateliers terminés</span>
-        <div class="avance__barre" id="parcours-barre" role="progressbar" aria-label="Ateliers terminés" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><i></i></div>
-        <span><b id="parcours-n">0 / 4</b></span>
+        <span>Progression du parcours</span>
+        <div class="avance__barre" id="parcours-barre" role="progressbar" aria-label="Parties terminées" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><i></i></div>
+        <span><b id="parcours-n">0 / 5</b> ateliers validés</span>
       </div>
       <div class="cta">
-        <a class="btn btn--plein" href="#intro">Commencer&nbsp;: l’introduction</a>
+        <a class="btn btn--plein" href="#atelier-1">Commencer&nbsp;: l’atelier 1</a>
         <button class="btn" type="button" data-presenter><svg class="lect" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.2l10 5.8-10 5.8z"/></svg>Présenter</button>
       </div>
     </div>
-    <figure class="temps" id="temps" aria-labelledby="temps-legende">
-      <div class="temps__cadre">
-        <span class="temps__titre" aria-hidden="true">un projet, du besoin aux clés</span>
-        <svg viewBox="0 0 560 400" id="temps-svg" aria-hidden="true"></svg>
-        <div class="temps__frise">
-          <input class="temps__curseur" id="temps-curseur" type="range" min="0" max="1000" step="1" value="0" aria-label="Avancement du projet dans le temps">
-          <div class="temps__phases" id="temps-phases"></div>
-        </div>
-        <p class="temps__legende" id="temps-legende"></p>
+    <figure class="vitrine" id="vitrine" aria-label="Le plan de zonage d’une commune : zones urbaines, à urbaniser, agricoles et naturelles">
+      <div class="vitrine__cadre">
+        <span class="vitrine__titre" aria-hidden="true">une commune, quatre zones</span>
+        <svg viewBox="0 0 560 400" id="vitrine-svg" aria-hidden="true"></svg>
+        <div class="vitrine__onglets" id="vitrine-onglets" role="tablist" aria-label="Choisir une zone"></div>
+        <p class="vitrine__legende" id="vitrine-legende" aria-live="polite"></p>
       </div>
-      <p class="note">↔ Promène la souris sur le dessin, ou fais glisser le curseur&nbsp;: le projet avance du besoin aux clés.</p>
+      <p class="note">↔ Choisissez une zone&nbsp;: le plan de la commune se colorie. Sans clic, les zones se relaient.</p>
     </figure>
   </section>
 
   <!-- ===================== LE PARCOURS ===================== -->
-  <section class="section" id="tables" data-diapo="Le parcours" aria-labelledby="t-tables">
+  <section class="section" id="tables" data-diapo="Les ateliers" aria-labelledby="t-tables">
     <header class="entete">
       <div class="entete__haut"><p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>le world café</p></div>
-      <h2 class="titre" id="t-tables" data-ecrit>Une introduction, <span class="souligne">quatre ateliers<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 8C50 3 120 11 197 5"/></svg></span></h2>
-      <p class="chapo-sec rv">Commence par l’introduction, puis passe d’une table à l’autre. À la fin de chaque atelier, marque-le «&nbsp;terminé&nbsp;»&nbsp;: la progression se garde sur cet ordinateur.</p>
+      <h2 class="titre" id="t-tables" data-ecrit>Cinq ateliers, <span class="souligne">un seul PLU<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 8C50 3 120 11 197 5"/></svg></span></h2>
+      <p class="chapo-sec rv">Passez d’une table à l’autre dans l’ordre&nbsp;: chaque atelier prépare le suivant. À la fin de chaque atelier, marquez-le «&nbsp;terminé&nbsp;»&nbsp;: la progression se garde sur cet ordinateur.</p>
     </header>
-    <a class="intro-carte rv" href="#intro" id="intro-carte"></a>
     <div class="tables" id="tables-liste"></div>
     <p class="tables__total rv" id="tables-total"></p>
+    <div id="tables-plus"></div>
   </section>
 
-  <!-- ===================== INTRODUCTION ===================== -->
-  <section class="section atelier" id="intro" data-diapo="Introduction" aria-labelledby="t-intro" style="--ca:#2a8fb0">
-    <header class="entete">
-      <div class="entete__haut"><p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>introduction générale</p><span class="chrono" data-chrono="intro"></span></div>
-      <h2 class="titre" id="t-intro" data-ecrit>L’acte de construire, <span class="souligne">mode d’emploi<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 6C60 10 130 2 197 7"/></svg></span></h2>
-    </header>
-    <div class="colonne" id="intro-corps"></div>
-  </section>
-
-  <!-- les quatre ateliers s'insèrent ici, construits depuis DONNEES -->
-
+  <!-- les ateliers s'insèrent ici, construits depuis DONNEES -->
+  <span id="fin-ateliers" hidden></span>
   <!-- ===================== QUIZ FINAL ===================== -->
   <section class="section" id="quiz" data-diapo="Quiz final" aria-labelledby="t-quiz">
     <header class="entete">
       <div class="entete__haut"><p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>évaluation finale</p></div>
-      <h2 class="titre" id="t-quiz" data-ecrit>Quiz final · <span class="souligne">phases et missions<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 6C60 10 130 2 197 7"/></svg></span></h2>
+      <h2 class="titre" id="t-quiz" data-ecrit>Quiz final · <span class="souligne">l’urbanisme et le PLU<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 8C50 3 120 11 197 5"/></svg></span></h2>
       <p class="chapo-sec rv" id="quiz-chapo"></p>
     </header>
     <div class="fiche verrou rv" id="verrou">
       <svg viewBox="0 0 110 130" aria-hidden="true"><path class="anse" d="M28 62V40a27 27 0 0 1 54 0v22"/><rect class="corps" x="14" y="60" width="82" height="64" rx="10"/><circle cx="55" cy="88" r="8"/><path d="M55 96v12"/></svg>
       <div>
         <h3 id="verrou-titre"></h3>
-        <p>Saisis le code d’accès communiqué par ton professeur.</p>
+        <p>Saisissez le code communiqué par votre professeur pour déverrouiller l’évaluation.</p>
         <form class="code-zone" id="code-form" autocomplete="off"><label class="sr" for="code">Code d’accès</label><input id="code" type="text" placeholder="CODE D’ACCÈS" maxlength="16" spellcheck="false"><button class="btn btn--plein" type="submit">Déverrouiller</button></form>
         <p class="code-msg" id="code-msg" aria-live="polite"></p>
       </div>
@@ -709,11 +846,11 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 
 <!-- ===================== PIED DE PAGE ===================== -->
 <footer class="pied">
-  <span class="pied__mot rv" aria-hidden="true">Les phases<svg viewBox="0 0 400 20" preserveAspectRatio="none"><path pathLength="1" d="M4 12C100 4 230 18 396 8"/></svg></span>
+  <span class="pied__mot rv" aria-hidden="true">Le PLU<svg viewBox="0 0 400 20" preserveAspectRatio="none"><path pathLength="1" d="M4 12C100 4 230 18 396 8"/></svg></span>
   <div class="pied__cols">
     <div><h4>World café</h4><p id="pied-texte"></p></div>
     <div><h4>Les ateliers</h4><ul id="pied-ateliers"></ul></div>
-    <div><h4>Le carnet</h4><ul><li><a id="pied-carnet">Accueil du carnet</a></li><li><a href="acteurs-construire.html">Les acteurs</a></li><li><a href="lecture-de-plans.html">Lecture de plans</a></li></ul></div>
+    <div><h4>Le carnet</h4><ul><li><a id="pied-carnet">Accueil du carnet</a></li><li><a href="lecture-de-plans.html">Lecture de plans</a></li><li><a href="acteurs-construire.html">Les acteurs</a></li><li><a href="phases-missions.html">Missions et phases</a></li></ul></div>
     <div><h4>Présenter</h4><ul><li><button type="button" data-presenter>Une partie par écran</button></li><li><a id="pied-origine" target="_blank" rel="noopener">Version d’origine<span class="sr"> (nouvel onglet)</span></a></li></ul></div>
   </div>
   <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main</span><a href="#accueil">Haut de page ↑</a></div>
@@ -731,326 +868,289 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 <p class="pres__suite" id="pres-suite" hidden aria-hidden="true">↓ la suite de la partie&nbsp;: espace, molette ou flèche ↓</p>
 <p class="sr" id="pres-annonce" aria-live="polite"></p>
 
-<noscript><div class="noscript">Cette page a besoin de JavaScript pour ses ateliers et son quiz. <a href="https://claude.ai/public/artifacts/249d2ae9-83ee-4a24-afd0-c25d92943c5f">Ouvrir la version d’origine</a>.</div></noscript>
+<noscript><div class="noscript">Cette page a besoin de JavaScript pour ses ateliers. <a href="https://claude.ai/public/artifacts/41cf6fc7-69d0-485d-95bf-2cb73eafd0d1">Ouvrir la version d’origine</a>.</div></noscript>
 <script>
 (() => {
 'use strict';
 
 /* =====================================================================
    1. DONNÉES — tout le contenu du World café est ici (repris de l'application
-   d'origine). Modifier une étape, une carte, une mission ou une question
+   d'origine). Modifier une phrase, une carte, une mission ou une question
    = modifier une ligne ; la page se reconstruit seule.
    Dans les textes : **gras** et *italique*.
    ===================================================================== */
 const DONNEES = {
-  origine: 'https://claude.ai/public/artifacts/249d2ae9-83ee-4a24-afd0-c25d92943c5f',
+  cle: 'plu',
+  origine: 'https://claude.ai/public/artifacts/41cf6fc7-69d0-485d-95bf-2cb73eafd0d1',
   carnet: 'index.html',
-  public: '1re Bac Pro TEBAA',
+  public: 'Bac Pro TEBAA / seconde EMNB',
   auteur: 'Jean-Philippe Amat',
   signature: 'Jean-Philippe Amat — PLP génie civil — lycée Urbain Vitry, Toulouse',
-  annee: '2026-2027',
-  codeQuiz: 'PHASES2026',   // le code que le professeur donne pour ouvrir le quiz final
-  dureeIntro: 10,           // minutes
+  annee: '2025-2026',
+  codeQuiz: 'PLU2026',   // le code que le professeur donne pour ouvrir le quiz final
+  mot: 'atelier',
+  pied: 'World café « L’urbanisme et le PLU » : cinq ateliers de 15 à 20 minutes, des flashcards, trois missions de terrain et un quiz final de 15 questions.',
 
-  // les quatre ateliers (durée en minutes ; couleur : le crayon de l'atelier ; papier : la couleur de sa table)
+  // l'accueil : la carte d'une commune, vue par zone
+  carte: [
+    { id: 'tout', nom: 'Le plan', couleur: 'var(--gr)',
+      phrase: 'Le **plan de zonage** découpe la commune en quatre sortes de zones. Chaque zone a ses règles : c’est le PLU qui dit où l’on peut construire, et comment.' },
+    { id: 'U', nom: 'U · urbaine', couleur: 'var(--rouge)',
+      phrase: '**Zone urbaine** : des terrains déjà bâtis et équipés (eau, assainissement, électricité). On peut y construire, sous les conditions du règlement.' },
+    { id: 'AU', nom: 'AU · à urbaniser', couleur: '#c77a1e',
+      phrase: '**Zone à urbaniser** : des terrains naturels que la commune prévoit d’ouvrir à la construction, tout de suite (1AU) ou plus tard (2AU).' },
+    { id: 'A', nom: 'A · agricole', couleur: '#9a7d00',
+      phrase: '**Zone agricole** : réservée aux cultures et à l’élevage. On n’y construit presque que des bâtiments agricoles.' },
+    { id: 'N', nom: 'N · naturelle', couleur: 'var(--vert)',
+      phrase: '**Zone naturelle** : à protéger pour ses paysages, ses milieux naturels ou ses risques. La construction y est quasi interdite.' },
+  ],
+
+  // les cinq ateliers (durée en minutes ; couleur : le crayon de l'atelier ; papier : la couleur de sa table)
   ateliers: [
-    { id: 1, court: 'Acteurs', titre: 'Qui fait quoi ?', sousTitre: 'Les acteurs de l’acte de construire', duree: 20, couleur: 'var(--bleu)', papier: 'var(--pb)',
-      problematique: 'Un bâtiment n’est jamais l’œuvre d’une seule personne : qui commande, qui conçoit, qui construit et qui contrôle ?' },
-    { id: 2, court: 'Conception', titre: 'Du besoin au permis', sousTitre: 'Programmation et conception', duree: 20, couleur: '#7b55c7', papier: '#ebe2f8',
-      problematique: 'Comment passe-t-on d’une simple idée (« j’ai besoin d’un bâtiment ») à un projet dessiné, chiffré et autorisé ?' },
-    { id: 3, court: 'Missions', titre: 'Les missions de la maîtrise d’œuvre', sousTitre: 'De l’ESQ à l’AOR (loi MOP)', duree: 20, couleur: 'var(--vert)', papier: 'var(--pv)',
-      problematique: 'Que contient exactement le contrat d’un maître d’œuvre, et que veulent dire ces sigles : APS, APD, PRO, DET, AOR ?' },
-    { id: 4, court: 'Chantier', titre: 'Construire et réceptionner', sousTitre: 'Chantier, réception et garanties', duree: 20, couleur: '#c77a1e', papier: 'var(--po)',
-      problematique: 'Quand un chantier est-il vraiment terminé, et que se passe-t-il si un désordre apparaît après la livraison ?' },
+    { id: 1, court: 'Urbanisme', titre: 'L’urbanisme en France', sousTitre: 'Histoire, principes et acteurs de l’aménagement du territoire', duree: 15, couleur: 'var(--bleu)', papier: 'var(--pb)',
+      problematique: 'Pourquoi et comment organise-t-on l’espace urbain en France ?' },
+    { id: 2, court: 'Composition', titre: 'La composition du PLU', sousTitre: 'Les pièces constitutives du Plan Local d’Urbanisme', duree: 20, couleur: '#7b55c7', papier: '#ebe2f8',
+      problematique: 'De quoi est composé un PLU et à quoi sert chaque document ?' },
+    { id: 3, court: 'Zonage', titre: 'Le zonage du PLU', sousTitre: 'Zones U, AU, A, N et leurs règles', duree: 15, couleur: 'var(--vert)', papier: 'var(--pv)',
+      problematique: 'Comment le PLU découpe-t-il le territoire en zones et sous-zones ?' },
+    { id: 4, court: 'Règlement', titre: 'Lire et utiliser le PLU', sousTitre: 'Règles d’implantation, hauteur, emprise au sol', duree: 20, couleur: '#c77a1e', papier: 'var(--po)',
+      problematique: 'Comment utiliser le PLU pour vérifier la constructibilité d’un terrain ?' },
+    { id: 5, court: 'Permis', titre: 'Du PLU au permis de construire', sousTitre: 'Certificat d’urbanisme, instruction et conformité', duree: 15, couleur: 'var(--rouge)', papier: 'var(--pr)',
+      problematique: 'Quel est le parcours d’un projet de construction face aux règles du PLU ?' },
   ],
 
-  // les 4 grandes périodes d'une opération (l'introduction, et le dessin de l'accueil)
-  periodes: [
-    { titre: 'Programmation', qui: 'Maître d’ouvrage', picto: 'idee', texte: 'Définir le besoin, vérifier la faisabilité, fixer le budget et le calendrier, rédiger le programme.',
-      details: ['Émergence du besoin', 'Études de faisabilité (site, PLU, sol)', 'Programme + enveloppe financière', 'Choix du maître d’œuvre'] },
-    { titre: 'Conception', qui: 'Maître d’œuvre', picto: 'conception', texte: 'Traduire le programme en projet : dessins, choix techniques, autorisations et pièces écrites.',
-      details: ['ESQ → APS → APD', 'Dépôt du permis de construire', 'PRO : plans et CCTP', 'DCE : dossier de consultation'] },
-    { titre: 'Réalisation', qui: 'Entreprises', picto: 'execution', texte: 'Consulter, choisir les entreprises, préparer puis exécuter les travaux sous la direction du maître d’œuvre.',
-      details: ['Consultation et choix des entreprises', 'Période de préparation', 'Exécution des travaux (DET)', 'Réception de l’ouvrage (AOR)'] },
-    { titre: 'Exploitation', qui: 'Maître d’ouvrage / usagers', picto: 'reception', texte: 'Le bâtiment est utilisé, entretenu et maintenu ; les garanties légales courent à partir de la réception.',
-      details: ['Remise du DOE et du DIUO', 'Garantie de parfait achèvement (1 an)', 'Garantie biennale (2 ans)', 'Garantie décennale (10 ans)'] },
-  ],
-
-  // le dessin de l'accueil : ce qui se passe à chaque moment (t de 0 = le besoin, à 1 = le bâtiment en service)
-  moments: [
-    [0, 'Le maître d’ouvrage exprime un besoin.'],
-    [0.09, 'Il fait rédiger le programme et vérifie la faisabilité : terrain, PLU, étude de sol.'],
-    [0.25, 'Le maître d’œuvre esquisse une première réponse au programme (ESQ).'],
-    [0.33, 'APS : le projet se précise, en plan et en volume.'],
-    [0.39, 'APD : les choix sont arrêtés, c’est la base du permis de construire.'],
-    [0.44, 'Le permis de construire est accordé.'],
-    [0.46, 'PRO et DCE : le projet est décrit lot par lot pour les entreprises.'],
-    [0.5, 'Consultation : le maître d’ouvrage choisit les entreprises (ACT).'],
-    [0.55, 'Préparation, implantation, fondations : le chantier démarre.'],
-    [0.59, 'Les entreprises construisent, le maître d’œuvre dirige (VISA, DET).'],
-    [0.77, 'OPR puis réception : le maître d’ouvrage accepte l’ouvrage et reçoit les clés (AOR).'],
-    [0.84, 'Le bâtiment vit ; les garanties courent depuis la réception : 1, 2 et 10 ans.'],
-  ],
-
-  // l'introduction générale, bloc par bloc (mêmes types que les ateliers)
-  intro: [
-    { type: 'texte', textes: ['Construire un bâtiment ne commence pas avec la première pelleteuse et ne s’arrête pas à la pose de la dernière poignée de porte. Une opération de construction est une **succession de phases**, chacune confiée à des acteurs précis, avec des documents et des décisions à produire. Comprendre cet enchaînement, c’est comprendre à quel moment on intervient, avec qui on travaille et quel document on doit produire. C’est le cœur du métier de technicien d’études du bâtiment.'] },
-    { type: 'periodes', titre: 'Les 4 grandes périodes d’une opération' },
-    { type: 'grille', titre: 'Six repères à connaître', items: [
-      { titre: 'Loi MOP (1985)', picto: 'balance', texte: 'Loi du 12 juillet 1985 sur la maîtrise d’ouvrage publique. Depuis 2019, ses règles sont intégrées au Code de la commande publique. Elle fixe le rôle du MOA, du MOE et le contenu des missions.' },
-      { titre: 'Marché public', picto: 'administrations', texte: 'La commande publique (mairie, région, État, bailleur social) applique obligatoirement ces règles : programme, mission de base, appel d’offres.' },
-      { titre: 'Marché privé', picto: 'maison', texte: 'Un particulier ou une entreprise privée est libre du contenu du contrat, mais l’organisation en phases reste la même en pratique.' },
-      { titre: 'Contrat = pièce clé', picto: 'contrat', texte: 'Chaque acteur est lié aux autres par un contrat (marché de maîtrise d’œuvre, marché de travaux) qui définit sa mission, son prix et ses délais.' },
-      { titre: 'Un ordre imposé', picto: 'horloge', texte: 'On ne peut pas consulter les entreprises avant d’avoir un projet chiffré, ni démarrer les travaux sans permis purgé de tout recours.' },
-      { titre: 'Le coût se fige', picto: 'financer', texte: 'Plus on avance dans les phases, plus une modification coûte cher. Les choix les plus décisifs se prennent au début, à l’esquisse.' },
-    ] },
-    { type: 'alerte', titre: 'Ne pas confondre', textes: [
-      '**Maître d’ouvrage (MOA)** = celui pour qui on construit. Il commande et il paie.',
-      '**Maître d’œuvre (MOE)** = celui qui conçoit le projet et dirige les travaux pour le compte du MOA. Moyen mnémotechnique : le maître d’ouvr**Age** a l’ar**Gent**, le maître d’œuv**rE** fait les **É**tudes.',
-    ] },
-  ],
-
-  // atelier 1 : le schéma des acteurs autour de l'opération
-  acteurs: [
-    { id: 'moa', picto: 'moa', abbr: 'MOA', label: 'Maître d’ouvrage', role: 'Le commanditaire', couleur: 'var(--bleu)',
-      description: 'C’est la personne physique ou morale pour laquelle l’ouvrage est construit. Il est le propriétaire du projet : il définit le besoin, finance l’opération et prend toutes les décisions importantes.',
-      points: ['Définit le besoin et rédige le programme', 'Choisit le terrain et finance l’opération', 'Choisit le maître d’œuvre et signe les marchés', 'Prononce la réception des travaux'],
-      exemples: ['Commune', 'Bailleur social', 'Promoteur', 'Particulier'] },
-    { id: 'amo', picto: 'mandat', abbr: 'AMO', label: 'Assistant à maîtrise d’ouvrage', role: 'Le conseil du client', couleur: '#2a8fb0',
-      description: 'Il aide le maître d’ouvrage à faire ses choix quand celui-ci n’a pas les compétences techniques. Attention : il conseille, mais il ne conçoit pas le bâtiment.',
-      points: ['Aide à rédiger le programme', 'Conseille sur le budget et le planning', 'Assiste au choix du maître d’œuvre', 'Ne se substitue jamais au MOE'],
-      exemples: ['Programmiste', 'AMO énergie', 'Conducteur d’opération'] },
-    { id: 'moe', picto: 'moe', abbr: 'MOE', label: 'Maître d’œuvre', role: 'Le concepteur et le chef d’orchestre', couleur: '#7b55c7',
-      description: 'Il conçoit le projet à partir du programme, établit les plans et les pièces écrites, consulte les entreprises et dirige l’exécution des travaux pour le compte du maître d’ouvrage.',
-      points: ['Conçoit le projet (ESQ → APD → PRO)', 'Constitue le dossier de permis de construire', 'Rédige le DCE et analyse les offres', 'Dirige et contrôle l’exécution des travaux'],
-      exemples: ['Architecte', 'BET structure', 'BET fluides', 'Économiste'] },
-    { id: 'ent', picto: 'entreprises', abbr: 'ENT', label: 'Entreprises de travaux', role: 'Les constructeurs', couleur: '#c77a1e',
-      description: 'Elles réalisent physiquement l’ouvrage. Elles sont titulaires d’un marché de travaux : soit une entreprise générale pour tout le chantier, soit une entreprise par lot (allotissement).',
-      points: ['Exécutent les travaux de leur lot', 'Établissent les études d’exécution (plans EXE)', 'Rédigent leur PPSPS', 'Peuvent sous-traiter une partie des travaux'],
-      exemples: ['Gros œuvre', 'Charpente', 'Plomberie', 'Électricité'] },
-    { id: 'ct', picto: 'controle', abbr: 'CT', label: 'Contrôleur technique', role: 'Le garant de la sécurité', couleur: 'var(--vert)',
-      description: 'Missionné par le maître d’ouvrage, il donne un avis sur les risques techniques : solidité de l’ouvrage et sécurité des personnes. Il est obligatoire pour de nombreuses constructions (ERP, IGH, bâtiments complexes).',
-      points: ['Mission L : solidité des ouvrages', 'Mission S : sécurité des personnes', 'Examine les plans et visite le chantier', 'Rédige un rapport final (RFCT)'],
-      exemples: ['Apave', 'Socotec', 'Bureau Veritas', 'Qualiconsult'] },
-    { id: 'sps', picto: 'sps', abbr: 'SPS', label: 'Coordonnateur SPS', role: 'Le coordonnateur sécurité', couleur: 'var(--rouge2)',
-      description: 'Désigné par le maître d’ouvrage dès la conception dès qu’au moins deux entreprises interviennent, il organise la prévention des risques liés à la coprésence des entreprises sur le chantier.',
-      points: ['Rédige le PGC (plan général de coordination)', 'Tient le registre-journal', 'Harmonise les PPSPS des entreprises', 'Constitue le DIUO pour l’exploitation future'],
-      exemples: ['Coordonnateur niveau 1, 2 ou 3'] },
-  ],
-
-  // atelier 3 : les missions normalisées de la maîtrise d'œuvre (base : dans la mission de base)
-  missionsMOE: [
-    { id: 'diag', sigle: 'DIAG', nom: 'Diagnostic', couleur: '#2a8fb0', base: false, picto: 'diag', quand: 'Uniquement sur bâtiment existant',
-      description: 'Établir un état des lieux technique du bâtiment avant de définir le projet de réhabilitation.',
-      livrables: ['Relevé de l’existant', 'État sanitaire du bâti', 'Repérage des désordres', 'Faisabilité de la transformation'] },
-    { id: 'esq', sigle: 'ESQ', nom: 'Esquisse', couleur: 'var(--bleu)', base: true, picto: 'conception', quand: 'Conception — début',
-      description: 'Proposer une première réponse au programme et vérifier qu’il est réalisable dans l’enveloppe financière.',
-      livrables: ['Parti architectural', 'Plans de principe et volumétrie', 'Insertion dans le site', 'Estimation sommaire'] },
-    { id: 'aps', sigle: 'APS', nom: 'Avant-projet sommaire', couleur: 'var(--bleu)', base: true, picto: 'moe', quand: 'Conception',
-      description: 'Préciser la composition générale en plan et en volume et proposer les dispositions techniques.',
-      livrables: ['Plans au 1/200', 'Principes de structure et de fluides', 'Calendrier prévisionnel', 'Estimation provisoire des travaux'] },
-    { id: 'apd', sigle: 'APD', nom: 'Avant-projet définitif', couleur: '#7b55c7', base: true, picto: 'cible', quand: 'Conception — choix figés',
-      description: 'Arrêter définitivement les formes, dimensions et matériaux, et déterminer le coût prévisionnel définitif des travaux.',
-      livrables: ['Plans, coupes, façades au 1/100', 'Surfaces définitives', 'Choix des matériaux', 'Base du dossier de permis de construire'] },
-    { id: 'pro', sigle: 'PRO', nom: 'Projet', couleur: '#7b55c7', base: true, picto: 'reglage', quand: 'Fin de conception',
-      description: 'Décrire le projet lot par lot avec assez de précision pour que les entreprises puissent le chiffrer et le réaliser.',
-      livrables: ['Plans détaillés et détails d’exécution', 'CCTP par lot', 'Coût prévisionnel par lot', 'Échéancier des travaux'] },
-    { id: 'act', sigle: 'ACT', nom: 'Assistance aux contrats de travaux', couleur: 'var(--vert)', base: true, picto: 'consultation', quand: 'Consultation des entreprises',
-      description: 'Aider le maître d’ouvrage à choisir les entreprises et à mettre au point les marchés de travaux.',
-      livrables: ['Constitution du DCE', 'Analyse comparative des offres', 'Rapport d’analyse et avis', 'Mise au point des marchés'] },
-    { id: 'visa', sigle: 'VISA', nom: 'Visa des études d’exécution', couleur: 'var(--vert)', base: true, picto: 'visa', quand: 'Avant et pendant les travaux',
-      description: 'Vérifier que les plans d’exécution établis par les entreprises sont conformes au projet du maître d’œuvre.',
-      livrables: ['Examen des plans EXE de l’entreprise', 'Visa, visa avec observations ou refus', 'Suivi des reprises'] },
-    { id: 'exe', sigle: 'EXE', nom: 'Études d’exécution', couleur: '#c77a1e', base: false, picto: 'plans', quand: 'Mission complémentaire',
-      description: 'Réaliser les plans d’exécution à la place des entreprises. Le plus souvent, ce sont les entreprises qui les font (le MOE se limite alors au VISA).',
-      livrables: ['Plans de coffrage et de ferraillage', 'Plans de réseaux et de réservations', 'Notes de calcul', 'Nomenclatures'] },
-    { id: 'det', sigle: 'DET', nom: 'Direction de l’exécution des travaux', couleur: '#c77a1e', base: true, picto: 'execution', quand: 'Pendant le chantier',
-      description: 'Diriger le chantier pour le compte du maître d’ouvrage et vérifier la conformité des travaux au marché.',
-      livrables: ['Réunions de chantier et comptes rendus', 'Vérification des situations de travaux', 'Ordres de service', 'Information du MOA'] },
-    { id: 'opc', sigle: 'OPC', nom: 'Ordonnancement, pilotage, coordination', couleur: '#c2477f', base: false, picto: 'opc', quand: 'Mission complémentaire',
-      description: 'Organiser dans le temps l’intervention des différentes entreprises et faire respecter le planning général.',
-      livrables: ['Planning général d’exécution', 'Coordination des interfaces entre lots', 'Relances et alertes de retard'] },
-    { id: 'aor', sigle: 'AOR', nom: 'Assistance aux opérations de réception', couleur: 'var(--vert)', base: true, picto: 'reception', quand: 'Fin de chantier',
-      description: 'Assister le maître d’ouvrage lors de la réception de l’ouvrage et pendant l’année de garantie de parfait achèvement.',
-      livrables: ['Opérations préalables à la réception (OPR)', 'Proposition de réception au MOA', 'Suivi de la levée des réserves', 'Examen du DOE'] },
-  ],
-
-  // le contenu propre à chaque atelier, bloc par bloc
-  // (types : texte, periodes, etapes, grille, carte, compare, alerte, explorateur)
+  // le contenu de chaque atelier : une suite de blocs
   contenus: {
     1: [
-      { type: 'carte', cle: 'acteurs', liste: 'acteurs', titre: 'Schéma des acteurs', consigne: 'Clique sur chaque intervenant.', centre: 'OPÉRATION DE CONSTRUCTION', picto: 'ouvrage' },
-      { type: 'grille', titre: 'Les autres intervenants de l’opération', items: [
-        { titre: 'Géomètre-expert', picto: 'geometre', texte: 'Relève le terrain, borne la propriété, implante le bâtiment. Seul habilité à fixer les limites de propriété.' },
-        { titre: 'Géotechnicien', picto: 'geotech', texte: 'Réalise l’étude de sol (missions G1, G2…) qui conditionne le choix et le dimensionnement des fondations.' },
-        { titre: 'Service instructeur', picto: 'instructeur', texte: 'Service urbanisme de la mairie : il instruit le permis de construire et vérifie la conformité au PLU.' },
-        { titre: 'Concessionnaires', picto: 'concession', texte: 'Gestionnaires des réseaux (électricité, eau, gaz, télécom, assainissement) qui raccordent le bâtiment.' },
-        { titre: 'Assureurs', picto: 'garanties', texte: 'Assurance dommages-ouvrage souscrite par le MOA, assurance décennale obligatoire pour les constructeurs.' },
-        { titre: 'Usagers et riverains', picto: 'chefEquipe', texte: 'Futurs occupants consultés en amont, voisins concernés par l’affichage du permis et les nuisances de chantier.' },
-      ] },
+      { type: 'phrase', titre: 'L’urbanisme en une phrase',
+        texte: 'L’**urbanisme** est la science et l’art d’organiser l’espace des villes et des territoires. En France, il est encadré par le **Code de l’urbanisme**, qui définit les règles de construction et d’aménagement.' },
+      { type: 'grille', deux: true, titre: 'Quatre lois à connaître', hint: 'Dans l’ordre du temps : chaque loi a changé la façon de planifier la ville.',
+        items: [
+          { picto: 'programme', titre: 'Loi SRU (2000)', texte: '**Solidarité et Renouvellement Urbains** : elle a modernisé le droit de l’urbanisme. Le **PLU** remplace le **POS** (Plan d’Occupation des Sols).' },
+          { picto: 'feuille', titre: 'Grenelle II (2010)', texte: 'Les enjeux **environnementaux** entrent dans tous les documents d’urbanisme.' },
+          { picto: 'ouvrage', titre: 'Loi ALUR (2014)', texte: '**Accès au Logement et Urbanisme Rénové** : elle supprime le **COS** et renforce les PLU intercommunaux (**PLUi**).' },
+          { picto: 'arbre', titre: 'Loi Climat (2021)', texte: 'Objectif **Zéro Artificialisation Nette** (ZAN) des sols d’ici 2050 : un impact majeur sur les PLU.' },
+        ] },
+      { type: 'cascade', titre: 'La hiérarchie des documents d’urbanisme', hint: 'Du plus large au plus local : chaque document doit être compatible avec celui du dessus.',
+        note: 'Chaque document doit être compatible avec le document supérieur.',
+        items: [
+          { sigle: 'SRADDET', texte: 'Schéma régional', echelle: 'Région', couleur: 'var(--bleu)' },
+          { sigle: 'SCoT', texte: 'Schéma de Cohérence Territoriale', echelle: 'Intercommunalité', couleur: '#7b55c7' },
+          { sigle: 'PLU / PLUi', texte: 'Plan Local d’Urbanisme', echelle: 'Commune ou intercommunalité', couleur: 'var(--vert)' },
+          { sigle: 'Carte communale', texte: 'Alternative simplifiée au PLU', echelle: 'Petites communes', couleur: '#c77a1e', alt: true },
+        ] },
+      { type: 'grille', titre: 'Les acteurs de l’urbanisme', hint: 'Six acteurs, six rôles : qui fait quoi autour du PLU ?',
+        items: [
+          { picto: 'administrations', titre: 'Commune / EPCI', texte: 'Élabore et approuve le PLU.' },
+          { picto: 'balance', titre: 'Préfet', texte: 'Contrôle de légalité et porter à connaissance.' },
+          { picto: 'chefEquipe', titre: 'Citoyens', texte: 'Concertation et enquête publique.' },
+          { picto: 'moe', titre: 'Architectes / BET', texte: 'Application des règles dans les projets.' },
+          { picto: 'monument', titre: 'ABF', texte: 'Architecte des Bâtiments de France : périmètres protégés.' },
+          { picto: 'feuille', titre: 'MRAe', texte: 'Mission Régionale d’Autorité environnementale.' },
+        ] },
     ],
     2: [
-      { type: 'etapes', titre: 'De l’idée au dossier de consultation', items: [
-        { titre: 'Émergence du besoin', qui: 'MOA', picto: 'idee', texte: 'Un besoin apparaît : agrandir une école, créer des logements, remplacer un bâtiment vétuste.', details: ['Analyse des usages et des effectifs', 'Recherche d’un terrain ou d’un bâtiment à réhabiliter', 'Première estimation de l’enveloppe financière'] },
-        { titre: 'Études de faisabilité', qui: 'MOA / AMO', picto: 'loupe', texte: 'On vérifie que le projet est possible sur ce terrain, dans ce budget et dans ce délai.', details: ['Consultation du PLU : zonage, hauteur, emprise, recul', 'Étude de sol (mission géotechnique G1)', 'Contraintes de site : accès, réseaux, servitudes, risques'] },
-        { titre: 'Le programme', qui: 'MOA', picto: 'programme', texte: 'Document écrit qui décrit tout ce que le bâtiment doit permettre de faire. C’est le cahier des charges du maître d’œuvre.', details: ['Liste et surface de chaque local', 'Liaisons et fonctionnement entre les locaux', 'Exigences techniques, environnementales et de confort', 'Enveloppe financière et calendrier prévisionnel'] },
-        { titre: 'Choix du maître d’œuvre', qui: 'MOA', picto: 'contrat', texte: 'Le MOA sélectionne l’équipe de conception, par concours d’architecture ou par appel d’offres selon le montant.', details: ['Signature du contrat de maîtrise d’œuvre', 'Définition de la mission confiée (mission de base + compléments)', 'Fixation des honoraires'] },
-        { titre: 'Esquisse (ESQ)', qui: 'MOE', picto: 'conception', texte: 'Première réponse au programme : le parti architectural, l’implantation, les volumes.', details: ['Croquis, plans de principe, insertion dans le site', 'Vérification de la faisabilité du programme', 'Estimation sommaire du coût des travaux'] },
-        { titre: 'Avant-projet sommaire (APS)', qui: 'MOE', picto: 'moe', texte: 'Le projet se précise : composition générale en plan et en volume, principes techniques.', details: ['Plans au 1/200 environ', 'Propositions de dispositions techniques (structure, énergie)', 'Estimation provisoire des travaux et calendrier'] },
-        { titre: 'Avant-projet définitif (APD)', qui: 'MOE', picto: 'cible', texte: 'Les choix sont arrêtés : formes, dimensions, matériaux. C’est la base du dossier de permis de construire.', details: ['Plans, coupes et façades au 1/100', 'Choix des matériaux et des équipements', 'Coût prévisionnel définitif des travaux', 'Surfaces définitives du bâtiment'] },
-        { titre: 'Permis de construire (PCMI ou PC)', qui: 'MOA (déposé par le MOE)', picto: 'administrations', texte: 'Demande d’autorisation d’urbanisme déposée en mairie, instruite au regard du PLU.', details: ['Dossier PC : plans de situation, masse, coupe, façades, notice, insertion', 'Instruction : 2 mois pour une maison, 3 mois pour les autres cas', 'Affichage sur le terrain + délai de recours des tiers de 2 mois'] },
-        { titre: 'Projet (PRO) et DCE', qui: 'MOE', picto: 'reglage', texte: 'Le projet est décrit lot par lot avec assez de précision pour que les entreprises puissent chiffrer.', details: ['Plans détaillés et carnets de détails', 'CCTP : description technique lot par lot', 'Cadre de DPGF / décomposition des prix', 'Coût prévisionnel des travaux par lot'] },
-      ] },
-      { type: 'compare', titre: 'APS ou APD : ne plus confondre', items: [
-        { titre: 'APS — Avant-projet sommaire', picto: 'moe', texte: 'On explore encore : le projet prend forme mais tout n’est pas figé.',
-          points: ['•Échelle de travail : environ 1/200', '•Composition générale en plan et en volume', '•Dispositions techniques proposées', '•Estimation provisoire du coût des travaux', '•Le MOA peut encore faire évoluer le projet'] },
-        { titre: 'APD — Avant-projet définitif', picto: 'cible', texte: 'On arrête les choix : ce qui est décidé ici part au permis de construire.',
-          points: ['+Échelle de travail : environ 1/100', '+Formes, dimensions et matériaux arrêtés', '+Surfaces définitives (surface de plancher, emprise au sol)', '+Coût prévisionnel définitif des travaux', '+Base du dossier de permis de construire'] },
-      ] },
+      { type: 'phrase', titre: 'Le PLU en une phrase',
+        texte: 'Le **PLU** est composé de plusieurs **pièces réglementaires** qui forment un tout cohérent. Chaque document a un rôle précis et complémentaire.' },
+      { type: 'etapes', titre: 'Les 6 pièces du PLU', hint: 'Lisez-les dans l’ordre : du diagnostic de la commune jusqu’aux servitudes qui s’y ajoutent.',
+        items: [
+          { picto: 'graphique', titre: 'Rapport de présentation', texte: 'Diagnostic du territoire, état initial de l’environnement, justification des choix retenus, évaluation environnementale.',
+            details: ['Analyse socio-économique', 'Diagnostic environnemental', 'Bilan du PLU précédent', 'Justification des orientations'] },
+          { picto: 'boussole', titre: 'PADD', texte: '**Projet d’Aménagement et de Développement Durables** : le projet politique de la commune.',
+            details: ['Orientations générales d’urbanisme', 'Politique de l’habitat', 'Politique des transports', 'Préservation des espaces naturels'] },
+          { picto: 'plans', titre: 'OAP', texte: '**Orientations d’Aménagement et de Programmation** : des règles pour des secteurs à enjeux.',
+            details: ['Schémas d’aménagement par secteur', 'Mixité fonctionnelle et sociale', 'Principes de desserte et de voirie', 'Qualité environnementale et paysagère'] },
+          { picto: 'regle', titre: 'Règlement', texte: 'Règles applicables zone par zone : implantation, hauteur, emprise, stationnement…',
+            details: ['Destination des constructions', 'Hauteur et gabarit', 'Implantation par rapport aux voies et aux limites', 'Stationnement et espaces verts'] },
+          { picto: 'carteTerrain', titre: 'Plan de zonage', texte: 'Carte délimitant les zones U, AU, A, N et les emplacements réservés.',
+            details: ['Zonage réglementaire', 'Emplacements réservés (ER)', 'Espaces boisés classés (EBC)', 'Périmètres de protection'] },
+          { picto: 'dossier', titre: 'Annexes', texte: 'Servitudes d’utilité publique, réseaux, plans de prévention des risques…',
+            details: ['Servitudes d’utilité publique (SUP)', 'Réseaux d’eau et d’assainissement', 'Plans de prévention des risques (PPR)', 'Périmètres de droit de préemption'] },
+        ] },
+      { type: 'equation', titre: 'Articulation des pièces du PLU',
+        items: ['Rapport de présentation', 'PADD', 'OAP', 'Règlement', 'Plan de zonage', 'Annexes'],
+        resultat: 'Le PLU complet', note: 'Ensemble opposable aux autorisations d’urbanisme.' },
     ],
     3: [
-      { type: 'texte', textes: ['Le contrat de maîtrise d’œuvre découpe le travail du MOE en **missions normalisées**, désignées par des sigles. En marché public, la **mission de base** pour un bâtiment neuf forme un tout indissociable : ESQ, APS, APD, PRO, ACT, VISA (ou EXE), DET et AOR. Les autres missions (DIAG, EXE, OPC) sont des **missions complémentaires**, ajoutées au cas par cas.'] },
-      { type: 'explorateur', titre: 'Les missions une par une', consigne: 'Clique sur un sigle pour ouvrir sa fiche, ou trie les missions.', defaut: 'esq' },
+      { type: 'phrase', titre: 'Le zonage en une phrase',
+        texte: 'Le **plan de zonage** divise le territoire communal en **4 grandes catégories de zones**, chacune ayant ses propres règles de constructibilité.' },
+      { type: 'zones', titre: 'Les 4 grandes zones du PLU', hint: 'Même code, même couleur que sur la carte de l’accueil.',
+        items: [
+          { code: 'U', nom: 'Zone urbaine', couleur: 'var(--rouge)', desc: 'Zones déjà urbanisées et équipées (réseaux).', construire: 'autorisée sous les conditions du règlement.',
+            sous: [['UA', 'centre-ville dense, habitat collectif'], ['UB', 'zone résidentielle pavillonnaire'], ['UC', 'habitat individuel en périphérie'], ['UE', 'zone d’activités économiques'], ['UX', 'zone d’équipements publics']] },
+          { code: 'AU', nom: 'Zone à urbaniser', couleur: '#c77a1e', desc: 'Zones naturelles destinées à être ouvertes à l’urbanisation, avec ou sans aménagement préalable.', construire: 'possible dès que la zone est ouverte : tout de suite en 1AU, plus tard en 2AU.',
+            sous: [['1AU', 'urbanisation immédiate (réseaux à proximité)'], ['2AU', 'urbanisation future (modification du PLU nécessaire)'], ['AUe', 'à urbaniser pour des activités économiques']] },
+          { code: 'A', nom: 'Zone agricole', couleur: '#9a7d00', desc: 'Zones réservées à l’activité agricole.', construire: 'très limitée (bâtiments agricoles uniquement).',
+            sous: [['A', 'agricole stricte'], ['Ap', 'agricole protégée (paysage)'], ['Ah', 'agricole avec habitat existant toléré']] },
+          { code: 'N', nom: 'Zone naturelle', couleur: 'var(--vert)', desc: 'Zones à protéger pour la qualité des paysages, des milieux naturels ou des risques.', construire: 'quasi interdite.',
+            sous: [['N', 'naturelle stricte'], ['Nl', 'naturelle de loisirs'], ['Nf', 'naturelle forestière'], ['Nr', 'naturelle à risque (inondation, etc.)']] },
+        ] },
+      { type: 'legende', titre: 'La légende du plan de zonage', hint: 'Ces signes se superposent aux zones : ils ajoutent une règle particulière sur une partie du terrain.',
+        items: [
+          { sym: 'er', code: 'ER', nom: 'Emplacement réservé', texte: 'Terrain gelé pour un projet public.' },
+          { sym: 'ebc', code: 'EBC', nom: 'Espace boisé classé', texte: 'Boisement protégé : défrichement interdit.' },
+          { sym: 'haie', code: 'L.111-22', nom: 'Élément paysager', texte: 'Haie, arbre, mur protégé.' },
+          { sym: 'alignement', code: '///', nom: 'Alignement', texte: 'Ligne de recul imposée par rapport à la voie.' },
+          { sym: 'inondation', code: 'PPRi', nom: 'Risque inondation', texte: 'Zone rouge ou bleue du plan de prévention.' },
+        ] },
     ],
     4: [
-      { type: 'etapes', titre: 'Du choix des entreprises à la remise des clés', items: [
-        { titre: 'Consultation et choix des entreprises', qui: 'MOA assisté du MOE (ACT)', picto: 'consultation', texte: 'Le DCE est envoyé aux entreprises, qui remettent une offre. Le MOE analyse et le MOA attribue.', details: ['Remise des offres à date limite', 'Analyse technique et financière', 'Attribution puis signature des marchés'] },
-        { titre: 'Ordre de service (OS) et période de préparation', qui: 'MOA / entreprises', picto: 'contrat', texte: 'L’OS de démarrage lance officiellement le chantier. La période de préparation précède les travaux.', details: ['Plan d’installation de chantier', 'PPSPS de chaque entreprise', 'Plannings d’exécution', 'Déclaration d’ouverture de chantier (DOC)'] },
-        { titre: 'Implantation et travaux préparatoires', qui: 'Entreprises / géomètre', picto: 'implantation', texte: 'Le bâtiment est matérialisé sur le terrain avant tout terrassement.', details: ['Piquetage et chaises d’implantation', 'Installation de la base vie et des clôtures', 'Déclaration DT-DICT sur les réseaux existants'] },
-        { titre: 'Exécution des travaux', qui: 'Entreprises, dirigées par le MOE (DET)', picto: 'execution', texte: 'Les lots s’enchaînent selon le planning : gros œuvre, clos et couvert, second œuvre, finitions.', details: ['Réunions de chantier hebdomadaires + comptes rendus', 'Situations de travaux mensuelles', 'Contrôles du CT et visites du CSPS', 'Gestion des aléas et des travaux modificatifs'] },
-        { titre: 'OPR — Opérations préalables à la réception', qui: 'MOE (AOR)', picto: 'loupe', texte: 'Le maître d’œuvre parcourt l’ouvrage avec les entreprises et liste tout ce qui n’est pas conforme.', details: ['Visite détaillée local par local', 'Liste des réserves', 'Essais et vérifications de fonctionnement', 'Proposition de réception au MOA'] },
-        { titre: 'Réception des travaux', qui: 'MOA', picto: 'reception', texte: 'Acte juridique majeur par lequel le MOA accepte l’ouvrage, avec ou sans réserves. Il signe le procès-verbal de réception.', details: ['PV de réception daté et signé', 'Point de départ de toutes les garanties', 'Transfert de la garde de l’ouvrage au MOA', 'Remise des clés'] },
-        { titre: 'Levée des réserves et documents finaux', qui: 'Entreprises / MOE', picto: 'dossier', texte: 'Les réserves sont reprises dans le délai fixé, puis les documents de l’ouvrage sont remis au maître d’ouvrage.', details: ['DOE : dossier des ouvrages exécutés', 'DIUO : dossier d’intervention ultérieure sur l’ouvrage', 'DGD : décompte général et définitif', 'PV de levée des réserves'] },
-      ] },
-      { type: 'compare', titre: 'Réception avec ou sans réserves', items: [
-        { titre: 'Réception avec réserves', picto: 'sps', texte: 'Le MOA accepte l’ouvrage mais liste les points non conformes ou inachevés.',
-          points: ['•Les réserves sont annexées au PV de réception', '•Un délai est fixé pour les lever', '•Une retenue de garantie peut être conservée', '•Les garanties courent malgré tout dès la date de réception'] },
-        { titre: 'Réception sans réserve', picto: 'visa', texte: 'L’ouvrage est accepté tel quel : aucune non-conformité n’est relevée.',
-          points: ['+PV signé sans annexe de réserves', '+Solde du marché libéré selon le contrat', '+Départ immédiat des garanties légales', '+Situation rare sur un chantier de bâtiment'] },
-      ] },
-      { type: 'grille', titre: 'Après la réception : garanties et documents', items: [
-        { titre: 'Parfait achèvement — 1 an', picto: 'reglage', texte: 'L’entreprise doit réparer tous les désordres signalés pendant l’année qui suit la réception, quelle que soit leur importance.' },
-        { titre: 'Bon fonctionnement (biennale) — 2 ans', picto: 'boulon', texte: 'Couvre les éléments d’équipement dissociables du bâtiment : volets, radiateurs, portes, robinetterie, VMC…' },
-        { titre: 'Décennale — 10 ans', picto: 'administrations', texte: 'Couvre les désordres compromettant la solidité de l’ouvrage ou le rendant impropre à sa destination : fissures structurelles, infiltrations en toiture…' },
-        { titre: 'Dommages-ouvrage', picto: 'garanties', texte: 'Assurance souscrite par le maître d’ouvrage avant l’ouverture du chantier : elle préfinance les réparations décennales sans attendre le procès.' },
-        { titre: 'DOE', picto: 'dossier', texte: 'Dossier des ouvrages exécutés : plans conformes à l’exécution, notices, fiches produits. Indispensable pour entretenir le bâtiment.' },
-        { titre: 'DIUO', picto: 'sps', texte: 'Dossier d’intervention ultérieure sur l’ouvrage, établi par le CSPS : il explique comment intervenir en sécurité sur le bâtiment plus tard.' },
-      ] },
+      { type: 'phrase', titre: 'Lire le règlement en une phrase',
+        texte: 'Avant de construire, il faut vérifier les **règles du PLU** applicables à la parcelle. Le règlement fixe les **droits à construire**, zone par zone.' },
+      { type: 'regles', titre: 'Les règles du PLU à connaître', hint: 'Les numéros d’articles sont ceux du règlement classique d’un PLU.',
+        items: [
+          { picto: 'voie', titre: 'Implantation par rapport à la voie', art: 'Art. 6', texte: 'Distance minimale entre la construction et la voie publique. Le règlement peut imposer un **alignement**, un **recul** (par exemple 5 m minimum) ou l’implantation en limite.',
+            exemple: 'En zone UA : implantation à l’alignement obligatoire. En zone UB : recul minimum de 5 m.' },
+          { picto: 'limites', titre: 'Implantation par rapport aux limites séparatives', art: 'Art. 7', texte: 'Distance entre la construction et les limites de propriété latérales et de fond. Souvent **H/2** avec un minimum de 3 m.',
+            exemple: 'Retrait = H/2, minimum 3 m. Ou implantation en limite autorisée si le mur est aveugle.' },
+          { picto: 'voisins', titre: 'Implantation par rapport aux bâtiments voisins', art: 'Art. 8', texte: 'Distance minimale entre deux constructions sur un même terrain.',
+            exemple: 'Distance ≥ hauteur du bâtiment le plus haut, minimum 4 m.' },
+          { picto: 'emprise', titre: 'Emprise au sol (CES)', art: 'Art. 9', texte: 'Surface occupée au sol par la construction (sa projection verticale) divisée par la surface du terrain. Elle limite la densité bâtie.',
+            exemple: 'CES max = 40 % → sur 500 m² de terrain, emprise max = 200 m².' },
+          { picto: 'hauteur', titre: 'Hauteur maximale', art: 'Art. 10', texte: 'Hauteur mesurée au **faîtage** ou à l’**acrotère**, depuis le terrain naturel. Elle varie selon les zones.',
+            exemple: 'Zone UA : 15 m max (R+4). Zone UB : 9 m max (R+2+combles).' },
+          { picto: 'voiture', titre: 'Stationnement', art: 'Art. 12', texte: 'Nombre de places de stationnement imposé selon le type de construction.',
+            exemple: 'Logement : 1 place / 60 m² de surface de plancher (SDP). Bureau : 1 place / 40 m² de SDP.' },
+          { picto: 'arbre', titre: 'Espaces libres et plantations', art: 'Art. 13', texte: 'Pourcentage minimum d’espaces verts ou de pleine terre sur le terrain.',
+            exemple: '30 % du terrain en pleine terre minimum. 1 arbre planté pour 100 m² de terrain.' },
+        ] },
+      { type: 'etapes', titre: 'Méthode : comment lire un PLU pour un projet', hint: 'Cinq gestes, toujours dans cet ordre.',
+        items: [
+          { titre: 'Repérer la parcelle', texte: 'Sur le plan de zonage, identifier la zone (U, AU, A, N) et la sous-zone (UA, UB…).' },
+          { titre: 'Lire le règlement de zone', texte: 'Consulter les articles du règlement correspondant à la zone identifiée.' },
+          { titre: 'Vérifier les servitudes', texte: 'Regarder les annexes : SUP, ER, EBC, PPR qui se superposent à la parcelle.' },
+          { titre: 'Consulter les OAP', texte: 'Si la parcelle est dans un secteur d’OAP, vérifier les principes d’aménagement.' },
+          { titre: 'Synthétiser les contraintes', texte: 'Dresser la fiche de contraintes : reculs, hauteur, emprise, stationnement, espaces verts.' },
+        ] },
+    ],
+    5: [
+      { type: 'phrase', titre: 'Le permis en une phrase',
+        texte: 'Le **PLU** est le document de référence pour instruire les **autorisations d’urbanisme**. Tout projet de construction doit être conforme à ses prescriptions.' },
+      { type: 'autorisations', titre: 'Les autorisations d’urbanisme', hint: 'Selon la nature des travaux, on ne dépose pas le même dossier.',
+        items: [
+          { picto: 'contrat', nom: 'Certificat d’urbanisme (CU)', couleur: 'var(--bleu)', delai: '1 mois (CUa) / 2 mois (CUb)',
+            types: ['CUa (informatif) : indique les règles applicables à un terrain', 'CUb (opérationnel) : indique si un projet précis est réalisable'] },
+          { picto: 'dossier', nom: 'Déclaration préalable (DP)', couleur: '#7b55c7', delai: '1 mois',
+            types: ['Travaux de faible importance (extension < 40 m² en zone U)', 'Modification de l’aspect extérieur, clôtures, ravalement', 'Changement de destination sans travaux'] },
+          { picto: 'ouvrage', nom: 'Permis de construire (PC)', couleur: 'var(--vert)', delai: '2 mois (maison) / 3 mois (autre)',
+            types: ['Construction nouvelle > 20 m² de SDP', 'Extension > 40 m² en zone U (ou > 20 m² hors zone U)', 'Changement de destination avec modification de structure'] },
+          { picto: 'implantation', nom: 'Permis d’aménager (PA)', couleur: '#c77a1e', delai: '3 mois',
+            types: ['Lotissement créant des voies ou des espaces communs', 'Camping, aire de stationnement', 'Opérations d’affouillement ou d’exhaussement'] },
+          { picto: 'marteau', nom: 'Permis de démolir', couleur: 'var(--rouge)', delai: '2 mois',
+            types: ['Démolition totale ou partielle', 'Obligatoire en secteur protégé', 'Peut être intégré au PC'] },
+        ] },
+      { type: 'etapes', titre: 'Le parcours d’un permis de construire', hint: 'De la mairie au chantier, sept étapes.',
+        items: [
+          { picto: 'dossier', titre: 'Dépôt du dossier', texte: 'En mairie ou en ligne. Le dossier comprend les plans (masse, coupe, façades), les photos et la notice.' },
+          { picto: 'consultation', titre: 'Enregistrement', texte: 'Attribution d’un numéro d’enregistrement et affichage en mairie. Décompte du délai d’instruction.' },
+          { picto: 'loupe', titre: 'Instruction', texte: 'Le service urbanisme vérifie la conformité au PLU, aux OAP et aux servitudes. Consultation de l’ABF si nécessaire.' },
+          { picto: 'garanties', titre: 'Décision', texte: 'Arrêté accordant ou refusant le permis. Possible avec prescriptions (conditions à respecter).' },
+          { picto: 'panneau', titre: 'Affichage sur le terrain', texte: 'Panneau réglementaire visible de la voie publique pendant 2 mois. Les tiers peuvent contester.' },
+          { picto: 'execution', titre: 'Ouverture du chantier', texte: '**DROC** (Déclaration Réglementaire d’Ouverture du Chantier) à déposer en mairie.' },
+          { picto: 'ouvrage', titre: 'Achèvement des travaux', texte: '**DAACT** (Déclaration Attestant l’Achèvement et la Conformité des Travaux) et contrôle de conformité.' },
+        ] },
     ],
   },
 
-  // flashcards : [question, réponse] (0 = l'introduction)
+  // les flashcards de chaque atelier : [question, réponse]
   memo: {
-    0: [
-      ['Que veut dire l’expression « acte de construire » ?', 'L’ensemble des opérations, des acteurs et des phases qui permettent de passer d’un besoin à un bâtiment livré et utilisé.'],
-      ['Quelles sont les 4 grandes périodes d’une opération de construction ?', 'Programmation → Conception → Réalisation → Exploitation.'],
-      ['Que signifient les sigles MOA et MOE ?', 'MOA = **M**aître d’**O**uvr**A**ge (le client, celui pour qui on construit). MOE = **M**aître d’**Œ**uvr**E** (celui qui conçoit et dirige les travaux).'],
-      ['À quoi sert la loi MOP ?', 'Elle définit les rôles du maître d’ouvrage et du maître d’œuvre et le contenu des missions dans la commande publique. Ses règles sont aujourd’hui codifiées dans le Code de la commande publique.'],
-      ['À quel moment les choix coûtent-ils le moins cher à modifier ?', 'Au tout début, en phase de programmation et d’esquisse : plus le projet avance, plus une modification est longue et coûteuse.'],
-    ],
     1: [
-      ['Qui est le maître d’ouvrage ?', 'La personne (publique ou privée) pour laquelle l’ouvrage est construit : il définit le besoin, finance et réceptionne. C’est le client.'],
-      ['Quelle est la différence entre AMO et MOE ?', 'L’AMO conseille et assiste le maître d’ouvrage dans ses décisions ; le MOE conçoit le projet et dirige l’exécution des travaux.'],
-      ['Qui compose l’équipe de maîtrise d’œuvre ?', 'L’architecte (mandataire le plus souvent), les bureaux d’études techniques (structure, fluides, thermique) et l’économiste de la construction.'],
-      ['Quelles sont les deux missions de base du contrôleur technique ?', 'La mission L (solidité des ouvrages) et la mission S (sécurité des personnes).'],
-      ['Quand faut-il désigner un coordonnateur SPS ?', 'Dès la phase de conception, dès qu’au moins deux entreprises (y compris sous-traitants) interviennent sur le chantier.'],
-      ['Qui signe les marchés de travaux avec les entreprises ?', 'Le maître d’ouvrage. Le maître d’œuvre l’assiste (mission ACT) mais ne signe pas à sa place.'],
+      ['Quel document a remplacé le POS ?', 'Le **PLU** (Plan Local d’Urbanisme), depuis la loi SRU de 2000.'],
+      ['Que signifie ZAN ?', '**Zéro Artificialisation Nette** : objectif de la loi Climat de 2021 pour limiter l’étalement urbain.'],
+      ['Quel est le document d’urbanisme à l’échelle régionale ?', 'Le **SRADDET** (Schéma Régional d’Aménagement, de Développement Durable et d’Égalité des Territoires).'],
+      ['Qui élabore le PLU ?', 'La **commune**, ou l’**EPCI** (Établissement Public de Coopération Intercommunale) pour un PLUi.'],
+      ['Qu’est-ce que le SCoT ?', 'Le **Schéma de Cohérence Territoriale** : un document d’urbanisme intercommunal qui s’impose au PLU.'],
     ],
     2: [
-      ['Qu’est-ce que le programme ?', 'Le document rédigé par le maître d’ouvrage qui décrit les besoins, les locaux, les surfaces, les exigences techniques, le budget et le calendrier. C’est le cahier des charges du maître d’œuvre.'],
-      ['Que vérifie-t-on lors des études de faisabilité ?', 'Que le projet est réalisable : règles du PLU, nature du sol, accès et réseaux, contraintes du site, budget et délai.'],
-      ['Quelle phase sert de base au dossier de permis de construire ?', 'L’APD (avant-projet définitif), car les formes, dimensions, matériaux et surfaces y sont arrêtés.'],
-      ['Quelle est la différence principale entre APS et APD ?', 'L’APS propose des solutions générales et une estimation provisoire ; l’APD arrête définitivement les choix et donne le coût prévisionnel définitif des travaux.'],
-      ['Que contient le DCE ?', 'Le **D**ossier de **C**onsultation des **E**ntreprises : règlement de consultation, acte d’engagement, CCAP, CCTP, plans et décomposition des prix. Il permet aux entreprises de remettre une offre.'],
-      ['Combien de temps dure le délai de recours des tiers après affichage du permis ?', '2 mois à compter du premier jour d’affichage régulier du permis sur le terrain.'],
+      ['Combien de pièces principales composent un PLU ?', '**6 pièces** : rapport de présentation, PADD, OAP, règlement, plan de zonage, annexes.'],
+      ['Que contient le PADD ?', 'Le **Projet d’Aménagement et de Développement Durables** : les orientations politiques d’urbanisme de la commune.'],
+      ['Que sont les OAP ?', 'Les **Orientations d’Aménagement et de Programmation** : des règles spécifiques pour des secteurs à enjeux.'],
+      ['Quelle pièce du PLU contient les règles de hauteur et d’implantation ?', 'Le **règlement** du PLU, qui fixe les règles zone par zone.'],
+      ['Que trouve-t-on dans les annexes du PLU ?', 'Les servitudes d’utilité publique, les réseaux, les plans de prévention des risques, les périmètres de préemption.'],
+      ['Qu’est-ce qu’un emplacement réservé (ER) ?', 'Un terrain réservé sur le plan de zonage pour un **équipement public futur** (voirie, école, parc…).'],
     ],
     3: [
-      ['Que contient la mission de base d’un maître d’œuvre pour un bâtiment neuf ?', 'ESQ, APS, APD, PRO, ACT, VISA (ou EXE), DET et AOR. Elle forme un ensemble indissociable pour la commande publique.'],
-      ['Quelles sont les principales missions complémentaires ?', 'L’OPC (ordonnancement, pilotage, coordination), les études d’exécution (EXE) si le MOE les réalise, et le DIAG pour les bâtiments existants.'],
-      ['Quelle est la différence entre EXE et VISA ?', 'EXE = réaliser les plans d’exécution. VISA = vérifier et approuver les plans d’exécution réalisés par l’entreprise. Le MOE fait l’un ou l’autre, pas les deux sur le même lot.'],
-      ['Que fait le maître d’œuvre pendant la mission ACT ?', 'Il prépare le dossier de consultation, analyse les offres des entreprises, remet un rapport d’analyse au maître d’ouvrage et met au point les marchés.'],
-      ['En quoi consiste la mission DET ?', 'Diriger l’exécution des travaux : animer les réunions de chantier, vérifier la conformité des ouvrages au marché, contrôler les situations de travaux et informer le maître d’ouvrage.'],
-      ['Quelle mission couvre l’année qui suit la réception ?', 'L’AOR : elle comprend les OPR, l’assistance à la réception, le suivi de la levée des réserves et le suivi pendant la garantie de parfait achèvement.'],
+      ['Quelles sont les 4 grandes zones du PLU ?', '**U** (urbaine), **AU** (à urbaniser), **A** (agricole), **N** (naturelle).'],
+      ['Quelle est la différence entre 1AU et 2AU ?', '**1AU** : urbanisation immédiate (réseaux proches). **2AU** : urbanisation future (elle nécessite une modification du PLU).'],
+      ['Peut-on construire une maison en zone A ?', '**Non**, sauf les bâtiments agricoles nécessaires à l’exploitation. L’habitat y est strictement limité.'],
+      ['Que signifie EBC ?', '**Espace Boisé Classé** : un boisement protégé où le défrichement est interdit.'],
+      ['Que signifie ER sur un plan de zonage ?', '**Emplacement Réservé** : un terrain réservé pour un futur équipement ou une voirie publique.'],
     ],
     4: [
-      ['Qu’est-ce qu’un ordre de service (OS) ?', 'Un document écrit notifié à l’entreprise par le maître d’ouvrage (via le MOE) pour lui donner une instruction : démarrage des travaux, arrêt, reprise, travaux modificatifs.'],
-      ['À quoi sert la période de préparation de chantier ?', 'À organiser le chantier avant les travaux : plan d’installation, PPSPS, plannings d’exécution, commandes et approvisionnements.'],
-      ['Que sont les OPR ?', 'Les opérations préalables à la réception : le maître d’œuvre visite l’ouvrage avec les entreprises, liste les réserves et propose la réception au maître d’ouvrage.'],
-      ['Qui prononce la réception des travaux ?', 'Le maître d’ouvrage, et lui seul. Le maître d’œuvre l’assiste et lui propose la réception, mais ne la prononce pas.'],
-      ['Pourquoi la réception est-elle une date capitale ?', 'Parce qu’elle marque le transfert de la garde de l’ouvrage au maître d’ouvrage et le point de départ de toutes les garanties légales.'],
-      ['Quelles sont les durées des trois garanties légales ?', 'Parfait achèvement : 1 an. Bon fonctionnement (biennale) : 2 ans. Décennale : 10 ans. Toutes partent de la date de réception.'],
-      ['Quelle est la différence entre le DOE et le DIUO ?', 'Le DOE décrit l’ouvrage réellement exécuté (plans, notices). Le DIUO, établi par le CSPS, explique comment intervenir en sécurité sur le bâtiment plus tard.'],
+      ['Qu’est-ce que l’emprise au sol (CES) ?', 'Le rapport entre la **surface au sol du bâtiment** (sa projection) et la **surface du terrain**. Exemple : CES 40 % = 200 m² d’emprise sur 500 m².'],
+      ['Comment mesure-t-on la hauteur d’un bâtiment dans le PLU ?', 'Depuis le **terrain naturel** jusqu’au **faîtage** (toit en pente) ou à l’**acrotère** (toit-terrasse).'],
+      ['Que signifie la règle H/2 pour les limites séparatives ?', 'Le retrait doit être au moins égal à la **moitié de la hauteur** du bâtiment, avec un minimum (souvent 3 m).'],
+      ['Qu’est-ce qu’un alignement en urbanisme ?', 'La ligne qui sépare la voie publique de la propriété privée. Le PLU peut imposer de construire **à l’alignement** (en bord de voie).'],
+      ['Combien de places de stationnement pour un logement de 120 m² (règle 1 place par 60 m²) ?', '120 ÷ 60 = **2 places** de stationnement à prévoir.'],
+    ],
+    5: [
+      ['Quelle est la différence entre CUa et CUb ?', '**CUa** : informatif (règles applicables au terrain). **CUb** : opérationnel (faisabilité d’un projet précis sur le terrain).'],
+      ['À partir de quelle surface faut-il un permis de construire ?', 'Au-delà de **20 m²** de surface de plancher pour une construction nouvelle (ou 40 m² pour une extension en zone U).'],
+      ['Quel est le délai d’instruction d’un permis de construire pour une maison individuelle ?', '**2 mois**, à compter du dépôt du dossier complet.'],
+      ['Que signifie DAACT ?', '**Déclaration Attestant l’Achèvement et la Conformité des Travaux** : à déposer en mairie après le chantier.'],
+      ['Combien de temps le panneau de chantier doit-il rester visible ?', '**2 mois minimum** : c’est le délai pendant lequel les tiers peuvent contester le permis.'],
+      ['Qui instruit le permis de construire ?', 'Le **service urbanisme** de la commune (ou de l’intercommunalité), avec la consultation éventuelle de l’ABF et d’autres services.'],
     ],
   },
 
-  // les missions pratiques de chaque atelier (cochées sur cet ordinateur)
+  // les missions de terrain, placées après l'atelier dont elles se servent
   missions: {
-    1: [
-      { id: 'm1', etape: 'Mission 1 — Identifier', titre: 'Repérer les acteurs d’une opération réelle', picto: 'loupe',
-        taches: ['Repérer le panneau de permis de construire d’un chantier proche du lycée', 'Relever le nom du maître d’ouvrage et celui de l’architecte', 'Classer chaque nom relevé dans la bonne famille : MOA, MOE, entreprise', 'Noter la nature et la surface du projet indiquées sur le panneau'],
-        tuto: { titre: 'Comment lire un panneau de chantier', etapes: ['Le panneau réglementaire est visible depuis la voie publique pendant toute la durée du chantier.', 'En haut : le numéro et la date du permis, ainsi que le nom du bénéficiaire (= le maître d’ouvrage).', 'Au milieu : la nature des travaux, la surface de plancher et la hauteur du bâtiment.', 'En bas : le nom de l’architecte (obligatoire au-delà de 150 m² de surface de plancher).', 'Photographier le panneau, puis recopier les informations dans un tableau à 3 colonnes : MOA / MOE / Entreprises.'] } },
-      { id: 'm2', etape: 'Mission 2 — Organiser', titre: 'Construire l’organigramme des acteurs', picto: 'carte',
-        taches: ['Placer le MOA en haut de la feuille et le relier au MOE et aux entreprises', 'Ajouter le contrôleur technique et le coordonnateur SPS reliés au MOA', 'Tracer en trait plein les liens contractuels, en pointillés les liens de contrôle', 'Vérifier qu’aucun lien contractuel direct ne relie le MOE aux entreprises'],
-        tuto: { titre: 'Règle d’or de l’organigramme', etapes: ['Tous les contrats partent du maître d’ouvrage : c’est lui qui paie, donc lui qui signe.', 'Le MOE a un contrat avec le MOA, pas avec les entreprises.', 'Les entreprises ont chacune un marché de travaux avec le MOA.', 'Le MOE dirige les entreprises pour le compte du MOA : c’est un lien de direction, pas un lien contractuel.', 'Le CT et le CSPS sont eux aussi missionnés directement par le MOA.'] } },
-    ],
-    2: [
-      { id: 'm3', etape: 'Mission 3 — Analyser', titre: 'Décoder un programme de construction', picto: 'programme',
-        taches: ['Lister les locaux demandés dans le programme fourni et leur surface', 'Calculer la surface utile totale demandée', 'Repérer trois exigences techniques imposées par le maître d’ouvrage', 'Identifier l’enveloppe financière annoncée et le délai souhaité'],
-        tuto: { titre: 'Méthode de lecture d’un programme', etapes: ['Repérer le sommaire : le programme est toujours organisé par entités fonctionnelles.', 'Extraire le tableau des surfaces : un local = une ligne = une surface utile.', 'Additionner les surfaces utiles, puis appliquer le coefficient de circulation annoncé.', 'Surligner les exigences imposées (niveau d’isolation, accessibilité, matériaux biosourcés…).', 'Noter à part le budget travaux HT et la date de livraison souhaitée : ce sont deux contraintes non négociables.'] } },
-      { id: 'm4', etape: 'Mission 4 — Situer', titre: 'Replacer des documents dans la bonne phase', picto: 'boussole',
-        taches: ['Classer 6 documents fournis dans l’ordre chronologique des phases', 'Associer chaque document à son auteur (MOA ou MOE)', 'Justifier l’échelle de représentation de chaque plan', 'Repérer le document qui déclenche le dépôt du permis de construire'],
-        tuto: { titre: 'Reconnaître une phase à partir d’un plan', etapes: ['Regarder d’abord le cartouche : la phase (ESQ, APS, APD, PRO, EXE) y est presque toujours indiquée.', 'Observer l’échelle : 1/500 ou 1/200 = amont ; 1/100 = APD/PC ; 1/50 et détails = PRO/EXE.', 'Compter le niveau de détail : cotes intérieures et réservations n’apparaissent qu’à partir du PRO.', 'Vérifier la présence du tableau des surfaces : caractéristique de l’APD et du dossier de PC.', 'Conclure en associant le document à un auteur et à un destinataire.'] } },
-    ],
     3: [
-      { id: 'm5', etape: 'Mission 5 — Ordonner', titre: 'Remettre les missions dans l’ordre', picto: 'ordre',
-        taches: ['Écrire dans l’ordre chronologique les 8 missions de la mission de base', 'Entourer les missions qui se déroulent avant le dépôt du permis de construire', 'Souligner les missions qui se déroulent pendant le chantier', 'Ajouter à part les missions complémentaires possibles'],
-        tuto: { titre: 'Astuce de mémorisation', etapes: ['La conception va du plus flou au plus précis : ESQ → APS → APD → PRO.', 'Vient ensuite tout ce qui touche aux entreprises : ACT (les choisir) puis VISA (vérifier leurs plans).', 'Puis le chantier : DET (diriger).', 'Enfin la fin : AOR (réceptionner).', 'Phrase repère : « Esquisser, Préciser, Arrêter, Projeter, Consulter, Viser, Diriger, Réceptionner ».'] } },
-      { id: 'm6', etape: 'Mission 6 — Décider', titre: 'Composer une mission de maîtrise d’œuvre', picto: 'balance',
-        taches: ['Lire les 3 situations de projet proposées par le professeur', 'Pour chaque situation, cocher les missions à confier au MOE', 'Justifier l’ajout ou non de la mission OPC', 'Justifier l’ajout du DIAG dans le cas d’une réhabilitation'],
-        tuto: { titre: 'Comment raisonner', etapes: ['Le projet porte-t-il sur un bâtiment existant ? Si oui, ajouter DIAG.', 'Combien de lots séparés ? Au-delà de 8 à 10 lots, l’OPC devient indispensable.', 'Qui réalise les plans d’exécution ? Si ce sont les entreprises → VISA ; si c’est le MOE → EXE.', 'En marché public, la mission de base ne peut pas être découpée : elle est confiée en totalité.', 'Rédiger une phrase de justification par mission ajoutée.'] } },
+      { id: 'm1', etape: 'Mission 1 — Découverte', titre: 'Explorer le PLU de Toulouse', picto: 'loupe',
+        taches: ['Ouvrir le PLU de Toulouse Métropole en ligne (site metropole.toulouse.fr)', 'Repérer le plan de zonage de votre quartier', 'Identifier la zone (U, AU, A, N) du lycée Urbain Vitry', 'Noter 3 règles du règlement applicables à cette zone'],
+        tuto: { titre: 'Comment accéder au PLU en ligne', etapes: ['Aller sur le géoportail de Toulouse Métropole.', 'Activer le calque « PLU – Zonage réglementaire ».', 'Zoomer sur le lycée et cliquer sur la parcelle.', 'Lire la fiche de zone qui s’affiche.'] } },
     ],
     4: [
-      { id: 'm7', etape: 'Mission 7 — Contrôler', titre: 'Préparer une visite d’OPR', picto: 'dossier',
-        taches: ['Établir une grille de contrôle pour un local type (sol, murs, plafond, menuiseries, équipements)', 'Réaliser la visite d’un local du lycée avec cette grille', 'Rédiger 5 réserves en localisant précisément chaque désordre', 'Classer les réserves par lot concerné'],
-        tuto: { titre: 'Comment rédiger une réserve', etapes: ['Une réserve = un désordre = une ligne dans le tableau.', 'Indiquer le local et sa localisation précise (niveau, repère de porte, mur nord…).', 'Décrire le constat de façon factuelle : « éclat de 3 cm sur l’angle du dormant ».', 'Indiquer le lot responsable : menuiserie intérieure, peinture, électricité…', 'Ne jamais écrire la solution technique à la place de l’entreprise : décrire le défaut, pas la réparation.'] } },
-      { id: 'm8', etape: 'Mission 8 — Situer dans le temps', titre: 'Construire la frise des garanties', picto: 'horloge',
-        taches: ['Tracer une frise chronologique de 12 ans à partir de la date de réception', 'Placer les trois garanties légales avec leurs durées', 'Placer 4 désordres fournis sur la frise et indiquer la garantie applicable', 'Repérer un désordre non couvert et expliquer pourquoi'],
-        tuto: { titre: 'Quelle garantie pour quel désordre ?', etapes: ['Le désordre est-il signalé dans la première année ? → garantie de parfait achèvement.', 'Concerne-t-il un équipement démontable sans abîmer le bâtiment (volet, radiateur) ? → garantie biennale.', 'Compromet-il la solidité ou rend-il le bâtiment impropre à son usage (fissure structurelle, infiltration) ? → décennale.', 'S’agit-il d’usure normale ou d’un défaut d’entretien ? → aucune garantie, c’est à la charge du propriétaire.', 'Toujours vérifier la date : c’est la réception qui fait courir les délais.'] } },
+      { id: 'm2', etape: 'Mission 2 — Analyse', titre: 'Vérifier la constructibilité', picto: 'plans',
+        taches: ['Choisir une parcelle en zone UB dans le PLU', 'Relever : emprise max, hauteur max, recul par rapport à la voie, recul par rapport aux limites', 'Dessiner un schéma en plan avec les contraintes d’implantation', 'Calculer l’emprise maximale constructible'],
+        tuto: { titre: 'Méthode de relevé des règles', etapes: ['Identifier la zone de la parcelle sur le plan de zonage.', 'Ouvrir le règlement à la section correspondante (par exemple la zone UB).', 'Relever les articles 6 à 13.', 'Reporter les cotes sur un schéma simplifié.'] } },
+    ],
+    5: [
+      { id: 'm3', etape: 'Mission 3 — Application', titre: 'Constituer un mini-dossier de permis de construire', picto: 'dossier',
+        taches: ['Identifier les pièces obligatoires d’un dossier de permis de construire', 'Rédiger la notice décrivant le terrain et le projet (PCMI 4)', 'Lister les plans nécessaires (masse, coupe, façades)', 'Vérifier la conformité du projet avec le règlement de zone'],
+        tuto: { titre: 'Les pièces du dossier de permis de construire (PCMI)', etapes: ['PCMI 1 : plan de situation.', 'PCMI 2 : plan de masse.', 'PCMI 3 : plan en coupe.', 'PCMI 4 : notice descriptive.', 'PCMI 5 : plans des façades et des toitures.', 'PCMI 6 : document graphique d’insertion.', 'PCMI 7 et 8 : photographies de l’environnement proche et lointain.'] } },
     ],
   },
 
-  // quiz final (bonne : rang de la bonne réponse, à partir de 0 ; atelier : l'atelier où se trouve la réponse, rattachement ajouté pour la correction)
+  // le quiz final : 15 questions
   quiz: [
-    { atelier: 1, question: 'Qui définit le besoin, finance l’opération et réceptionne l’ouvrage ?', options: ['Le maître d’œuvre', 'Le maître d’ouvrage', 'L’entreprise générale', 'Le contrôleur technique'], bonne: 1,
-      explication: 'Le maître d’ouvrage (MOA) est le client : il définit le besoin, finance et prononce la réception.' },
-    { atelier: 1, question: 'Quel est le rôle exact de l’AMO ?', options: ['Concevoir le bâtiment à la place de l’architecte', 'Diriger les entreprises sur le chantier', 'Assister et conseiller le maître d’ouvrage dans ses choix', 'Contrôler la solidité des ouvrages'], bonne: 2,
-      explication: 'L’AMO conseille le maître d’ouvrage ; il ne conçoit pas et ne dirige pas les travaux.' },
-    { atelier: 2, question: 'Dans quel ordre se déroulent les phases de conception ?', options: ['APD → ESQ → APS → PRO', 'ESQ → APS → APD → PRO', 'PRO → APS → APD → ESQ', 'ESQ → APD → APS → PRO'], bonne: 1,
-      explication: 'On va du plus général au plus précis : esquisse, avant-projet sommaire, avant-projet définitif, projet.' },
-    { atelier: 2, question: 'Quelle phase sert de base au dossier de permis de construire ?', options: ['L’esquisse (ESQ)', 'L’avant-projet sommaire (APS)', 'L’avant-projet définitif (APD)', 'Le projet (PRO)'], bonne: 2,
-      explication: 'À l’APD, les formes, dimensions, matériaux et surfaces sont arrêtés : c’est la base du dossier de PC.' },
-    { atelier: 2, question: 'Que signifie le sigle DCE ?', options: ['Dossier de Consultation des Entreprises', 'Document de Contrôle de l’Exécution', 'Descriptif Commun des Équipements', 'Dossier de Conformité Environnementale'], bonne: 0,
-      explication: 'Le DCE réunit toutes les pièces permettant aux entreprises de remettre une offre chiffrée.' },
-    { atelier: 3, question: 'Quelle mission correspond à la direction de l’exécution des travaux ?', options: ['ACT', 'VISA', 'DET', 'AOR'], bonne: 2,
-      explication: 'DET = Direction de l’Exécution des Travaux : réunions de chantier, contrôle de conformité, situations de travaux.' },
-    { atelier: 3, question: 'Parmi ces missions, laquelle est une mission complémentaire (hors mission de base) ?', options: ['APD', 'OPC', 'ACT', 'AOR'], bonne: 1,
-      explication: 'L’OPC (ordonnancement, pilotage, coordination) est une mission complémentaire, comme l’EXE et le DIAG.' },
-    { atelier: 3, question: 'Que fait le maître d’œuvre dans la mission VISA ?', options: ['Il dessine les plans d’exécution', 'Il vérifie les plans d’exécution établis par les entreprises', 'Il signe le permis de construire', 'Il assure la sécurité du chantier'], bonne: 1,
-      explication: 'Le VISA consiste à examiner et approuver les études d’exécution réalisées par les entreprises.' },
-    { atelier: 1, question: 'Qui est chargé de rédiger le PGC et le DIUO ?', options: ['Le contrôleur technique', 'L’économiste de la construction', 'Le coordonnateur SPS', 'Le géomètre-expert'], bonne: 2,
-      explication: 'Le coordonnateur SPS rédige le plan général de coordination et constitue le DIUO.' },
-    { atelier: 4, question: 'Quel événement marque le point de départ des garanties légales ?', options: ['La signature du marché de travaux', 'L’ordre de service de démarrage', 'La réception des travaux', 'La levée des dernières réserves'], bonne: 2,
-      explication: 'La réception est l’acte fondateur : elle transfère la garde de l’ouvrage et fait courir toutes les garanties.' },
-    { atelier: 4, question: 'Quelle est la durée de la garantie de parfait achèvement ?', options: ['6 mois', '1 an', '2 ans', '10 ans'], bonne: 1,
-      explication: 'La garantie de parfait achèvement dure 1 an après la réception et couvre tous les désordres signalés.' },
-    { atelier: 4, question: 'Une fissure importante compromettant la solidité du bâtiment apparaît 6 ans après la réception. Quelle garantie s’applique ?', options: ['Parfait achèvement', 'Garantie biennale', 'Garantie décennale', 'Aucune garantie'], bonne: 2,
-      explication: 'La garantie décennale couvre pendant 10 ans les désordres qui compromettent la solidité ou rendent l’ouvrage impropre à sa destination.' },
+    { atelier: 1, question: 'Quel document a remplacé le POS ?', options: ['Le SCoT', 'Le PLU', 'Le SRADDET', 'Le RNU'], bonne: 1,
+      explication: 'La loi SRU de 2000 a remplacé le POS par le PLU.' },
+    { atelier: 2, question: 'Que signifie PADD ?', options: ['Plan d’Action pour le Développement Durable', 'Projet d’Aménagement et de Développement Durables', 'Programme d’Aménagement et de Densification Durable', 'Plan d’Aménagement des Droits de Densité'], bonne: 1,
+      explication: 'Le PADD est le Projet d’Aménagement et de Développement Durables.' },
+    { atelier: 2, question: 'Combien de pièces principales composent un PLU ?', options: ['3', '4', '6', '8'], bonne: 2,
+      explication: 'Le PLU comprend 6 pièces : rapport de présentation, PADD, OAP, règlement, zonage, annexes.' },
+    { atelier: 3, question: 'Que signifie la zone « AU » ?', options: ['Zone Agricole Urbaine', 'Zone À Urbaniser', 'Zone d’Aménagement Unique', 'Zone d’Activité Urbaine'], bonne: 1,
+      explication: 'AU = À Urbaniser. Ce sont des zones naturelles destinées à l’urbanisation.' },
+    { atelier: 3, question: 'Peut-on construire librement en zone N ?', options: ['Oui, sans restriction', 'Oui, avec un permis', 'Non, la construction y est quasi interdite', 'Oui, si la parcelle est grande'], bonne: 2,
+      explication: 'La zone N est naturelle et protégée : la construction y est quasi interdite.' },
+    { atelier: 4, question: 'Que signifie CES ?', options: ['Coefficient d’Exploitation du Sol', 'Coefficient d’Emprise au Sol', 'Capacité d’Extension de Surface', 'Critère d’Espace de Stationnement'], bonne: 1,
+      explication: 'Le CES (Coefficient d’Emprise au Sol) est le rapport entre l’emprise bâtie et la surface du terrain.' },
+    { atelier: 4, question: 'Quelle est la règle classique de retrait en limite séparative ?', options: ['H/3 minimum 2 m', 'H/2 minimum 3 m', 'H minimum 5 m', 'H/4 minimum 1 m'], bonne: 1,
+      explication: 'La règle courante est H/2 avec un minimum de 3 m de retrait.' },
+    { atelier: 5, question: 'À quoi sert le certificat d’urbanisme ?', options: ['À démarrer les travaux', 'À connaître les règles ou la faisabilité d’un projet', 'À déposer un permis', 'À obtenir un prêt bancaire'], bonne: 1,
+      explication: 'Le CU informe sur les règles (CUa) ou sur la faisabilité d’un projet précis (CUb).' },
+    { atelier: 5, question: 'Quel est le délai d’instruction d’un permis de construire pour une maison ?', options: ['1 mois', '2 mois', '3 mois', '6 mois'], bonne: 1,
+      explication: 'Le délai d’instruction d’un permis de construire pour une maison individuelle est de 2 mois.' },
+    { atelier: 1, question: 'Que signifie ZAN ?', options: ['Zone d’Aménagement Nouveau', 'Zéro Artificialisation Nette', 'Zone d’Action Naturelle', 'Zonage Administratif National'], bonne: 1,
+      explication: 'ZAN = Zéro Artificialisation Nette, objectif de la loi Climat de 2021.' },
+    { atelier: 2, question: 'Quel document du PLU contient les schémas d’aménagement par secteur ?', options: ['Le PADD', 'Les OAP', 'Le règlement', 'Les annexes'], bonne: 1,
+      explication: 'Les OAP (Orientations d’Aménagement et de Programmation) contiennent les schémas par secteur.' },
+    { atelier: 3, question: 'Que signifie EBC sur un plan de zonage ?', options: ['Espace de Bâti Contrôlé', 'Espace Boisé Classé', 'Emprise de Bâtiment Construit', 'Environnement Biologique Contrôlé'], bonne: 1,
+      explication: 'EBC = Espace Boisé Classé : un boisement protégé où le défrichement est interdit.' },
+    { atelier: 5, question: 'Quelle est la surface seuil pour un permis de construire (construction neuve) ?', options: ['5 m²', '10 m²', '20 m²', '40 m²'], bonne: 2,
+      explication: 'Un permis de construire est nécessaire au-delà de 20 m² de surface de plancher pour une construction nouvelle.' },
+    { atelier: 5, question: 'Que signifie DAACT ?', options: ['Demande d’Autorisation d’Aménagement et de Construction du Terrain', 'Déclaration Attestant l’Achèvement et la Conformité des Travaux', 'Document d’Approbation Administrative de Construction Terminée', 'Dossier d’Analyse Architecturale et de Contrôle Technique'], bonne: 1,
+      explication: 'DAACT = Déclaration Attestant l’Achèvement et la Conformité des Travaux.' },
+    { atelier: 1, question: 'Quelle loi a supprimé le COS (Coefficient d’Occupation des Sols) ?', options: ['Loi SRU (2000)', 'Grenelle II (2010)', 'Loi ALUR (2014)', 'Loi Climat (2021)'], bonne: 2,
+      explication: 'La loi ALUR de 2014 a supprimé le COS pour simplifier les règles de densité.' },
   ],
   // les messages du résultat (min : nombre de bonnes réponses à atteindre)
   resultats: [
-    { min: 9, mot: 'Excellent', texte: 'Excellent : tu maîtrises les phases et les missions de l’acte de construire.' },
-    { min: 6, mot: 'Bon niveau', texte: 'Bon niveau : revois les ateliers correspondant à tes erreurs.' },
-    { min: 0, mot: 'À retravailler', texte: 'À retravailler : reprends les flashcards des 4 ateliers avant de recommencer.' },
+    { min: 12, mot: 'Excellent', texte: 'Excellent ! Vous maîtrisez l’urbanisme et le PLU.' },
+    { min: 10, mot: 'Très bien', texte: 'Très bien ! Quelques points à revoir.' },
+    { min: 7, mot: 'Bien', texte: 'Bien. Relisez les ateliers pour progresser.' },
+    { min: 0, mot: 'À reprendre', texte: 'Courage ! Reprenez les ateliers et réessayez.' },
   ],
 };
 
@@ -1063,11 +1163,12 @@ const borne = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
 const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SOURIS = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const NB = String.fromCharCode(160);   // espace insécable de la typographie française
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])).replace(/ ([?!:;»])/g, NB + '$1').replace(/« /g, '«' + NB);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])).replace(/ ([?!:;»])/g, NB + '$1').replace(/« /g, '«' + NB).replace(/(\d) (?=m²|m³|m(?![a-zé])|cm|mm|kg|€|%|°|min(?![a-zé])|h(?![a-zé]))/g, '$1' + NB);
 const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');   // **gras**, *italique*
 const alea = s => () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const lire = (cle, defaut) => { try { return JSON.parse(localStorage.getItem(cle)) ?? defaut; } catch { return defaut; } };
 const ecrire = (cle, v) => { try { localStorage.setItem(cle, JSON.stringify(v)); } catch { /* navigation privée : on garde en mémoire */ } };
+const euros = n => Math.round(n).toLocaleString('fr-FR') + NB + '€';
 const GRIB = '<svg class="gribouille" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 7C20 3 40 10 60 6S90 4 98 7"/></svg>';
 const FL = '<svg class="fl" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15C7 11 10 8 15 3M7.5 3.2c2.6-.3 5-.2 7.5 0 .2 2.5.3 5 0 7.6"/></svg>';
 const FLECHE = '<svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>';
@@ -1090,257 +1191,399 @@ const PICTO = {
   moa: '<rect x="3" y="7.5" width="18" height="12.5" rx="2"/><path d="M8.5 7.5V5.6c0-.9.7-1.6 1.6-1.6h3.8c.9 0 1.6.7 1.6 1.6v1.9M3 12.5h18M10.5 11.5v2.4h3v-2.4"/>',
   moe: '<path d="M4 20V4l16 16z"/><path d="M8 16v-4.3l4.3 4.3z"/><path d="M4 8h2.2M4 12h2.2"/>',
   entreprises: '<path d="M2.5 18.5h19M4.5 18.5a7.5 7.5 0 0 1 15 0M9.5 11.6V8h5v3.6"/>',
-  controle: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20.5 20.5l-5.2-5.2M7.8 10.6l2 2 3.4-4"/>',
-  sps: '<path d="M12 3.5L22 20.5H2z"/><path d="M12 10v5M12 17.6v.3"/>',
   administrations: '<path d="M3 21h18M5 21V11h14v10M3.5 11L12 6l8.5 5M9 21v-5h6v5M12 6V2.5l3.5 1.2L12 5"/>',
-  mandat: '<circle cx="8" cy="7.5" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.4-3.8 2.6-6 5.5-6s5.1 2.2 5.5 6M14 20c.3-2.8 1.5-4.5 3-4.5s2.7 1.7 3 4.5"/>',
   economiste: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M11 11h2M14 11h2M8 14.5h2M11 14.5h2M14 14.5h2M8 18h2M11 18h5"/>',
-  opc: '<path d="M3 3.5v17h18"/><path d="M6 6.5h6v2.6H6zM9.5 10.8h7v2.6h-7zM13 15.1h6v2.6h-6z"/>',
+  geometre: '<rect x="8.5" y="3" width="7" height="5.5" rx="1"/><path d="M15.5 5.7H18M12 8.5v3.5M6 21l6-9 6 9M12 12v9"/>',
   programme: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 11h7M9 14.5h7M9 18h4"/>',
   conception: '<path d="M4 20l1.2-4.4L16 4.8l3.2 3.2L8.4 18.8z"/><path d="M14 6.8l3.2 3.2M5.2 15.6l3.2 3.2"/>',
   consultation: '<rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3.5 7l8.5 6.5L20.5 7"/>',
   execution: '<path d="M6 21V4h15M6 8l4-4M17 4v6M15.4 10h3.2v2.6h-3.2zM3 21h6"/>',
-  reception: '<circle cx="7.5" cy="14.5" r="4"/><path d="M10.5 11.8L20 3.5M16.6 6.4l2.6 2.6M13.9 8.8l2 2"/>',
   garanties: '<path d="M12 3l8 3v6c0 4.6-3.4 8-8 9-4.6-1-8-4.4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
-  financer: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.6a4.4 4.4 0 1 0 0 6.8M7 10.8h6.5M7 13.4h6.5"/>',
   contrat: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 9h5M9 12h7M8.5 17.5c1.4-2.4 2.4-2.4 2.9-.4s1.6 2 3.1-1"/>',
   chefEquipe: '<circle cx="12" cy="7" r="2.6"/><circle cx="5.5" cy="10" r="2.2"/><circle cx="18.5" cy="10" r="2.2"/><path d="M7.5 20c.3-3.6 2-5.6 4.5-5.6s4.2 2 4.5 5.6M1.8 19c.3-2.6 1.6-4 3.7-4M22.2 19c-.3-2.6-1.6-4-3.7-4"/>',
-  geometre: '<rect x="8.5" y="3" width="7" height="5.5" rx="1"/><path d="M15.5 5.7H18M12 8.5v3.5M6 21l6-9 6 9M12 12v9"/>',
-  geotech: '<path d="M3 8h18M3 13h18M3 18h18"/><path d="M12 2.5v15M9.5 15.2l2.5 3.3 2.5-3.3"/>',
-  instructeur: '<path d="M9 3h6v4.5l3 3.5H6l3-3.5zM5 14h14v3H5zM4 21h16"/>',
-  concession: '<path d="M13 2.5L5 13h6l-1.5 8.5L18 10h-6z"/>',
+  mandat: '<circle cx="8" cy="7.5" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.4-3.8 2.6-6 5.5-6s5.1 2.2 5.5 6M14 20c.3-2.8 1.5-4.5 3-4.5s2.7 1.7 3 4.5"/>',
+  bailleur: '<path d="M3 21V9l5-4 5 4v12M13 21v-9l4-3 4 3v9M2 21h20M6.5 13h3M6.5 16.5h3M15.5 14.5h3M15.5 18h3"/>',
   loupe: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20.5 20.5l-5.2-5.2"/>',
   horloge: '<circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l3.8 2.4"/>',
   idee: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2v.5h5V16c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>',
   balance: '<path d="M12 3v17M6.5 20.5h11M4.5 7h15"/><path d="M7 7l-3.2 7a3.2 3.2 0 0 0 6.4 0zM17 7l-3.2 7a3.2 3.2 0 0 0 6.4 0z"/>',
-  maison: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V21h14V9.5M10 21v-6h4v6"/>',
-  cible: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
   implantation: '<path d="M3 21V9M7 21V9M2 11h6M17 21V9M21 21V9M16 11h6M5 11h14"/>',
   dossier: '<path d="M3 7.5V19a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-8l-2-2.5H4a1 1 0 0 0-1 1z"/><path d="M7 13h10M7 16.5h6"/>',
   boussole: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
-  diag: '<path d="M6 3v6a5 5 0 0 0 10 0V3M11 14v2.5a4 4 0 0 0 8 0V14"/><circle cx="19" cy="12" r="2"/>',
-  visa: '<circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3 6-7"/>',
   plans: '<path d="M4 6a2 2 0 0 1 4 0v13a2 2 0 0 0-4 0zM8 6h12v13H8M11 10h6M11 13h6M11 16h4"/>',
   reglage: '<path d="M15 4a5 5 0 0 0-4.6 6.9L3.5 17.8a1.9 1.9 0 0 0 2.7 2.7l6.9-6.9A5 5 0 0 0 20 9l-3 1-2-2 1-3z"/>',
   boulon: '<path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z"/><circle cx="12" cy="12" r="3"/>',
-  ordre: '<path d="M4 5h1.6v4.5M3.8 9.5h3.4M4 14.6c0-1.1 3-1.1 3 .3 0 1.1-3 1.8-3 3.4h3.2M11 7h9M11 12h9M11 17h9"/>',
+  code: '<path d="M12 6.5c-1.8-1.4-4.5-2-8.5-2v13c4 0 6.7.6 8.5 2 1.8-1.4 4.5-2 8.5-2v-13c-4 0-6.7.6-8.5 2z"/><path d="M12 6.5v13"/>',
+  bulle: '<path d="M4 5.5h16v10H12l-4.5 4v-4H4z"/><path d="M8 9.5h8M8 12.5h5"/>',
+  portable: '<rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M3 18.5h18l-1.5-3.5h-15z"/>',
+  graphique: '<path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/>',
+  ciseaux: '<circle cx="6.5" cy="17.5" r="2.5"/><circle cx="6.5" cy="6.5" r="2.5"/><path d="M8.7 8L20 17M8.7 16L20 7"/>',
+  murs: '<path d="M3 5h18v14H3zM3 9.7h18M3 14.3h18M9 5v4.7M15 5v4.7M6 9.7v4.6M12 9.7v4.6M18 9.7v4.6M9 14.3V19M15 14.3V19"/>',
+  carteTerrain: '<path d="M3.5 6l5-2 7 2 5-2v14l-5 2-7-2-5 2z"/><path d="M8.5 4v14M15.5 6v14"/>',
+  envoyer: '<path d="M4 14v5h16v-5M12 15V4M8 8l4-4 4 4"/>',
+  recevoir: '<path d="M4 14v5h16v-5M12 4v11M8 11l4 4 4-4"/>',
+  echange: '<path d="M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4"/>',
+  maquette: '<path d="M12 2.8l8.2 4.6v9.2L12 21.2l-8.2-4.6V7.4z"/><path d="M3.8 7.4L12 12l8.2-4.6M12 12v9.2"/>',
+  station: '<rect x="8" y="3.5" width="8" height="6" rx="1.2"/><path d="M16 6h3M12 9.5v3M5.5 21L12 12.5 18.5 21M12 12.5V21M9 17.5h6"/>',
+  satellite: '<rect x="9" y="9" width="6" height="6" rx="1" transform="rotate(45 12 12)"/><path d="M4.5 4.5l3 3M16.5 16.5l3 3M3.5 9.5a8 8 0 0 0 11 11"/>',
+  niveau: '<rect x="14" y="3" width="5" height="18" rx="1"/><path d="M14 7h2.5M14 11h3M14 15h2.5M14 19h3M3 12h8M3 9.5v5"/>',
+  scanner: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
+  drone: '<path d="M9 12h6M12 9.5v5"/><circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M6.7 7.5L10 11M17.3 7.5L14 11M6.7 16.5L10 13M17.3 16.5L14 13"/>',
+  borne: '<path d="M9 21V9l3-5 3 5v12zM6.5 21h11M9 13h6"/>',
 };
 const picto = n => `<svg viewBox="0 0 24 24" aria-hidden="true">${PICTO[n] || ''}</svg>`;
 const AT = DONNEES.ateliers;
-const DUREES = Object.assign({ intro: DONNEES.dureeIntro }, Object.fromEntries(AT.map(a => ['atelier-' + a.id, a.duree])));
+const SECTIONS = AT.map(a => a.id);   // chaque atelier se valide
+const DUREES = Object.fromEntries(AT.map(a => ['atelier-' + a.id, a.duree]));
+const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+const nomSection = n => `${DONNEES.mot || 'atelier'} ${n} (${AT.find(a => a.id === n).court.toLowerCase()})`;
 
 /* =====================================================================
-   3. L'ACCUEIL : un projet qui avance dans le temps
-   La souris (ou le curseur) fait passer le temps : le besoin, le programme,
-   l'esquisse devenue permis, le chantier, puis le bâtiment en service.
-   Chaque trait a son moment : t de 0 (le besoin) à 1 (le bâtiment vit).
+   3. LES OUTILS DU DESSIN AU CRAYON
+   P : un trait qui se trace · F : un trait interrompu · A : un lavis · T : un texte.
+   Chaque page y ajoute son accueil dessiné (initHero) et ses scènes.
    ===================================================================== */
-const Pc = (d, c) => `<path${c ? ` class="${c}"` : ''} d="${d}"/>`;
-const Tx = (x, y, t, c = '', ancre = '') => `<text x="${x}" y="${y}"${c ? ` class="${c}"` : ''}${ancre ? ` text-anchor="${ancre}"` : ''}>${t}</text>`;
-function personnage(x, y, o = {}) {   // debout, les pieds en (x, y)
-  return Pc(`M${x - 6} ${y}L${x - 3} ${y - 26}M${x + 6} ${y}L${x + 3} ${y - 26}M${x - 6} ${y}h-5M${x + 6} ${y}h5`)
-    + Pc(`M${x - 11} ${y - 25}L${x - 8} ${y - 55}Q${x} ${y - 60} ${x + 8} ${y - 55}L${x + 11} ${y - 25}Z`, 'corps')
-    + (o.extra || '')
-    + Pc(`M${x - 8} ${y - 54}L${x - 16} ${y - 34}M${x + 8} ${y - 54}L${x + 16} ${y - 34}`)
-    + (o.objets || '')
-    + Pc(`M${x + 8} ${y - 68}a8 8 0 1 0 -16 0a8 8 0 1 0 16 0`, 'papier')
-    + Pc(`M${x - 3} ${y - 69}v.4M${x + 3} ${y - 69}v.4M${x - 3} ${y - 64.5}q3 2.4 6 0`, 'fin')
-    + (o.casque ? Pc(`M${x - 9} ${y - 70}a9 9 0 0 1 18 0zM${x - 11.5} ${y - 70}h23`, o.casque) : '');
+const P = (d, c = 't', k = 0) => `<path class="${c} trait" pathLength="1" style="--k:${k}" d="${d}"/>`;                           // un trait qui se trace
+const F = (d, c, tirets, k = 0) => `<path class="${c} fixe" stroke-dasharray="${tirets}" style="--k:${k}" d="${d}"/>`;          // un trait interrompu, qui apparaît
+const A = (d, c, k = 0) => `<path class="remplir ${c}" style="--k:${k}" d="${d}"/>`;                                            // un lavis
+const T = (x, y, t, c = '', k = 0, ancre = 'middle') => `<text x="${x}" y="${y}" class="${c}" text-anchor="${ancre}" style="--k:${k}">${t}</text>`;
+
+/* =====================================================================
+   3 bis. LES SCÈNES ANIMÉES : l'outillage commun
+   Chaque scène est un petit dessin au crayon qui s'anime ou que l'on manipule.
+   Elles ne tournent que lorsqu'elles sont à l'écran, se mettent en pause
+   (bouton), et restent lisibles sans animation (mouvement réduit).
+   ===================================================================== */
+const nf = (n, d = 2) => n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const typo = s => s.replace(/ ([?!:;»])/g, NB + '$1').replace(/« /g, '«' + NB).replace(/(\d) (?=m²|m(?![a-zé])|€|%|°)/g, '$1' + NB);
+const rond = (x, y, r) => { x = +x; y = +y; return `M${(x + r).toFixed(1)} ${y.toFixed(1)}a${r} ${r} 0 1 0 ${-2 * r} 0a${r} ${r} 0 1 0 ${2 * r} 0`; };
+const Tr = (x, y, t, c = '', rot = 0, k = 0, ancre = 'middle') => `<text x="${x}" y="${y}" class="${c}" text-anchor="${ancre}" transform="rotate(${rot} ${x} ${y})" style="--k:${k}">${t}</text>`;
+const BTN_PAUSE = `<button class="scene__pause" type="button" aria-pressed="false" aria-label="Mettre l’animation en pause"><span class="ic-pause"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M5.5 3.5v11M12.5 3.5v11"/></svg></span><span class="ic-lect"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3.2l10 5.8-10 5.8z"/></svg></span></button>`;
+const puceBtn = (i, texte) => `<button class="scene__puce" type="button" aria-pressed="false" data-i="${i}">${texte}</button>`;
+function coque(el, viewBox, ctrl) {   // le cadre commun : dessin, commandes, légende
+  el.innerHTML = `<div class="scene__cadre"><div class="scene__toile"><svg class="vue" viewBox="${viewBox}" aria-hidden="true"></svg></div><p class="scene__astuce" aria-hidden="true">↔ Faites glisser le dessin pour le voir en entier.</p>${ctrl ? `<div class="scene__ctrl">${ctrl}</div>` : ''}<p class="scene__legende" aria-live="off"></p></div>`;
+  return { svg: $('svg.vue', el), ctrl: $('.scene__ctrl', el), legende: $('.scene__legende', el) };
 }
-const habit = (cc, dessin) => `<g style="--cc:${cc}">${dessin}</g>`;
-const arbre = (x, y) => Pc(`M${x} ${y}V${y - 30}M${x} ${y - 14}l-7-7M${x} ${y - 20}l6-6`) + Pc(`M${x + 18} ${y - 46}a18 18 0 1 0 -36 0a18 18 0 1 0 36 0`, 'lv');
-const FEN = 'M210 285h30v25h-30zM320 285h30v25h-30zM268 290h24v40h-24zM210 222h30v25h-30zM265 222h30v25h-30zM320 222h30v25h-30z';
-const SIGLES = [['ESQ', .27], ['APS', .33], ['APD', .39], ['PRO', .45], ['ACT', .5], ['VISA', .56], ['DET', .6], ['AOR', .78]];
-// k : 't' = un trait qui se trace, 'o' = un objet qui apparaît ; a → b : le moment où il se dessine ; f : [début, fin, opacité restante] s'il s'efface
-const DESSIN = (() => {
-  let mat = 'M420 330', fl = 'M420 92', k = 0, tuiles = '';
-  for (let y = 306; y > 92; y -= 24) mat += `L${++k % 2 ? 432 : 420} ${y}`;
-  k = 0; for (let x = 404; x > 150; x -= 16) fl += `L${x} ${++k % 2 ? 84 : 92}`;
-  for (let x = 192; x < 392; x += 12) { const yS = x < 280 ? 212 - (x - 180) * .52 : 160 + (x - 280) * .433, h = Math.min(14, 208 - yS - 5); if (h > 3) tuiles += `M${x} ${(yS + 4).toFixed(1)}v${h.toFixed(1)}`; }
-  return [
-    // exploitation : les lavis, posés sous les traits (ils n'apparaissent qu'à la fin)
-    { k: 'o', a: .82, b: .87, h: Pc('M190 330V208H390V330Z', 'lo') },
-    { k: 'o', a: .84, b: .89, h: Pc('M180 212L280 160L400 212Z', 'lt') },
-    { k: 'o', a: .86, b: .9, h: Pc(FEN, 'lb') },
-    { k: 'o', a: .93, b: .97, h: Pc('M211 286h28v23h-28zM321 223h28v23h-28z', 'lj') },
-    // le terrain et la parcelle
-    { k: 't', a: 0, b: .03, d: 'M10 330C150 328 400 333 550 329' },
-    { k: 't', a: 0, b: .03, c: 'fin', d: 'M30 341l8-6M90 343l8-6M160 341l8-6M380 343l8-6M440 341l8-6M510 343l8-6' },
-    { k: 'o', a: .02, b: .07, h: Pc('M150 330l-5 9h10zM430 330l-5 9h10z', 'tr') + Pc('M150 334H430', 'tr tirets') },
-    { k: 'o', a: .03, b: .08, f: [.5, .55, 0], h: Tx(290, 350, 'limites de la parcelle', 't-r petit', 'middle') },
-    // programmation : le maître d'ouvrage, son besoin, son programme ; la faisabilité (sol, PLU)
-    { k: 'o', a: 0, b: .05, h: habit('rgba(47,111,214,.3)', personnage(86, 330, { extra: Pc('M86 275.5l-2.2 4.5 2.2 10 2.2-10z', 'lr tr'), objets: Pc('M62 297h16v12H62zM67 297v-3h6v3', 'lo') })) },
-    { k: 'o', a: .03, b: .08, f: [.22, .26, 0], h: Pc('M44 196h122a8 8 0 0 1 8 8v20a8 8 0 0 1-8 8H100l-10 14 1-14H44a8 8 0 0 1-8-8v-20a8 8 0 0 1 8-8z', 'papier') + Tx(105, 211, 'j’ai besoin', '', 'middle') + Tx(105, 226, `d’un bâtiment${NB}!`, '', 'middle') },
-    { k: 'o', a: .09, b: .15, f: [.5, .56, 0], h: Pc('M112 250h30l10 10v40h-40z', 'papier') + Pc('M142 250v10h10M118 268h28M118 276h28M118 284h22M118 292h26', 'fin') + Tx(132, 244, 'PROGRAMME', 't-r petit', 'middle') },
-    { k: 'o', a: .14, b: .2, f: [.27, .31, 0], h: Pc('M352 330l8-28 8 28M355 318h10') + Pc('M360 302V392', 'tb tirets') + Tx(372, 300, `sol${NB}: étude G1`, 't-b petit') },
-    { k: 'o', a: .17, b: .23, f: [.5, .55, 0], h: Pc('M150 140H430', 'tr tirets') + Tx(290, 132, `PLU${NB}: hauteur maximale`, 't-r petit', 'middle') },
-    // conception : l'architecte, l'esquisse qui se précise (ESQ, APS, APD), le permis, le DCE
-    { k: 'o', a: .25, b: .29, h: habit('rgba(123,85,199,.3)', personnage(478, 330, { objets: Pc('M442 284h20v26h-20z', 'papier') + Pc('M446 304v-9l6-5 6 5v9z', 'fin') + Pc('M494 296l5-9', 'tr') })) },
-    { k: 't', a: .27, b: .33, c: 'tb', f: [.5, .62, .1], d: 'M192 331C190 300 193 262 191 212C222 196 252 178 282 158C318 176 354 194 390 211C391 260 388 300 390 331M184 214C220 196 250 178 283 154C318 172 360 194 398 215M198 269C260 271 320 266 384 270' },
-    { k: 't', a: .33, b: .39, c: 'tb', f: [.5, .62, .1], d: 'M190 330V208H390V330M180 212L280 160L400 212M190 268H390' },
-    { k: 't', a: .39, b: .44, c: 'tb', f: [.5, .62, .1], d: FEN },
-    { k: 'o', a: .4, b: .44, f: [.5, .58, 0], h: Pc('M190 354H390M190 349v10M390 349v10M408 330V160M403 330h10M403 160h10', 'tb') + Tx(290, 367, '12,00', 't-b petit', 'middle') + Tx(414, 248, '8,50', 't-b petit') + Tx(196, 386, 'APD · 1/100', 't-b petit') },
-    { k: 'o', a: .44, b: .47, f: [.56, .6, 0], h: `<g transform="rotate(-8 250 181)">${Pc('M192 168h116v26h-116z', 'tr')}${Tx(250, 186, 'PERMIS ACCORDÉ', 't-r', 'middle')}</g>` },
-    { k: 'o', a: .46, b: .5, f: [.56, .6, 0], h: Pc('M508 270h34v26h-34z', 'papier') + Pc('M504 274h34v26h-34z', 'papier') + Pc('M500 278h34v26h-34z', 'papier') + Tx(517, 296, 'DCE', 'petit', 'middle') },
-    // réalisation : la grue, les compagnons, le bâtiment qui monte, la réception
-    { k: 't', a: .5, b: .55, f: [.8, .84, 0], d: 'M420 330V92M432 330V92M150 84H490M150 92H490M150 84V92M426 84V56M426 56L210 84M426 56L490 84' },
-    { k: 't', a: .51, b: .55, c: 'fin', f: [.8, .84, 0], d: mat + fl },
-    { k: 'o', a: .53, b: .56, f: [.8, .84, 0], h: Pc('M470 92h20v18h-20z', 'lg') + Pc('M300 92V150', 'fin') + Pc('M300 150v4M300 154c-4 0-4 7 0 7s3.5-2.5 3.5-4.5') + Pc('M290 161h20l-3 12h-14z', 'lg') + Pc('M412 330v-10h28v10z', 'lg') },
-    { k: 'o', a: .55, b: .58, f: [.79, .82, 0], h: habit('rgba(61,154,95,.38)', personnage(158, 330, { casque: 'lj', objets: Pc('M174 296l8 34M178 331h9') }) + personnage(404, 330, { casque: 'lj', objets: Pc('M388 296l-6 4') + Pc('M382 300l-8-1 3 6z', 'lg') })) },
-    { k: 'o', a: .55, b: .59, h: Pc('M184 330h14v16h-14zM382 330h14v16h-14z', 'lg') + Pc('M184 346H396', 'fin') },
-    { k: 't', a: .59, b: .64, c: 'tf', d: 'M190 330V268M390 330V268' },
-    { k: 'o', a: .64, b: .66, h: Pc('M186 268H394V262H186Z', 'lg') },
-    { k: 't', a: .66, b: .7, c: 'tf', d: 'M190 262V208M390 262V208' },
-    { k: 't', a: .7, b: .73, d: 'M190 208H390M182 212L280 162L398 212M232 208L280 184L328 208M280 162V208' },
-    { k: 't', a: .73, b: .76, c: 'tf', d: 'M178 213L280 159L402 213' },
-    { k: 't', a: .74, b: .77, c: 'fin', d: tuiles },
-    { k: 't', a: .76, b: .79, d: FEN + 'M225 285v25M335 285v25M225 222v25M280 222v25M335 222v25' },
-    { k: 'o', a: .78, b: .81, f: [.92, .96, 0], h: Pc('M106 252h30v36h-30z', 'papier') + Pc('M110 260h22M110 266h22M110 272h14', 'fin') + Pc('M114 281c3-4 5-4 6 0s3 3 6-2', 'tr') + Tx(121, 247, 'PV de réception', 't-r petit', 'middle') },
-    { k: 'o', a: .8, b: .83, h: Pc('M104 298a4 4 0 1 0 -8 0a4 4 0 1 0 8 0M104 298h11M111 298v4M115 298v4', 'tr') },
-    // exploitation : le soleil, des arbres, des usagers, les garanties qui courent depuis la réception
-    { k: 'o', a: .85, b: .9, h: Pc('M518 118a13 13 0 1 0 -26 0a13 13 0 1 0 26 0', 'lj') + Pc('M505 95v-8M505 149v-8M482 118h-8M536 118h-8M489 102l-6-6M527 140l-6-6M521 102l6-6M483 140l6-6', 'fin') },
-    { k: 'o', a: .86, b: .92, h: arbre(150, 330) + arbre(525, 330) },
-    { k: 'o', a: .88, b: .93, h: habit('rgba(214,69,58,.3)', personnage(244, 330)) + habit('rgba(42,143,176,.35)', personnage(345, 330)) },
-    { k: 'o', a: .9, b: .97, h: Pc('M190 358V394', 'tr') + Pc('M190 362h20v6h-20z', 'lc') + Pc('M190 372h40v6h-40z', 'lp') + Pc('M190 382h200v6h-200z', 'lr') + Tx(214, 368, '1 an', 'petit') + Tx(234, 378, '2 ans', 'petit') + Tx(394, 388, '10 ans', 'petit') + Tx(184, 394, 'réception', 't-r petit', 'end') },
-  ];
-})();
-function initTemps() {
-  const svg = $('#temps-svg'), curseur = $('#temps-curseur'), phasesEl = $('#temps-phases'), legende = $('#temps-legende'), P = DONNEES.periodes;
-  svg.innerHTML = DESSIN.map((it, i) => it.k === 't' ? `<path class="${it.c ? it.c + ' ' : ''}trait" pathLength="1" d="${it.d}" data-i="${i}"/>` : `<g data-i="${i}" style="opacity:0">${it.h}</g>`).join('')
-    + SIGLES.map(([s, t], i) => `<text class="sigle" x="${(40 + i * 480 / 7).toFixed(1)}" y="50" data-t="${t}">${s}</text>`).join('');
-  const els = DESSIN.map((_, i) => svg.querySelector(`[data-i="${i}"]`)), avant = DESSIN.map(() => ''), sigles = $$('.sigle', svg);
-  phasesEl.innerHTML = P.map((p, i) => `<button class="temps__phase" type="button" data-i="${i}" style="--c:${['var(--bleu)', '#7b55c7', '#c77a1e', 'var(--vert)'][i]}">${i + 1}. ${esc(p.titre)}<small>${esc(p.qui)}</small></button>`).join('');
-  const boutons = $$('.temps__phase', phasesEl);
-  const S = { t: REDUIT ? 1 : 0, vise: null, attente: 0, pause: 0, visible: true, acc: 0, rendu: -1, phase: -1, moment: -1 };
-  const phaseDe = t => (t < .25 ? 0 : t < .5 ? 1 : t < .8 ? 2 : 3);
-  const rendre = () => {
-    const t = S.t; if (Math.abs(t - S.rendu) < .0015) return; S.rendu = t;
-    DESSIN.forEach((it, i) => {
-      const f = borne((t - it.a) / (it.b - it.a)), o = it.f ? 1 - borne((t - it.f[0]) / (it.f[1] - it.f[0])) * (1 - it.f[2]) : 1;
-      const v = it.k === 't' ? (1.01 * (1 - f)).toFixed(3) + '|' + o.toFixed(2) : (f * o).toFixed(2);
-      if (v === avant[i]) return; avant[i] = v;
-      if (it.k === 't') { const [d, op] = v.split('|'); els[i].style.strokeDashoffset = d; els[i].style.opacity = op === '1.00' ? '' : op; }
-      else els[i].style.opacity = v;
-    });
-    sigles.forEach(s => s.classList.toggle('lu', t >= +s.dataset.t));
-    const ph = phaseDe(t); let m = 0;
-    DONNEES.moments.forEach(([tm], i) => { if (t >= tm) m = i; });
-    if (ph !== S.phase || m !== S.moment) {
-      S.phase = ph; S.moment = m;
-      boutons.forEach((b, i) => { b.classList.toggle('ici', i === ph); b.classList.toggle('passee', i < ph); });
-      legende.innerHTML = `<b>${esc(P[ph].titre)}</b> · pilote${NB}: ${esc(P[ph].qui.toLowerCase())} — ${esc(DONNEES.moments[m][1])}`;
-    }
-    if (document.activeElement !== curseur) curseur.value = Math.round(t * 1000);
+const surEcran = (el, fn) => new IntersectionObserver(([e]) => fn(e.isIntersecting), { threshold: .2 }).observe(el);
+function boutonPause(bouton, S) {   // un bouton pause / lecture commun à toutes les scènes qui bougent seules
+  const maj = () => { bouton.setAttribute('aria-pressed', String(S.pause)); bouton.setAttribute('aria-label', S.pause ? 'Reprendre l’animation' : 'Mettre l’animation en pause'); };
+  bouton.addEventListener('click', () => { S.pause = !S.pause; maj(); });
+  maj(); return maj;
+}
+// un dessin fait de morceaux numérotés par étape : les nouveaux se tracent, les anciens restent en place
+function segments(svg, segs, i, prev, defs = '') {
+  svg.innerHTML = defs + segs.filter(g => g.s <= i && (g.jusqua === undefined || i <= g.jusqua)).map(g => `<g class="seg ${g.s > prev ? 'neuf' : 'vieux'}" style="--d:${g.d || 0}ms">${g.h}</g>`).join('');
+  void svg.getBoundingClientRect();   // on fixe l'état « non tracé » avant de lancer le tracé
+  $$('.neuf', svg).forEach(g => g.classList.add('go'));
+}
+function sceneEtapes(el, o) {   // o : viewBox, aria, noms, legendes, segs(i), defs, duree(i), cumul, depart, departReduit
+  const { svg, ctrl, legende } = coque(el, o.viewBox, `<div class="scene__puces" role="group" aria-label="${esc(o.aria)}">${o.noms.map((n, i) => puceBtn(i, n)).join('')}</div>${BTN_PAUSE}`);
+  const boutons = $$('.scene__puce', ctrl), S = { i: -1, t: 0, pause: REDUIT, visible: false };
+  const majPause = boutonPause($('.scene__pause', ctrl), S);
+  const aller = (i, manuel) => {
+    const prev = o.cumul && i === S.i + 1 ? S.i : -1;
+    S.i = i; S.t = 0;
+    if (manuel) { S.pause = true; majPause(); }
+    boutons.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    legende.innerHTML = typo(o.legendes[i]); legende.setAttribute('aria-live', S.pause ? 'polite' : 'off');
+    segments(svg, o.segs(i), i, prev, o.defs || '');
   };
-  // la souris mène le temps : la gauche du dessin = le besoin, la droite = le bâtiment en service
-  svg.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = svg.getBoundingClientRect(); S.vise = borne((e.clientX - r.left - r.width * .04) / (r.width * .92)); });
-  svg.addEventListener('pointerleave', () => { S.vise = null; S.pause = performance.now() + 2500; });
-  curseur.addEventListener('input', () => { S.t = curseur.value / 1000; S.vise = null; S.pause = performance.now() + 12000; rendre(); });
-  boutons.forEach((b, i) => b.addEventListener('click', () => { S.t = [.24, .49, .79, 1][i]; S.vise = null; S.pause = performance.now() + 12000; rendre(); }));
+  boutons.forEach(b => b.addEventListener('click', () => aller(+b.dataset.i, true)));
+  surEcran(el, v => { S.visible = v; if (v && S.i < 0) aller(REDUIT ? (o.departReduit ?? 0) : (o.depart ?? 0)); });
+  return { S, aller, maj(dt) { if (!S.visible || S.pause || S.i < 0) return; S.t += dt; if (S.t >= o.duree(S.i)) aller((S.i + 1) % o.noms.length); } };
+}
+
+
+const SCENES = {};   // chaque page y range ses scènes : SCENES.nom = el => ({ S, maj(dt) })
+const initScenes = () => $$('.scene[data-scene]').map(el => SCENES[el.dataset.scene]?.(el)).filter(Boolean);
+const PLUS_INITS = [];   // les parties vivantes propres à une page
+
+function vitrine(o) {   // l'accueil : un dessin de base, puis des vues que l'on choisit par onglets (sans clic, elles se relaient)
+  const fig = $('#vitrine'), svg = $('#vitrine-svg'), onglets = $('#vitrine-onglets'), legende = $('#vitrine-legende'), R = o.items;
+  svg.innerHTML = `<g class="dessin" id="vitrine-base">${o.base()}</g><g class="dessin" id="vitrine-sur"></g>`;
+  const sur = $('#vitrine-sur', svg);
+  void svg.getBoundingClientRect(); $('#vitrine-base', svg).classList.add('go');
+  onglets.innerHTML = R.map((r, i) => `<button class="vitrine__onglet" type="button" role="tab" aria-selected="false" data-i="${i}" style="--c:${r.couleur}">${esc(r.nom)}</button>`).join('');
+  const boutons = $$('.vitrine__onglet', onglets);
+  const S = { i: -1, t: 0, pause: 0, survol: false, visible: true };
+  const montrer = (i, manuel) => {
+    if (i === S.i) return;
+    S.i = i; S.t = 0;
+    if (manuel) S.pause = performance.now() + 14000;
+    boutons.forEach((b, k) => b.setAttribute('aria-selected', String(k === i)));
+    legende.innerHTML = fmt(R[i].phrase); legende.style.setProperty('--c', R[i].couleur);
+    sur.classList.remove('go'); sur.innerHTML = o.vue(R[i].id, i);
+    void sur.getBoundingClientRect();   // on fixe l'état « non tracé » avant de lancer le tracé
+    sur.classList.add('go');
+  };
+  onglets.addEventListener('click', e => { const b = e.target.closest('.vitrine__onglet'); if (b) montrer(+b.dataset.i, true); });
+  fig.addEventListener('pointerenter', () => (S.survol = true));
+  fig.addEventListener('pointerleave', () => (S.survol = false));
+  fig.addEventListener('focusin', () => (S.survol = true));
+  fig.addEventListener('focusout', () => (S.survol = false));
   new IntersectionObserver(([e]) => (S.visible = e.isIntersecting)).observe(svg);
-  rendre();
+  montrer(0);
   return {
-    S, rendre,
+    S, montrer,
     maj(dt, now) {
-      if (!S.visible || PRES_ETAT.on && PRES_ETAT.id !== 'accueil') return;
-      if (S.vise !== null) { S.t += (S.vise - S.t) * Math.min(1, dt * 7); rendre(); return; }
-      if (REDUIT || now < S.pause) return;
-      // sans la souris, le projet avance seul : 20 s du besoin aux clés, 3 s d'arrêt, puis il recommence
-      if (S.t >= 1) { S.attente += dt; if (S.attente > 3) { S.attente = 0; S.t = 0; rendre(); } return; }
-      S.t = Math.min(1, S.t + dt / 20);
-      S.acc += dt; if (S.acc >= 1 / 12) { S.acc = 0; rendre(); }   // 12 images par seconde : le filtre « crayon » n'est recalculé que 12 fois
+      if (!S.visible || S.survol || REDUIT || now < S.pause || PRES_ETAT.on && PRES_ETAT.id !== 'accueil') return;
+      S.t += dt;
+      if (S.t >= (o.duree || 7)) montrer((S.i + 1) % R.length);   // sans clic, les vues se relaient
     },
   };
 }
+
 
 /* =====================================================================
    4. CONSTRUCTION DE LA PAGE (tout vient de DONNEES)
    ===================================================================== */
 const titreSouligne = t => { const m = t.replace(/ ([?!:;»])/g, NB + '$1').split(' '), fin = m.pop(); return `${esc(m.join(' '))} <span class="souligne">${esc(fin)}<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 7C60 3 140 10 197 5"/></svg></span>`; };
 const LISTES = {};   // les listes affichées en carte
-const htmlEtapes = items => `<ol class="etapes">${items.map((e, k) => `<li class="etape rv" style="--i:${k % 3}"><span class="etape__n" aria-hidden="true">${k + 1}</span><div class="fiche"><h4>${picto(e.picto)}<span>${esc(e.titre)}</span>${e.qui ? `<span class="qui"><span class="sr">acteur : </span>${esc(e.qui)}</span>` : ''}</h4><p>${esc(e.texte)}</p><ul>${e.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul></div></li>`).join('')}</ol>`;
+const hint = b => (b.hint ? `<p class="consigne">${esc(b.hint)}</p>` : '');
+const htmlEtapes = items => `<ol class="etapes">${items.map((e, k) => `<li class="etape rv" style="--i:${k % 3}${e.couleur ? `;--ca:${e.couleur}` : ''}"><span class="etape__n" aria-hidden="true">${k + 1}</span><div class="fiche${e.details ? '' : ' simple'}"><h4>${e.picto ? picto(e.picto) : ''}<span>${esc(e.titre)}</span>${e.qui ? `<span class="qui"><span class="sr">acteur : </span>${esc(e.qui)}</span>` : ''}</h4><p>${fmt(e.texte)}</p>${e.details ? `<ul>${e.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul>` : ''}</div></li>`).join('')}</ol>`;
 function htmlCarte(cle, centre, pictoCentre, liste, couleur) {   // les acteurs en cercle autour d'un centre ; la fiche de l'acteur choisi à côté
   LISTES[cle] = { liste, couleur };
   const n = liste.length;
   return `<div class="carte-zone"><div class="carte-acteurs" id="carte-${cle}" data-carte="${cle}">
       <svg class="carte-acteurs__fils" aria-hidden="true"></svg>
       <div class="carte-acteurs__centre" aria-hidden="true">${picto(pictoCentre)}<span>${esc(centre)}</span></div>
-      ${liste.map((a, k) => { const ang = -Math.PI / 2 + k * 2 * Math.PI / n; return `<button class="noeud" type="button" data-id="${a.id}" aria-pressed="false" aria-controls="fiche-${cle}" style="--gx:${(50 + 37 * Math.cos(ang)).toFixed(1)}%;--gy:${(50 + 39 * Math.sin(ang)).toFixed(1)}%;--r:${ROT[k % 6] * 1.6}deg;--c:${a.couleur || couleur}">${picto(a.picto || a.id)}<b>${esc(a.label)}</b>${a.abbr !== a.label ? `<small>${esc(a.abbr)}</small>` : ''}</button>`; }).join('')}
+      ${liste.map((a, k) => { const ang = -Math.PI / 2 + k * 2 * Math.PI / n; return `<button class="noeud" type="button" data-id="${a.id}" aria-pressed="false" aria-controls="fiche-${cle}" style="--gx:${(50 + 37 * Math.cos(ang)).toFixed(1)}%;--gy:${(50 + 39 * Math.sin(ang)).toFixed(1)}%;--r:${ROT[k % 6] * 1.6}deg;--c:${a.couleur || couleur}">${picto(a.picto)}<b>${esc(a.label)}</b>${a.abbr ? `<small>${esc(a.abbr)}</small>` : ''}</button>`; }).join('')}
     </div>
-    <div class="fiche fiche-acteur" id="fiche-${cle}" aria-live="polite"><p class="vide">Clique sur un acteur du schéma pour afficher sa fiche.</p></div></div>`;
+    <div class="fiche fiche-acteur" id="fiche-${cle}" aria-live="polite"><p class="vide">Cliquez sur un acteur du schéma pour afficher sa fiche.</p></div></div>`;
 }
-const htmlMemo = (liste, cle) => `<div class="rv"><h3 class="bloc-titre">Flashcards${NB}: vérifier sa mémorisation</h3><p class="consigne">Réponds mentalement à voix haute, puis clique sur la carte pour te corriger. <span class="compte" data-compte="${cle}">(0/${liste.length} retournées)</span></p>
+const htmlMemo = (liste, cle) => `<div class="rv"><h3 class="bloc-titre">Flashcards${NB}: vérifier sa mémorisation</h3><p class="consigne">Lisez la question, formulez votre réponse à voix haute, puis cliquez sur la carte pour vérifier. <span class="compte" data-compte="${cle}">(0/${liste.length} retournées)</span></p>
   <div class="cartes-memo" data-memo="${cle}">${liste.map(([q, r], k) => `<button class="memo-carte rv" type="button" aria-pressed="false" style="--i:${k % 2}"><span class="memo-carte__in">
-    <span class="memo-face memo-face--recto"><span class="marque">QUESTION ${k + 1}</span><span class="txt">${fmt(q)}</span><small>Clique pour la réponse</small></span>
-    <span class="memo-face memo-face--dos" aria-hidden="true"><span class="marque">RÉPONSE</span><span class="txt">${fmt(r)}</span><small>Clique pour revenir</small></span></span></button>`).join('')}</div></div>`;
+    <span class="memo-face memo-face--recto"><span class="marque">QUESTION ${k + 1}</span><span class="txt">${fmt(q)}</span><small>Cliquez pour la réponse</small></span>
+    <span class="memo-face memo-face--dos" aria-hidden="true"><span class="marque">RÉPONSE</span><span class="txt">${fmt(r)}</span><small>Cliquez pour revenir</small></span></span></button>`).join('')}</div></div>`;
 const htmlMissions = (liste, cle) => `<div class="rv"><h3 class="bloc-titre">Missions pratiques</h3>
   <div class="avance"><span>Progression de l’atelier</span><div class="avance__barre" id="barre-at${cle}" role="progressbar" aria-label="Progression des missions de l’atelier" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><b id="pc-at${cle}">0${NB}%</b></div>
   <div class="missions" data-atelier="${cle}">${liste.map((m, k) => `<article class="fiche mission rv" style="--i:${k % 2};--r:${[-.7, .6][k % 2]}deg;--rt:${[-3, 2][k % 2]}deg">
-    <div class="mission__tete">${picto(m.picto)}<div><small>${esc(m.etape.toUpperCase())}</small><h4>${esc(m.titre)}</h4></div></div>
+    <div class="mission__tete">${picto(m.picto || 'dossier')}<div><small>${esc(m.etape.toUpperCase())}</small><h4>${esc(m.titre)}</h4></div></div>
     <div class="mission__avance"><div class="avance__barre" id="barre-${m.id}" role="progressbar" aria-label="Avancement de la mission" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><b id="pc-${m.id}">0${NB}%</b></div>
     <ul class="taches">${m.taches.map((t, i) => `<li><button class="tache" type="button" role="checkbox" aria-checked="false" data-cle="${m.id}-${i}">${CASE}<span>${esc(t)}</span></button></li>`).join('')}</ul>
-    <button class="tuto-btn" type="button" aria-expanded="false" aria-controls="tuto-${m.id}">Voir le tutoriel ↓</button>
-    <div class="tuto" id="tuto-${m.id}" hidden><h5>${esc(m.tuto.titre)}</h5><ol>${m.tuto.etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol></div>
+    ${m.tuto ? `<button class="tuto-btn" type="button" aria-expanded="false" aria-controls="tuto-${m.id}">Voir le tutoriel ↓</button>
+    <div class="tuto" id="tuto-${m.id}" hidden><h5>${esc(m.tuto.titre)}</h5><ol>${m.tuto.etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol></div>` : ''}
   </article>`).join('')}</div></div>`;
 const MARQUES = { '+': ['plus', PLUS, ''], '!': ['moins', ATTN, 'Limite : '], '•': ['point', LOSANGE, ''] };
 const BLOCS = {   // un rendu par type de bloc
+  phrase: b => `<div class="fiche definition rv"><h3>${esc(b.titre || 'En une phrase')}</h3><p>${fmt(b.texte)}</p></div>`,
   texte: b => `<div class="fiche texte rv">${b.titre ? `<h4>${esc(b.titre)}</h4>` : ''}${b.textes.map(t => `<p>${fmt(t)}</p>`).join('')}</div>`,
-  periodes: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${htmlEtapes(DONNEES.periodes)}</div>`,
-  etapes: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${htmlEtapes(b.items)}</div>`,
-  grille: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><div class="grille">${b.items.map((c, k) => `<article class="carte rv" style="--i:${k % 3};--r:${ROT[k % 6]}deg">${picto(c.picto)}<h4>${esc(c.titre)}</h4><p>${fmt(c.texte)}</p></article>`).join('')}</div></div>`,
+  etapes: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}${htmlEtapes(b.items)}</div>`,
+  parcours: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<ol class="escalier" style="--n:${b.items.length}">${b.items.map(([etape, texte], k) => `<li class="marche" style="--k:${k}"><span class="marche__etq">${esc(etape)}</span><p>${esc(texte)}</p></li>`).join('')}</ol></div>`,
+  grille: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<div class="grille${b.deux ? ' grille--2' : ''}">${b.items.map((c, k) => `<article class="carte rv" style="--i:${k % 3};--r:${ROT[k % 6]}deg">${picto(c.picto)}<h4>${esc(c.titre)}</h4><p>${fmt(c.texte)}</p></article>`).join('')}</div></div>`,
   carte: (b, a) => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><p class="consigne">${esc(b.consigne)}</p>${htmlCarte(b.cle, b.centre, b.picto, DONNEES[b.liste], a.couleur)}</div>`,
   alerte: b => `<div class="postit alerte rv"><h4>${esc(b.titre)}</h4>${b.textes.map(t => `<p>${fmt(t)}</p>`).join('')}</div>`,
-  compare: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><div class="compare">${b.items.map((c, k) => `<div class="fiche" style="--r:${k ? .6 : -.6}deg;--rt:${k ? 3 : -3}deg"><h4>${picto(c.picto)}<span>${esc(c.titre)}</span></h4><p>${fmt(c.texte)}</p><ul>${c.points.map(p => { const [cl, signe, sr] = MARQUES[p[0]] || MARQUES['•']; return `<li class="${cl}">${signe}<span>${sr ? `<span class="sr">${sr}</span>` : ''}${esc(p.slice(1))}</span></li>`; }).join('')}</ul></div>`).join('')}</div></div>`,
-  explorateur: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><p class="consigne">${esc(b.consigne)}</p>
-      <div class="filtres" role="group" aria-label="Trier les missions">${[['tout', 'Toutes les missions'], ['base', 'Mission de base'], ['comp', 'Missions complémentaires']].map(([k, l], i) => `<button class="filtre" type="button" data-filtre="${k}" aria-pressed="${i === 0}">${esc(l)}</button>`).join('')}</div>
-      <div class="explorateur" data-defaut="${esc(b.defaut || '')}"><div class="sigles">${DONNEES.missionsMOE.map((m, k) => `<button class="sigle-btn" type="button" data-id="${m.id}" data-base="${m.base}" aria-pressed="false" aria-controls="fiche-missions" style="--c:${m.couleur};--r:${ROT[k % 6]}deg"><span class="base ${m.base ? 'base--oui' : 'base--non'}">${m.base ? 'base' : 'complém.'}</span>${picto(m.picto)}<b>${esc(m.sigle)}</b><small>${esc(m.nom)}</small></button>`).join('')}</div>
-      <div class="fiche fiche-acteur" id="fiche-missions" aria-live="polite"></div></div></div>`,
+  duo: b => `<div class="duo-cartes">${b.items.map((c, k) => `<div class="fiche rv" style="--i:${k};--r:${k ? .7 : -.6}deg;--rt:${k ? 3 : -3}deg"><h4>${c.picto ? picto(c.picto) : ''}<span>${esc(c.titre)}</span></h4>${c.textes.map(t => `<p>${fmt(t)}</p>`).join('')}</div>`).join('')}</div>`,
+  compare: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<div class="compare">${b.items.map((c, k) => `<div class="fiche" style="--r:${k ? .6 : -.6}deg;--rt:${k ? 3 : -3}deg"><h4>${picto(c.picto)}<span>${esc(c.titre)}</span></h4><p>${fmt(c.texte)}</p><ul>${c.points.map(p => { const [cl, signe, sr] = MARQUES[p[0]] || MARQUES['•']; return `<li class="${cl}">${signe}<span>${sr ? `<span class="sr">${sr}</span>` : ''}${esc(p.slice(1))}</span></li>`; }).join('')}</ul></div>`).join('')}</div></div>`,
+  tableau: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3><div class="tableau-zone" tabindex="0" role="region" aria-label="${esc(b.titre)}"><table class="tableau"><thead><tr>${b.entetes.map(h => `<th scope="col">${esc(h)}</th>`).join('')}</tr></thead><tbody>${b.lignes.map(l => `<tr>${l.map((c, i) => (i === 0 ? `<th scope="row">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div></div>`,
+  scene: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<figure class="scene" data-scene="${b.id}"></figure></div>`,
 };
-function htmlIntro() {
-  return DONNEES.intro.map(b => BLOCS[b.type](b, { couleur: '#2a8fb0' })).join('')
-    + htmlMemo(DONNEES.memo[0] || [], 0)
-    + `<div class="atelier__pied rv"><nav aria-label="Circuler dans le world café"><a class="lien" href="#accueil">↑ Haut de page</a><a class="lien" href="#tables">Le parcours</a></nav><a class="btn btn--plein" href="#atelier-1">Commencer l’atelier 1 ${FL}</a></div>`;
+
+/* =====================================================================
+   PAGE « L'URBANISME ET LE PLU » : ses pictogrammes, ses blocs et la carte
+   de zonage de l'accueil (une commune dessinée au crayon, zone par zone)
+   ===================================================================== */
+Object.assign(PICTO, {
+  feuille: '<path d="M5 19C5 10 10 5 20 4c0 10-5 15-14 15z"/><path d="M5 19l8-8"/>',
+  arbre: '<circle cx="12" cy="9" r="6"/><path d="M12 15v6M8.5 21h7"/>',
+  panneau: '<path d="M4.5 4h15v9h-15zM12 13v8M8.5 21h7M8 8.5h8"/>',
+  regle: '<path d="M3 16L16 3l5 5L8 21z"/><path d="M7 12l2 2M10 9l2 2M13 6l2 2"/>',
+  hauteur: '<path d="M4 3v18M2 6l2-3 2 3M2 18l2 3 2-3M10 21V11l5-4 5 4v10z"/>',
+  limites: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/><path d="M12 5v14"/>',
+  voiture: '<path d="M4 17v-5l2-5h12l2 5v5zM4 13.5h16"/><circle cx="8" cy="17" r="1.5"/><circle cx="16" cy="17" r="1.5"/>',
+  voie: '<path d="M8.5 3L3 21M15.5 3L21 21M12 5v3M12 11v3M12 17v3"/>',
+  voisins: '<path d="M2.5 20V11l4-3 4 3v9zM13.5 20v-9l4-3 4 3v9"/><path d="M10.5 15h3"/>',
+  emprise: '<rect x="3" y="3" width="18" height="18" rx="1.5"/><rect x="7" y="8" width="10" height="8" rx=".5"/>',
+  monument: '<path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M3 10l9-6 9 6z"/>',
+  marteau: '<path d="M13.5 4.5l6 6-3 3-6-6zM12 9.5L4.5 17l2.5 2.5 7.5-7.5"/>',
+});
+
+/* ---------- la géométrie du dessin : un polygone, des hachures, des toits, des arbres ---------- */
+const dans = (poly, x, y) => {   // le point est-il dans le polygone ?
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+};
+const chemin = (poly, ferme = true) => 'M' + poly.map(p => p.join(' ')).join('L') + (ferme ? 'Z' : '');
+const lisse = pts => {   // une courbe douce qui passe près des points
+  let d = `M${pts[0].join(' ')}`;
+  for (let i = 1; i < pts.length - 1; i++) d += `Q${pts[i].join(' ')} ${((pts[i][0] + pts[i + 1][0]) / 2).toFixed(1)} ${((pts[i][1] + pts[i + 1][1]) / 2).toFixed(1)}`;
+  return d + `L${pts[pts.length - 1].join(' ')}`;
+};
+const echantillon = (pts, pas) => {   // des points régulièrement posés le long d'une ligne brisée
+  const r = [];
+  for (let i = 0; i + 1 < pts.length; i++) {
+    const [xa, ya] = pts[i], [xb, yb] = pts[i + 1], n = Math.max(1, Math.round(Math.hypot(xb - xa, yb - ya) / pas));
+    for (let k = 0; k < n; k++) r.push([xa + (xb - xa) * k / n, ya + (yb - ya) * k / n]);
+  }
+  return r;
+};
+function hachures(poly, pas, ang, marge = 2) {   // des traits parallèles (angle en degrés), recoupés par le polygone
+  const a = ang * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+  const R = poly.map(([x, y]) => [x * c + y * s, -x * s + y * c]);   // le polygone tourné : les traits deviennent horizontaux
+  const vs = R.map(p => p[1]), v0 = Math.min(...vs), v1 = Math.max(...vs);
+  let d = '';
+  for (let v = Math.ceil(v0 / pas) * pas + pas / 2; v < v1; v += pas) {
+    const us = [];
+    for (let i = 0; i < R.length; i++) {
+      const [ua, va] = R[i], [ub, vb] = R[(i + 1) % R.length];
+      if ((va <= v && vb > v) || (vb <= v && va > v)) us.push(ua + (v - va) * (ub - ua) / (vb - va));
+    }
+    us.sort((m, n) => m - n);
+    for (let k = 0; k + 1 < us.length; k += 2) {
+      const u0 = us[k] + marge, u1 = us[k + 1] - marge;
+      if (u1 - u0 < 4) continue;
+      d += `M${(u0 * c - v * s).toFixed(1)} ${(u0 * s + v * c).toFixed(1)}L${(u1 * c - v * s).toFixed(1)} ${(u1 * s + v * c).toFixed(1)}`;   // retour dans le repère du dessin
+    }
+  }
+  return d;
 }
+const boite = poly => { const xs = poly.map(p => p[0]), ys = poly.map(p => p[1]); return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]; };
+function maisons(poly, pasx, pasy, graine, ech = 1) {   // un toit carré au centre de chaque îlot de la grille des rues
+  const r = alea(graine), [x0, y0, x1, y1] = boite(poly);
+  let d = '';
+  for (let j = Math.ceil(y0 / pasy); j * pasy < y1; j++) for (let i = Math.ceil(x0 / pasx); i * pasx < x1; i++) {
+    const cx = i * pasx + (r() - .5) * 5 * ech, cy = j * pasy + (r() - .5) * 5 * ech, w = (10 + r() * 6) * ech, h = (8 + r() * 5) * ech;
+    if (![[-1, -1], [1, -1], [1, 1], [-1, 1]].every(([a, b]) => dans(poly, cx + a * (w / 2 + 3 * ech), cy + b * (h / 2 + 3 * ech)))) continue;
+    d += `M${(cx - w / 2).toFixed(1)} ${(cy - h / 2).toFixed(1)}h${w.toFixed(1)}v${h.toFixed(1)}h${(-w).toFixed(1)}zM${(cx - w / 2).toFixed(1)} ${(cy - h / 2 + h * .4).toFixed(1)}h${w.toFixed(1)}`;
+  }
+  return d;
+}
+function arbres(poly, n, graine, ecart, evite = [], ray = [8, 13]) {   // des arbres semés au hasard, sans se toucher
+  const r = alea(graine), [x0, y0, x1, y1] = boite(poly), pts = [];
+  for (let essai = 0; pts.length < n && essai < 1500; essai++) {
+    const x = x0 + r() * (x1 - x0), y = y0 + r() * (y1 - y0), q = ray[0] + r() * (ray[1] - ray[0]);
+    if (![[0, 0], [q, 0], [-q, 0], [0, q + 5], [0, -q]].every(([a, b]) => dans(poly, x + a, y + b))) continue;
+    if (pts.some(p => Math.hypot(p[0] - x, p[1] - y) < ecart) || evite.some(p => Math.hypot(p[0] - x, p[1] - y) < q + 8)) continue;
+    pts.push([x, y, q]);
+  }
+  return pts.map(([x, y, q]) => rond(x, y, q) + `M${x.toFixed(1)} ${(y + q).toFixed(1)}v${(q * .45).toFixed(1)}`).join('');
+}
+
+/* ---------- la commune : une carte de zonage dessinée à la main ---------- */
+const COMMUNE = [[26, 60], [300, 30], [470, 52], [538, 120], [528, 300], [420, 372], [240, 384], [110, 360], [34, 300]];
+const POLY = {   // quatre zones qui se recouvrent exactement : chaque côté est partagé
+  U: [[170, 150], [262, 128], [338, 156], [346, 238], [300, 288], [206, 292], [150, 240]],
+  AU: [[338, 156], [430, 128], [462, 198], [430, 270], [346, 238]],
+  N: [[26, 60], [240, 37], [262, 128], [170, 150], [150, 240], [206, 292], [232, 330], [240, 384], [110, 360], [34, 300]],
+  A: [[240, 37], [300, 30], [470, 52], [538, 120], [528, 300], [420, 372], [240, 384], [232, 330], [206, 292], [300, 288], [346, 238], [430, 270], [462, 198], [430, 128], [338, 156], [262, 128]],
+};
+const ROUTE = [[32, 214], [100, 204], [160, 206], [230, 214], [300, 214], [350, 204], [440, 176], [534, 164]];
+const RUISSEAU = [[44, 96], [66, 134], [90, 164], [100, 200], [92, 252], [98, 312], [116, 358]];
+const CHAMPS = [   // les champs de la zone agricole : chacun son sens de labour
+  { p: [[250, 52], [330, 42], [340, 104], [268, 118]], a: 8 },
+  { p: [[350, 46], [458, 58], [466, 112], [358, 122]], a: 98 },
+  { p: [[480, 112], [532, 128], [522, 202], [474, 196]], a: 40 },
+  { p: [[476, 210], [524, 218], [518, 292], [452, 298], [442, 278]], a: 82 },
+  { p: [[252, 304], [338, 298], [362, 352], [252, 374]], a: 20 },
+];
+const AU1 = [[338, 156], [398, 138], [398, 258], [346, 238]];   // 1AU : à urbaniser tout de suite
+const FERME = 'M388 340v-22l17-11 17 11v22zM399 340v-11h12v11M430 340v-30a7 7 0 0 1 14 0v30zM426 340h26M376 346h84';
+const LAVIS = { U: 'f-r', AU: 'f-o', A: 'f-j', N: 'f-v' }, TRAIT = { U: 'tr', AU: 'to', A: 'tj', N: 'tv' }, TXT = { U: 't-r', AU: 't-o', A: 't-j', N: 't-v' };
+const ETIQ = { U: [246, 236], AU: [392, 186], A: [494, 246], N: [84, 232] };
+const TEXTURES = {   // le dessin propre à chaque zone : des rues et des toits, des lots, des sillons, des arbres
+  U: k => P(hachures(POLY.U, 28, 90) + hachures(POLY.U, 26, 0), 't2', k) + P(maisons(POLY.U, 28, 26, 5), 'tr', k + 1),
+  AU: k => F(hachures(POLY.AU, 14, 64), 'to fin', '3 4', k) + F('M398 138V258', 'to', '7 4', k + 1) + P(maisons(AU1, 24, 22, 4, .8), 'to', k + 1)
+    + T(368, 232, '1AU', 'sigle t-o halo', k + 2) + T(430, 236, '2AU', 'sigle t-o halo', k + 2),
+  A: k => CHAMPS.map(c => P(hachures(c.p, 7, c.a), 'tj fin', k) + F(chemin(c.p), 'tj', '5 3', k)).join('') + P(FERME, 'tj', k + 1),
+  N: k => P(arbres(POLY.N, 38, 11, 28, [...echantillon(RUISSEAU, 12), ...echantillon(ROUTE, 12)]), 'tv', k),
+};
+const zone = (z, k = 0) => A(chemin(POLY[z]), LAVIS[z], k) + P(chemin(POLY[z]), TRAIT[z], k) + TEXTURES[z](k + 1) + T(ETIQ[z][0], ETIQ[z][1], z, `gros ${TXT[z]} halo`, k + 3);
+const BASE_COMMUNE = () => P(chemin(COMMUNE), 'tg', 0) + P(lisse(ROUTE), 'route', 1) + F(lisse(ROUTE), 't2', '7 6', 2) + P(lisse(RUISSEAU), 'tb', 1)
+  + F(chemin(POLY.U), 't2', '5 4', 2) + F(chemin(POLY.AU), 't2', '5 4', 2) + F('M240 37L262 128M206 292L232 330L240 384', 't2', '5 4', 2)
+  + P('M520 38V12M514 20l6-8 6 8', 't', 3) + T(520, 54, 'N', 'moyen', 3) + T(30, 394, 'plan de zonage · extrait de commune', 'petit', 4, 'start');
+function initHero() {
+  return vitrine({
+    items: DONNEES.carte, base: BASE_COMMUNE,
+    vue: id => (id === 'tout' ? ['A', 'N', 'U', 'AU'].map((z, i) => zone(z, 1 + i * 2)).join('') : zone(id, 0)),
+  });
+}
+
+/* ---------- les vignettes des fiches de zone (même dessin, en petit) ---------- */
+const VIG = [[8, 8], [142, 8], [142, 96], [8, 96]];
+function vignette(z) {
+  const fond = '<rect class="fond" x="4" y="4" width="142" height="96" rx="5"/>';
+  if (z === 'U') return fond + `<path d="${hachures(VIG, 26, 90) + hachures(VIG, 24, 0)}"/><path class="bati" d="${maisons(VIG, 26, 24, 3, .6)}"/>`;
+  if (z === 'AU') return fond + `<path class="pointille" d="${hachures(VIG, 12, 64)}"/><path class="pointille" d="M75 8V96"/><path class="bati" d="${maisons([[8, 8], [75, 8], [75, 96], [8, 96]], 24, 22, 4, .6)}"/><text x="40" y="94" text-anchor="middle">1AU</text><text x="110" y="94" text-anchor="middle">2AU</text>`;
+  if (z === 'A') return fond + `<path d="${hachures([[8, 8], [84, 8], [84, 96], [8, 96]], 6, 12) + hachures([[88, 8], [142, 8], [142, 52], [88, 52]], 6, 100)}"/><path class="bati" d="M96 92v-14l11-7 11 7v14zM124 92V78a5 5 0 0 1 10 0v14z"/>`;
+  return fond + `<path d="${arbres(VIG, 9, 21, 22, [], [6, 9])}"/>`;
+}
+/* les signes de la légende d'un plan de zonage (64 × 44) */
+const SYMBOLES = {
+  er: '<path d="M8 6h48v32H8z"/><path d="M8 16l16-10M8 28l30-22M12 38L50 6M26 38l30-24M42 38l14-11"/>',
+  ebc: '<path d="' + rond(20, 17, 8) + rond(40, 14, 7) + rond(30, 31, 8) + rond(50, 31, 6) + '"/><path d="M20 25v4M40 21v3M30 39v3M50 37v3"/>',
+  haie: '<path d="M6 30a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0"/><path d="M6 34h52" class="pointille"/>',
+  alignement: '<path d="M6 32h52M14 32l-4-14M24 32l-4-14M34 32l-4-14M44 32l-4-14M54 32l-4-14"/>',
+  inondation: '<path d="M6 14q5-6 10 0t10 0t10 0t10 0t10 0M6 25q5-6 10 0t10 0t10 0t10 0t10 0M6 36q5-6 10 0t10 0t10 0t10 0t10 0"/>',
+};
+const PAP = ['var(--pj)', 'var(--pb)', 'var(--pv)', 'var(--pr)', 'var(--po)'];
+Object.assign(BLOCS, {
+  // la hiérarchie : chaque document un cran plus bas, décalé vers la droite
+  cascade: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<ol class="cascade">${b.items.map((n, k) => `<li class="niveau rv${n.alt ? ' niveau--alt' : ''}" style="--k:${n.alt ? b.items.length - 2 : k};--c:${n.couleur}">${n.alt ? '<span class="niveau__ou">ou</span>' : ''}<b class="niveau__sigle">${esc(n.sigle)}</b><span class="niveau__txt">${esc(n.texte)}</span><span class="niveau__echelle">${esc(n.echelle)}</span></li>`).join('')}</ol>${b.note ? `<p class="cascade__note">${esc(b.note)}</p>` : ''}</div>`,
+  // les pièces du PLU, posées l'une à côté de l'autre : 1 + 2 + … = le PLU
+  equation: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<div class="equation">${b.items.map((t, k) => `<span class="pastille" style="--p:${PAP[k % 5]};--r:${ROT[k % 6]}deg"><b>${k + 1}</b>${esc(t)}</span><i aria-hidden="true">${k < b.items.length - 1 ? '+' : '='}</i>`).join('')}<span class="pastille pastille--res">${esc(b.resultat)}</span></div>${b.note ? `<p class="equation__note">${esc(b.note)}</p>` : ''}</div>`,
+  zones: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<div class="zones">${b.items.map((z, k) => `<article class="zone rv" style="--c:${z.couleur};--i:${k % 2}">
+      <svg class="zone__vignette" viewBox="0 0 150 104" aria-hidden="true">${vignette(z.code)}</svg>
+      <header><span class="zone__code">${esc(z.code)}</span><h4>${esc(z.nom)}</h4></header>
+      <p class="zone__desc">${fmt(z.desc)}</p>
+      <p class="zone__constr"><b>Construction :</b> ${esc(z.construire)}</p>
+      <h5>Sous-zones courantes</h5>
+      <ul class="zone__sous">${z.sous.map(([c, t]) => `<li><b>${esc(c)}</b><span>${esc(t)}</span></li>`).join('')}</ul></article>`).join('')}</div></div>`,
+  legende: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<div class="legende">${b.items.map((l, k) => `<div class="leg rv" style="--i:${k % 3}"><svg viewBox="0 0 64 44" aria-hidden="true">${SYMBOLES[l.sym]}</svg><div><h4>${esc(l.nom)} <span class="leg__code">${esc(l.code)}</span></h4><p>${esc(l.texte)}</p></div></div>`).join('')}</div></div>`,
+  regles: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<div class="regles">${b.items.map((r, k) => `<article class="regle rv" style="--i:${k % 2}">
+      <header>${picto(r.picto)}<h4>${esc(r.titre)}</h4><span class="regle__art">${esc(r.art)}</span></header>
+      <p>${fmt(r.texte)}</p><p class="exemple"><b>Exemple</b>${fmt(r.exemple)}</p></article>`).join('')}</div></div>`,
+  autorisations: b => `<div class="rv"><h3 class="bloc-titre">${esc(b.titre)}</h3>${hint(b)}<div class="autorisations">${b.items.map((a, k) => `<article class="autor rv" style="--c:${a.couleur};--i:${k % 3}">
+      <header>${picto(a.picto)}<h4>${esc(a.nom)}</h4></header>
+      <p class="autor__delai"><span>Délai d’instruction</span>${esc(a.delai)}</p>
+      <ul>${a.types.map(t => `<li>${esc(t)}</li>`).join('')}</ul></article>`).join('')}</div></div>`,
+});
+
+function htmlProbleme(texte, etiquette = 'PROBLÉMATIQUE') { return `<p class="postit probleme rv"><svg viewBox="0 0 34 34" aria-hidden="true">${etiquette === 'PROBLÉMATIQUE' ? '<circle cx="17" cy="17" r="14"/><path d="M12.5 13a4.5 4.5 0 1 1 6.6 4c-1.4.8-2.1 1.8-2.1 3.2M17 25v.5"/>' : '<path d="M9 4h12l6 6v20H9z"/><path d="M21 4v6h6M13 16h10M13 21h10M13 26h6"/>'}</svg><span><small>${esc(etiquette)}</small>${esc(texte)}</span></p>`; }
+const piedAtelier = (prec, suiv, id) => `<div class="atelier__pied rv"><nav aria-label="Circuler entre les parties"><a class="lien" href="#accueil">↑ Haut de page</a><a class="lien" href="${prec}">← Précédent</a><a class="lien" href="${suiv}">Suivant →</a></nav><button class="btn btn-fait" type="button" id="fait-${id}" data-atelier="${id}" aria-pressed="false">${CASE}<span>Marquer comme terminé</span></button></div>`;
 function htmlAtelier(a) {
-  const prec = a.id > 1 ? `#atelier-${a.id - 1}` : '#intro', suiv = a.id < AT.length ? `#atelier-${a.id + 1}` : '#quiz';
+  const prec = a.id > 1 ? `#atelier-${a.id - 1}` : '#tables', suiv = a.id < AT.length ? `#atelier-${a.id + 1}` : (DONNEES.quiz ? '#quiz' : '#accueil');
   return `
-  <section class="section atelier" id="atelier-${a.id}" data-diapo="Atelier ${a.id} · ${esc(a.court)}" aria-labelledby="t-at${a.id}" style="--ca:${a.couleur}">
+  <section class="section atelier" id="atelier-${a.id}" data-diapo="${esc(cap(DONNEES.mot || 'atelier'))} ${a.id} · ${esc(a.court)}" aria-labelledby="t-at${a.id}" style="--ca:${a.couleur}">
     <header class="entete">
-      <div class="entete__haut"><p class="sur rv">${FLECHE}atelier ${a.id} · ${esc(a.court.toLowerCase())}</p><span class="chrono" data-chrono="atelier-${a.id}"></span><span class="tampon-fait" data-fait="${a.id}" aria-hidden="true">terminé ✓</span></div>
+      <div class="entete__haut"><p class="sur rv">${FLECHE}${esc(DONNEES.mot || 'atelier')} ${a.id} · ${esc(a.court.toLowerCase())}</p><span class="chrono" data-chrono="atelier-${a.id}"></span><span class="tampon-fait" data-fait="${a.id}" aria-hidden="true">terminé ✓</span></div>
       <h2 class="titre" id="t-at${a.id}" data-ecrit>${titreSouligne(a.titre)}</h2>
       <p class="chapo-sec rv">${esc(a.sousTitre)}</p>
     </header>
     <div class="colonne">
-      <p class="postit probleme rv"><svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="14"/><path d="M12.5 13a4.5 4.5 0 1 1 6.6 4c-1.4.8-2.1 1.8-2.1 3.2M17 25v.5"/></svg><span><small>PROBLÉMATIQUE</small>${esc(a.problematique)}</span></p>
+      ${a.problematique ? htmlProbleme(a.problematique, a.etiquette) : ''}
       ${(DONNEES.contenus[a.id] || []).map(b => BLOCS[b.type](b, a)).join('')}
-      ${htmlMemo(DONNEES.memo[a.id] || [], a.id)}
-      ${htmlMissions(DONNEES.missions[a.id] || [], a.id)}
-      <div class="atelier__pied rv"><nav aria-label="Circuler entre les ateliers"><a class="lien" href="#accueil">↑ Haut de page</a><a class="lien" href="${prec}">← Précédent</a><a class="lien" href="${suiv}">Suivant →</a></nav><button class="btn btn-fait" type="button" id="fait-${a.id}" data-atelier="${a.id}" aria-pressed="false">${CASE}<span>Marquer comme terminé</span></button></div>
+      ${(DONNEES.memo?.[a.id] || []).length ? htmlMemo(DONNEES.memo[a.id], a.id) : ''}
+      ${(DONNEES.missions?.[a.id] || []).length ? htmlMissions(DONNEES.missions[a.id], a.id) : ''}
+      ${piedAtelier(prec, suiv, a.id)}
     </div>
   </section>`;
 }
 function construirePage() {
-  const D = DONNEES, C = D.carnet;
+  const D = DONNEES, C = D.carnet, N = AT.length;
   // --- liens, en-tête, navigation, pied de page
   $('#pied-carnet').href = C; $('#pied-origine').href = D.origine;
   $('#annee').textContent = new Date().getFullYear();
   $('#public').innerHTML = `World café · ${esc(D.public).replace(/^(\d)re\b/, '$1<sup>re</sup>')}`;
   $('#auteur').textContent = `auteur${NB}: ${D.auteur}`;
-  $('#pied-texte').textContent = `Les phases et les missions dans l’acte de construire · ${D.public}. ${D.signature} · année scolaire ${D.annee}. Code du quiz${NB}: communiqué en classe.`;
-  $('#nav-liens').innerHTML = '<a href="#intro">Intro</a>' + AT.map(a => `<a href="#atelier-${a.id}">${esc(a.court)}</a>`).join('') + '<a href="#quiz">Quiz</a>';
+  $('#pied-texte').textContent = D.pied;
+  $('#nav-liens').innerHTML = AT.map(a => `<a href="#atelier-${a.id}">${esc(a.court)}</a>`).join('') + (D.quiz ? '<a href="#quiz">Quiz</a>' : '');
   $$('.nav__liens a').forEach(a => a.insertAdjacentHTML('beforeend', GRIB));
   $('#pied-ateliers').innerHTML = AT.map(a => `<li><a href="#atelier-${a.id}">${a.id} · ${esc(a.titre)}</a></li>`).join('');
   if (SOURIS) document.documentElement.classList.add('souris');
-  // --- le parcours : l'introduction, puis les quatre tables
-  $('#intro-carte').innerHTML = `${picto('horloge')}<span class="txt"><small>À COMMENCER EN PREMIER</small><b>Introduction générale</b><span class="d">${esc('Commence ici : les 4 grandes périodes d’une opération, le cadre juridique et le vocabulaire de base.')}</span></span><span class="va">${D.dureeIntro} min →</span>`;
-  $('#tables-liste').innerHTML = AT.map((a, i) => `<a class="table-wc rv" href="#atelier-${a.id}" style="--i:${i};--r:${ROT[i % 6]}deg;--ca:${a.couleur};--c:${a.papier}">
+  // --- le parcours : les tables, une par atelier
+  const tables = $('#tables-liste'); tables.dataset.n = N;   // la feuille de style en tire la disposition (3 + 2 centrées pour cinq tables)
+  tables.innerHTML = AT.map((a, i) => `<a class="table-wc rv" href="#atelier-${a.id}" style="--i:${i};--r:${ROT[i % 6]}deg;--ca:${a.couleur};--c:${a.papier}">
       <svg viewBox="0 0 120 84" aria-hidden="true"><path d="M14 32c-8 4-8 16 0 20M106 32c8 4 8 16 0 20M42 14c4-8 32-8 36 0M42 70c4 8 32 8 36 0"/><ellipse class="plateau" cx="60" cy="42" rx="38" ry="20"/><text x="60" y="50">${a.id}</text></svg>
       <span class="tampon-fait" data-fait="${a.id}" aria-hidden="true">terminé ✓</span>
-      <span class="etq">atelier ${a.id} · ${esc(a.court.toLowerCase())}</span><h3>${esc(a.titre)}</h3><p>${esc(a.sousTitre)}</p><span class="duree">durée${NB}: ${a.duree} min</span></a>`).join('');
-  $('#tables-total').innerHTML = `<b>${AT.reduce((t, a) => t + a.duree, 0)} minutes</b> d’ateliers après l’introduction (${D.dureeIntro} min), puis le quiz final (${D.quiz.length} questions), ouvert avec le code du professeur.`;
-  // --- l'introduction et les quatre ateliers (avant le quiz)
-  $('#intro-corps').innerHTML = htmlIntro();
-  $('#quiz').insertAdjacentHTML('beforebegin', AT.map(htmlAtelier).join(''));
+      <span class="etq">${esc(D.mot || 'atelier')} ${a.id} · ${esc(a.court.toLowerCase())}</span><h3>${esc(a.titre)}</h3><p>${esc(a.sousTitre)}</p><span class="duree">durée${NB}: ${a.duree} min${a.niveau ? ` · <span class="etoiles" title="niveau ${a.niveau} sur 3">${'★'.repeat(a.niveau)}${'☆'.repeat(3 - a.niveau)}</span>` : ''}</span></a>`).join('');
+  const total = AT.reduce((t, a) => t + a.duree, 0);
+  $('#tables-total').innerHTML = `<b>${total} minutes</b> en tout : ${N} ${esc(D.mot || 'atelier')}s${new Set(AT.map(a => a.duree)).size === 1 ? ` de ${AT[0].duree} min` : ''}${D.quiz ? `, puis le quiz final (${D.quiz.length} questions), ouvert avec le code du professeur` : ''}.`;
+  // --- les ateliers (avant le quiz, ou avant le pied de page)
+  $('#fin-ateliers').insertAdjacentHTML('beforebegin', AT.map(htmlAtelier).join(''));
   // --- chronomètres : l'arc rouge couvre la durée prévue sur un cadran d'une heure
   $$('[data-chrono]').forEach(el => {
     const m = DUREES[el.dataset.chrono]; if (!m) { el.remove(); return; }
@@ -1348,8 +1591,10 @@ function construirePage() {
     el.style.setProperty('--fin', (1 - Math.min(m, 60) / 60).toFixed(3));
   });
   // --- quiz
-  $('#quiz-chapo').textContent = `${D.quiz.length} questions. Une seule bonne réponse par question. Valide à la fin pour obtenir ton score et les explications.`;
-  $('#verrou-titre').textContent = `Évaluation finale${NB}: ${D.quiz.length} questions`;
+  if (D.quiz) {
+    $('#quiz-chapo').textContent = `${D.quiz.length} questions sur l’ensemble du parcours. Une seule bonne réponse par question.`;
+    $('#verrou-titre').textContent = `Quiz final${NB}: ${D.quiz.length} questions`;
+  }
   // --- menu des petits écrans
   $('#mmenu').innerHTML = `<a href="${esc(C)}" style="--i:0"><span>←</span>Accueil du carnet</a>` +
     $$('main > section[data-diapo]').map((s, i) => `<a href="#${s.id}" style="--i:${i + 1}"><span>${i ? String(i).padStart(2, '0') : '·'}</span>${esc(s.dataset.diapo)}</a>`).join('');
@@ -1357,7 +1602,7 @@ function construirePage() {
 
 /* =====================================================================
    5. LES PARTIES VIVANTES : schéma des acteurs, étapes, flashcards,
-   missions, ateliers terminés, explorateur des missions de maîtrise d'œuvre
+   missions, parcours terminé
    ===================================================================== */
 const CARTES = {};
 function initCartes() {
@@ -1383,10 +1628,9 @@ function initCartes() {
       $(`path[data-id="${id}"]`, svg)?.classList.add('chaud');
       const a = liste.find(x => x.id === id);
       fiche.style.setProperty('--c', a.couleur || couleur);
-      fiche.innerHTML = `<div class="fiche-acteur__tete">${picto(a.picto || a.id)}<div><h4>${esc(a.label)}</h4><span class="sigle">${esc(a.abbr)}</span></div></div>
+      fiche.innerHTML = `<div class="fiche-acteur__tete">${picto(a.picto)}<div><h4>${esc(a.label)}</h4>${a.abbr ? `<span class="sigle">${esc(a.abbr)}</span>` : ''}</div></div>
         <p class="role">${esc(a.role)}</p><p>${esc(a.description)}</p>
-        <h5>CE QU’IL FAIT</h5><ul>${a.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
-        ${a.exemples ? `<h5>EXEMPLES</h5><div class="outils">${a.exemples.map(o => `<span>${esc(o)}</span>`).join('')}</div>` : ''}`;
+        ${a.exemples ? `<h5>MOTS-CLÉS</h5><div class="outils">${a.exemples.map(o => `<span>${esc(o)}</span>`).join('')}</div>` : ''}`;
     };
     noeuds.forEach(b => b.addEventListener('click', () => {
       choisir(b.dataset.id);
@@ -1428,7 +1672,7 @@ function initMemo() {   // une flashcard se retourne au clic ; le compteur dit c
   });
 }
 function initMissions() {   // les tâches se cochent, la progression suit (gardée sur cet ordinateur)
-  const CLE = 'carnet-phases-missions', fait = lire(CLE, {}) || {};
+  const CLE = 'carnet-' + DONNEES.cle + '-missions', fait = lire(CLE, {}) || {};
   const barre = (id, n, total) => {
     const pc = Math.round(100 * n / Math.max(1, total)), b = $('#barre-' + id);
     $('#pc-' + id).textContent = pc + NB + '%';
@@ -1448,26 +1692,26 @@ function initMissions() {   // les tâches se cochent, la progression suit (gard
       avance(t.dataset.cle.split('-')[0]);
     });
   });
-  Object.values(DONNEES.missions).flat().forEach(m => avance(m.id));
+  Object.values(DONNEES.missions || {}).flat().forEach(m => avance(m.id));
   $$('.tuto-btn').forEach(b => b.addEventListener('click', () => {
     const ouvrir = b.getAttribute('aria-expanded') !== 'true', box = document.getElementById(b.getAttribute('aria-controls'));
     b.setAttribute('aria-expanded', String(ouvrir)); box.hidden = !ouvrir;
     b.textContent = ouvrir ? 'Masquer le tutoriel ↑' : 'Voir le tutoriel ↓';
   }));
 }
-function initParcours() {   // « Marquer comme terminé » : le tampon sur la table, la barre de l'accueil
-  const CLE = 'carnet-phases-ateliers', N = AT.length;
-  const faits = new Set((lire(CLE, []) || []).filter(id => AT.some(a => a.id === id)));
+function initParcours() {   // « Marquer comme terminé » : le tampon sur la table, la barre de l'accueil (introduction comprise)
+  const CLE = 'carnet-' + DONNEES.cle + '-sections', N = SECTIONS.length;
+  const faits = new Set((lire(CLE, []) || []).filter(id => SECTIONS.includes(id)));
   const maj = () => {
     const n = faits.size, barre = $('#parcours-barre');
     $('#parcours-n').textContent = `${n} / ${N}`;
     barre.setAttribute('aria-valuenow', n); barre.setAttribute('aria-valuemax', N); $('i', barre).style.width = (100 * n / N) + '%';
-    AT.forEach(a => {
-      const ok = faits.has(a.id), b = $('#fait-' + a.id);
-      $$(`[data-fait="${a.id}"]`).forEach(t => t.classList.toggle('on', ok));
+    SECTIONS.forEach(id => {
+      const ok = faits.has(id), b = $('#fait-' + id);
+      $$(`[data-fait="${id}"]`).forEach(t => t.classList.toggle('on', ok));
       if (!b) return;
       b.setAttribute('aria-pressed', String(ok));
-      $('span', b).textContent = ok ? 'Atelier terminé' : 'Marquer comme terminé';
+      $('span', b).textContent = ok ? 'Terminé' : 'Marquer comme terminé';
     });
   };
   $$('.btn-fait').forEach(b => b.addEventListener('click', () => {
@@ -1477,38 +1721,14 @@ function initParcours() {   // « Marquer comme terminé » : le tampon sur la t
   }));
   maj();
 }
-function initExplorateur() {   // atelier 3 : un sigle cliqué ouvre sa fiche ; les filtres trient base / complémentaires
-  const zone = $('.explorateur'); if (!zone) return;
-  const fiche = $('#fiche-missions'), btns = $$('.sigle-btn', zone), filtres = $$('.filtre');
-  const ouvrir = id => {
-    const m = DONNEES.missionsMOE.find(x => x.id === id); if (!m) return;
-    btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === id)));
-    fiche.style.setProperty('--c', m.couleur);
-    fiche.innerHTML = `<div class="fiche-acteur__tete">${picto(m.picto)}<div><h4>${esc(m.sigle)} — ${esc(m.nom)}</h4></div></div>
-      <p class="role">${esc(m.quand)}</p><span class="statut ${m.base ? 'statut--oui' : 'statut--non'}">${m.base ? 'MISSION DE BASE' : 'MISSION COMPLÉMENTAIRE'}</span>
-      <p>${esc(m.description)}</p><h5>CE QUE PRODUIT LE MAÎTRE D’ŒUVRE</h5><div class="outils">${m.livrables.map(l => `<span>${esc(l)}</span>`).join('')}</div>`;
-  };
-  btns.forEach(b => b.addEventListener('click', () => {
-    ouvrir(b.dataset.id);
-    if (matchMedia('(max-width: 980px)').matches) fiche.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'nearest' });
-  }));
-  filtres.forEach(f => f.addEventListener('click', () => {
-    const k = f.dataset.filtre;
-    filtres.forEach(x => x.setAttribute('aria-pressed', String(x === f)));
-    btns.forEach(b => (b.hidden = k === 'base' ? b.dataset.base !== 'true' : k === 'comp' ? b.dataset.base === 'true' : false));
-    const choisi = btns.find(b => b.getAttribute('aria-pressed') === 'true');
-    if (!choisi || choisi.hidden) ouvrir(btns.find(b => !b.hidden).dataset.id);
-  }));
-  ouvrir(zone.dataset.defaut || DONNEES.missionsMOE[0].id);
-}
-
 /* =====================================================================
    6. LE QUIZ FINAL : le code ouvre le cadenas, la copie se corrige au stylo rouge
    ===================================================================== */
 function initQuiz() {
+  if (!DONNEES.quiz || !$('#verrou')) return;
   const Q = DONNEES.quiz, verrou = $('#verrou'), form = $('#code-form'), champ = $('#code'), msg = $('#code-msg'), copie = $('#copie');
   const remplir = () => {
-    copie.innerHTML = Q.map((q, i) => { const a = AT.find(x => x.id === q.atelier); return `<fieldset class="question"><legend><small>QUESTION ${i + 1}/${Q.length}${a ? ` <span class="question__atelier" style="--c:${a.couleur}">· atelier ${a.id} (${esc(a.court.toLowerCase())})</span>` : ''}</small>${esc(q.question)}</legend><div class="options">${q.options.map((o, k) => `<label class="option"><input type="radio" name="q${i}" value="${k}"><span class="rond"></span><b>${'ABCD'[k]}.</b> ${esc(o)}<span class="marque" aria-hidden="true"></span></label>`).join('')}</div></fieldset>`; }).join('')
+    copie.innerHTML = Q.map((q, i) => { const a = AT.find(x => x.id === q.atelier); return `<fieldset class="question"><legend><small>QUESTION ${i + 1}/${Q.length} <span class="question__atelier" style="--c:${a ? a.couleur : '#2a8fb0'}">· ${esc(nomSection(q.atelier))}</span></small>${esc(q.question)}</legend><div class="options">${q.options.map((o, k) => `<label class="option"><input type="radio" name="q${i}" value="${k}"><span class="rond"></span><b>${'ABCD'[k]}.</b> ${esc(o)}<span class="marque" aria-hidden="true"></span></label>`).join('')}</div></fieldset>`; }).join('')
       + `<div class="copie__pied"><button class="btn btn--plein" type="submit" id="valider" disabled>Valider mes réponses</button><span id="repondues">0/${Q.length} répondues</span></div>`;
     cadre($('#valider'), 7);
   };
@@ -1518,7 +1738,7 @@ function initQuiz() {
       verrou.classList.add('ouvert'); msg.className = 'code-msg ok'; msg.textContent = `✓ Le quiz est déverrouillé. Bonne chance${NB}!`;
       if (copie.hidden) { remplir(); copie.hidden = false; setTimeout(() => copie.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'start' }), 500); }
     } else {
-      msg.className = 'code-msg ko'; msg.textContent = 'Code incorrect — demande-le à ton professeur.';
+      msg.className = 'code-msg ko'; msg.textContent = 'Code incorrect. Demandez-le à votre professeur.';
       verrou.classList.remove('non'); void verrou.offsetWidth; verrou.classList.add('non');
     }
   });
@@ -1534,7 +1754,7 @@ function initQuiz() {
     if (rep.includes(-1)) return;
     const score = Q.reduce((t, q, i) => t + (rep[i] === q.bonne), 0);
     const R = DONNEES.resultats.find(r => score >= r.min) || DONNEES.resultats[DONNEES.resultats.length - 1];
-    const aRevoir = [...new Set(Q.filter((q, i) => rep[i] !== q.bonne && q.atelier).map(q => q.atelier))].sort((x, y) => x - y);
+    const aRevoir = [...new Set(Q.filter((q, i) => rep[i] !== q.bonne).map(q => q.atelier))].sort((x, y) => x - y);
     $$('.question', copie).forEach((f, i) => {
       $$('.option', f).forEach((o, k) => {
         $('input', o).disabled = true;
@@ -1543,8 +1763,9 @@ function initQuiz() {
       });
       f.insertAdjacentHTML('beforeend', `<p class="explication"><b>EXPLICATION</b>${esc(Q[i].explication)}</p>`);
     });
+    const lien = n => `<a href="#${n === 0 ? 'intro' : 'atelier-' + n}">${n === 0 ? 'introduction' : n}</a>`;
     copie.insertAdjacentHTML('afterbegin', `<div class="note-prof" id="note-prof" role="status"><svg viewBox="0 0 118 84" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 98 4 108 30C116 54 70 84 34 74C8 66 4 38 30 20C50 8 80 8 96 12"/></svg>${score}/${Q.length}<small>${esc(R.mot)}</small></div>
-      <p class="resultat">${esc(R.texte)}${aRevoir.length ? ` Questions manquées${NB}: atelier${aRevoir.length > 1 ? 's' : ''} ${aRevoir.map(n => `<a href="#atelier-${n}">${n}</a>`).join(', ')}.` : ''}</p>`);
+      <p class="resultat">${esc(R.texte)}${aRevoir.length ? ` À revoir${NB}: ${aRevoir.map(lien).join(', ')}.` : ''}</p>`);
     $('.copie__pied', copie).innerHTML = `<button class="btn" type="button" id="recommencer">Recommencer</button><a class="btn" href="#accueil">Retour à l’accueil</a>`;
     cadre($('#recommencer'), 9); cadre($('.copie__pied a.btn', copie), 11);
     $('#recommencer').addEventListener('click', () => { remplir(); copie.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'start' }); });
@@ -1599,7 +1820,7 @@ function initTrace() {   // la souris laisse un trait de crayon qui s'estompe ; 
   const taille = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; };
   taille();
   if (SOURIS && !REDUIT) addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse' || !(e.target instanceof Element) || e.target.closest('.temps, input, .copie')) { dernier = null; return; }
+    if (e.pointerType !== 'mouse' || !(e.target instanceof Element) || e.target.closest('.vitrine, .scene, input, .copie, .tableur, .exo')) { dernier = null; return; }
     const p = [e.clientX, e.clientY];
     if (dernier) { c.strokeStyle = 'rgba(42,42,42,.4)'; c.lineWidth = 1.3; c.lineCap = 'round'; c.beginPath(); c.moveTo(dernier[0], dernier[1]); c.lineTo(p[0] + Math.random() - .5, p[1] + Math.random() - .5); c.stroke(); encre = 1; }
     dernier = p;
@@ -1719,8 +1940,8 @@ function initPresentation(crochets) {
    ===================================================================== */
 construirePage();
 ecrireTitres();
-const TEMPS = initTemps(), TRACE = initTrace(), ETAPES = initEtapes();
-initCartes(); initMemo(); initMissions(); initParcours(); initExplorateur(); initQuiz();
+const HERO = typeof initHero === 'function' ? initHero() : { maj() {} }, TRACE = initTrace(), ETAPES = initEtapes(), SCENES_VIVES = initScenes();
+initCartes(); initMemo(); initMissions(); initParcours(); initQuiz(); PLUS_INITS.forEach(f => f());
 apparitions(); initNav();
 const mesurerCartes = () => Object.values(CARTES).forEach(c => c.mesurer());
 const toutMesurer = () => { TRACE.taille(); cadres(); mesurerCartes(); ETAPES.demander(); };
@@ -1738,12 +1959,12 @@ function boucle(now) {
     nav.classList.toggle('solide', y > 20);
     if (y > 160 && dy > 2) nav.classList.add('cachee'); else if (dy < -2 || y <= 160) nav.classList.remove('cachee');
   }
-  TEMPS.maj(dt, now); ETAPES.maj(); PRES.maj(now);
+  HERO.maj(dt, now); SCENES_VIVES.forEach(sc => sc.maj && sc.maj(dt, now)); ETAPES.maj(); PRES.maj(now);
   TRACE.maj(dt, PRES.on ? 0 : dy);
   requestAnimationFrame(boucle);
 }
 requestAnimationFrame(boucle);
-window.PHASES = { TEMPS, PRES, CARTES, ETAPES };   // vérifications
+window.WC = { HERO, PRES, CARTES, ETAPES, SCENES_VIVES };   // vérifications
 let pretFait = false;
 const pret = () => { if (pretFait) return; pretFait = true; document.body.classList.add('pret'); toutMesurer(); };
 (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(pret);

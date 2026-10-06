@@ -1,0 +1,1766 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lire un plan en 2 min 30</title>
+<meta name="description" content="Animation motion design de deux minutes trente sur la lecture d’un dossier de plans : le plan de masse, les vues, la coupe à 1 m du sol, le code des traits, l’échelle et les cotes, la perspective, avec pauses questions et guide d’exploitation en classe.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500;700&family=Instrument+Sans:ital,wght@0,400..700;1,500&display=swap">
+<style>
+:root{
+  --bg:#E5EAF0; --surface:#F5F7FA; --ink:#0E2240; --muted:#4B5B74; --line:#C8D1DD;
+  --accent:#2F6FD6; --accent-soft:#DCE6F7; --screen:#0B1A30; --focus:#2F6FD6;
+  --fd:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --fb:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --fm:"IBM Plex Mono",Consolas,"Cascadia Mono",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+    --accent:#7FB0FF; --accent-soft:#16305A; --screen:#050C16; --focus:#7FB0FF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+  --accent:#7FB0FF; --accent-soft:#16305A; --screen:#050C16; --focus:#7FB0FF;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--fb)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:clamp(16px,4vw,40px);padding-block:36px 72px;display:grid;gap:36px}
+.head{display:grid;gap:12px;max-width:800px}
+.kicker{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0;font:500 12.5px/1.3 var(--fm);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:10px;height:10px;border-radius:50%;display:block}
+h1{font:800 clamp(34px,5.4vw,62px)/1 var(--fd);letter-spacing:-.025em;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);font-size:17px;max-width:64ch;text-wrap:pretty}
+
+.player{display:grid;gap:10px}
+.screen{position:relative;border-radius:18px;overflow:hidden;background:var(--screen);box-shadow:0 30px 70px -40px rgba(8,20,40,.7)}
+.screen canvas{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:16/9;cursor:pointer}
+.screen:fullscreen{display:grid;place-items:center;border-radius:0;background:#000}
+.screen:fullscreen canvas{width:min(100vw,177.78vh)}
+.bigplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:12px;padding:10px 22px 10px 10px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 clamp(14px,1.6vw,18px)/1 var(--fb);cursor:pointer;box-shadow:0 16px 40px -14px rgba(0,0,0,.6);white-space:nowrap}
+.bigplay .tri{width:40px;height:40px;border-radius:50%;background:#0E2240;color:#FFB627;display:grid;place-items:center;flex:none}
+.bigplay:hover{background:#FFC24D}
+.qcard{position:absolute;left:3%;bottom:6%;max-width:min(600px,90%);background:rgba(9,22,42,.95);color:#fff;border-radius:16px;padding:16px 18px 18px;display:grid;gap:8px;box-shadow:0 20px 50px -20px rgba(0,0,0,.7)}
+.qcard .qk{margin:0;font:500 12px/1.3 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:#FFB627}
+.qcard .qt{margin:0;font:700 clamp(16px,2.1vw,23px)/1.28 var(--fd);text-wrap:pretty}
+.qcard button{justify-self:start;margin-top:4px;height:38px;padding:0 18px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 14px var(--fb);cursor:pointer}
+.rec{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;background:rgba(9,22,42,.92);color:#fff;font:500 13px/1 var(--fm);padding:8px 12px;border-radius:999px}
+.rec::before{content:"";width:9px;height:9px;border-radius:50%;background:#FF5A4A;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
+.ib{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.ib.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ib svg{display:block}
+.track{flex:1 1 260px;min-width:0;position:relative;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:0;pointer-events:none}
+.ticks i{position:absolute;top:-10px;width:2px;height:20px;margin-left:-1px;background:var(--muted);opacity:.45;border-radius:1px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;margin:0;border-radius:999px;background:linear-gradient(to right,var(--accent) var(--p,0%),var(--line) var(--p,0%));cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ink);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ink)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ink);border:3px solid var(--bg)}
+.tc{font:500 14px var(--fm);font-variant-numeric:tabular-nums;color:var(--muted);min-width:10ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tog{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font:600 14px var(--fb);cursor:pointer;user-select:none}
+.tog input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.btn{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--fb);cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:hover:not(:disabled),.ib:hover,.tog:hover{border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.help{margin:0;font:500 12.5px/1.5 var(--fm);color:var(--muted)}
+.note{margin:0;font-size:14px;color:var(--muted);max-width:80ch}
+
+.sec{display:grid;gap:16px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+.sec-head h2{font:800 clamp(24px,2.8vw,32px)/1.1 var(--fd);margin:0;letter-spacing:-.015em}
+.sec-head p{margin:0;color:var(--muted);font-size:15px}
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+@media (max-width:1000px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.board{grid-template-columns:1fr}}
+.card{width:100%;height:100%;display:grid;grid-template-rows:auto auto 1fr;gap:8px;text-align:left;padding:10px 10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:inherit;font:inherit;cursor:pointer}
+.card:hover{border-color:var(--ink)}
+.card canvas{width:100%;max-width:100%;height:auto;aspect-ratio:16/9;display:block;border-radius:9px;background:var(--screen)}
+.card .meta{display:flex;align-items:baseline;gap:10px;padding-inline:4px}
+.card .tm{font:500 12.5px var(--fm);color:var(--muted);font-variant-numeric:tabular-nums}
+.card h3{margin:0;font:700 18px/1.2 var(--fd)}
+.card p{margin:0;padding-inline:4px;font-size:14.5px;line-height:1.45;color:var(--muted)}
+.card[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;display:grid;gap:8px;align-content:start}
+.step .when{font:500 12.5px/1.3 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.step h3{margin:0;font:700 20px/1.2 var(--fd)}
+.step p{margin:0;font-size:15px;text-wrap:pretty}
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 32px;border-top:1px solid var(--line);padding-top:4px}
+@media (max-width:860px){.more{grid-template-columns:1fr}}
+.more h3{font:700 17px/1.2 var(--fd);margin:16px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:14px;padding:4px 11px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.more ul{margin:0;padding-left:18px;display:grid;gap:7px;font-size:14.5px}
+.more li::marker{color:var(--accent)}
+.fam{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;padding:0;list-style:none;font-size:14.5px}
+.fam li{display:inline-flex;align-items:center;gap:7px}
+.fam i{width:12px;height:12px;border-radius:50%;display:block;flex:none}
+@media (prefers-reduced-motion: reduce){.rec::before{animation:none}}
+.retour{margin:0 0 2px;font:500 13px/1.3 var(--fm)}.retour a{color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}.retour a:hover{color:var(--ink)}
+</style>
+
+<main class="wrap">
+  <header class="head">
+    <p class="retour"><a href="index.html" onclick="try{if(document.referrer&&new window.URL(document.referrer).origin===window.location.origin){window.history.back();return false}}catch(e){}">← Retour au carnet 2EMNB</a></p>
+    <p class="kicker"><span class="dots" aria-hidden="true"><i style="background:#4D8FEA"></i><i style="background:#FFB627"></i><i style="background:#A58BFF"></i><i style="background:#3FBF7F"></i><i style="background:#FF7A59"></i><i style="background:#6FD3FF"></i></span>Lecture de plan · motion design · 2 min 30</p>
+    <h1>Lire un plan en 2&nbsp;min&nbsp;30</h1>
+    <p class="lede">Huit plans d’environ 20 secondes qui suivent un dossier de plans dans l’ordre&nbsp;: le terrain et son plan de masse, la maison regardée sous toutes ses faces, coupée à 1&nbsp;m du sol, lue trait par trait, mesurée, puis vue en perspective. Sans voix off&nbsp;: le texte animé porte le message et chaque plan laisse le temps de lire. À projeter en ouverture de séquence, d’une traite puis avec les pauses questions.</p>
+  </header>
+
+  <section class="player" aria-label="Lecteur de l’animation">
+    <div class="screen" id="screen">
+      <canvas id="stage" width="1920" height="1080" role="img" aria-label="Animation en huit plans : une maison a trois dimensions, une feuille deux ; le plan de masse situe la maison sur sa parcelle ; les vues de face, de dessus et de gauche ; le plan, coupe horizontale à un mètre du sol vue de dessus ; le sens des traits et des symboles ; l’échelle, les cotes et la coupe ; la perspective à un et deux points de fuite ; six réflexes pour lire un plan."></canvas>
+      <button class="bigplay" id="bigplay" type="button"><span class="tri"><svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true"><path d="M2 1.5v15L15 9z" fill="currentColor"/></svg></span><span id="bigtxt">Lancer l’animation · 2&nbsp;min&nbsp;30</span></button>
+      <div class="qcard" id="qcard" role="dialog" aria-live="polite" aria-labelledby="qt" hidden>
+        <p class="qk" id="qk"></p>
+        <p class="qt" id="qt"></p>
+        <button type="button" id="qgo">Continuer</button>
+      </div>
+      <div class="rec" id="rec" hidden></div>
+    </div>
+    <div class="bar">
+      <button class="ib primary" id="play" type="button" aria-label="Lecture"></button>
+      <button class="ib" id="restart" type="button" aria-label="Revenir au début"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 2v14M15 2.5v13L5.5 9z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
+      <div class="track">
+        <input type="range" id="scrub" min="0" max="150" step="0.01" value="0" aria-label="Position dans l’animation">
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+      </div>
+      <span class="tc" id="tc">0:00 / 2:30</span>
+      <div class="opts">
+        <label class="tog"><input type="checkbox" id="snd" checked> Son</label>
+        <label class="tog"><input type="checkbox" id="pz"> Pauses questions</label>
+        <button class="btn" id="fs" type="button">Plein écran</button>
+        <button class="btn" id="exp" type="button">Exporter en vidéo</button>
+      </div>
+    </div>
+    <p class="help">Espace&nbsp;: lecture ou pause · ← →&nbsp;: une seconde · 1 à 8&nbsp;: aller au plan · F&nbsp;: plein écran · M&nbsp;: son</p>
+    <p class="note" id="expnote"></p>
+  </section>
+
+  <section class="sec" aria-labelledby="h-plans">
+    <div class="sec-head"><h2 id="h-plans">Les huit plans</h2><p>Cliquez un plan pour le lire depuis son début.</p></div>
+    <ol class="board" id="board"></ol>
+  </section>
+
+  <section class="sec" aria-labelledby="h-classe">
+    <div class="sec-head"><h2 id="h-classe">Exploiter en classe</h2><p>Une séance d’ouverture d’environ 35 minutes.</p></div>
+    <div class="steps">
+      <article class="step">
+        <span class="when">Avant · 5 min</span>
+        <h3>Dessiner sa chambre</h3>
+        <p>Chaque élève dessine sa chambre «&nbsp;vue d’en haut&nbsp;», sans autre consigne. On compare deux ou trois dessins&nbsp;: qui a mis la porte, la fenêtre, les meubles&nbsp;? À quelle taille&nbsp;? On garde les dessins.</p>
+      </article>
+      <article class="step">
+        <span class="when">Pendant · 2 × 2 min 30</span>
+        <h3>Voir, puis revoir</h3>
+        <p>Premier passage d’une traite, sans prise de notes. Second passage avec «&nbsp;Pauses questions&nbsp;» cochée&nbsp;: l’animation s’arrête à la fin de chaque plan sur une question, une minute d’échange en binôme.</p>
+      </article>
+      <article class="step">
+        <span class="when">Après · 20 min</span>
+        <h3>Lire un vrai plan</h3>
+        <p>Par binôme, sur le dossier de la Maison Mirales, appliquer les six réflexes&nbsp;: le cartouche, le plan de masse (rue, nord, distances aux limites), trois pièces et leurs surfaces, deux cotes, une hauteur lue sur la coupe, puis une perspective à main levée. Enfin, reprendre le dessin du début avec les bons traits.</p>
+      </article>
+    </div>
+    <div class="more">
+      <div>
+        <h3>Vocabulaire à retenir</h3>
+        <div class="chips"><span>plan de masse</span><span>parcelle</span><span>distance aux limites</span><span>échelle graduée</span><span>vue en plan</span><span>plan de coupe</span><span>façade (élévation)</span><span>vue de dessus</span><span>vue de gauche</span><span>trait épais · fin · tireté</span><span>poché</span><span>sens d’ouverture</span><span>allège</span><span>appui</span><span>ligne de foulée</span><span>échelle 1/100 · 1/50</span><span>cote</span><span>chaîne de cotes</span><span>surface (m²)</span><span>niveau ±0,00</span><span>nord</span><span>coupe A-A</span><span>cartouche</span><span>perspective</span><span>ligne d’horizon</span><span>point de fuite</span></div>
+      </div>
+      <div>
+        <h3>Comment l’animation est construite</h3>
+        <ul>
+          <li>L’ordre d’un dossier de plans&nbsp;: le terrain d’abord, puis la maison regardée, coupée, lue, mesurée, et enfin vue en perspective.</li>
+          <li>La même maison de bout en bout&nbsp;: 10,40 × 8,00&nbsp;m, cinq pièces et un escalier vers les combles, sur une parcelle de 600&nbsp;m².</li>
+          <li>Chaque couleur garde son sens&nbsp;:
+            <ul class="fam" aria-label="Couleurs de l’animation">
+              <li><i style="background:#4D8FEA"></i>vue de face</li>
+              <li><i style="background:#FFB627"></i>vue de dessus, plan</li>
+              <li><i style="background:#A58BFF"></i>vue de gauche</li>
+              <li><i style="background:#3FBF7F"></i>cotes</li>
+              <li><i style="background:#FF7A59"></i>coupe</li>
+              <li><i style="background:#6FD3FF"></i>perspective</li>
+            </ul>
+          </li>
+          <li>Pas de coupure entre la maison et son terrain&nbsp;: la caméra prend de la hauteur et la feuille devient la parcelle.</li>
+          <li>Le plan naît sous les yeux&nbsp;: la maison est coupée, le haut s’envole, on la regarde d’en haut.</li>
+          <li>La légende des traits reste à l’écran à la fin du plan 5&nbsp;: elle sert de mémo pour la pause.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Sources et choix</h3>
+        <ul>
+          <li>Plan de masse&nbsp;: pièce PCMI2 du permis de construire (code de l’urbanisme, art. R431-9). L’échelle graduée reste juste même si le plan est agrandi ou réduit.</li>
+          <li>Disposition des vues selon la méthode européenne (NF EN ISO 5456-2)&nbsp;: la vue de dessus sous la vue de face, la vue de gauche à sa droite.</li>
+          <li>Traits (NF EN ISO 128)&nbsp;: épais pour ce qui est coupé, fin pour ce qui est vu, interrompu pour ce qui est caché ou au-dessus du plan de coupe.</li>
+          <li>Plan de coupe horizontal à environ 1&nbsp;m du sol&nbsp;: l’usage courant, pour traverser portes et fenêtres.</li>
+          <li>Cotes en mètres&nbsp;; une ouverture se note largeur × hauteur, avec sa hauteur d’allège.</li>
+          <li>Perspective conique, œil à 1,60&nbsp;m, axe de visée horizontal&nbsp;: les verticales restent verticales et les fuyantes rejoignent un ou deux points de fuite sur la ligne d’horizon.</li>
+          <li>Maison fictive aux cotes arrondies&nbsp;: un support de première lecture, pas un plan d’exécution.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+/* ============ Réglages de base ============ */
+const W = 1920, H = 1080, DUR = 150, TAU = Math.PI * 2, DEG = Math.PI / 180;
+const cv = document.getElementById('stage');
+const ctx = cv.getContext('2d');
+const C = {
+  ink:'#0E2240', paper:'#EAF0EC', bp:'#123C78', amber:'#FFB627', white:'#FFFFFF',
+  green:'#3FBF7F', coral:'#FF7A59', blue:'#4D8FEA', violet:'#A58BFF',
+  greenD:'#1F9D5C', coralD:'#E4502C', blueD:'#2F6FD6', amberD:'#B87D00', violetD:'#6F4FE0', sky:'#6FD3FF',
+  sheet:'#FBFCFA', sub:'#33445E', card:'#16305A'
+};
+const F = {
+  d:'"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif',
+  b:'"Instrument Sans","Segoe UI",system-ui,sans-serif',
+  m:'"IBM Plex Mono",Consolas,"Cascadia Mono",monospace'
+};
+
+/* ============ Mouvement ============ */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const E = {
+  out3: k => 1 - Math.pow(1 - k, 3),
+  in3: k => k * k * k,
+  io3: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  out5: k => 1 - Math.pow(1 - k, 5),
+  back: k => { const c1 = 1.70158, c3 = c1 + 1; return k <= 0 ? 0 : 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); }
+};
+const rnd = (s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(1242);
+
+/* ============ Outils de dessin ============ */
+function setFont(w, s, f) { ctx.font = `${w} ${s}px ${f || F.d}`; }
+function spacing(px) { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; }
+function rr(x, y, w, h, r) {
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); }
+
+// Typographie cinétique : chaque mot monte d'un masque, puis ressort par le haut.
+function kWords(str, x, y, o) {
+  const t = o.t, ws = str.split(' '), st = o.stagger ?? .08, du = o.dur ?? .7;
+  if (t < o.t0) return;
+  if (o.tOut != null && t > o.tOut + ws.length * st * .5 + .45) return;
+  let size = o.size;
+  setFont(o.weight || 800, size, o.font);
+  let sp = ctx.measureText(' ').width, wd = ws.map(w => ctx.measureText(w).width);
+  let total = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  if (o.maxW && total > o.maxW) {
+    size *= o.maxW / total; setFont(o.weight || 800, size, o.font);
+    sp = ctx.measureText(' ').width; wd = ws.map(w => ctx.measureText(w).width);
+    total = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  }
+  let cx = o.align === 'center' ? x - total / 2 : o.align === 'right' ? x - total : x;
+  const lift = size * 1.3;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx - 60, y - size * 1.1, total + 120, size * 1.5); ctx.clip();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  for (let i = 0; i < ws.length; i++) {
+    const d = o.t0 + i * st;
+    const a = E.out5(P(t, d, d + du));
+    const b = o.tOut != null ? E.in3(P(t, o.tOut + i * st * .5, o.tOut + i * st * .5 + .4)) : 0;
+    const dy = (1 - a) * lift - b * lift;
+    if (a > 0 && b < 1) {
+      let col = o.color;
+      const m = o.marks && o.marks[i];
+      if (m) {
+        const mk = E.io3(P(t, m.t0, m.t0 + .45));
+        if (mk > 0) { ctx.fillStyle = m.color; ctx.fillRect(cx - 10, y - size * .8 + dy, (wd[i] + 20) * mk, size); }
+        if (mk > .55 && m.text) col = m.text;
+      }
+      ctx.fillStyle = col; ctx.fillText(ws[i], cx, y + dy);
+    }
+    cx += wd[i] + sp;
+  }
+  ctx.restore();
+}
+function eyebrow(txt, x, y, col, t, t0, tOut) {
+  const a = E.out5(P(t, t0, t0 + .7)), b = tOut != null ? E.in3(P(t, tOut, tOut + .35)) : 0, k = a * (1 - b);
+  if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = col;
+  ctx.fillRect(x, y - 9, 40 * a, 4);
+  setFont(500, 22, F.m); spacing(4); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x + 56 - (1 - a) * 16, y);
+  spacing(0); ctx.restore();
+}
+function label(txt, x, y, o) {
+  const k = o.k; if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k * (o.alpha ?? 1); ctx.fillStyle = o.color;
+  setFont(o.weight || 500, o.size || 22, o.font || F.m); spacing(o.ls ?? 3);
+  ctx.textAlign = o.align || 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x, y + (1 - k) * 12);
+  spacing(0); ctx.restore();
+}
+// Texte simple qui respecte l'opacité en cours.
+function txt(s, x, y, font, col, align, alpha, ls) {
+  if (alpha <= .001) return;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.font = font; ctx.fillStyle = col; spacing(ls || 0);
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(s, x, y);
+  spacing(0); ctx.restore();
+}
+function pill(cx, cy, text, size, bg, fg, k, font) {
+  if (k <= .001) return;
+  ctx.font = font || `700 ${size}px ${F.b}`;
+  const w = ctx.measureText(text).width + size * 1.2, h = size * 1.75;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(k, k); ctx.globalAlpha *= Math.min(1, k);
+  rr(-w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = bg; ctx.fill();
+  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, size * .06);
+  ctx.restore();
+}
+function arrowHead(x, y, ang, s) {
+  ctx.beginPath(); ctx.moveTo(x, y);
+  ctx.lineTo(x - Math.cos(ang - .42) * s, y - Math.sin(ang - .42) * s);
+  ctx.lineTo(x - Math.cos(ang + .42) * s, y - Math.sin(ang + .42) * s); ctx.closePath(); ctx.fill();
+}
+function grid(a, col, step) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.lineWidth = 1;
+  ctx.strokeStyle = col[0]; ctx.beginPath();
+  for (let x = step; x < W; x += step) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); }
+  for (let y = step; y < H; y += step) { ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); }
+  ctx.stroke();
+  ctx.strokeStyle = col[1]; ctx.beginPath();
+  for (let x = step * 5; x < W; x += step * 5) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); }
+  for (let y = step * 5; y < H; y += step * 5) { ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); }
+  ctx.stroke(); ctx.restore();
+}
+const bpGrid = a => grid(a, ['rgba(255,255,255,.055)', 'rgba(255,255,255,.1)'], 40);
+const darkGrid = a => grid(a, ['rgba(255,255,255,.035)', 'rgba(255,255,255,.065)'], 40);
+
+/* ============ La maison, en mètres ============
+   X vers l'est, Y vers le nord, Z vers le haut ; origine à l'angle sud-ouest, nu extérieur.
+   10,40 × 8,00 m, murs de 20 cm, cloisons de 10 cm, hauteur sous plafond 2,50 m,
+   toit à deux pans à 50 % (égout 2,50 m, faîtage 4,70 m), débords de 40 cm (égouts) et 30 cm (pignons). */
+const HL = 10.4, HW = 8, HT = 2.7, HP = 2.5, HR = 4.7, EG = 2.5, DV = .4, DG = .3, RT = .18, CUT = 1;
+const XC = HL / 2, YC = HW / 2;
+// Ouvertures : [début, fin, allège, linteau, sorte, charnière (a = début, b = fin), côté où elle s'ouvre (±1)]
+const WALLS3 = [
+  { r: [0, HL, 0, .2], h: HT, ax: 'x', ext: true, op: [[1.2, 3.6, 0, 2.15, 'baie'], [4.8, 6.0, .9, 2.15, 'fen'], [8.0, 9.2, .9, 2.15, 'fen']] },   // façade sud
+  { r: [0, HL, 7.8, HW], h: HT, ax: 'x', ext: true, op: [[1.7, 2.7, 0, 2.15, 'porte', 'a', -1], [4.0, 4.6, 1.5, 2.15, 'haute'], [7.4, 8.6, .9, 2.15, 'fen']] }, // nord
+  { r: [0, .2, .2, 7.8], h: HT, ax: 'y', op: [] },                                     // pignon ouest
+  { r: [HL - .2, HL, .2, 7.8], h: HT, ax: 'y', op: [[5.7, 6.9, .9, 2.15, 'fen']] },     // pignon est
+  { r: [.2, 10.2, 4.7, 4.8], h: HP, ax: 'x', op: [[1.5, 2.4, 0, 2.04, 'porte', 'a', -1], [6.0, 6.8, 0, 2.04, 'porte', 'b', 1]] },
+  { r: [3.1, 3.2, 4.8, 7.8], h: HP, ax: 'y', op: [[5.2, 6.0, 0, 2.04, 'porte', 'a', 1]] },
+  { r: [5.6, 5.7, 4.8, 7.8], h: HP, ax: 'y', op: [] },
+  { r: [6.9, 7.0, .2, 4.7], h: HP, ax: 'y', op: [[3.7, 4.5, 0, 2.04, 'porte', 'b', 1]] }
+];
+const SLAB = { x0: 0, x1: HL, y0: 0, y1: HW, z0: -.25, z1: 0, k: 'slab' };
+const BOXES = [];
+(function build() {
+  // Tronçons de 2,2 m au plus : le tri du peintre reste juste sur les longs murs.
+  const push = (w, u0, u1, z0, z1, e0, e1) => {
+    if (u1 - u0 < 1e-6) return;
+    const n = Math.max(1, Math.ceil((u1 - u0) / 2.2 - 1e-9)), [x0, x1, y0, y1] = w.r;
+    for (let i = 0; i < n; i++) {
+      const a = u0 + (u1 - u0) * i / n, b = u0 + (u1 - u0) * (i + 1) / n;
+      const s0 = !(i === 0 && e0), s1 = !(i === n - 1 && e1);
+      BOXES.push(w.ax === 'x'
+        ? { x0: a, x1: b, y0, y1, z0, z1, k: 'wall', skip: { mx: s0, px: s1 } }
+        : { x0, x1, y0: a, y1: b, z0, z1, k: 'wall', skip: { my: s0, py: s1 } });
+    }
+  };
+  WALLS3.forEach(w => {
+    const A = w.ax === 'x' ? w.r[0] : w.r[2], B = w.ax === 'x' ? w.r[1] : w.r[3];
+    let cur = A, first = true;
+    [...w.op].sort((p, q) => p[0] - q[0]).forEach(([a, b, s, hd]) => {
+      push(w, cur, a, 0, w.h, first ? !!w.ext : true, true);
+      if (s > 0) push(w, a, b, 0, s, false, false);
+      push(w, a, b, hd, w.h, false, false);
+      cur = b; first = false;
+    });
+    push(w, cur, B, 0, w.h, first ? !!w.ext : true, !!w.ext);
+    // Vitrages et porte d'entrée, dans l'épaisseur du mur
+    w.op.forEach(([a, b, s, hd, kind]) => {
+      if (kind === 'porte' && !w.ext) return;
+      const m = w.ax === 'x' ? (w.r[2] + w.r[3]) / 2 : (w.r[0] + w.r[1]) / 2, e = .025, k = kind === 'porte' ? 'door' : 'glass';
+      BOXES.push(w.ax === 'x' ? { x0: a, x1: b, y0: m - e, y1: m + e, z0: s, z1: hd, k } : { x0: m - e, x1: m + e, y0: a, y1: b, z0: s, z1: hd, k });
+    });
+  });
+  // Escalier droit vers les combles : 11 marches de 24 cm de giron, 22,9 cm de hauteur.
+  for (let i = 1; i <= 11; i++) BOXES.push({ x0: .2, x1: 1.1, y0: 4.9 + .24 * (i - 1), y1: 4.9 + .24 * i + .03, z0: .229 * i - .05, z1: .229 * i, k: 'stair' });
+})();
+
+function boxFaces(b, out, o) {
+  const { x0, x1, y0, y1 } = b, dz = o.dz || 0, z0 = b.z0 + dz, z1 = b.z1 + dz, sk = b.skip || {}, a = o.a ?? 1, bias = (o.bias || 0) + (b.k === 'stair' ? 1.2 : 0); // l'escalier, rangé contre le pignon, passe derrière les murs
+  const f = (p, n, role) => out.push({ p, n, k: b.k, role, a, bias });
+  f([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], o.sec ? 'sec' : 'top');
+  if (!sk.my) f([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0]);
+  if (!sk.py) f([[x1, y1, z0], [x0, y1, z0], [x0, y1, z1], [x1, y1, z1]], [0, 1, 0]);
+  if (!sk.mx) f([[x0, y1, z0], [x0, y0, z0], [x0, y0, z1], [x0, y1, z1]], [-1, 0, 0]);
+  if (!sk.px) f([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0]);
+}
+function roofFaces(out, dz, a) {
+  const nx = 6, ny = 3, X0 = -DG, X1 = HL + DG;
+  [[-DV, -1], [HW + DV, 1]].forEach(([ye, sg]) => {
+    const n = [0, sg * .4472, .8944];
+    const Q = (x, v, off) => [x, lerp(ye, YC, v), lerp(EG, HR, v) - off + dz];
+    for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+      const xa = lerp(X0, X1, i / nx), xb = lerp(X0, X1, (i + 1) / nx), va = j / ny, vb = (j + 1) / ny;
+      out.push({ p: [Q(xa, va, 0), Q(xb, va, 0), Q(xb, vb, 0), Q(xa, vb, 0)], n, k: 'roof', a });
+      if (j === 0) out.push({ p: [Q(xa, 0, RT), Q(xb, 0, RT), Q(xb, 0, 0), Q(xa, 0, 0)], n: [0, sg, 0], k: 'fascia', a });
+      if (i === 0) out.push({ p: [Q(X0, va, RT), Q(X0, vb, RT), Q(X0, vb, 0), Q(X0, va, 0)], n: [-1, 0, 0], k: 'fascia', a });
+      if (i === nx - 1) out.push({ p: [Q(X1, va, RT), Q(X1, vb, RT), Q(X1, vb, 0), Q(X1, va, 0)], n: [1, 0, 0], k: 'fascia', a });
+    }
+  });
+  // Pignons et leurs petites fenêtres de combles
+  [[0, -1], [HL, 1]].forEach(([x, sg]) => {
+    out.push({ p: [[x, 0, HT + dz], [x, HW, HT + dz], [x, YC, HR - .12 + dz]], n: [sg, 0, 0], k: 'wall', a });
+    const e = x + sg * .01;
+    out.push({ p: [[e, 3.6, 3.0 + dz], [e, 4.4, 3.0 + dz], [e, 4.4, 3.6 + dz], [e, 3.6, 3.6 + dz]], n: [sg, 0, 0], k: 'glass', a, bias: -1.5 });
+  });
+}
+// Coupe la maison à la hauteur cut : ce qui est dessous (lo) et ce qui est dessus (up, soulevé de lift).
+function buildFaces(o = {}) {
+  const lo = [], up = [], cut = o.cut ?? null, lift = o.lift || 0, upA = o.upA ?? 1, loA = o.loA ?? 1;
+  boxFaces(SLAB, lo, { a: loA, bias: 1e3 });
+  for (const b of BOXES) {
+    if (cut == null || b.z1 <= cut + 1e-6) { boxFaces(b, lo, { a: loA }); continue; }
+    if (b.z0 < cut - 1e-6) boxFaces({ ...b, z1: cut }, lo, { a: loA, sec: o.sec && b.k !== 'glass' });
+    if (upA > .003) boxFaces({ ...b, z0: Math.max(b.z0, cut) }, up, { dz: lift, a: upA });
+  }
+  const low = cut == null || cut > (EG + HR) / 2, ra = o.roofA ?? (low ? loA : upA);
+  if (ra > .003) roofFaces(low ? lo : up, o.roofDz ?? (low ? 0 : lift), ra);
+  return { lo, up };
+}
+
+/* ============ Projection et rendu 3D (orthographique, écrit à la main) ============ */
+const LIGHT = (() => { const v = [-.35, -.55, .76], l = Math.hypot(...v); return v.map(c => c / l); })();
+const MAT = { wall: [246, 248, 252], slab: [128, 146, 176], roof: [201, 212, 230], fascia: [170, 184, 208], stair: [232, 206, 160], glass: [124, 178, 240], door: [214, 150, 90], sec: [255, 182, 39] };
+const makeCam = (th, ph, s, cx, cy, zc, xc, yc) => ({ th: th * DEG, ph: ph * DEG, s, cx, cy, zc: zc ?? 2.35, xc: xc ?? XC, yc: yc ?? YC });
+function projector(cam) {
+  const ct = Math.cos(cam.th), st = Math.sin(cam.th), cp = Math.cos(cam.ph), sp = Math.sin(cam.ph);
+  const f = p => {
+    const X = p[0] - cam.xc, Y = p[1] - cam.yc, Z = p[2] - cam.zc, xp = X * ct - Y * st, yp = X * st + Y * ct;
+    return [cam.cx + cam.s * xp, cam.cy - cam.s * (yp * sp + Z * cp), yp * cp - Z * sp];
+  };
+  f.facing = n => (n[0] * st + n[1] * ct) * cp - n[2] * sp;
+  return f;
+}
+// Perspective conique : œil en E, axe de visée horizontal d'azimut th, distance focale F (px).
+function perspector(cam) {
+  const s = Math.sin(cam.th), c = Math.cos(cam.th), [ex, ey, ez] = cam.E;
+  const f = p => {
+    const vx = p[0] - ex, vy = p[1] - ey, vz = p[2] - ez, xc = vx * c - vy * s, zc = Math.max(.2, vx * s + vy * c);
+    return [cam.cx + cam.F * xc / zc, cam.cy - cam.F * vz / zc, zc];
+  };
+  f.facing = (n, p0) => n[0] * (p0[0] - ex) + n[1] * (p0[1] - ey) + n[2] * (p0[2] - ez);
+  f.vp = d => { const df = d[0] * s + d[1] * c, dr = d[0] * c - d[1] * s; return Math.abs(df) < 1e-3 ? null : [cam.cx + cam.F * dr / df, cam.cy]; };
+  return f;
+}
+function draw3D(faces, cam, o = {}) {
+  const pr = cam.persp ? perspector(cam) : projector(cam), vis = [];
+  for (const f of faces) {
+    if (f.a <= .003) continue;
+    if (pr.facing(f.n, f.p[0]) > -1e-3) continue;   // face vue de dos ou par la tranche
+    const q = f.p.map(pr); let dep = 0; for (const v of q) dep += v[2];
+    vis.push({ f, q, dep: dep / q.length + f.bias });
+  }
+  vis.sort((a, b) => b.dep - a.dep);
+  ctx.save(); ctx.lineJoin = 'round'; ctx.lineWidth = o.lw || 1.2;
+  for (const { f, q } of vis) {
+    const sec = f.role === 'sec', m = sec ? MAT.sec : MAT[f.k] || MAT.wall;
+    const lam = Math.max(0, f.n[0] * LIGHT[0] + f.n[1] * LIGHT[1] + f.n[2] * LIGHT[2]), sh = sec ? 1 : .6 + .4 * lam;
+    ctx.globalAlpha = f.a * (o.alpha ?? 1) * (f.k === 'glass' ? .9 : 1);
+    ctx.beginPath(); ctx.moveTo(q[0][0], q[0][1]); for (let i = 1; i < q.length; i++) ctx.lineTo(q[i][0], q[i][1]); ctx.closePath();
+    const fill = `rgb(${m[0] * sh | 0},${m[1] * sh | 0},${m[2] * sh | 0})`;
+    ctx.fillStyle = fill; ctx.fill();
+    // murs et toit sont découpés en tronçons : on trace leurs bords de leur propre couleur pour cacher les joints
+    ctx.strokeStyle = sec ? 'rgba(150,95,0,.6)' : (f.k === 'wall' || f.k === 'roof') ? fill : 'rgba(14,34,64,.3)'; ctx.stroke();
+  }
+  ctx.restore();
+  return pr;
+}
+function dimLine(p, q, k, col, lw, head) {
+  if (k <= 0) return;
+  const e = [lerp(p[0], q[0], k), lerp(p[1], q[1], k)], ang = Math.atan2(q[1] - p[1], q[0] - p[0]);
+  ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+  if (head) { arrowHead(p[0], p[1], ang + Math.PI, head); if (k > .97) arrowHead(e[0], e[1], ang, head); }
+  ctx.restore();
+}
+
+/* ============ Découpage : huit plans, chacun écrit en temps local (u = t − début du plan) ============ */
+const TS = [0, 16, 34, 53, 72, 93, 114, 132];
+
+/* ============ Plan 1 · Du volume au papier (0 → 16 s) ============ */
+const SHEET = [[-2.6, -2.6], [13, -2.6], [13, 10.6], [-2.6, 10.6]];
+function quad3(pr, pts, fill, stroke, lw, dash) {
+  const q = pts.map(pr);
+  ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.save(); ctx.strokeStyle = stroke; ctx.lineWidth = lw || 2; if (dash) ctx.setLineDash(dash); ctx.stroke(); ctx.restore(); }
+}
+const DIMS1 = [
+  [[0, -1.2, 0], [HL, -1.2, 0], 'longueur 10,40 m', 3.7, [0, 38]],
+  [[HL + 1.2, 0, 0], [HL + 1.2, HW, 0], 'largeur 8,00 m', 4.0, [70, 26]],
+  [[-1.2, YC, 0], [-1.2, YC, HR], 'hauteur 4,70 m', 4.3, [-96, 0]]
+];
+const camS1 = u => makeCam(24 + u * 1.1, 23, 50 * lerp(.86, 1, E.out3(P(u, .4, 1.2))), 1310, 610, 1.9);
+function s1(t) {
+  const u = t;
+  bpGrid(E.out3(P(u, 0, 1.4)));
+  eyebrow('LIRE UN PLAN', 140, 150, C.amber, u, .3, 15.4);
+  // Filigrane de l'auteur, très discret
+  label('sur une idée de Jean-Philippe Amat', 1780, 1046, { k: E.out3(P(u, .8, 2.0)) * (1 - P(u, 15.4, 15.8)), color: '#fff', alpha: .28, size: 17, font: F.b, weight: 400, align: 'right', ls: .5 });
+
+  const sa = E.out3(P(u, .4, 1.2)), cam = camS1(u), pr = projector(cam);
+  // La feuille, sous la maison
+  const sk = E.out3(P(u, 6.8, 7.7)), fa = 1 - E.in3(P(u, 11.0, 11.5));
+  if (sk > 0) {
+    ctx.save(); ctx.globalAlpha = sk;
+    quad3(pr, SHEET.map(([x, y]) => [XC + (x - XC) * (.8 + .2 * sk), YC + (y - YC) * (.8 + .2 * sk), -.28]), 'rgba(255,255,255,.1)', 'rgba(255,255,255,.8)', 2.5);
+    ctx.restore();
+    dimLine(pr([-2.2, -3.3, -.28]), pr([12.6, -3.3, -.28]), E.io3(P(u, 7.3, 8.0)) * fa, 'rgba(255,255,255,.95)', 3, 16);
+    dimLine(pr([-3.3, 10.2, -.28]), pr([-3.3, -2.2, -.28]), E.io3(P(u, 7.6, 8.3)) * fa, 'rgba(255,255,255,.95)', 3, 16);
+  }
+  // La maison sort de terre : les murs montent, le toit se pose.
+  if (sa > 0) {
+    const hh = lerp(0, 2.75, E.io3(P(u, 1.0, 2.8))), rk = E.out3(P(u, 2.7, 3.5));
+    const { lo, up } = buildFaces({ cut: hh >= 2.749 ? null : Math.max(.002, hh), upA: 0, loA: sa, roofA: rk, roofDz: (1 - rk) * 2.6 });
+    draw3D(lo.concat(up), cam);
+  }
+  // Les trois dimensions de la maison
+  DIMS1.forEach(([a, b, s, t0, off]) => {
+    const k = E.io3(P(u, t0, t0 + .6)) * fa; if (k <= 0) return;
+    const p = pr(a), q = pr(b);
+    dimLine(p, q, k, C.amber, 3.5, 15);
+    pill((p[0] + q[0]) / 2 + off[0], (p[1] + q[1]) / 2 + off[1], s, 20, C.amber, C.ink, E.back(P(u, t0 + .4, t0 + .8)) * fa);
+  });
+
+  kWords('Une maison :', 140, 320, { size: 84, weight: 800, color: '#fff', t: u, t0: 1.0, tOut: 11.0 });
+  kWords('3 dimensions.', 140, 415, { size: 84, weight: 800, color: '#fff', t: u, t0: 1.25, tOut: 11.05, marks: { 0: { t0: 3.9, color: C.amber, text: C.ink } } });
+  kWords('Une feuille :', 140, 560, { size: 84, weight: 800, color: '#fff', t: u, t0: 6.9, tOut: 11.1 });
+  kWords('2 dimensions.', 140, 655, { size: 84, weight: 800, color: '#fff', t: u, t0: 7.15, tOut: 11.15, marks: { 0: { t0: 7.9, color: '#fff', text: C.bp } } });
+  kWords('Comment faire tenir', 140, 380, { size: 80, weight: 800, color: '#fff', t: u, t0: 11.5, tOut: 15.4, maxW: 760 });
+  kWords('la maison', 140, 470, { size: 80, weight: 800, color: '#fff', t: u, t0: 11.65, tOut: 15.4 });
+  kWords('sur la feuille ?', 140, 560, { size: 80, weight: 800, color: '#fff', t: u, t0: 11.8, tOut: 15.4, marks: { 2: { t0: 12.6, color: C.amber, text: C.ink } } });
+  kWords('Suivons le dossier de plans, du terrain à la perspective.', 140, 660, { size: 32, weight: 500, font: F.b, color: 'rgba(255,255,255,.88)', t: u, t0: 13.2, tOut: 15.45, stagger: .05, maxW: 760 });
+}
+
+/* ============ Plan 2 · Le terrain : le plan de masse (16 → 34 s) ============ */
+// Parcelle de 24 × 25 m (600 m²), rue au nord : la maison est à 5,00 m de la rue et à 4,00 m de la limite ouest.
+const PARC = [[-4, -12], [20, -12], [20, 13], [-4, 13]];
+const TREES = [[3, -6, 2.6], [15, -7.4, 2.8], [17.5, 2.5, 2.3], [-1.2, -9.3, 2.0]];
+const MS = 22, MX0 = 1300 - 8 * MS, MY0 = 560 + 4.5 * MS, mX = X => MX0 + X * MS, mY = Y => MY0 - Y * MS;
+function camS2(u) {
+  const kA = E.io3(P(u, .3, 3.4)), kB = E.io3(P(u, 3.6, 6.0));
+  return makeCam(lerp(lerp(24 + 16 * 1.1, 36, kA), 0, kB), lerp(lerp(23, 40, kA), 90, kB), lerp(lerp(50, 20, kA), MS, kB),
+    lerp(1310, 1300, kA), lerp(610, 560, kA), lerp(1.9, 0, kA), lerp(XC, 8, kA), lerp(YC, 4.5, kA));
+}
+function tree3(pr, s, [x, y, R], k) {
+  if (k <= 0) return;
+  const g = pr([x, y, -.27]), c = pr([x, y, lerp(-.27, 3.2, k)]);
+  ctx.save(); ctx.strokeStyle = '#6B4F35'; ctx.lineWidth = Math.max(2, s * .25); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(g[0], g[1]); ctx.lineTo(c[0], c[1]); ctx.stroke();
+  circle(c[0], c[1], R * s * k); ctx.fillStyle = 'rgba(63,191,127,.92)'; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = C.greenD; ctx.stroke();
+  circle(c[0] - R * s * k * .3, c[1] - R * s * k * .3, R * s * k * .45); ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fill();
+  ctx.restore();
+}
+const MASSE = ['Les limites de la parcelle', 'Les distances aux limites', 'Le nord, la rue, l’accès', 'L’échelle, en barre graduée'];
+const MT = i => 7.6 + i * 2.0;
+function mCote(x0, y0, x1, y1, s, k) {
+  if (k <= 0) return;
+  const a = [mX(x0), mY(y0)], b = [mX(x1), mY(y1)], e = [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+  ctx.save(); ctx.strokeStyle = C.green; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(e[0], e[1]);
+  [a, b].forEach((p, i) => { if (i && k < 1) return; ctx.moveTo(p[0] - 7, p[1] + 7); ctx.lineTo(p[0] + 7, p[1] - 7); });
+  ctx.stroke(); ctx.restore();
+  const vert = Math.abs(x1 - x0) < 1e-6, m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  ctx.save(); ctx.translate(m[0] + (vert ? -9 : 0), m[1] + (vert ? 0 : -9)); if (vert) ctx.rotate(-Math.PI / 2);
+  txt(s, 0, 0, `700 17px ${F.b}`, C.green, 'center', E.out3(P(k, .7, 1))); ctx.restore();
+}
+function masse(u, a) {
+  ctx.save(); ctx.globalAlpha = a; ctx.lineJoin = 'round';
+  const W_ = 'rgba(255,255,255,.95)';
+  // la rue
+  ctx.strokeStyle = W_; ctx.lineWidth = 1.6; ctx.beginPath();
+  [13, 14, 20.5].forEach(Y => { ctx.moveTo(mX(-6), mY(Y)); ctx.lineTo(mX(22), mY(Y)); }); ctx.stroke();
+  ctx.save(); ctx.setLineDash([16, 12]); ctx.globalAlpha = a * .6; ctx.beginPath(); ctx.moveTo(mX(-6), mY(17.25)); ctx.lineTo(mX(22), mY(17.25)); ctx.stroke(); ctx.restore();
+  txt('RUE DES TILLEULS', mX(12), mY(17.25) - 12, `600 16px ${F.m}`, '#fff', 'center', .85, 4);
+  // allée, stationnement, arbres
+  ctx.lineWidth = 1.4; ctx.beginPath(); ctx.rect(mX(1.6), mY(13), 1.2 * MS, 5 * MS); ctx.rect(mX(12.5), mY(13), 5 * MS, 4.5 * MS);
+  ctx.moveTo(mX(15), mY(13)); ctx.lineTo(mX(15), mY(8.5)); ctx.stroke();
+  TREES.forEach(([x, y, R]) => { circle(mX(x), mY(y), R * MS); ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(mX(x) - 5, mY(y)); ctx.lineTo(mX(x) + 5, mY(y)); ctx.moveTo(mX(x), mY(y) - 5); ctx.lineTo(mX(x), mY(y) + 5); ctx.stroke(); });
+  // la maison, vue de dessus : sa toiture
+  ctx.beginPath(); ctx.rect(mX(-DG), mY(HW + DV), (HL + 2 * DG) * MS, (HW + 2 * DV) * MS); ctx.fillStyle = 'rgba(255,255,255,.16)'; ctx.fill(); ctx.lineWidth = 2.6; ctx.stroke();
+  ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(mX(-DG), mY(YC)); ctx.lineTo(mX(HL + DG), mY(YC)); ctx.stroke();
+  ctx.save(); ctx.globalAlpha = a * .4; ctx.lineWidth = 1; ctx.beginPath();
+  [.4, 1.2, 2.0, 2.8, 3.5, 4.5, 5.2, 6.0, 6.8, 7.6].forEach(Y => { ctx.moveTo(mX(-DG), mY(Y)); ctx.lineTo(mX(HL + DG), mY(Y)); }); ctx.stroke(); ctx.restore();
+  // limite de la parcelle : trait mixte épais
+  const h0 = hl(u, MT(0), MT(1));
+  ctx.save(); ctx.lineWidth = 3.2; ctx.setLineDash([22, 7, 4, 7]); ctx.strokeStyle = h0 > 0 ? `rgba(255,${lerp(255, 182, h0) | 0},${lerp(255, 39, h0) | 0},1)` : '#fff';
+  if (h0 > 0) { ctx.shadowColor = C.amber; ctx.shadowBlur = 14 * h0; }
+  ctx.beginPath(); PARC.forEach(([x, y], i) => i ? ctx.lineTo(mX(x), mY(y)) : ctx.moveTo(mX(x), mY(y))); ctx.closePath(); ctx.stroke(); ctx.restore();
+  txt('PARCELLE · 600 m²', mX(7.4), mY(-11.1), `600 16px ${F.m}`, '#fff', 'center', E.out3(P(u, MT(0) + .4, MT(0) + .9)), 3);
+  // distances aux limites
+  const c0 = MT(1) + .1;
+  mCote(6.4, HW, 6.4, 13, '5,00', E.io3(P(u, c0, c0 + .6)));
+  mCote(-4, 2.5, 0, 2.5, '4,00', E.io3(P(u, c0 + .2, c0 + .8)));
+  mCote(HL, 5.6, 20, 5.6, '9,60', E.io3(P(u, c0 + .4, c0 + 1.0)));
+  mCote(8.2, -12, 8.2, 0, '12,00', E.io3(P(u, c0 + .6, c0 + 1.2)));
+  // le nord, l'accès
+  northArrow(1690, 262, E.back(P(u, MT(2), MT(2) + .5)), '#fff');
+  const ka = E.io3(P(u, MT(2) + .3, MT(2) + 1.0));
+  if (ka > 0) {
+    const x = mX(2.2), y0 = mY(16.6), y1 = lerp(y0, mY(9.4), ka);
+    ctx.save(); ctx.strokeStyle = C.amber; ctx.fillStyle = C.amber; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke(); arrowHead(x, y1 + 12, Math.PI / 2, 18); ctx.restore();
+    pill(x - 52, mY(15.3), 'accès', 18, C.amber, C.ink, E.back(P(u, MT(2) + .8, MT(2) + 1.2)));
+  }
+  // échelle graduée : elle reste juste même si l'on agrandit le plan
+  const ks = E.out3(P(u, MT(3), MT(3) + .6));
+  if (ks > 0) {
+    const x0 = mX(-4), y = 986;
+    ctx.save(); ctx.globalAlpha = a * ks; ctx.strokeStyle = '#fff'; ctx.fillStyle = '#fff'; ctx.lineWidth = 1.6;
+    ctx.strokeRect(x0, y - 8, 10 * MS, 8); ctx.fillRect(x0, y - 8, 5 * MS, 8);
+    [0, 5, 10].forEach(v => txt(v === 10 ? '10 m' : String(v), x0 + v * MS, y + 20, `600 15px ${F.m}`, '#fff', v === 10 ? 'left' : 'center', 1));
+    ctx.restore();
+  }
+  ctx.restore();
+}
+function s2(t) {
+  const u = t - TS[1];
+  bpGrid(1);
+  eyebrow('1 · LE TERRAIN', 140, 150, C.amber, u, .3, 17.6);
+  const cam = camS2(u), pr = projector(cam), f3 = 1 - E.io3(P(u, 6.3, 7.2));
+  if (f3 > 0) {
+    // La feuille devient la parcelle, la rue et les arbres apparaissent.
+    const km = E.io3(P(u, .4, 2.6)), kr = E.out3(P(u, 1.6, 2.6)), kp = E.out3(P(u, 2.4, 3.2));
+    ctx.save(); ctx.globalAlpha = f3;
+    quad3(pr, SHEET.map((c, i) => [lerp(c[0], PARC[i][0], km), lerp(c[1], PARC[i][1], km), -.28]),
+      `rgba(${lerp(255, 63, km) | 0},${lerp(255, 191, km) | 0},${lerp(255, 127, km) | 0},${lerp(.1, .2, km)})`, 'rgba(255,255,255,.85)', 2.5);
+    if (kr > 0) {
+      ctx.globalAlpha = f3 * kr;
+      quad3(pr, [[-6, 13, -.28], [22, 13, -.28], [22, 14, -.28], [-6, 14, -.28]], 'rgba(220,228,240,.35)');
+      quad3(pr, [[-6, 14, -.28], [22, 14, -.28], [22, 20.5, -.28], [-6, 20.5, -.28]], 'rgba(8,18,34,.55)');
+      const a = pr([-6, 17.25, -.28]), b = pr([22, 17.25, -.28]);
+      ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 2; ctx.setLineDash([16, 12]); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.restore();
+    }
+    if (kp > 0) {
+      ctx.globalAlpha = f3 * kp;
+      quad3(pr, [[1.6, 8, -.28], [2.8, 8, -.28], [2.8, 13, -.28], [1.6, 13, -.28]], 'rgba(255,255,255,.22)');
+      quad3(pr, [[12.5, 8.5, -.28], [17.5, 8.5, -.28], [17.5, 13, -.28], [12.5, 13, -.28]], 'rgba(255,255,255,.22)');
+    }
+    ctx.restore();
+    // arbres : ceux de derrière avant la maison, ceux de devant après
+    const hd = pr([XC, YC, 1.2])[2], tk = i => E.back(P(u, 2.4 + i * .12, 2.9 + i * .12));
+    ctx.save(); ctx.globalAlpha = f3;
+    TREES.forEach((tr, i) => { if (pr([tr[0], tr[1], 1.5])[2] > hd) tree3(pr, cam.s, tr, tk(i)); });
+    ctx.restore();
+    draw3D(buildFaces({}).lo, cam, { alpha: f3 });
+    ctx.save(); ctx.globalAlpha = f3;
+    TREES.forEach((tr, i) => { if (pr([tr[0], tr[1], 1.5])[2] <= hd) tree3(pr, cam.s, tr, tk(i)); });
+    ctx.restore();
+  }
+  const ma = E.out3(P(u, 6.0, 7.0));
+  if (ma > 0) masse(u, ma);
+
+  kWords('D’abord, le terrain :', 140, 300, { size: 70, weight: 800, color: '#fff', t: u, t0: .8, tOut: 17.6, maxW: 780 });
+  kWords('le plan de masse.', 140, 385, { size: 70, weight: 800, color: '#fff', t: u, t0: 1.1, tOut: 17.65,
+    marks: { 1: { t0: 2.2, color: C.amber, text: C.ink }, 2: { t0: 2.25, color: C.amber, text: C.ink }, 3: { t0: 2.3, color: C.amber, text: C.ink } } });
+  kWords('Vu de très haut, il situe la maison sur sa parcelle.', 140, 470, { size: 30, weight: 500, font: F.b, color: 'rgba(255,255,255,.88)', t: u, t0: 6.4, tOut: 17.7, stagger: .05, maxW: 760 });
+  const out = E.in3(P(u, 17.6, 18.0));
+  MASSE.forEach((s, i) => {
+    const t0 = MT(i), a = E.out3(P(u, t0, t0 + .5)) * (1 - out); if (a <= 0) return;
+    const y = 580 + i * 78, act = u >= t0 && (i === MASSE.length - 1 ? u < 17.6 : u < MT(i + 1)), hk = act ? E.out3(P(u, t0, t0 + .35)) : 0;
+    ctx.save(); ctx.globalAlpha = a; ctx.translate((1 - a) * -30, 0);
+    if (hk > 0) { ctx.globalAlpha = a * hk; rr(118, y - 44, 660, 64, 12); ctx.fillStyle = 'rgba(255,182,39,.2)'; ctx.fill(); ctx.fillStyle = C.amber; ctx.fillRect(118, y - 44, 6, 64); }
+    ctx.globalAlpha = a * (act || u >= 16.0 ? 1 : .6);
+    ctx.fillStyle = C.amber; circle(152, y - 12, 7); ctx.fill();
+    setFont(600, 30, F.b); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(s, 176, y);
+    ctx.restore();
+  });
+}
+
+/* ============ Plan 3 · On la regarde : les vues (34 → 53 s) ============ */
+// Chaque vue est un dessin 2D (u, v) en mètres, centré comme la caméra : la même échelle permet
+// de le « décoller » de la maquette au moment où la caméra s'aligne, puis de le ranger à sa place.
+const fx = x => x - XC, fz = z => z - 2.35, fy = y => y - YC, gy = y => -(y - YC);
+const R4 = (u0, v0, u1, v1) => [u0, v0, u1, v0, u1, v1, u0, v1, u0, v0];
+const VIEWS = {
+  face: {
+    fill: [R4(fx(0), fz(0), fx(HL), fz(2.32)), R4(fx(-DG), fz(2.32), fx(HL + DG), fz(HR))],
+    main: [R4(fx(0), fz(0), fx(HL), fz(2.32)), R4(fx(-DG), fz(2.32), fx(HL + DG), fz(HR))],
+    thin: [[fx(-DG), fz(EG), fx(HL + DG), fz(EG)], R4(fx(1.2), fz(0), fx(3.6), fz(2.15)), [fx(2.4), fz(0), fx(2.4), fz(2.15)],
+      R4(fx(4.8), fz(.9), fx(6), fz(2.15)), [fx(5.4), fz(.9), fx(5.4), fz(2.15)], [fx(4.72), fz(.9), fx(6.08), fz(.9)],
+      R4(fx(8), fz(.9), fx(9.2), fz(2.15)), [fx(8.6), fz(.9), fx(8.6), fz(2.15)], [fx(7.92), fz(.9), fx(9.28), fz(.9)]],
+    hatch: [2.85, 3.2, 3.55, 3.9, 4.25].map(z => [fx(-DG), fz(z), fx(HL + DG), fz(z)]),
+    ground: [[fx(-1.2), fz(0), fx(HL + 1.2), fz(0)]]
+  },
+  dessus: {
+    fill: [R4(fx(-DG), fy(-DV), fx(HL + DG), fy(HW + DV))],
+    main: [R4(fx(-DG), fy(-DV), fx(HL + DG), fy(HW + DV))],
+    thin: [[fx(-DG), 0, fx(HL + DG), 0]],
+    hatch: [.4, 1.2, 2.0, 2.8, 3.5, 4.5, 5.2, 6.0, 6.8, 7.6].map(y => [fx(-DG), fy(y), fx(HL + DG), fy(y)]),
+    ground: []
+  },
+  gauche: {
+    fill: [[gy(-DV), fz(2.32), gy(YC), fz(4.52), gy(HW + DV), fz(2.32), gy(HW + DV), fz(EG), gy(YC), fz(HR), gy(-DV), fz(EG)],
+      [gy(0), fz(0), gy(HW), fz(0), gy(HW), fz(2.52), gy(YC), fz(4.52), gy(0), fz(2.52)]],
+    main: [[gy(-DV), fz(2.32), gy(YC), fz(4.52), gy(HW + DV), fz(2.32), gy(HW + DV), fz(EG), gy(YC), fz(HR), gy(-DV), fz(EG), gy(-DV), fz(2.32)],
+      [gy(0), fz(0), gy(0), fz(2.52)], [gy(HW), fz(0), gy(HW), fz(2.52)]],
+    thin: [R4(gy(4.4), fz(3.0), gy(3.6), fz(3.6)), [gy(YC), fz(3.0), gy(YC), fz(3.6)]],
+    hatch: [],
+    ground: [[gy(-1.2), fz(0), gy(HW + 1.2), fz(0)]]
+  }
+};
+function vPath(T, list) {
+  ctx.beginPath();
+  for (const s of list) { ctx.moveTo(T.ox + s[0] * T.s, T.oy - s[1] * T.s); for (let i = 2; i < s.length; i += 2) ctx.lineTo(T.ox + s[i] * T.s, T.oy - s[i + 1] * T.s); }
+}
+function drawView(id, T, col, a, glow) {
+  const V = VIEWS[id];
+  ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  if (glow > 0) { ctx.shadowColor = col; ctx.shadowBlur = 22 * glow; }
+  ctx.globalAlpha = a * .16; ctx.fillStyle = col; vPath(T, V.fill); ctx.fill();
+  ctx.globalAlpha = a; ctx.strokeStyle = col;
+  ctx.lineWidth = 3.4; vPath(T, V.ground); ctx.stroke();
+  ctx.lineWidth = 2.6; vPath(T, V.main); ctx.stroke();
+  ctx.lineWidth = 1.6; vPath(T, V.thin); ctx.stroke();
+  ctx.globalAlpha = a * .45; ctx.lineWidth = 1.1; vPath(T, V.hatch); ctx.stroke();
+  ctx.restore();
+}
+// Disposition européenne : la vue de dessus sous la vue de face, la vue de gauche à sa droite.
+const SLOT = { face: { ox: 347, oy: 400.1, s: 34 }, dessus: { ox: 347, oy: 709.6, s: 34 }, gauche: { ox: 763.6, oy: 400.1, s: 34 } };
+const PEEL = [
+  { id: 'face', col: C.blue, t0: 2.9, m0: 3.5, m1: 4.5, lab: 'VUE DE FACE', dim: 'longueur × hauteur', lx: 160, ly: 524 },
+  { id: 'dessus', col: C.amber, t0: 7.1, m0: 7.7, m1: 8.7, lab: 'VUE DE DESSUS', dim: 'longueur × largeur', lx: 160, ly: 904 },
+  { id: 'gauche', col: C.violet, t0: 11.3, m0: 11.9, m1: 12.9, lab: 'VUE DE GAUCHE', dim: 'largeur × hauteur', lx: 614, ly: 524 }
+];
+const K3 = [[1.1, 34, 24], [2.9, 0, 0], [5.4, 0, 0], [7.1, 0, 90], [9.6, 0, 90], [11.3, 90, 0], [12.9, 90, 0], [13.9, 34, 24]];
+function camS3(u) {
+  let th = K3[0][1], ph = K3[0][2];
+  for (let i = 0; i < K3.length - 1; i++) {
+    const [ta, a1, a2] = K3[i], [tb, b1, b2] = K3[i + 1];
+    if (u >= ta) { const k = E.io3(P(u, ta, tb)); th = lerp(a1, b1, k); ph = lerp(a2, b2, k); }
+  }
+  const kd = E.io3(P(u, 12.9, 13.9)), ap = E.out3(P(u, .3, 1.1));
+  return makeCam(th + Math.max(0, u - 13.9) * 1.6, ph, lerp(46, 34, kd) * lerp(.85, 1, ap), lerp(1420, 1470, kd), lerp(560, 610, kd), 2.35);
+}
+const ARR3 = [[C.blue, [XC, -7.5, 1.2], [XC, -1.5, 1.2], 'de face'], [C.amber, [XC, YC, 11], [XC, YC, 5.7], 'de dessus'], [C.violet, [-7.8, YC, 1.2], [-1.3, YC, 1.2], 'de gauche']];
+function s3(t) {
+  const u = t - TS[2];
+  darkGrid(E.out3(P(u, 0, 1.0)));
+  eyebrow('2 · ON LA REGARDE', 140, 150, C.blue, u, .4, 18.6);
+  kWords('De face, de dessus, de côté.', 140, 245, { size: 60, weight: 800, color: '#fff', t: u, t0: .7, tOut: 18.6, maxW: 900,
+    marks: { 1: { t0: 3.0, color: C.blue, text: C.ink }, 3: { t0: 7.2, color: C.amber, text: C.ink }, 5: { t0: 11.4, color: C.violet, text: C.ink } } });
+  // Lignes de rappel : les vues s'alignent
+  const rk = E.io3(P(u, 14.1, 15.1));
+  if (rk > 0) {
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.4)'; ctx.lineWidth = 1.5; ctx.setLineDash([8, 7]); ctx.beginPath();
+    [-DG, HL + DG].forEach(X => { const x = SLOT.face.ox + fx(X) * 34; ctx.moveTo(x, 300); ctx.lineTo(x, lerp(300, 880, rk)); });
+    [0, EG, HR].forEach(Z => { const y = SLOT.face.oy - fz(Z) * 34; ctx.moveTo(140, y); ctx.lineTo(lerp(140, 935, rk), y); });
+    ctx.stroke(); ctx.restore();
+  }
+  // La maquette tourne pour s'aligner sur chaque vue
+  const cam = camS3(u), ap = E.out3(P(u, .3, 1.1));
+  if (ap > 0) {
+    const pr = draw3D(buildFaces({ loA: ap }).lo, cam);
+    ARR3.forEach(([col, a, b, s], i) => {
+      const k = E.io3(P(u, 13.5 + i * .2, 14.1 + i * .2)); if (k <= 0) return;
+      const p = pr(a), q = pr(b), e = [lerp(p[0], q[0], k), lerp(p[1], q[1], k)], ang = Math.atan2(q[1] - p[1], q[0] - p[0]);
+      ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+      arrowHead(e[0] + Math.cos(ang) * 6, e[1] + Math.sin(ang) * 6, ang, 20 * k);
+      ctx.restore();
+      pill(p[0], p[1] + (i === 1 ? -24 : 26), s, 19, col, C.ink, E.back(P(u, 13.8 + i * .2, 14.2 + i * .2)));
+    });
+  }
+  // Chaque vue se décolle de la maquette et va se ranger
+  PEEL.forEach(v => {
+    const a = E.out3(P(u, v.t0, v.t0 + .35)); if (a <= 0) return;
+    const m = E.io3(P(u, v.m0, v.m1)), S = SLOT[v.id];
+    drawView(v.id, { ox: lerp(1420, S.ox, m), oy: lerp(560, S.oy, m), s: lerp(46, S.s, m) }, v.col, a, (1 - m) * a);
+    const la = E.out3(P(u, v.m1 - .15, v.m1 + .35));
+    if (la > 0) {
+      label(v.lab, v.lx, v.ly, { k: la, color: v.col, size: 18, weight: 700, ls: 2 });
+      setFont(700, 18, F.m); spacing(2); const w = ctx.measureText(v.lab).width; spacing(0);
+      label(v.dim, v.lx + w + 16, v.ly, { k: la, color: '#fff', alpha: .82, size: 19, font: F.b, weight: 500, ls: 0 });
+    }
+  });
+  kWords('Une vue = 2 dimensions. Il en faut plusieurs, bien alignées.', 140, 990, { size: 40, weight: 700, color: '#fff', t: u, t0: 14.4, tOut: 18.6, stagger: .05, maxW: 1640,
+    marks: { 2: { t0: 15.1, color: C.amber, text: C.ink }, 3: { t0: 15.16, color: C.amber, text: C.ink } } });
+}
+
+/* ============ Plan 4 · On la coupe : le plan (53 → 72 s) ============ */
+function cutPlane(pr, z, a) {
+  const q = [[-1.8, -1.8], [HL + 1.8, -1.8], [HL + 1.8, HW + 1.8], [-1.8, HW + 1.8]].map(([x, y]) => pr([x, y, z]));
+  ctx.save(); ctx.globalAlpha = a;
+  ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+  ctx.fillStyle = 'rgba(255,182,39,.2)'; ctx.fill();
+  ctx.save(); ctx.clip(); ctx.strokeStyle = 'rgba(255,182,39,.22)'; ctx.lineWidth = 1; ctx.beginPath();
+  for (let x = -1.8; x <= HL + 1.8; x += 1.4) { const p = pr([x, -1.8, z]), r = pr([x, HW + 1.8, z]); ctx.moveTo(p[0], p[1]); ctx.lineTo(r[0], r[1]); }
+  for (let y = -1.8; y <= HW + 1.8; y += 1.4) { const p = pr([-1.8, y, z]), r = pr([HL + 1.8, y, z]); ctx.moveTo(p[0], p[1]); ctx.lineTo(r[0], r[1]); }
+  ctx.stroke(); ctx.restore();
+  ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+  ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.stroke();
+  ctx.restore();
+}
+function s4(t) {
+  const u = t - TS[3];
+  darkGrid(1);
+  eyebrow('3 · ON LA COUPE', 140, 150, C.amber, u, .6, 18.6);
+  const app = E.out3(P(u, .3, 1.3)), kr = E.io3(P(u, 8.2, 10.6));
+  const cam = makeCam(lerp(30 + Math.min(u, 8.2) * .8, 0, kr), lerp(27, 90, kr), lerp(58 * lerp(.9, 1, app), SC, kr), 1270, lerp(590, 530, kr), 2.35);
+  const zp = lerp(5.8, CUT, E.io3(P(u, 2.6, 4.8)));                    // le plan de coupe descend
+  const lk = E.io3(P(u, 5.8, 7.6)), upA = 1 - E.in3(P(u, 6.3, 7.6));   // le haut s'envole
+  const pa = E.out3(P(u, 2.3, 2.8)) * (1 - E.io3(P(u, 7.3, 8.1)));
+  const f3 = app * (1 - E.io3(P(u, 11.5, 12.4))), pk = E.out3(P(u, 11.2, 12.2));
+  // Le sol reste en fond du plan une fois la maquette effacée
+  if (pk > 0) { ctx.save(); ctx.globalAlpha = pk * .07; ctx.fillStyle = '#fff'; ctx.fillRect(bx(0), by(HW), HL * SC, HW * SC); ctx.restore(); }
+  if (f3 > 0) {
+    const { lo, up } = buildFaces({ cut: u >= 2.3 ? zp : null, lift: lk * 5.5, upA, sec: true, loA: f3 });
+    const pr = draw3D(lo, cam);
+    if (pa > 0) {
+      cutPlane(pr, zp, pa);
+      // la hauteur du plan de coupe
+      const a = pr([-1.2, -1.2, 0]), b = pr([-1.2, -1.2, zp]);
+      ctx.save(); ctx.globalAlpha = pa; ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.beginPath();
+      ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.moveTo(a[0] - 10, a[1]); ctx.lineTo(a[0] + 10, a[1]); ctx.stroke(); ctx.restore();
+      pill(a[0] - 56, (a[1] + b[1]) / 2, '1 m', 24, C.amber, C.ink, E.back(P(u, 4.6, 5.1)) * pa);
+    }
+    if (up.length) draw3D(up, cam);
+  }
+  if (pk > 0) { ctx.save(); ctx.globalAlpha = pk; darkPlan(); ctx.restore(); }
+
+  kWords('Pour faire le plan,', 140, 330, { size: 70, weight: 800, color: '#fff', t: u, t0: 1.0, tOut: 11.2, maxW: 640 });
+  kWords('on coupe la maison', 140, 415, { size: 70, weight: 800, color: '#fff', t: u, t0: 1.2, tOut: 11.2, maxW: 640 });
+  kWords('à 1 m du sol.', 140, 500, { size: 70, weight: 800, color: '#fff', t: u, t0: 1.4, tOut: 11.2, marks: { 1: { t0: 4.7, color: C.amber, text: C.ink }, 2: { t0: 4.75, color: C.amber, text: C.ink } } });
+  kWords('On enlève le dessus…', 140, 610, { size: 40, weight: 600, font: F.b, color: 'rgba(255,255,255,.9)', t: u, t0: 6.0, tOut: 11.25, stagger: .05 });
+  kWords('… et on regarde d’en haut.', 140, 665, { size: 40, weight: 600, font: F.b, color: 'rgba(255,255,255,.9)', t: u, t0: 8.4, tOut: 11.3, stagger: .05 });
+  kWords('C’est le plan.', 140, 420, { size: 104, weight: 800, color: '#fff', t: u, t0: 11.8, tOut: 18.6, maxW: 640, marks: { 2: { t0: 12.5, color: C.amber, text: C.ink } } });
+  kWords('Pourquoi 1 m ? Pour couper', 140, 530, { size: 38, weight: 600, font: F.b, color: '#fff', t: u, t0: 13.2, tOut: 18.65, stagger: .05, maxW: 620 });
+  kWords('les portes et les fenêtres.', 140, 580, { size: 38, weight: 600, font: F.b, color: '#fff', t: u, t0: 13.4, tOut: 18.7, stagger: .05, maxW: 620 });
+  kWords('On dit aussi « vue en plan ».', 140, 660, { size: 30, weight: 500, font: F.b, color: 'rgba(255,255,255,.72)', t: u, t0: 14.8, tOut: 18.75, stagger: .05, maxW: 620 });
+}
+
+/* ============ Le plan dessiné : vue en plan, coupe à 1 m ============ */
+const SC = 76, OX = 1270 - XC * SC, OY = 530 + YC * SC;
+let PL = { ox: OX, oy: OY, s: SC };
+const mx = X => PL.ox + X * PL.s, my = Y => PL.oy - Y * PL.s, zk = () => PL.s / SC;
+const bx = X => OX + X * SC, by = Y => OY - Y * SC;            // repère fixe, hors loupe
+const CUTB = BOXES.filter(b => b.k === 'wall' && b.z0 <= CUT && b.z1 > CUT); // ce que le plan de coupe traverse
+const pSeg = (a, b, c, d) => { ctx.moveTo(mx(a), my(b)); ctx.lineTo(mx(c), my(d)); };
+const pRect = (x0, y0, x1, y1) => ctx.rect(mx(x0), my(y1), (x1 - x0) * PL.s, (y1 - y0) * PL.s);
+
+function planWalls(col) { ctx.fillStyle = col; ctx.beginPath(); CUTB.forEach(b => pRect(b.x0, b.y0, b.x1, b.y1)); ctx.fill(); }
+const across = w => w.ax === 'x' ? [w.r[2], w.r[3]] : [w.r[0], w.r[1]];
+const UV = (w, u, v) => w.ax === 'x' ? [u, v] : [v, u];
+function uvSeg(w, u1, v1, u2, v2) { const p = UV(w, u1, v1), q = UV(w, u2, v2); pSeg(p[0], p[1], q[0], q[1]); }
+function doorPath(w, op, sw) {
+  const [a, b, , , , hinge, side] = op, Wd = b - a, [v0, v1] = across(w), vf = side > 0 ? v1 : v0;
+  const uh = hinge === 'a' ? a : b, A0 = hinge === 'a' ? 0 : Math.PI;
+  let A1 = Math.atan2(side, 0); if (A1 - A0 > Math.PI) A1 -= TAU; if (A1 - A0 < -Math.PI) A1 += TAU;
+  const ang = lerp(A0, A1, sw), pt = an => UV(w, uh + Math.cos(an) * Wd, vf + Math.sin(an) * Wd), h = UV(w, uh, vf);
+  const z = zk();
+  // le vantail
+  ctx.lineWidth = 2.8 * z; ctx.beginPath(); const e = pt(ang); ctx.moveTo(mx(h[0]), my(h[1])); ctx.lineTo(mx(e[0]), my(e[1])); ctx.stroke();
+  // l'arc : le passage de la porte
+  ctx.lineWidth = 1.2 * z; ctx.beginPath();
+  for (let i = 0; i <= 24; i++) { const p = pt(lerp(A0, ang, i / 24)); i ? ctx.lineTo(mx(p[0]), my(p[1])) : ctx.moveTo(mx(p[0]), my(p[1])); }
+  ctx.stroke();
+}
+function planOpenings(col, o = {}) {
+  const z = zk();
+  ctx.save(); ctx.strokeStyle = col; ctx.lineCap = 'butt';
+  WALLS3.forEach((w, wi) => w.op.forEach((op, oi) => {
+    const [a, b, , , kind] = op, [v0, v1] = across(w), vm = (v0 + v1) / 2;
+    if (o.only && kind !== o.only) return;
+    if (kind === 'fen') {
+      ctx.lineWidth = 1.3 * z; ctx.beginPath();
+      uvSeg(w, a, v0, b, v0); uvSeg(w, a, v1, b, v1);                           // l'appui, vu sous le plan de coupe
+      uvSeg(w, a, vm - .03, b, vm - .03); uvSeg(w, a, vm + .03, b, vm + .03);  // le châssis vitré
+      uvSeg(w, (a + b) / 2, vm - .03, (a + b) / 2, vm + .03);
+      ctx.stroke();
+    } else if (kind === 'baie') {
+      const m = (a + b) / 2; ctx.lineWidth = 1.3 * z; ctx.beginPath();
+      [[a, vm - .07, m + .06, vm - .01], [m - .06, vm + .01, b, vm + .07]].forEach(([u0, w0, u1, w1]) => { uvSeg(w, u0, w0, u1, w0); uvSeg(w, u1, w0, u1, w1); uvSeg(w, u1, w1, u0, w1); uvSeg(w, u0, w1, u0, w0); });
+      ctx.stroke();
+    } else if (kind === 'porte') {
+      doorPath(w, op, o.swing ? o.swing(wi, oi) : 1);
+    } else if (kind === 'haute' && (o.dashed || 0) > 0) {
+      // Fenêtre haute (allège 1,50 m) : au-dessus du plan de coupe, donc en tireté
+      ctx.save(); ctx.globalAlpha *= o.dashed; ctx.lineWidth = 1.5 * z; ctx.setLineDash([7 * z, 5 * z]); ctx.beginPath();
+      uvSeg(w, a, v0 - .1, b, v0 - .1); uvSeg(w, a, v1 + .1, b, v1 + .1); uvSeg(w, a, v0 - .1, a, v1 + .1); uvSeg(w, b, v0 - .1, b, v1 + .1);
+      ctx.stroke(); ctx.restore();
+    }
+  }));
+  ctx.restore();
+}
+function planStair(col, dashA) {
+  const z = zk(), st = k => 4.9 + .24 * k;
+  ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.3 * z; ctx.lineCap = 'butt';
+  ctx.beginPath(); for (let k = 0; k <= 4; k++) pSeg(.2, st(k), 1.1, st(k)); pSeg(1.1, st(0), 1.1, 5.95); ctx.stroke();
+  // La ligne brisée : là où le plan de coupe traverse l'escalier
+  ctx.lineWidth = 1.8 * z; ctx.beginPath(); ctx.moveTo(mx(.2), my(5.78));
+  [[.55, 5.9], [.61, 5.76], [.71, 6.04], [.77, 5.92], [1.1, 6.05]].forEach(([x, y]) => ctx.lineTo(mx(x), my(y))); ctx.stroke();
+  // Au-dessus du plan de coupe : en tireté
+  ctx.save(); ctx.globalAlpha *= dashA; ctx.setLineDash([6 * z, 5 * z]); ctx.lineWidth = 1.2 * z; ctx.beginPath();
+  for (let k = 5; k <= 11; k++) pSeg(.2, st(k), 1.1, st(k)); pSeg(1.1, 6.05, 1.1, st(11)); ctx.stroke(); ctx.restore();
+  // Ligne de foulée : on part du rond, la flèche monte
+  ctx.lineWidth = 1.5 * z; ctx.beginPath(); ctx.arc(mx(.65), my(4.99), .065 * PL.s, 0, TAU); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx(.65), my(5.06)); ctx.lineTo(mx(.65), my(7.3)); ctx.stroke();
+  arrowHead(mx(.65), my(7.44), -Math.PI / 2, 15 * z);
+  ctx.restore();
+}
+const FURN = [
+  // séjour-cuisine : plan de travail, évier, plaques, table et chaises, canapé, table basse
+  ['r', .2, 2.0, .8, 4.6], ['r', .3, 3.72, .7, 4.28], ['c', .5, 4.0, .035],
+  ['c', .38, 2.35, .1], ['c', .62, 2.35, .1], ['c', .38, 2.65, .1], ['c', .62, 2.65, .1],
+  ['r', 1.9, 2.3, 3.3, 3.2],
+  ['r', 1.97, 3.25, 2.33, 3.6], ['r', 2.42, 3.25, 2.78, 3.6], ['r', 2.87, 3.25, 3.23, 3.6],
+  ['r', 1.97, 1.9, 2.33, 2.25], ['r', 2.42, 1.9, 2.78, 2.25], ['r', 2.87, 1.9, 3.23, 2.25],
+  ['r', 1.5, 2.57, 1.85, 2.93], ['r', 3.35, 2.57, 3.7, 2.93],
+  ['r', 4.4, 3.8, 6.4, 4.6], ['l', 4.6, 4.4, 6.2, 4.4], ['l', 4.6, 3.8, 4.6, 4.6], ['l', 6.2, 3.8, 6.2, 4.6],
+  ['r', 4.9, 2.7, 5.9, 3.2],
+  // chambre 1 : lit double, chevets, placard
+  ['r', 8.3, 2.1, 10.2, 3.5], ['r', 9.7, 2.2, 10.1, 2.75], ['r', 9.7, 2.85, 10.1, 3.4], ['l', 9.45, 2.1, 9.45, 3.5],
+  ['r', 9.75, 1.6, 10.2, 2.05], ['r', 9.75, 3.55, 10.2, 4.0], ['r', 7.0, .8, 7.6, 2.6], ['l', 7.52, .8, 7.52, 2.6],
+  // chambre 2 : lit simple, bureau et chaise
+  ['r', 5.7, 6.9, 7.6, 7.8], ['r', 5.8, 7.0, 6.15, 7.7], ['l', 6.35, 6.9, 6.35, 7.8],
+  ['r', 9.6, 5.8, 10.2, 6.8], ['r', 9.15, 6.1, 9.5, 6.5],
+  // salle d'eau : douche, WC, lavabo
+  ['r', 4.7, 6.9, 5.6, 7.8], ['l', 4.7, 6.9, 5.6, 7.8], ['l', 4.7, 7.8, 5.6, 6.9],
+  ['r', 3.3, 7.58, 3.8, 7.8], ['e', 3.55, 7.28, .18, .27],
+  ['r', 5.15, 5.2, 5.6, 5.8], ['e', 5.37, 5.5, .14, .2]
+];
+function planFurniture(col) {
+  ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 1.2 * zk(); ctx.beginPath();
+  FURN.forEach(([k, a, b, c, d]) => {
+    if (k === 'r') pRect(a, b, c, d);
+    else if (k === 'l') pSeg(a, b, c, d);
+    else if (k === 'c') { ctx.moveTo(mx(a) + c * PL.s, my(b)); ctx.arc(mx(a), my(b), c * PL.s, 0, TAU); }
+    else { ctx.moveTo(mx(a) + c * PL.s, my(b)); ctx.ellipse(mx(a), my(b), c * PL.s, d * PL.s, 0, 0, TAU); }
+  });
+  ctx.stroke(); ctx.restore();
+}
+function planOverhang(col) { // débord de toiture, au-dessus du plan de coupe
+  ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 1.5 * zk(); ctx.setLineDash([10 * zk(), 7 * zk()]);
+  ctx.beginPath(); pRect(-DG, -DV, HL + DG, HW + DV); ctx.stroke(); ctx.restore();
+}
+const ROOMS = [['SÉJOUR-CUISINE', '30,2 m²', 5.2, 1.75], ['CHAMBRE 1', '14,4 m²', 8.75, 1.35], ['ENTRÉE', '8,7 m²', 2.1, 6.05], ['SALLE D’EAU', '7,2 m²', 4.4, 6.3], ['CHAMBRE 2', '13,5 m²', 8.3, 6.15]];
+function darkPlan() {
+  planWalls(C.amber);
+  planOpenings('#fff');
+  planStair('#fff', .75);
+}
+
+/* ============ Plans 5 et 6 · Lire les traits, mesurer (72 → 114 s, même feuille) ============ */
+const A5 = TS[4], A6 = TS[5];
+const hl = (t, a, b) => E.out3(P(t, a, a + .4)) * (1 - E.in3(P(t, b - .35, b)));
+const LEG = [
+  ['Trait épais', 'ce qui est coupé : les murs'],
+  ['Trait fin', 'ce qui est vu dessous : meubles, appuis'],
+  ['Tireté', 'ce qui est au-dessus : toit, fenêtre haute'],
+  ['Porte', 'l’arc montre le sens d’ouverture'],
+  ['Fenêtre', 'l’appui et le vitrage, dans le mur'],
+  ['Escalier', 'la flèche monte, la ligne brisée coupe']
+];
+const LT = i => A5 + 2.2 + i * 2.9;
+const doorSw = t => (wi, oi) => {
+  const a = LT(3);
+  return (wi === 7 && oi === 0 && t > a + .1 && t < a + 1.8) ? (t < a + .5 ? 1 - E.io3(P(t, a + .1, a + .5)) : E.io3(P(t, a + .6, a + 1.5))) : 1;
+};
+function paperPlan(t, inLoupe) {
+  const fa = E.out3(P(t, LT(1) + .1, LT(1) + 1.1)), da = E.out3(P(t, LT(2) + .1, LT(2) + .9));
+  if (fa > 0) { ctx.save(); ctx.globalAlpha *= fa; planFurniture(C.ink); ctx.restore(); }
+  if (da > 0) { ctx.save(); ctx.globalAlpha *= da; planOverhang(C.ink); ctx.restore(); }
+  planWalls(C.ink);
+  planOpenings(C.ink, { swing: doorSw(t), dashed: da });
+  planStair(C.ink, 1);
+  if (inLoupe) return;
+  // surbrillances de la légende
+  const h1 = hl(t, LT(0), LT(1));
+  if (h1 > 0) { ctx.save(); ctx.globalAlpha = h1 * (.82 + .18 * Math.sin((t - LT(0)) * 6)); planWalls(C.amber); ctx.restore(); }
+  const h2 = hl(t, LT(1) + .1, LT(2));
+  if (h2 > 0) { ctx.save(); ctx.globalAlpha = h2; ctx.shadowColor = C.amber; ctx.shadowBlur = 8; planFurniture(C.amberD); ctx.restore(); }
+  const h3 = hl(t, LT(2) + .1, LT(3));
+  if (h3 > 0) { ctx.save(); ctx.globalAlpha = h3; planOverhang(C.amberD); planOpenings(C.amberD, { dashed: 1, only: 'haute' }); ctx.restore(); }
+  // noms des pièces, puis leurs surfaces
+  ROOMS.forEach(([n, s, X, Y], i) => {
+    txt(n, bx(X), by(Y), `600 15px ${F.m}`, C.ink, 'center', .85 * E.out3(P(t, A5 + 1.2 + i * .08, A5 + 1.7 + i * .08)), 1.2);
+    const sk = E.back(P(t, A6 + 14.0 + i * .12, A6 + 14.5 + i * .12));
+    if (sk > 0) { ctx.save(); ctx.translate(bx(X), by(Y) + 23); ctx.scale(sk, sk); txt(s, 0, 0, `700 19px ${F.b}`, C.ink, 'center', Math.min(1, sk)); ctx.restore(); }
+  });
+}
+function sheetFrame() {
+  ctx.save(); ctx.shadowColor = 'rgba(14,34,64,.16)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
+  rr(760, 118, 1052, 894, 12); ctx.fillStyle = C.sheet; ctx.fill(); ctx.restore();
+  ctx.save(); rr(760, 118, 1052, 894, 12); ctx.clip();
+  ctx.strokeStyle = 'rgba(47,111,214,.05)'; ctx.lineWidth = 1; ctx.beginPath();
+  for (let x = 780; x < 1812; x += 20) { ctx.moveTo(x + .5, 118); ctx.lineTo(x + .5, 1012); }
+  for (let y = 138; y < 1012; y += 20) { ctx.moveTo(760, y + .5); ctx.lineTo(1812, y + .5); }
+  ctx.stroke(); ctx.restore();
+  // cartouche
+  ctx.save(); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.strokeRect(1466, 944, 326, 52);
+  ctx.beginPath(); ctx.moveTo(1702, 944); ctx.lineTo(1702, 996); ctx.stroke(); ctx.restore();
+  txt('MAISON INDIVIDUELLE', 1478, 964, `700 13px ${F.m}`, C.ink, 'left', 1, 1);
+  txt('PLAN DU REZ-DE-CHAUSSÉE', 1478, 986, `500 12px ${F.m}`, C.ink, 'left', .8, .5);
+  txt('ÉCHELLE', 1714, 962, `500 11px ${F.m}`, C.ink, 'left', .7, 1.5);
+  txt('1/100', 1714, 986, `700 17px ${F.m}`, C.ink, 'left', 1, 1);
+}
+function legendSample(i, x, y) {
+  ctx.save(); ctx.strokeStyle = C.ink; ctx.fillStyle = C.ink; ctx.lineCap = 'butt';
+  if (i === 0) ctx.fillRect(x, y - 8, 110, 16);
+  else if (i === 1) { ctx.lineWidth = 1.6; ctx.strokeRect(x + 14, y - 16, 82, 32); ctx.beginPath(); ctx.moveTo(x + 14, y); ctx.lineTo(x + 96, y); ctx.stroke(); }
+  else if (i === 2) { ctx.lineWidth = 2.4; ctx.setLineDash([10, 7]); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 110, y); ctx.stroke(); }
+  else if (i === 3) {
+    ctx.fillRect(x, y + 8, 32, 13); ctx.fillRect(x + 78, y + 8, 32, 13);
+    ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + 32, y + 8); ctx.lineTo(x + 32, y - 38); ctx.stroke();
+    ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(x + 32, y + 8, 46, -Math.PI / 2, 0); ctx.stroke();
+  } else if (i === 4) {
+    ctx.fillRect(x, y - 9, 32, 18); ctx.fillRect(x + 78, y - 9, 32, 18);
+    ctx.lineWidth = 1.5; ctx.beginPath();
+    [-9, -2.5, 2.5, 9].forEach(d => { ctx.moveTo(x + 32, y + d); ctx.lineTo(x + 78, y + d); });
+    ctx.moveTo(x + 55, y - 2.5); ctx.lineTo(x + 55, y + 2.5); ctx.stroke();
+  } else {
+    ctx.lineWidth = 1.5; ctx.beginPath();
+    [8, 24, 40, 56].forEach(d => { ctx.moveTo(x + d, y - 17); ctx.lineTo(x + d, y + 17); });
+    ctx.moveTo(x + 8, y - 17); ctx.lineTo(x + 64, y - 17); ctx.moveTo(x + 8, y + 17); ctx.lineTo(x + 70, y + 17);
+    ctx.moveTo(x + 64, y - 17); ctx.lineTo(x + 70, y - 3); ctx.lineTo(x + 62, y + 3); ctx.lineTo(x + 70, y + 17); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x + 12, y, 4, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 16, y); ctx.lineTo(x + 100, y); ctx.stroke(); arrowHead(x + 110, y, 0, 13);
+  }
+  ctx.restore();
+}
+function legend(t) {
+  const out = E.in3(P(t, A5 + 20.45, A5 + 20.95));
+  LEG.forEach(([n, m], i) => {
+    const t0 = LT(i), a = E.out3(P(t, t0, t0 + .5)) * (1 - out); if (a <= 0) return;
+    const y = 440 + i * 90, act = t >= t0 && (i === LEG.length - 1 ? t < A5 + 20.45 : t < LT(i + 1));
+    const hk = act ? E.out3(P(t, t0, t0 + .35)) : 0;
+    ctx.save(); ctx.globalAlpha = a; ctx.translate((1 - a) * -30, 0);
+    if (hk > 0) { ctx.globalAlpha = a * hk; rr(118, y - 44, 624, 84, 12); ctx.fillStyle = 'rgba(255,182,39,.22)'; ctx.fill(); ctx.fillStyle = C.amber; ctx.fillRect(118, y - 44, 6, 84); ctx.globalAlpha = a; }
+    ctx.globalAlpha = a * (act || t >= A5 + 20.0 ? 1 : .55);
+    legendSample(i, 142, y - 4);
+    setFont(700, 30); ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(n, 286, y - 6);
+    setFont(500, 21, F.b); ctx.fillStyle = C.sub; ctx.fillText(m, 286, y + 24);
+    ctx.restore();
+  });
+}
+// Loupes : [début, fin, point visé (m), centre de la loupe (m), grossissement]
+const LOUPES = [[LT(3), LT(4) - .05, [7.3, 4.1], [9.1, 1.6], 2.0], [LT(4), LT(5) - .05, [5.4, .12], [4.2, 2.8], 2.8], [LT(5), A5 + 20.5, [.65, 6.1], [3.4, 6.25], 2.1]];
+function loupe(t, [t0, t1, f, c, z]) {
+  const a = E.back(P(t, t0, t0 + .5)), o = E.in3(P(t, t1 - .3, t1)), k = Math.max(0, a) * (1 - o);
+  if (k <= .01) return;
+  const fx0 = bx(f[0]), fy0 = by(f[1]), cx = bx(c[0]), cy = by(c[1]), R = 132 * k;
+  const ang = Math.atan2(cy - fy0, cx - fx0);
+  ctx.save(); ctx.globalAlpha = Math.min(1, k);
+  ctx.strokeStyle = C.amber; ctx.lineWidth = 4; circle(fx0, fy0, 40 * k); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(fx0 + Math.cos(ang) * 40 * k, fy0 + Math.sin(ang) * 40 * k); ctx.lineTo(cx - Math.cos(ang) * R, cy - Math.sin(ang) * R); ctx.stroke();
+  ctx.save(); ctx.shadowColor = 'rgba(14,34,64,.3)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10; circle(cx, cy, R); ctx.fillStyle = C.sheet; ctx.fill(); ctx.restore();
+  ctx.save(); circle(cx, cy, R); ctx.clip();
+  const keep = PL; PL = { ox: cx + (OX - fx0) * z, oy: cy + (OY - fy0) * z, s: SC * z };
+  paperPlan(t, true);
+  PL = keep; ctx.restore();
+  ctx.lineWidth = 5; ctx.strokeStyle = C.ink; circle(cx, cy, R); ctx.stroke();
+  ctx.lineWidth = 3; ctx.strokeStyle = C.amber; circle(cx, cy, R + 5); ctx.stroke();
+  ctx.restore();
+}
+function chainH(Y, xs, labs, k, la) {
+  if (k <= 0) return;
+  const y = by(Y), x0 = bx(xs[0]) - 12, x1 = bx(xs[xs.length - 1]) + 12, xe = lerp(x0, x1, k);
+  ctx.save(); ctx.strokeStyle = C.greenD; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(xe, y);
+  xs.forEach(X => { const x = bx(X); if (x > xe) return; ctx.moveTo(x, by(-.1)); ctx.lineTo(x, y + 10); ctx.moveTo(x - 7, y + 7); ctx.lineTo(x + 7, y - 7); });
+  ctx.stroke(); ctx.restore();
+  labs.forEach((s, i) => txt(s, (bx(xs[i]) + bx(xs[i + 1])) / 2, y - 7, `600 17px ${F.b}`, C.greenD, 'center', E.out3(P(la, i * .06, i * .06 + .3))));
+}
+function chainV(X, ys, labs, k, la) {
+  if (k <= 0) return;
+  const x = bx(X), y0 = by(ys[0]) + 12, y1 = by(ys[ys.length - 1]) - 12, ye = lerp(y0, y1, k);
+  ctx.save(); ctx.strokeStyle = C.greenD; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, ye);
+  ys.forEach(Y => { const y = by(Y); if (y < ye) return; ctx.moveTo(bx(-.1), y); ctx.lineTo(x - 10, y); ctx.moveTo(x - 7, y + 7); ctx.lineTo(x + 7, y - 7); });
+  ctx.stroke(); ctx.restore();
+  labs.forEach((s, i) => { ctx.save(); ctx.translate(x - 8, (by(ys[i]) + by(ys[i + 1])) / 2); ctx.rotate(-Math.PI / 2); txt(s, 0, 0, `600 17px ${F.b}`, C.greenD, 'center', E.out3(P(la, i * .06, i * .06 + .3))); ctx.restore(); });
+}
+function ruler(t) {
+  const a = E.out3(P(t, A6 + 2.0, A6 + 2.8)), o = E.in3(P(t, A6 + 6.8, A6 + 7.3));
+  if (a <= 0 || o >= 1) return;
+  const x0 = bx(0), y0 = by(0) + 22 + (1 - a) * 50 + o * 40, len = 11 * SC;
+  ctx.save(); ctx.globalAlpha = a * (1 - o);
+  ctx.save(); ctx.shadowColor = 'rgba(14,34,64,.22)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6;
+  rr(x0 - 24, y0, len + 48, 62, 8); ctx.fillStyle = 'rgba(255,247,222,.97)'; ctx.fill(); ctx.restore();
+  ctx.strokeStyle = 'rgba(14,34,64,.35)'; ctx.lineWidth = 1.5; rr(x0 - 24, y0, len + 48, 62, 8); ctx.stroke();
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2; ctx.beginPath();
+  for (let i = 0; i <= 110; i++) { const x = x0 + i * SC / 10, L = i % 10 === 0 ? 22 : i % 5 === 0 ? 14 : 8; ctx.moveTo(x, y0); ctx.lineTo(x, y0 + L); }
+  ctx.stroke();
+  for (let i = 0; i <= 11; i++) txt(String(i), x0 + i * SC, y0 + 44, `600 16px ${F.m}`, C.ink, 'center', 1);
+  txt('cm', x0 + 11 * SC + 16, y0 + 58, `500 12px ${F.m}`, C.ink, 'left', .6);
+  const mk = E.io3(P(t, A6 + 3.6, A6 + 4.8));
+  if (mk > 0) { ctx.fillStyle = C.greenD; ctx.fillRect(x0, y0 - 9, 10.4 * SC * mk, 6); circle(x0 + 10.4 * SC * mk, y0 - 6, 7); ctx.fill(); }
+  ctx.restore();
+  pill(x0 + 10.4 * SC + 70, by(0) + 12, '10,4 cm', 20, C.greenD, '#fff', E.back(P(t, A6 + 4.8, A6 + 5.3)) * a * (1 - o));
+}
+function northArrow(x, y, k, col) {
+  if (k <= 0) return;
+  col = col || C.ink;
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ctx.globalAlpha *= Math.min(1, k);
+  ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2.2; circle(0, 0, 30); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, -26); ctx.lineTo(10, 16); ctx.lineTo(0, 8); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(0, -26); ctx.lineTo(-10, 16); ctx.lineTo(0, 8); ctx.closePath(); ctx.stroke();
+  setFont(800, 22); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText('N', 0, -38);
+  ctx.restore();
+}
+function sectionAA(t) {
+  const a = E.out3(P(t, A6 + 17.2, A6 + 17.8)) * (1 - E.in3(P(t, A6 + 20.5, A6 + 20.9)));
+  if (a <= 0) return;
+  const s = 50, X = Y => 190 + (Y + DV) * s, Yz = Z => 880 - Z * s;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(0, (1 - a) * 30);
+  ctx.save(); ctx.shadowColor = 'rgba(14,34,64,.16)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 12; rr(130, 586, 612, 356, 14); ctx.fillStyle = C.sheet; ctx.fill(); ctx.restore();
+  pill(222, 614, 'COUPE A-A', 17, C.coral, C.ink, 1, `700 17px ${F.m}`);
+  const poly = pts => { ctx.beginPath(); pts.forEach(([y, z], i) => i ? ctx.lineTo(X(y), Yz(z)) : ctx.moveTo(X(y), Yz(z))); ctx.closePath(); ctx.fill(); };
+  ctx.fillStyle = C.ink;
+  poly([[0, -.25], [HW, -.25], [HW, 0], [0, 0]]);                    // dallage
+  poly([[0, 0], [.2, 0], [.2, HT], [0, HT]]); poly([[HW - .2, 0], [HW, 0], [HW, HT], [HW - .2, HT]]); // murs coupés
+  poly([[4.7, 0], [4.8, 0], [4.8, HP], [4.7, HP]]);                    // cloison
+  poly([[.2, HP], [HW - .2, HP], [HW - .2, HP + .06], [.2, HP + .06]]); // plafond
+  poly([[-DV, 2.32], [YC, 4.52], [YC, HR], [-DV, EG]]); poly([[YC, 4.52], [HW + DV, 2.32], [HW + DV, EG], [YC, HR]]); // toiture
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(-1.4), Yz(-.25)); ctx.lineTo(X(HW + 1.2), Yz(-.25)); ctx.stroke();
+  txt('séjour', X(1.7), Yz(1.1), `italic 500 17px ${F.b}`, C.sub, 'center', 1);
+  txt('salle d’eau', X(6.3), Yz(1.1), `italic 500 17px ${F.b}`, C.sub, 'center', 1);
+  // les hauteurs, en vert comme toutes les cotes
+  const dk = E.io3(P(t, A6 + 17.8, A6 + 18.5));
+  ctx.strokeStyle = C.greenD; ctx.fillStyle = C.greenD; ctx.lineWidth = 1.5; ctx.beginPath();
+  ctx.moveTo(X(3.4), Yz(0)); ctx.lineTo(X(3.4), lerp(Yz(0), Yz(HP), dk));
+  ctx.moveTo(X(HW + .9), Yz(0)); ctx.lineTo(X(HW + .9), lerp(Yz(0), Yz(HR), dk));
+  ctx.moveTo(X(HW + .3), Yz(0)); ctx.lineTo(X(HW + 1.05), Yz(0)); ctx.moveTo(X(YC + .1), Yz(HR)); ctx.lineTo(X(HW + 1.05), Yz(HR));
+  [[3.4, 0], [3.4, HP], [HW + .9, 0], [HW + .9, HR]].forEach(([y, z]) => { ctx.moveTo(X(y) - 6, Yz(z) + 6); ctx.lineTo(X(y) + 6, Yz(z) - 6); });
+  ctx.stroke();
+  const tk = E.out3(P(t, A6 + 18.3, A6 + 18.7));
+  ctx.save(); ctx.translate(X(3.4) - 8, Yz(HP / 2)); ctx.rotate(-Math.PI / 2); txt('2,50', 0, 0, `700 18px ${F.b}`, C.greenD, 'center', tk); ctx.restore();
+  ctx.save(); ctx.translate(X(HW + .9) - 8, Yz(HR / 2)); ctx.rotate(-Math.PI / 2); txt('4,70', 0, 0, `700 18px ${F.b}`, C.greenD, 'center', tk); ctx.restore();
+  ctx.restore();
+}
+function coupeLine(t) {
+  const k = E.io3(P(t, A6 + 16.5, A6 + 17.2)); if (k <= 0) return;
+  const x = bx(3.75), yT = by(9.1), yB = by(-2.0);
+  ctx.save(); ctx.strokeStyle = C.coralD; ctx.fillStyle = C.coralD;
+  ctx.lineWidth = 1.6; ctx.setLineDash([22, 6, 3, 6]); ctx.globalAlpha = .7; ctx.beginPath(); ctx.moveTo(x, yT); ctx.lineTo(x, lerp(yT, yB, k)); ctx.stroke();
+  ctx.setLineDash([]); ctx.globalAlpha = 1; ctx.lineWidth = 6; ctx.lineCap = 'butt';
+  const e = E.back(P(t, A6 + 17.0, A6 + 17.4));
+  if (e > 0) {
+    [[yT, by(8.5)], [yB, by(-1.5)]].forEach(([ya, yb]) => {
+      ctx.beginPath(); ctx.moveTo(x, ya); ctx.lineTo(x, yb); ctx.stroke();
+      ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, ya); ctx.lineTo(x - 34 * e, ya); ctx.stroke(); arrowHead(x - 38 * e, ya, Math.PI, 14 * e); ctx.lineWidth = 6;
+      txt('A', x + 12, ya + 8, `800 24px ${F.d}`, C.coralD, 'left', Math.min(1, e));
+    });
+  }
+  ctx.restore();
+}
+function s56(t) {
+  sheetFrame();
+  // amorce du plan 6 : l'échelle du cartouche s'allume
+  const ck = hl(t, A6 + 1.0, A6 + 6.8);
+  if (ck > 0) { ctx.save(); ctx.globalAlpha = ck; ctx.strokeStyle = C.green; ctx.lineWidth = 4; rr(1697, 940, 100, 60, 8); ctx.stroke(); ctx.restore(); }
+  paperPlan(t, false);
+  // Plan 6 : cotes, annotations, niveau, nord, coupe
+  chainH(-.78, [0, 1.2, 3.6, 4.8, 6, 8, 9.2, HL], ['1,20', '2,40', '1,20', '1,20', '2,00', '1,20', '1,20'], E.io3(P(t, A6 + 7.9, A6 + 9.1)), P(t, A6 + 9.0, A6 + 10.0));
+  chainH(-1.28, [0, HL], ['10,40'], E.io3(P(t, A6 + 8.3, A6 + 9.5)), P(t, A6 + 9.4, A6 + 10.0));
+  chainV(-.7, [0, HW], ['8,00'], E.io3(P(t, A6 + 8.6, A6 + 9.7)), P(t, A6 + 9.6, A6 + 10.2));
+  const wk = E.out3(P(t, A6 + 10.6, A6 + 11.1));
+  if (wk > 0) {
+    ctx.save(); ctx.globalAlpha = wk; ctx.strokeStyle = C.green; ctx.lineWidth = 3; rr(bx(4.75), by(.3), 1.3 * SC, .4 * SC, 6); ctx.stroke(); ctx.restore();
+    txt('1,20 × 1,25', bx(5.4), by(.62), `700 15px ${F.m}`, C.greenD, 'center', wk);
+    txt('allège 0,90', bx(5.4), by(.62) + 19, `500 14px ${F.m}`, C.greenD, 'center', wk);
+  }
+  northArrow(1742, 214, E.back(P(t, A6 + 15.1, A6 + 15.6)));
+  const nk = E.out3(P(t, A6 + 15.4, A6 + 15.9));
+  if (nk > 0) {
+    const x = bx(2.7), y = by(4.25);
+    ctx.save(); ctx.globalAlpha = nk; ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(x - 8, y - 12); ctx.lineTo(x + 8, y - 12); ctx.lineTo(x, y); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x - 12, y); ctx.lineTo(x + 70, y); ctx.stroke(); ctx.restore();
+    txt('±0,00', x + 12, y - 5, `700 15px ${F.m}`, C.ink, 'left', nk);
+  }
+  coupeLine(t);
+  LOUPES.forEach(L => loupe(t, L));
+  ruler(t);
+  // Colonne de gauche · plan 5
+  if (t < A6 + .5) {
+    eyebrow('4 · ON LIT LES TRAITS', 140, 150, C.amberD, t, A5 + .6, A5 + 20.5);
+    kWords('Chaque trait', 140, 250, { size: 76, weight: 800, color: C.ink, t, t0: A5 + .8, tOut: A5 + 20.5 });
+    kWords('a un sens.', 140, 335, { size: 76, weight: 800, color: C.ink, t, t0: A5 + 1.0, tOut: A5 + 20.55, marks: { 2: { t0: A5 + 1.5, color: C.amber, text: C.ink } } });
+    legend(t);
+  }
+  // Colonne de gauche · plan 6
+  eyebrow('5 · ON LA MESURE', 140, 150, C.greenD, t, A6 + .5, A6 + 20.5);
+  kWords('1/100', 140, 360, { size: 150, weight: 800, color: C.greenD, t, t0: A6 + .8, tOut: A6 + 7.0 });
+  kWords('1 cm sur le plan', 140, 460, { size: 48, weight: 700, color: C.ink, t, t0: A6 + 1.3, tOut: A6 + 7.05 });
+  kWords('= 1 m en vrai.', 140, 525, { size: 48, weight: 700, color: C.ink, t, t0: A6 + 1.5, tOut: A6 + 7.1, marks: { 1: { t0: A6 + 2.3, color: C.green, text: C.ink }, 2: { t0: A6 + 2.35, color: C.green, text: C.ink } } });
+  kWords('10,4 cm → 10,40 m', 140, 610, { size: 34, weight: 600, font: F.m, color: C.greenD, t, t0: A6 + 4.9, tOut: A6 + 7.15, stagger: .06 });
+  kWords('La cote', 140, 350, { size: 96, weight: 800, color: C.ink, t, t0: A6 + 7.6, tOut: A6 + 13.4 });
+  kWords('donne la vraie mesure.', 140, 430, { size: 50, weight: 700, color: C.ink, t, t0: A6 + 7.8, tOut: A6 + 13.45, maxW: 600, marks: { 2: { t0: A6 + 8.5, color: C.green, text: C.ink } } });
+  kWords('On lit la cote,', 140, 525, { size: 36, weight: 600, font: F.b, color: C.sub, t, t0: A6 + 9.2, tOut: A6 + 13.5, stagger: .05 });
+  kWords('on ne mesure pas le dessin.', 140, 572, { size: 36, weight: 600, font: F.b, color: C.sub, t, t0: A6 + 9.4, tOut: A6 + 13.55, stagger: .05, maxW: 600 });
+  kWords('Fenêtre : largeur × hauteur, et allège.', 140, 650, { size: 28, weight: 500, font: F.b, color: C.sub, t, t0: A6 + 10.8, tOut: A6 + 13.6, stagger: .04, maxW: 600 });
+  kWords('Surfaces, niveaux,', 140, 300, { size: 58, weight: 800, color: C.ink, t, t0: A6 + 13.9, tOut: A6 + 20.5, maxW: 600 });
+  kWords('nord : tout est écrit.', 140, 370, { size: 58, weight: 800, color: C.ink, t, t0: A6 + 14.1, tOut: A6 + 20.55, maxW: 600 });
+  kWords('La coupe A-A', 140, 470, { size: 44, weight: 800, color: C.coralD, t, t0: A6 + 16.9, tOut: A6 + 20.5 });
+  kWords('donne les hauteurs.', 140, 525, { size: 44, weight: 700, color: C.ink, t, t0: A6 + 17.1, tOut: A6 + 20.55 });
+  sectionAA(t);
+}
+
+/* ============ Plan 7 · On la voit en perspective (114 → 132 s) ============ */
+// Perspective conique, œil à 1,60 m, axe de visée horizontal : les verticales restent verticales.
+const PC1 = { E: [-3, -14, 1.6], th: 0, F: 720, cx: 900 };                                                   // 1 point de fuite
+const PC2 = { E: [XC - 13 * Math.SQRT1_2, YC - 13 * Math.SQRT1_2, 1.6], th: 45 * DEG, F: 500, cx: 1320 };  // 2 points de fuite
+const HZ = 640;
+function camS7(u) {
+  const k = E.io3(P(u, 7.0, 9.4));
+  return { persp: true, E: PC1.E.map((v, i) => lerp(v, PC2.E[i], k)), th: lerp(PC1.th, PC2.th, k), F: lerp(PC1.F, PC2.F, k), cx: lerp(PC1.cx, PC2.cx, k), cy: HZ };
+}
+// Arêtes qui fuient : parallèles au pignon (vers le point de fuite de la profondeur) ou à la façade sud.
+const FUY = [[0, 0, 0], [0, 0, HT], [HL, 0, 0], [HL, 0, HT]];
+const FUX = [[0, 0, 0], [-DG, -DV, EG], [-DG, YC, HR], [-DG, HW + DV, EG]];
+function vpDot(p, k) {
+  if (!p || k <= 0) return;
+  ctx.save(); ctx.globalAlpha = Math.min(1, k); ctx.fillStyle = C.amber; ctx.strokeStyle = C.amber; ctx.lineWidth = 2.5;
+  circle(p[0], p[1], 9 * k); ctx.fill(); circle(p[0], p[1], 18 * k); ctx.stroke(); ctx.restore();
+  pill(p[0], p[1] + 38, 'PF', 16, C.amber, C.ink, k);
+}
+function s7(t) {
+  const u = t - TS[6];
+  bpGrid(1);
+  eyebrow('6 · ON LA VOIT EN PERSPECTIVE', 140, 150, C.amber, u, .4, 17.6);
+  const cam = camS7(u), pr = perspector(cam);
+  // la ligne d'horizon, à hauteur des yeux
+  const hk = E.io3(P(u, 1.4, 2.4));
+  if (hk > 0) {
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(780, HZ); ctx.lineTo(lerp(780, 1880, hk), HZ); ctx.stroke(); ctx.restore();
+  }
+  const lk = E.out3(P(u, 2.2, 2.7));
+  label('LIGNE D’HORIZON', 1880, HZ - 50, { k: lk, color: '#fff', alpha: .85, size: 15, weight: 700, align: 'right', ls: 2 });
+  label('à hauteur des yeux', 1880, HZ - 28, { k: lk, color: '#fff', alpha: .7, size: 16, font: F.b, align: 'right', ls: 0 });
+  // les fuyantes, tracées sous la maison : seules leurs parties visibles restent
+  const fk = E.io3(P(u, 3.2, 4.6)) * (1 - E.io3(P(u, 14.6, 15.2)));
+  const vY = pr.vp([0, 1, 0]), vX0 = pr.vp([1, 0, 0]), vX = vX0 && Math.abs(vX0[0] - cam.cx) < 4000 ? vX0 : null;
+  if (fk > 0) {
+    ctx.save(); ctx.strokeStyle = C.amber; ctx.lineWidth = 2; ctx.setLineDash([10, 8]); ctx.globalAlpha = .9; ctx.beginPath();
+    const ray = (p, v, k) => { const a = pr(p); ctx.moveTo(a[0], a[1]); ctx.lineTo(lerp(a[0], v[0], k), lerp(a[1], v[1], k)); };
+    if (vY) FUY.forEach(p => ray(p, vY, fk));
+    const kx = fk * E.out3(P(u, 7.6, 8.8));
+    if (vX && kx > 0) FUX.forEach(p => ray(p, vX, kx));
+    ctx.stroke(); ctx.restore();
+  }
+  const ha = E.out3(P(u, 2.2, 3.0));
+  if (ha > 0) draw3D(buildFaces({ loA: ha }).lo, cam);
+  const pf = 1 - E.io3(P(u, 14.6, 15.2));
+  vpDot(vY, E.back(P(u, 3.0, 3.4)) * pf);
+  if (vX) vpDot(vX, E.back(P(u, 9.0, 9.4)) * pf);
+  // Les longueurs rétrécissent au loin : un repère tous les mètres le long de la façade sud
+  const tf = 1 - E.in3(P(u, 14.6, 15.0));
+  for (let X = 0; X <= 10; X++) {
+    const k = E.back(P(u, 11.0 + X * .1, 11.3 + X * .1)) * tf; if (k <= 0) continue;
+    const a = pr([X, -.03, 0]), b = pr([X, -.03, .45 * Math.min(1, k)]);
+    ctx.save(); ctx.strokeStyle = C.amber; ctx.fillStyle = C.amber; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); circle(a[0], a[1], 4); ctx.fill(); ctx.restore();
+  }
+  [.5, 9.5].forEach((X, i) => { const a = pr([X, -.03, 0]); pill(a[0], a[1] + 26, '1 m', 15, C.amber, C.ink, E.back(P(u, 12.1 + i * .2, 12.5 + i * .2)) * tf); });
+
+  kWords('La perspective', 140, 290, { size: 84, weight: 800, color: '#fff', t: u, t0: .7, tOut: 14.6, maxW: 620 });
+  kWords('montre la maison', 140, 370, { size: 56, weight: 700, color: '#fff', t: u, t0: .9, tOut: 14.65, maxW: 620 });
+  kWords('comme l’œil la voit.', 140, 440, { size: 56, weight: 700, color: '#fff', t: u, t0: 1.1, tOut: 14.7, maxW: 620, marks: { 1: { t0: 1.9, color: C.amber, text: C.ink } } });
+  kWords('1 point de fuite', 140, 560, { size: 36, weight: 700, font: F.b, color: '#fff', t: u, t0: 3.4, tOut: 14.6 });
+  kWords('la façade est de face, la profondeur fuit.', 140, 600, { size: 26, weight: 500, font: F.b, color: 'rgba(255,255,255,.82)', t: u, t0: 3.6, tOut: 14.65, stagger: .04, maxW: 610 });
+  kWords('2 points de fuite', 140, 680, { size: 36, weight: 700, font: F.b, color: '#fff', t: u, t0: 9.2, tOut: 14.6 });
+  kWords('on voit l’angle : deux côtés fuient.', 140, 720, { size: 26, weight: 500, font: F.b, color: 'rgba(255,255,255,.82)', t: u, t0: 9.4, tOut: 14.65, stagger: .04, maxW: 610 });
+  kWords('Au loin, les longueurs rétrécissent :', 140, 810, { size: 26, weight: 500, font: F.b, color: 'rgba(255,255,255,.82)', t: u, t0: 11.4, tOut: 14.65, stagger: .04, maxW: 610 });
+  kWords('on ne mesure pas une perspective.', 140, 850, { size: 26, weight: 700, font: F.b, color: '#fff', t: u, t0: 11.6, tOut: 14.7, stagger: .04, maxW: 610,
+    marks: { 3: { t0: 12.4, color: C.amber, text: C.ink } } });
+  kWords('Le plan mesure.', 140, 440, { size: 72, weight: 800, color: '#fff', t: u, t0: 15.0, tOut: 17.6, maxW: 620, marks: { 2: { t0: 15.6, color: C.green, text: C.ink } } });
+  kWords('La perspective montre.', 140, 530, { size: 72, weight: 800, color: '#fff', t: u, t0: 15.3, tOut: 17.65, maxW: 620, marks: { 2: { t0: 15.9, color: C.amber, text: C.ink } } });
+}
+
+/* ============ Plan 8 · À retenir (132 → 150 s) ============ */
+const REF = [
+  ['1', 'Le cartouche', ['Quoi ? Où ?', 'À quelle échelle ?'], C.blue, 'cart'],
+  ['2', 'Le plan de masse', ['Le terrain, le nord,', 'la rue, l’accès.'], C.amber, 'nord'],
+  ['3', 'Les pièces', ['Leurs noms,', 'leurs surfaces.'], C.violet, 'rooms'],
+  ['4', 'Les cotes', ['Les vraies mesures,', 'en mètres.'], C.green, 'cote'],
+  ['5', 'Les coupes', ['Les hauteurs :', 'plafonds, toit.'], C.coral, 'coupe'],
+  ['6', 'La perspective', ['Pour se représenter', 'le volume.'], C.sky, 'persp']
+];
+function refIcon(kind, x, y, col) {
+  ctx.save(); ctx.translate(x, y); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 3.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  if (kind === 'cart') { ctx.strokeRect(-34, -22, 68, 44); ctx.beginPath(); ctx.moveTo(-34, 2); ctx.lineTo(34, 2); ctx.moveTo(10, -22); ctx.lineTo(10, 22); ctx.stroke(); }
+  else if (kind === 'nord') { circle(0, 0, 28); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, -22); ctx.lineTo(10, 14); ctx.lineTo(0, 7); ctx.lineTo(-10, 14); ctx.closePath(); ctx.fill(); }
+  else if (kind === 'rooms') { ctx.strokeRect(-34, -26, 68, 52); ctx.beginPath(); ctx.moveTo(-34, 4); ctx.lineTo(34, 4); ctx.moveTo(4, -26); ctx.lineTo(4, 4); ctx.stroke(); setFont(700, 14, F.b); ctx.textAlign = 'center'; ctx.fillText('m²', -2, 21); }
+  else if (kind === 'cote') { ctx.beginPath(); ctx.moveTo(-36, 8); ctx.lineTo(36, 8); ctx.moveTo(-36, -4); ctx.lineTo(-36, 20); ctx.moveTo(36, -4); ctx.lineTo(36, 20); ctx.moveTo(-42, 14); ctx.lineTo(-30, 2); ctx.moveTo(30, 14); ctx.lineTo(42, 2); ctx.stroke(); setFont(700, 16, F.b); ctx.textAlign = 'center'; ctx.fillText('2,40', 0, -4); }
+  else if (kind === 'coupe') { ctx.beginPath(); ctx.moveTo(-38, -2); ctx.lineTo(0, -28); ctx.lineTo(38, -2); ctx.stroke(); ctx.fillRect(-32, -4, 8, 30); ctx.fillRect(24, -4, 8, 30); ctx.fillRect(-40, 24, 80, 5); }
+  else {
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-42, -12); ctx.lineTo(42, -12); ctx.stroke();
+    // l'arête verticale la plus proche, et ses fuyantes vers les deux points de fuite
+    ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(0, 26);
+    [-2, 26].forEach(y => [-38, 38].forEach(x => { ctx.moveTo(0, y); ctx.lineTo(x * .6, y + (-12 - y) * .6); }));
+    [-38, 38].forEach(x => { ctx.moveTo(x * .6, -2 + (-10) * .6); ctx.lineTo(x * .6, 26 + (-38) * .6); });  // arêtes du fond
+    ctx.stroke(); circle(-38, -12, 4.5); ctx.fill(); circle(38, -12, 4.5); ctx.fill();
+  }
+  ctx.restore();
+}
+function refCard([num, title, lines, col, ico], i, u) {
+  const t0 = 1.2 + i * .45, k = E.back(P(u, t0, t0 + .55)), out = E.in3(P(u, 9.6 + i * .06, 10.0 + i * .06));
+  if (k <= 0 || out >= 1) return;
+  const w = 250, h = 330, x = 150 + i * 272, y = 380;
+  ctx.save(); ctx.globalAlpha = Math.min(1, k) * (1 - out);
+  ctx.translate(x + w / 2, y + h / 2 + (1 - Math.min(1, k)) * 50 + out * 70); ctx.scale(.92 + .08 * k, .92 + .08 * k);
+  rr(-w / 2, -h / 2, w, h, 18); ctx.fillStyle = C.card; ctx.fill();
+  ctx.fillStyle = col; ctx.fillRect(-w / 2 + 22, -h / 2, 56, 6);
+  setFont(800, 72); ctx.fillStyle = col; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(num, -w / 2 + 20, -h / 2 + 100);
+  refIcon(ico, w / 2 - 58, -h / 2 + 70, col);
+  setFont(700, 30); const tw = ctx.measureText(title).width; if (tw > w - 44) setFont(700, 30 * (w - 44) / tw);
+  ctx.fillStyle = '#fff'; ctx.fillText(title, -w / 2 + 22, 38);
+  setFont(500, 20, F.b); ctx.fillStyle = 'rgba(255,255,255,.8)';
+  lines.forEach((l, j) => ctx.fillText(l, -w / 2 + 22, 82 + j * 28));
+  ctx.restore();
+}
+function s8(t) {
+  const u = t - TS[7];
+  darkGrid(E.out3(P(u, 0, 1.0)));
+  eyebrow('À RETENIR', 140, 150, C.amber, u, .4, 9.6);
+  kWords('Lire un plan en 6 réflexes', 140, 270, { size: 72, weight: 800, color: '#fff', t: u, t0: .6, tOut: 9.6, marks: { 4: { t0: 1.2, color: C.amber, text: C.ink } } });
+  REF.forEach((r, i) => refCard(r, i, u));
+  // Le plan redevient maison : les murs montent depuis le plan, le toit se pose.
+  const ap = E.out3(P(u, 10.0, 10.7));
+  if (ap > 0) {
+    const kr = E.io3(P(u, 10.4, 12.0));
+    const cam = makeCam(lerp(0, 30, kr) + Math.max(0, u - 12.0) * 2.5, lerp(90, 25, kr), 44 * lerp(.9, 1, ap), 1420, 600, 1.8);
+    const hh = lerp(.02, 2.75, E.io3(P(u, 11.4, 13.2))), rk = E.out3(P(u, 13.1, 13.9));
+    const { lo, up } = buildFaces({ cut: hh >= 2.749 ? null : hh, upA: 0, loA: ap, sec: true, roofA: rk, roofDz: (1 - rk) * 2.6 });
+    draw3D(lo.concat(up), cam);
+  }
+  kWords('Lire un plan,', 140, 390, { size: 80, weight: 800, color: '#fff', t: u, t0: 10.3, maxW: 800 });
+  kWords('c’est reconstruire', 140, 485, { size: 80, weight: 800, color: '#fff', t: u, t0: 10.5, maxW: 800 });
+  kWords('la maison', 140, 580, { size: 80, weight: 800, color: '#fff', t: u, t0: 10.7, maxW: 800 });
+  kWords('dans sa tête.', 140, 675, { size: 80, weight: 800, color: '#fff', t: u, t0: 10.9, maxW: 800,
+    marks: { 0: { t0: 11.8, color: C.amber, text: C.ink }, 1: { t0: 11.9, color: C.amber, text: C.ink }, 2: { t0: 12.0, color: C.amber, text: C.ink } } });
+  const pk = E.back(P(u, 14.2, 14.7));
+  if (pk > 0) { setFont(700, 34, F.b); pill(140 + (ctx.measureText('À toi de lire.').width + 34 * 1.2) / 2, 790, 'À toi de lire.', 34, C.amber, C.ink, pk); }
+}
+
+/* ============ Montage : plans + transitions ============ */
+const SCN = [
+  { t0: TS[0], bg: C.bp, draw: s1 },
+  { t0: TS[1], bg: C.bp, draw: s2 },  // même caméra : on prend de la hauteur sans coupure
+  { t0: TS[2], bg: C.ink, draw: s3, wipe: { type: 'bars', layers: [C.blue, C.amber] } },
+  { t0: TS[3], bg: C.ink, draw: s4, wipe: { type: 'circle', x: 1270, y: 590, layers: [C.amber] } },
+  { t0: TS[4], bg: C.paper, draw: s56, wipe: { type: 'circle', x: 1270, y: 530, layers: [C.amber] } },
+  { t0: TS[5], bg: C.paper, draw: s56 }, // même feuille : la mesure suit la lecture sans coupure
+  { t0: TS[6], bg: C.bp, draw: s7, wipe: { type: 'circle', x: 1300, y: 640, layers: [C.amber, C.sky] } },
+  { t0: TS[7], bg: C.ink, draw: s8, wipe: { type: 'circle', x: 1320, y: 640, layers: [C.green, C.amber] } }
+];
+const wipeDur = w => w.type === 'circle' ? w.layers.length * .1 + .75 : w.layers.length * .12 + .8;
+function wipeCircle(t, T, x, y, layers, next) {
+  const maxR = Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 4;
+  const k = i => E.io3(P(t, T + i * .1, T + i * .1 + .75));
+  layers.forEach((col, i) => { const r = maxR * k(i); if (r > 0) { ctx.fillStyle = col; circle(x, y, r); ctx.fill(); } });
+  const r = maxR * k(layers.length);
+  if (r > 0) { ctx.save(); circle(x, y, r); ctx.clip(); next(); ctx.restore(); }
+}
+function wipeBars(t, T, layers, next) {
+  const n = 8, bw = W / n;
+  const k = (li, j) => E.io3(P(t, T + li * .12 + j * .035, T + li * .12 + j * .035 + .55));
+  layers.forEach((col, li) => { ctx.fillStyle = col; for (let j = 0; j < n; j++) { const h = H * k(li, j); if (h > 0) ctx.fillRect(j * bw, H - h, bw + 1, h); } });
+  ctx.save(); ctx.beginPath(); let any = false;
+  for (let j = 0; j < n; j++) { const h = H * k(layers.length, j); if (h > 0) { ctx.rect(j * bw, H - h, bw + 1, h); any = true; } }
+  if (any) { ctx.clip(); next(); }
+  ctx.restore();
+}
+const grainC = document.createElement('canvas'); grainC.width = grainC.height = 256;
+(() => { const g = grainC.getContext('2d'), id = g.createImageData(256, 256); for (let i = 0; i < 65536; i++) { const v = (rnd() * 255) | 0; id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255; } g.putImageData(id, 0, 0); })();
+const grainP = ctx.createPattern(grainC, 'repeat');
+function grain(t) {
+  const f = Math.floor(t * 24), ox = (f * 97) % 256, oy = (f * 57) % 256;
+  ctx.save(); ctx.globalAlpha = .06; ctx.globalCompositeOperation = 'overlay'; ctx.translate(-ox, -oy);
+  ctx.fillStyle = grainP; ctx.fillRect(ox, oy, W, H); ctx.restore();
+}
+const sceneAt = t => { let i = SCN.length - 1; while (i > 0 && t < SCN[i].t0) i--; return i; };
+function render(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([]);
+  const i = sceneAt(t), s = SCN[i];
+  const full = () => { ctx.fillStyle = s.bg; ctx.fillRect(0, 0, W, H); s.draw(t); };
+  if (i > 0 && s.wipe && t < s.t0 + wipeDur(s.wipe)) {
+    const p = SCN[i - 1]; ctx.fillStyle = p.bg; ctx.fillRect(0, 0, W, H); p.draw(t);
+    if (s.wipe.type === 'circle') wipeCircle(t, s.t0, s.wipe.x, s.wipe.y, s.wipe.layers, full);
+    else wipeBars(t, s.t0, s.wipe.layers, full);
+  } else full();
+  grain(t);
+}
+
+/* ============ Son (synthétisé, hors ligne) ============ */
+const AU = { ctx: null, pad: null, chord: -1, beat: -1 };
+const snd = document.getElementById('snd');
+function impulse(c, sec, decay) {
+  const len = (c.sampleRate * sec) | 0, b = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
+  return b;
+}
+function audioInit() {
+  if (AU.ctx) return AU.ctx;
+  const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
+  const c = new A(); AU.ctx = c;
+  AU.out = c.createGain(); AU.out.gain.value = snd.checked ? 1 : 0;
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -20; comp.knee.value = 12; comp.ratio.value = 3;
+  comp.connect(AU.out); AU.out.connect(c.destination);
+  if (c.createMediaStreamDestination) { AU.dest = c.createMediaStreamDestination(); AU.out.connect(AU.dest); }
+  AU.bus = c.createGain(); AU.bus.gain.value = .9; AU.bus.connect(comp);
+  const conv = c.createConvolver(); conv.buffer = impulse(c, 2.6, 2.4);
+  AU.rev = c.createGain(); AU.rev.gain.value = .3; AU.rev.connect(conv); conv.connect(comp);
+  const nb = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), d = nb.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  AU.noise = nb;
+  return c;
+}
+function env(g, t, a, peak, dec) { g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(.0001, t + a + dec); }
+function voice(type, hz, vol, dec, o = {}) {
+  const c = AU.ctx, t = c.currentTime, osc = c.createOscillator(); osc.type = type;
+  if (o.glide) { osc.frequency.setValueAtTime(hz * o.glide, t); osc.frequency.exponentialRampToValueAtTime(hz, t + .06); } else osc.frequency.value = hz;
+  const g = c.createGain(); env(g, t, .006, vol, dec); osc.connect(g); g.connect(AU.bus);
+  if (o.rev) { const s = c.createGain(); s.gain.value = o.rev; g.connect(s); s.connect(AU.rev); }
+  osc.start(t); osc.stop(t + dec + .1);
+}
+const SFX = {
+  pop: (hz = 660, vol = .07) => voice('sine', hz, vol, .22, { glide: 1.6, rev: .25 }),
+  pluck: (hz, vol = .03) => voice('triangle', hz, vol, .38, { rev: .45 }),
+  tick: (hz = 1400, vol = .022) => voice('sine', hz, vol, .06, { rev: .15 }),
+  chime: (hz = 880, vol = .06) => [1, 2, 3.01, 4.2].forEach((m, i) => voice('sine', hz * m, vol / (i + 1), 1.6 - i * .25, { rev: .6 })),
+  boom: () => {
+    const c = AU.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(38, t + 1.4);
+    const g = c.createGain(); env(g, t, .02, .3, 1.5); o.connect(g); g.connect(AU.bus); o.start(t); o.stop(t + 1.7);
+  },
+  thud: () => {
+    const c = AU.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(55, t + .22);
+    const g = c.createGain(); env(g, t, .004, .34, .32); o.connect(g); g.connect(AU.bus); o.start(t); o.stop(t + .4);
+    SFX.whoosh(.14, .07);
+  },
+  whoosh: (dur = .75, vol = .16) => {
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise; s.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.1;
+    f.frequency.setValueAtTime(350, t); f.frequency.exponentialRampToValueAtTime(3200, t + dur * .55); f.frequency.exponentialRampToValueAtTime(900, t + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + dur * .5); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(AU.bus); const r = c.createGain(); r.gain.value = .3; g.connect(r); r.connect(AU.rev);
+    s.start(t); s.stop(t + dur + .05);
+  },
+  sweep: (dur, vol, up) => { // le plan de coupe qui descend, la maison qui monte
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise; s.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3;
+    f.frequency.setValueAtTime(up ? 400 : 2600, t); f.frequency.exponentialRampToValueAtTime(up ? 2400 : 380, t + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .25); g.gain.setValueAtTime(vol, t + dur - .3); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(AU.bus); const r = c.createGain(); r.gain.value = .4; g.connect(r); r.connect(AU.rev);
+    s.start(t); s.stop(t + dur + .05);
+  },
+  scratch: (dur, vol) => { // crayon sur le papier
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise; s.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3600; f.Q.value = .8;
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .06);
+    g.gain.setValueAtTime(vol, t + Math.max(.07, dur - .12)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    const l = c.createOscillator(); l.frequency.value = 6.5; const lg = c.createGain(); lg.gain.value = vol * .7; l.connect(lg); lg.connect(g.gain);
+    s.connect(f); f.connect(g); g.connect(AU.bus); s.start(t); s.stop(t + dur + .05); l.start(t); l.stop(t + dur + .05);
+  }
+};
+// Grille d'accords (ré majeur), deux à cinq accords par plan.
+const CD = { D: [146.83, 220, 293.66, 369.99], Bm: [123.47, 185, 293.66, 369.99], G: [98, 146.83, 246.94, 392], A: [110, 164.81, 277.18, 329.63], Em: [82.41, 123.47, 246.94, 329.63] };
+const CHORD_TL = [
+  [0, CD.D], [6.8, CD.Bm], [11.5, CD.G],
+  [TS[1], CD.A], [TS[1] + 3.6, CD.D], [TS[1] + 7.6, CD.G], [TS[1] + 11.6, CD.Em], [TS[1] + 13.6, CD.A],
+  [TS[2], CD.Bm], [TS[2] + 2.9, CD.D], [TS[2] + 7.1, CD.G], [TS[2] + 11.3, CD.Em], [TS[2] + 13.9, CD.A],
+  [TS[3], CD.Bm], [TS[3] + 2.6, CD.G], [TS[3] + 5.8, CD.D], [TS[3] + 8.2, CD.A], [TS[3] + 11.8, CD.D],
+  [TS[4], CD.G], [LT(0), CD.D], [LT(2), CD.Bm], [LT(4), CD.G], [LT(5), CD.A],
+  [TS[5], CD.D], [TS[5] + 7.6, CD.G], [TS[5] + 13.9, CD.Bm], [TS[5] + 16.9, CD.A],
+  [TS[6], CD.G], [TS[6] + 3.0, CD.D], [TS[6] + 7.0, CD.Bm], [TS[6] + 9.4, CD.G], [TS[6] + 15.0, CD.A],
+  [TS[7], CD.G], [TS[7] + 4.0, CD.A], [TS[7] + 10.0, CD.D]
+];
+const chordAt = t => { let i = 0; while (i + 1 < CHORD_TL.length && t >= CHORD_TL[i + 1][0]) i++; return i; };
+function padStart(ch) {
+  if (AU.pad || !AU.ctx) return;
+  const c = AU.ctx, t = c.currentTime, f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 650; f.Q.value = .7;
+  const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12, t + .8);
+  f.connect(g); g.connect(AU.bus); const rs = c.createGain(); rs.gain.value = .5; g.connect(rs); rs.connect(AU.rev);
+  const oscs = [];
+  ch.forEach((hz, i) => [-6, 6].forEach(dt => {
+    const o = c.createOscillator(); o.type = i === 0 ? 'triangle' : 'sawtooth'; o.frequency.value = hz; o.detune.value = dt;
+    const og = c.createGain(); og.gain.value = i === 0 ? .35 : .09; o.connect(og); og.connect(f); o.start(t); oscs.push({ o, i });
+  }));
+  const lfo = c.createOscillator(); lfo.frequency.value = .12; const lg = c.createGain(); lg.gain.value = 180; lfo.connect(lg); lg.connect(f.frequency); lfo.start(t);
+  AU.pad = { oscs, g, lfo };
+}
+function padChord(ch) { if (!AU.pad) return; const t = AU.ctx.currentTime; AU.pad.oscs.forEach(({ o, i }) => o.frequency.setTargetAtTime(ch[i], t, .18)); }
+function padStop() {
+  const p = AU.pad; if (!p) return; AU.pad = null;
+  const t = AU.ctx.currentTime; p.g.gain.cancelScheduledValues(t); p.g.gain.setTargetAtTime(.0001, t, .12);
+  setTimeout(() => { try { p.oscs.forEach(({ o }) => o.stop()); p.lfo.stop(); } catch (e) {} }, 900);
+}
+// Repères sonores, écrits en temps local de chaque plan.
+const CUES = [];
+const cue = (T0, list) => list.forEach(([u, fn]) => CUES.push([T0 + u, fn]));
+cue(TS[0], [
+  [.05, () => SFX.boom()], [1.0, () => SFX.sweep(1.8, .05, true)], [1.0, () => SFX.pop(523, .06)], [1.25, () => SFX.pop(587, .05)], [3.45, () => SFX.thud()],
+  [6.8, () => SFX.whoosh(.6, .05)], [6.9, () => SFX.pop(587, .05)], [7.15, () => SFX.pop(659, .05)], [7.9, () => SFX.chime(988, .04)],
+  [11.5, () => SFX.pop(440, .06)], [12.6, () => SFX.chime(1175, .05)], [13.2, () => SFX.pluck(587, .05)]
+]);
+DIMS1.forEach((d, i) => CUES.push([d[3], () => SFX.pop(660 + i * 90, .05)]));
+cue(TS[1], [
+  [.4, () => SFX.sweep(3.0, .05, false)], [.8, () => SFX.pop(523, .05)], [1.1, () => SFX.pop(587, .05)], [2.2, () => SFX.chime(988, .04)],
+  [3.6, () => SFX.whoosh(2.2, .05)], [6.0, () => SFX.chime(1175, .05)], [6.4, () => SFX.pop(440, .04)],
+  [MT(1) + .1, () => SFX.scratch(1.2, .009)], [MT(2), () => SFX.pop(988, .05)], [MT(2) + .3, () => SFX.whoosh(.6, .04)]
+]);
+TREES.forEach((tr, i) => CUES.push([TS[1] + 2.4 + i * .12, () => SFX.pop(620 + i * 70, .035)]));
+MASSE.forEach((m, i) => CUES.push([TS[1] + MT(i), () => SFX.pop(523 + i * 60, .055)]));
+for (let i = 0; i < 3; i++) CUES.push([TS[1] + MT(3) + .1 + i * .1, () => SFX.tick(1200 + i * 120, .02)]);
+cue(TS[2], [
+  [-.1, () => SFX.whoosh()], [.7, () => SFX.pop(440, .06)], [1.1, () => SFX.whoosh(.9, .06)], [2.9, () => SFX.chime(988, .05)], [3.5, () => SFX.whoosh(.6, .05)],
+  [5.4, () => SFX.whoosh(.9, .06)], [7.1, () => SFX.chime(880, .05)], [7.7, () => SFX.whoosh(.6, .05)],
+  [9.6, () => SFX.whoosh(.9, .06)], [11.3, () => SFX.chime(1175, .05)], [11.9, () => SFX.whoosh(.6, .05)], [12.9, () => SFX.whoosh(.7, .05)],
+  [13.5, () => SFX.pop(523, .04)], [13.7, () => SFX.pop(603, .04)], [13.9, () => SFX.pop(683, .04)],
+  [14.1, () => SFX.scratch(1.0, .008)], [14.4, () => SFX.chime(988, .04)]
+]);
+cue(TS[3], [
+  [-.1, () => SFX.whoosh()], [1.0, () => SFX.pop(523, .05)], [1.2, () => SFX.pop(587, .05)], [1.4, () => SFX.pop(659, .05)],
+  [2.6, () => SFX.sweep(2.2, .06, false)], [4.75, () => SFX.thud()], [5.8, () => SFX.sweep(1.8, .06, true)],
+  [8.2, () => SFX.whoosh(2.4, .06)], [11.2, () => SFX.chime(1175, .06)], [11.8, () => SFX.boom()], [12.5, () => SFX.chime(988, .05)],
+  [13.2, () => SFX.pop(587, .05)], [14.8, () => SFX.pop(440, .04)]
+]);
+cue(TS[4], [[-.1, () => SFX.whoosh()], [.8, () => SFX.pop(523, .05)], [20.45, () => SFX.whoosh(.6, .05)]]);
+ROOMS.forEach((r, i) => { CUES.push([TS[4] + 1.2 + i * .08, () => SFX.tick(1100 + i * 90)]); CUES.push([TS[5] + 14.0 + i * .12, () => SFX.pop(587 + i * 60, .035)]); });
+LEG.forEach((l, i) => CUES.push([LT(i), () => SFX.pop(523 + i * 60, .055)]));
+CUES.push([LT(1) + .1, () => SFX.scratch(1.0, .01)], [LT(2) + .1, () => SFX.scratch(.8, .008)], [LT(3) + .6, () => SFX.whoosh(.5, .03)]);
+[3, 4, 5].forEach(i => CUES.push([LT(i), () => SFX.whoosh(.5, .05)]));
+cue(TS[5], [
+  [.8, () => SFX.pop(392, .07)], [2.0, () => SFX.whoosh(.6, .05)], [4.8, () => SFX.chime(1175, .05)], [6.8, () => SFX.whoosh(.5, .04)],
+  [7.6, () => SFX.pop(440, .06)], [7.9, () => SFX.scratch(1.8, .01)], [9.2, () => SFX.pop(587, .04)], [10.6, () => SFX.pop(880, .04)],
+  [13.9, () => SFX.pop(523, .05)], [15.1, () => SFX.pop(988, .05)], [15.4, () => SFX.pop(659, .04)], [16.5, () => SFX.scratch(.7, .01)],
+  [17.0, () => SFX.thud()], [17.2, () => SFX.whoosh(.6, .05)], [18.3, () => SFX.chime(880, .04)]
+]);
+for (let i = 0; i < 11; i++) CUES.push([TS[5] + 3.6 + i * .11, () => SFX.tick(1000 + i * 70, .02)]);
+for (let i = 0; i < 7; i++) CUES.push([TS[5] + 9.0 + i * .06, () => SFX.tick(1300 + i * 50, .018)]);
+cue(TS[6], [
+  [-.1, () => SFX.whoosh()], [.7, () => SFX.pop(440, .06)], [1.4, () => SFX.scratch(1.0, .008)], [2.2, () => SFX.whoosh(.6, .05)],
+  [3.0, () => SFX.pop(988, .05)], [3.2, () => SFX.scratch(1.4, .01)], [3.4, () => SFX.pop(587, .05)],
+  [7.0, () => SFX.whoosh(2.4, .06)], [9.0, () => SFX.chime(1175, .05)], [9.2, () => SFX.pop(659, .05)],
+  [12.1, () => SFX.pop(880, .04)], [12.3, () => SFX.pop(740, .04)], [15.0, () => SFX.boom()], [15.6, () => SFX.chime(988, .05)], [15.9, () => SFX.chime(1175, .05)]
+]);
+for (let i = 0; i <= 10; i++) CUES.push([TS[6] + 11.0 + i * .1, () => SFX.tick(900 + i * 60, .018)]);
+cue(TS[7], [
+  [-.1, () => SFX.whoosh()], [.6, () => SFX.pop(440, .06)], [9.6, () => SFX.whoosh(.7, .06)], [10.3, () => SFX.pop(523, .05)],
+  [11.4, () => SFX.sweep(1.8, .06, true)], [11.8, () => SFX.chime(988, .04)], [13.8, () => SFX.thud()], [14.2, () => SFX.chime(1175, .07)],
+  [16.6, () => { if (AU.pad) AU.pad.g.gain.setTargetAtTime(.0001, AU.ctx.currentTime, .6); }]
+]);
+REF.forEach((r, i) => CUES.push([TS[7] + 1.2 + i * .45, () => SFX.pop(440 + i * 60, .06)]));
+CUES.sort((a, b) => a[0] - b[0]);
+function audioTick(a, b) {
+  if (!AU.ctx || !snd.checked) return;
+  for (const [ct, fn] of CUES) if (ct > a && ct <= b) { try { fn(); } catch (e) {} }
+  const ci = chordAt(b);
+  if (ci !== AU.chord) { AU.chord = ci; padChord(CHORD_TL[ci][1]); }
+  if (b >= 6.8 && b < TS[7]) {
+    const beat = Math.floor((b - 6.8) / .3);
+    if (beat !== AU.beat) {
+      AU.beat = beat;
+      const every = sceneAt(b) === 3 ? 2 : 1, pat = [1, 2, 3, 2, 1, 3, 2, 3];
+      if (beat % every === 0) SFX.pluck(CHORD_TL[ci][1][pat[beat % 8]] * 2, .026);
+    }
+  }
+}
+
+/* ============ Lecteur ============ */
+const $ = id => document.getElementById(id);
+const scrub = $('scrub'), tc = $('tc'), playB = $('play'), bigplay = $('bigplay'), pz = $('pz'), qcard = $('qcard'), expB = $('exp'), recB = $('rec');
+const ICON = {
+  play: '<svg width="18" height="20" viewBox="0 0 18 20" aria-hidden="true"><path d="M3 2v16l13-8z" fill="currentColor"/></svg>',
+  pause: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="4" height="14" rx="1" fill="currentColor"/><rect x="11" y="2" width="4" height="14" rx="1" fill="currentColor"/></svg>'
+};
+const CH = [
+  { t: TS[0], key: 10.4, title: 'Du volume au papier', idea: 'Une maison a trois dimensions, une feuille deux : comment faire tenir l’une sur l’autre ?', q: 'Une maison a trois dimensions, une feuille n’en a que deux. Que perd-on en la dessinant, et comment le retrouver ?' },
+  { t: TS[1], key: TS[1] + 16.2, title: 'Le plan de masse', idea: 'Vu de très haut, il situe la maison sur sa parcelle : limites, distances, nord, rue, accès, échelle.', q: 'De quel côté de la maison se trouve la rue ? À quelle distance de la limite de la parcelle la façade nord est-elle construite ?' },
+  { t: TS[2], key: TS[2] + 16.2, title: 'On la regarde', idea: 'Vue de face, vue de dessus, vue de gauche : chaque vue montre deux dimensions, et les vues s’alignent.', q: 'Sur la façade, quelle dimension de la maison ne peut-on pas lire ? Dans quelle vue la trouve-t-on ?' },
+  { t: TS[3], key: TS[3] + 6.9, title: 'On la coupe', idea: 'Le plan est une coupe horizontale à 1 m du sol, regardée d’en haut.', q: 'La fenêtre de la salle d’eau commence à 1,50 m du sol. Le plan de coupe la traverse-t-il ? Comment la dessiner, à votre avis ?' },
+  { t: TS[4], key: TS[4] + 20.0, title: 'On lit les traits', idea: 'Épais, fin, tireté : chaque trait a un sens. Portes, fenêtres et escalier ont leur symbole.', q: 'La porte de la chambre 1 s’ouvre-t-elle vers la chambre ou vers le séjour ? Où commence l’escalier, et vers où monte-t-il ?' },
+  { t: TS[5], key: TS[5] + 19.0, title: 'On la mesure', idea: 'L’échelle donne l’ordre de grandeur, la cote la vraie mesure, la coupe les hauteurs.', q: 'Au 1/100, un mur mesure 4,5 cm sur le plan. Combien mesure-t-il en vrai ? Et sur un plan au 1/50 ?' },
+  { t: TS[6], key: TS[6] + 13.0, title: 'La perspective', idea: 'Un ou deux points de fuite sur la ligne d’horizon : la maison comme l’œil la voit, mais sans vraies mesures.', q: 'Sur une perspective, deux fenêtres identiques n’ont pas la même largeur. Pourquoi ? Où lire leur vraie largeur ?' },
+  { t: TS[7], key: TS[7] + 5.5, title: 'À retenir', idea: 'Six réflexes : cartouche, plan de masse, pièces, cotes, coupes, perspective.', q: 'Et toi, par quoi commences-tu la lecture d’un plan ?' }
+];
+const PAUSES = [15.3, TS[1] + 17.3, TS[2] + 18.4, TS[3] + 18.4, TS[4] + 20.3, TS[5] + 20.4, TS[6] + 17.5];
+const POSTER = TS[3] + 6.9;
+let T = 0, poster = true, playing = false, from = 0, wall0 = 0, lastT = 0, nextPause = null;
+let recording = false, recorder = null;
+
+const fmt = s => { s = clamp(s, 0, DUR); return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0'); };
+const note = msg => { $('expnote').textContent = msg; };
+
+const board = $('board'), cards = [];
+CH.forEach((c, i) => {
+  const li = document.createElement('li'), b = document.createElement('button');
+  b.type = 'button'; b.className = 'card';
+  const cvs = document.createElement('canvas'); cvs.width = 480; cvs.height = 270; cvs.setAttribute('aria-hidden', 'true');
+  const meta = document.createElement('div'); meta.className = 'meta';
+  meta.innerHTML = `<span class="tm">${fmt(c.t)}</span><h3></h3>`; meta.querySelector('h3').textContent = `${i + 1}. ${c.title}`;
+  const p = document.createElement('p'); p.textContent = c.idea;
+  b.append(cvs, meta, p); b.addEventListener('click', () => goChapter(i));
+  li.append(b); board.append(li); cards.push(b);
+});
+CH.slice(1).forEach(c => { const i = document.createElement('i'); i.style.left = (c.t / DUR * 100) + '%'; $('ticks').append(i); });
+
+function ui() {
+  const shown = poster ? 0 : T;
+  scrub.value = shown; scrub.style.setProperty('--p', (shown / DUR * 100) + '%');
+  tc.textContent = fmt(shown) + ' / ' + fmt(DUR);
+  playB.innerHTML = playing ? ICON.pause : ICON.play;
+  playB.setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
+  const ci = poster ? -1 : sceneAt(T);
+  cards.forEach((c, i) => c.setAttribute('aria-current', i === ci ? 'true' : 'false'));
+}
+function hideQ() { qcard.hidden = true; }
+function showQ(i) {
+  $('qk').textContent = `Pause question · plan ${i + 1} sur ${CH.length} · ${CH[i].title}`;
+  $('qt').textContent = CH[i].q;
+  qcard.hidden = false; $('qgo').focus({ preventScroll: true });
+}
+const computeNext = () => (!pz.checked || recording) ? null : (PAUSES.find(p => p > T + .05) ?? null);
+function seek(t) {
+  poster = false; bigplay.hidden = true; hideQ();
+  T = clamp(t, 0, DUR); lastT = T; AU.beat = -1;
+  if (playing) { from = T; wall0 = performance.now(); nextPause = computeNext(); }
+  render(T); ui();
+}
+function play() {
+  if (poster) { poster = false; T = 0; }
+  if (T >= DUR - .02) T = 0;
+  hideQ(); bigplay.hidden = true;
+  playing = true; from = T; lastT = T; wall0 = performance.now(); nextPause = computeNext(); AU.beat = -1;
+  if (snd.checked) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+  ui(); requestAnimationFrame(loop);
+}
+function pause() { playing = false; padStop(); ui(); }
+const toggle = () => playing ? pause() : play();
+function step(t) {
+  audioTick(lastT, t); T = t; lastT = t; render(T); ui();
+  if (recording) recB.textContent = `Enregistrement · ${fmt(T)} sur ${fmt(DUR)} · Échap pour annuler`;
+}
+function loop(now) {
+  if (!playing) return;
+  const t = from + (now - wall0) / 1000;
+  if (nextPause != null && t >= nextPause) { const np = nextPause; step(np); pause(); showQ(PAUSES.indexOf(np)); return; }
+  if (t >= DUR) { step(DUR); pause(); ended(); return; }
+  step(t); requestAnimationFrame(loop);
+}
+function ended() {
+  if (recording) { setTimeout(() => { try { recorder.stop(); } catch (e) {} }, 300); return; }
+  $('bigtxt').textContent = 'Revoir · 2 min 30'; bigplay.hidden = false;
+}
+function goChapter(i) { if (recording) return; seek(CH[i].t + .001); if (!playing) play(); }
+function fullscreen() {
+  const el = $('screen');
+  if (document.fullscreenElement) { document.exitFullscreen && document.exitFullscreen().catch(() => {}); return; }
+  const r = el.requestFullscreen ? el.requestFullscreen() : null;
+  if (r && r.catch) r.catch(() => note('Le plein écran n’est pas disponible ici.')); else if (!r) note('Le plein écran n’est pas disponible ici.');
+}
+
+/* ============ Export vidéo ============ */
+const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+const canRec = !!(window.MediaRecorder && cv.captureStream);
+const EXPORT_HELP = '« Exporter en vidéo » enregistre l’animation en temps réel (2 min 30), avec le son si « Son » est coché. Gardez l’onglet visible pendant l’enregistrement.';
+if (framed) { expB.disabled = true; note('L’export vidéo fonctionne quand la page est ouverte depuis son fichier HTML, sur l’ordinateur : ici, le navigateur bloque le téléchargement.'); }
+else if (!canRec) { expB.disabled = true; note('Ce navigateur ne sait pas enregistrer une vidéo depuis la page. Essayez un Chrome, Edge ou Firefox récent.'); }
+else note(EXPORT_HELP);
+function pickMime() {
+  const L = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  for (const m of L) { try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) {} }
+  return '';
+}
+function setRec(on) {
+  recording = on; recB.hidden = !on;
+  expB.textContent = on ? 'Annuler l’enregistrement' : 'Exporter en vidéo';
+  [playB, $('restart'), scrub, $('fs'), pz].forEach(el => { el.disabled = on; });
+  cards.forEach(c => { c.disabled = on; });
+}
+function startExport() {
+  const mime = pickMime();
+  if (!mime) { note('Aucun format vidéo disponible dans ce navigateur.'); return; }
+  if (playing) pause(); hideQ(); bigplay.hidden = true;
+  const tracks = [...cv.captureStream(60).getVideoTracks()];
+  if (snd.checked) { const c = audioInit(); if (c && AU.dest) { c.resume(); tracks.push(...AU.dest.stream.getAudioTracks()); } }
+  const chunks = [];
+  try { recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: mime, videoBitsPerSecond: 14000000 }); }
+  catch (e) { note('L’enregistrement n’a pas pu démarrer dans ce navigateur.'); return; }
+  recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = () => {
+    const type = mime.split(';')[0], blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'Lire un plan en 2 min 30.' + (type === 'video/mp4' ? 'mp4' : 'webm');
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 8000);
+    setRec(false); bigplay.hidden = false;
+    note(`Vidéo enregistrée : ${(blob.size / 1048576).toFixed(1)} Mo, format ${type === 'video/mp4' ? 'MP4' : 'WebM'}. Elle est dans le dossier Téléchargements.`);
+  };
+  setRec(true); poster = false; T = 0; lastT = 0; render(0); ui();
+  recorder.start(500);
+  setTimeout(play, 150);
+}
+function cancelExport() {
+  if (!recording) return;
+  pause();
+  recorder.onstop = () => { setRec(false); note('Enregistrement annulé. ' + EXPORT_HELP); };
+  try { recorder.stop(); } catch (e) { setRec(false); }
+}
+
+/* ============ Événements ============ */
+playB.addEventListener('click', toggle);
+bigplay.addEventListener('click', () => { if (T >= DUR - .02) T = 0; play(); });
+$('restart').addEventListener('click', () => { seek(0); });
+$('qgo').addEventListener('click', () => { hideQ(); play(); });
+$('fs').addEventListener('click', fullscreen);
+expB.addEventListener('click', () => recording ? cancelExport() : startExport());
+cv.addEventListener('click', () => { if (!recording) toggle(); });
+scrub.addEventListener('input', () => { if (recording) return; if (playing) pause(); seek(+scrub.value); });
+snd.addEventListener('change', () => {
+  if (AU.ctx) AU.out.gain.setTargetAtTime(snd.checked ? 1 : 0, AU.ctx.currentTime, .05);
+  if (snd.checked && playing) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+});
+pz.addEventListener('change', () => { if (playing) nextPause = computeNext(); });
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const tg = e.target, tag = tg.tagName;
+  if (e.key === 'Escape' && recording) { cancelExport(); return; }
+  if (recording) return;
+  if (e.key === ' ') { if (tag === 'BUTTON' || (tag === 'INPUT' && tg.type === 'checkbox')) return; e.preventDefault(); toggle(); }
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const wasPlaying = playing; seek((poster ? 0 : T) + (e.key === 'ArrowRight' ? 1 : -1)); if (wasPlaying && !playing) play(); }
+  else if (/^[1-8]$/.test(e.key)) goChapter(+e.key - 1);
+  else if (e.key === 'f' || e.key === 'F') fullscreen();
+  else if (e.key === 'm' || e.key === 'M') { snd.checked = !snd.checked; snd.dispatchEvent(new Event('change')); }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden && playing && !recording) pause(); });
+
+/* ============ Démarrage ============ */
+function thumbs() {
+  CH.forEach((c, i) => { render(c.key); cards[i].querySelector('canvas').getContext('2d').drawImage(cv, 0, 0, 480, 270); });
+  render(poster ? POSTER : T);
+}
+render(POSTER); ui(); thumbs();
+if (document.fonts && document.fonts.load) {
+  const faces = ['800 100px "Bricolage Grotesque"', '700 100px "Bricolage Grotesque"', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"', '700 20px "Instrument Sans"', 'italic 500 20px "Instrument Sans"', '500 20px "IBM Plex Mono"', '700 20px "IBM Plex Mono"'];
+  Promise.race([Promise.all(faces.map(f => document.fonts.load(f).catch(() => null))), new Promise(r => setTimeout(r, 3000))])
+    .then(() => { if (!playing) thumbs(); });
+}
+})();
+</script>
+
+</html>

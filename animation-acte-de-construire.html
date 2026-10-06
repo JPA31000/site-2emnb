@@ -1,0 +1,1459 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L’acte de construire en 90 secondes</title>
+<meta name="description" content="Animation motion design d’une minute trente sur les acteurs, les missions et les phases de l’acte de construire, avec pauses questions et guide d’exploitation en classe.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500;700&family=Instrument+Sans:ital,wght@0,400..700;1,500&display=swap">
+<style>
+:root{
+  --bg:#E5EAF0; --surface:#F5F7FA; --ink:#0E2240; --muted:#4B5B74; --line:#C8D1DD;
+  --accent:#2F6FD6; --accent-soft:#DCE6F7; --screen:#0B1A30; --focus:#2F6FD6;
+  --fd:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --fb:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --fm:"IBM Plex Mono",Consolas,"Cascadia Mono",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+    --accent:#7FB0FF; --accent-soft:#16305A; --screen:#050C16; --focus:#7FB0FF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+  --accent:#7FB0FF; --accent-soft:#16305A; --screen:#050C16; --focus:#7FB0FF;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--fb)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:clamp(16px,4vw,40px);padding-block:36px 72px;display:grid;gap:36px}
+.head{display:grid;gap:12px;max-width:800px}
+.kicker{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0;font:500 12.5px/1.3 var(--fm);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:10px;height:10px;border-radius:50%;display:block}
+h1{font:800 clamp(34px,5.4vw,62px)/1 var(--fd);letter-spacing:-.025em;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);font-size:17px;max-width:64ch;text-wrap:pretty}
+
+.player{display:grid;gap:10px}
+.screen{position:relative;border-radius:18px;overflow:hidden;background:var(--screen);box-shadow:0 30px 70px -40px rgba(8,20,40,.7)}
+.screen canvas{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:16/9;cursor:pointer}
+.screen:fullscreen{display:grid;place-items:center;border-radius:0;background:#000}
+.screen:fullscreen canvas{width:min(100vw,177.78vh)}
+.bigplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:12px;padding:10px 22px 10px 10px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 clamp(14px,1.6vw,18px)/1 var(--fb);cursor:pointer;box-shadow:0 16px 40px -14px rgba(0,0,0,.6);white-space:nowrap}
+.bigplay .tri{width:40px;height:40px;border-radius:50%;background:#0E2240;color:#FFB627;display:grid;place-items:center;flex:none}
+.bigplay:hover{background:#FFC24D}
+.qcard{position:absolute;left:3%;bottom:6%;max-width:min(600px,90%);background:rgba(9,22,42,.95);color:#fff;border-radius:16px;padding:16px 18px 18px;display:grid;gap:8px;box-shadow:0 20px 50px -20px rgba(0,0,0,.7)}
+.qcard .qk{margin:0;font:500 12px/1.3 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:#FFB627}
+.qcard .qt{margin:0;font:700 clamp(16px,2.1vw,23px)/1.28 var(--fd);text-wrap:pretty}
+.qcard button{justify-self:start;margin-top:4px;height:38px;padding:0 18px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 14px var(--fb);cursor:pointer}
+.rec{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;background:rgba(9,22,42,.92);color:#fff;font:500 13px/1 var(--fm);padding:8px 12px;border-radius:999px}
+.rec::before{content:"";width:9px;height:9px;border-radius:50%;background:#FF5A4A;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
+.ib{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.ib.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ib svg{display:block}
+.track{flex:1 1 260px;min-width:0;position:relative;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:0;pointer-events:none}
+.ticks i{position:absolute;top:-10px;width:2px;height:20px;margin-left:-1px;background:var(--muted);opacity:.45;border-radius:1px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;margin:0;border-radius:999px;background:linear-gradient(to right,var(--accent) var(--p,0%),var(--line) var(--p,0%));cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ink);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ink)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ink);border:3px solid var(--bg)}
+.tc{font:500 14px var(--fm);font-variant-numeric:tabular-nums;color:var(--muted);min-width:10ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tog{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font:600 14px var(--fb);cursor:pointer;user-select:none}
+.tog input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.btn{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--fb);cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:hover:not(:disabled),.ib:hover,.tog:hover{border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.help{margin:0;font:500 12.5px/1.5 var(--fm);color:var(--muted)}
+.note{margin:0;font-size:14px;color:var(--muted);max-width:80ch}
+
+.sec{display:grid;gap:16px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+.sec-head h2{font:800 clamp(24px,2.8vw,32px)/1.1 var(--fd);margin:0;letter-spacing:-.015em}
+.sec-head p{margin:0;color:var(--muted);font-size:15px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+@media (max-width:900px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.board{grid-template-columns:1fr}}
+.card{width:100%;height:100%;display:grid;grid-template-rows:auto auto 1fr;gap:8px;text-align:left;padding:10px 10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:inherit;font:inherit;cursor:pointer}
+.card:hover{border-color:var(--ink)}
+.card canvas{width:100%;max-width:100%;height:auto;aspect-ratio:16/9;display:block;border-radius:9px;background:var(--screen)}
+.card .meta{display:flex;align-items:baseline;gap:10px;padding-inline:4px}
+.card .tm{font:500 12.5px var(--fm);color:var(--muted);font-variant-numeric:tabular-nums}
+.card h3{margin:0;font:700 18px/1.2 var(--fd)}
+.card p{margin:0;padding-inline:4px;font-size:14.5px;line-height:1.45;color:var(--muted)}
+.card[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;display:grid;gap:8px;align-content:start}
+.step .when{font:500 12.5px/1.3 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.step h3{margin:0;font:700 20px/1.2 var(--fd)}
+.step p{margin:0;font-size:15px;text-wrap:pretty}
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 32px;border-top:1px solid var(--line);padding-top:4px}
+@media (max-width:860px){.more{grid-template-columns:1fr}}
+.more h3{font:700 17px/1.2 var(--fd);margin:16px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:14px;padding:4px 11px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.more ul{margin:0;padding-left:18px;display:grid;gap:7px;font-size:14.5px}
+.more li::marker{color:var(--accent)}
+.fam{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;padding:0;list-style:none;font-size:14.5px}
+.fam li{display:inline-flex;align-items:center;gap:7px}
+.fam i{width:12px;height:12px;border-radius:50%;display:block;flex:none}
+@media (prefers-reduced-motion: reduce){.rec::before{animation:none}}
+.retour{margin:0 0 2px;font:500 13px/1.3 var(--fm)}.retour a{color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}.retour a:hover{color:var(--ink)}
+</style>
+
+<main class="wrap">
+  <header class="head">
+    <p class="retour"><a href="index.html" onclick="try{if(document.referrer&&new window.URL(document.referrer).origin===window.location.origin){window.history.back();return false}}catch(e){}">← Retour au carnet 2EMNB</a></p>
+    <p class="kicker"><span class="dots" aria-hidden="true"><i style="background:#FF7A59"></i><i style="background:#4D8FEA"></i><i style="background:#FFB627"></i><i style="background:#3FBF7F"></i></span>Acte de construire · motion design · 1 min 30</p>
+    <h1>L’acte de construire en 90 secondes</h1>
+    <p class="lede">Six plans d’environ 15 secondes pour répondre à deux questions&nbsp;: qui fait quoi, et dans quel ordre, du programme à la réception. Sans voix off&nbsp;: le texte animé porte le message et chaque plan laisse le temps de lire. À projeter en ouverture de séquence, d’une traite puis avec les pauses questions.</p>
+  </header>
+
+  <section class="player" aria-label="Lecteur de l’animation">
+    <div class="screen" id="screen">
+      <canvas id="stage" width="1920" height="1080" role="img" aria-label="Animation en six plans : un bâtiment ne se construit pas seul ; maître d’ouvrage, maître d’œuvre et entreprises ; quinze métiers en quatre familles ; les missions d’études de la loi MOP ; le chantier jusqu’à la réception ; synthèse qui fait quoi et quand."></canvas>
+      <button class="bigplay" id="bigplay" type="button"><span class="tri"><svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true"><path d="M2 1.5v15L15 9z" fill="currentColor"/></svg></span><span id="bigtxt">Lancer l’animation · 1&nbsp;min&nbsp;30</span></button>
+      <div class="qcard" id="qcard" role="dialog" aria-live="polite" aria-labelledby="qt" hidden>
+        <p class="qk" id="qk"></p>
+        <p class="qt" id="qt"></p>
+        <button type="button" id="qgo">Continuer</button>
+      </div>
+      <div class="rec" id="rec" hidden></div>
+    </div>
+    <div class="bar">
+      <button class="ib primary" id="play" type="button" aria-label="Lecture"></button>
+      <button class="ib" id="restart" type="button" aria-label="Revenir au début"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 2v14M15 2.5v13L5.5 9z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
+      <div class="track">
+        <input type="range" id="scrub" min="0" max="90" step="0.01" value="0" aria-label="Position dans l’animation">
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+      </div>
+      <span class="tc" id="tc">0:00 / 1:30</span>
+      <div class="opts">
+        <label class="tog"><input type="checkbox" id="snd" checked> Son</label>
+        <label class="tog"><input type="checkbox" id="pz"> Pauses questions</label>
+        <button class="btn" id="fs" type="button">Plein écran</button>
+        <button class="btn" id="exp" type="button">Exporter en vidéo</button>
+      </div>
+    </div>
+    <p class="help">Espace&nbsp;: lecture ou pause · ← →&nbsp;: une seconde · 1 à 6&nbsp;: aller au plan · F&nbsp;: plein écran · M&nbsp;: son</p>
+    <p class="note" id="expnote"></p>
+  </section>
+
+  <section class="sec" aria-labelledby="h-plans">
+    <div class="sec-head"><h2 id="h-plans">Les six plans</h2><p>Cliquez un plan pour le lire depuis son début.</p></div>
+    <ol class="board" id="board"></ol>
+  </section>
+
+  <section class="sec" aria-labelledby="h-classe">
+    <div class="sec-head"><h2 id="h-classe">Exploiter en classe</h2><p>Une séance d’ouverture d’environ 25 minutes.</p></div>
+    <div class="steps">
+      <article class="step">
+        <span class="when">Avant · 3 min</span>
+        <h3>Recueillir les représentations</h3>
+        <p>«&nbsp;Qui construit un bâtiment&#8239;?&nbsp;» Chaque élève écrit trois métiers sur trois post-it. On les colle au tableau sans les trier&nbsp;: on y reviendra.</p>
+      </article>
+      <article class="step">
+        <span class="when">Pendant · 2 × 1 min 30</span>
+        <h3>Voir, puis revoir</h3>
+        <p>Premier passage d’une traite, sans prise de notes. Second passage avec «&nbsp;Pauses questions&nbsp;» cochée&nbsp;: l’animation s’arrête à la fin de chaque plan sur une question, une minute d’échange en binôme.</p>
+      </article>
+      <article class="step">
+        <span class="when">Après · 15 min</span>
+        <h3>Ranger, puis ordonner</h3>
+        <p>Les post-it du début sont rangés en quatre familles. Puis chaque groupe remet les huit missions dans l’ordre et place sous chacune l’acteur qui la mène. On compare avec le tableau final de l’animation.</p>
+      </article>
+    </div>
+    <div class="more">
+      <div>
+        <h3>Vocabulaire à retenir</h3>
+        <div class="chips"><span>maître d’ouvrage (MOA)</span><span>maître d’œuvre (MOE)</span><span>entreprise</span><span>lot</span><span>marché de travaux</span><span>contrôleur technique</span><span>coordonnateur SPS</span><span>programme</span><span>ESQ · APS · APD</span><span>permis de construire</span><span>PRO</span><span>DCE</span><span>ACT</span><span>ordre de service</span><span>DET</span><span>réception</span><span>réserves</span><span>AOR</span><span>garantie décennale</span></div>
+      </div>
+      <div>
+        <h3>Comment l’animation est construite</h3>
+        <ul>
+          <li>Une idée par plan, six plans qu’on peut arrêter.</li>
+          <li>Chaque famille d’acteurs garde sa couleur du début à la fin&nbsp;:
+            <ul class="fam" aria-label="Couleurs des familles">
+              <li><i style="background:#FF7A59"></i>maître d’ouvrage</li>
+              <li><i style="background:#4D8FEA"></i>maître d’œuvre</li>
+              <li><i style="background:#FFB627"></i>entreprises</li>
+              <li><i style="background:#3FBF7F"></i>utilisateurs</li>
+            </ul>
+          </li>
+          <li>La frise des missions reste à l’écran pendant les études et le chantier&nbsp;: on sait toujours où l’on en est.</li>
+          <li>Le même bâtiment traverse l’animation&nbsp;: dessiné, esquissé, coté, construit, réceptionné.</li>
+          <li>Chaque mission porte son sigle officiel et sa traduction en français courant.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Sources et choix</h3>
+        <ul>
+          <li>Loi n° 85-704 du 12 juillet 1985 (loi MOP), reprise depuis 2019 dans le Code de la commande publique.</li>
+          <li>Missions de maîtrise d’œuvre&nbsp;: décret n° 93-1268 du 29 novembre 1993, repris dans le même code.</li>
+          <li>Réception et garanties&nbsp;: Code civil, articles 1792 à 1792-6.</li>
+          <li>VISA, EXE et OPC ne sont pas détaillés&nbsp;: c’est une première lecture de l’acte de construire.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+/* ============ Réglages de base ============ */
+const W = 1920, H = 1080, DUR = 90, TAU = Math.PI * 2;
+const cv = document.getElementById('stage');
+const ctx = cv.getContext('2d');
+const C = {
+  ink:'#0E2240', paper:'#EAF0EC', bp:'#123C78', amber:'#FFB627', white:'#FFFFFF',
+  green:'#3FBF7F', coral:'#FF7A59', blue:'#4D8FEA',
+  greenD:'#1F9D5C', coralD:'#E4502C', blueD:'#2F6FD6', amberD:'#B87D00',
+  pencil:'#56667E', sheet:'#FBFCFA', glass:'#BFD7F5', sub:'#33445E'
+};
+// Une couleur par famille d'acteurs, tenue de bout en bout.
+const FAM = {
+  moa: { c: C.coral, d: C.coralD, name: 'Maître d’ouvrage', low: 'maître d’ouvrage' },
+  moe: { c: C.blue, d: C.blueD, name: 'Maître d’œuvre', low: 'maître d’œuvre' },
+  ent: { c: C.amber, d: C.amberD, name: 'Entreprises', low: 'entreprises' },
+  usa: { c: C.green, d: C.greenD, name: 'Utilisateurs', low: 'utilisateurs' }
+};
+const F = {
+  d:'"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif',
+  b:'"Instrument Sans","Segoe UI",system-ui,sans-serif',
+  m:'"IBM Plex Mono",Consolas,"Cascadia Mono",monospace'
+};
+
+/* ============ Mouvement ============ */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const E = {
+  out3: k => 1 - Math.pow(1 - k, 3),
+  in3: k => k * k * k,
+  io3: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  out5: k => 1 - Math.pow(1 - k, 5),
+  io5: k => k < .5 ? 16 * Math.pow(k, 5) : 1 - Math.pow(-2 * k + 2, 5) / 2,
+  back: k => { const c1 = 1.70158, c3 = c1 + 1; return k <= 0 ? 0 : 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
+  elastic: k => k <= 0 ? 0 : k >= 1 ? 1 : Math.pow(2, -10 * k) * Math.sin((k * 10 - .75) * (TAU / 3)) + 1
+};
+const rnd = (s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(19850712);
+
+/* ============ Outils de dessin ============ */
+function setFont(w, s, f) { ctx.font = `${w} ${s}px ${f || F.d}`; }
+function spacing(px) { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; }
+function rr(x, y, w, h, r) {
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); }
+
+// Typographie cinétique : chaque mot monte d'un masque, puis ressort par le haut.
+function kWords(str, x, y, o) {
+  const t = o.t, ws = str.split(' '), st = o.stagger ?? .08, du = o.dur ?? .7;
+  if (t < o.t0) return;
+  if (o.tOut != null && t > o.tOut + ws.length * st * .5 + .45) return;
+  let size = o.size;
+  setFont(o.weight || 800, size, o.font);
+  let sp = ctx.measureText(' ').width, wd = ws.map(w => ctx.measureText(w).width);
+  let total = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  if (o.maxW && total > o.maxW) {
+    size *= o.maxW / total; setFont(o.weight || 800, size, o.font);
+    sp = ctx.measureText(' ').width; wd = ws.map(w => ctx.measureText(w).width);
+    total = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  }
+  let cx = o.align === 'center' ? x - total / 2 : o.align === 'right' ? x - total : x;
+  const lift = size * 1.3;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx - 60, y - size * 1.1, total + 120, size * 1.5); ctx.clip();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  for (let i = 0; i < ws.length; i++) {
+    const d = o.t0 + i * st;
+    const a = E.out5(P(t, d, d + du));
+    const b = o.tOut != null ? E.in3(P(t, o.tOut + i * st * .5, o.tOut + i * st * .5 + .4)) : 0;
+    const dy = (1 - a) * lift - b * lift;
+    if (a > 0 && b < 1) {
+      let col = o.color;
+      const m = o.marks && o.marks[i];
+      if (m) {
+        const mk = E.io3(P(t, m.t0, m.t0 + .45));
+        if (mk > 0) { ctx.fillStyle = m.color; ctx.fillRect(cx - 10, y - size * .8 + dy, (wd[i] + 20) * mk, size); }
+        if (mk > .55 && m.text) col = m.text;
+      }
+      ctx.fillStyle = col; ctx.fillText(ws[i], cx, y + dy);
+    }
+    cx += wd[i] + sp;
+  }
+  ctx.restore();
+}
+function eyebrow(txt, x, y, col, t, t0, tOut) {
+  const a = E.out5(P(t, t0, t0 + .7)), b = tOut != null ? E.in3(P(t, tOut, tOut + .35)) : 0, k = a * (1 - b);
+  if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = col;
+  ctx.fillRect(x, y - 9, 40 * a, 4);
+  setFont(500, 22, F.m); spacing(4); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x + 56 - (1 - a) * 16, y);
+  spacing(0); ctx.restore();
+}
+function label(txt, x, y, o) {
+  const k = o.k; if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k * (o.alpha ?? 1); ctx.fillStyle = o.color;
+  setFont(o.weight || 500, o.size || 22, o.font || F.m); spacing(o.ls ?? 3);
+  ctx.textAlign = o.align || 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x, y + (1 - k) * 12);
+  spacing(0); ctx.restore();
+}
+// Texte simple qui respecte l'opacité en cours (pour ce qui est dessiné dans la feuille).
+function txt(s, x, y, font, col, align, alpha, ls) {
+  if (alpha <= .001) return;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.font = font; ctx.fillStyle = col; spacing(ls || 0);
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(s, x, y);
+  spacing(0); ctx.restore();
+}
+function pill(cx, cy, text, size, bg, fg, k, stroke) {
+  if (k <= .001) return;
+  setFont(700, size, F.b);
+  const w = ctx.measureText(text).width + size * 1.2, h = size * 1.75;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(k, k);
+  rr(-w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = bg; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2.5; ctx.stroke(); }
+  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, size * .06);
+  ctx.restore();
+}
+// Silhouette : pieds en (x, y), hauteur h.
+function person(x, y, h, o) {
+  const hr = h * .14, bw = h * .46, bh = h * .56, k = o.k ?? 1;
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.beginPath(); ctx.arc(0, -bh - hr * 1.45, hr, 0, TAU);
+  ctx.moveTo(-bw / 2, 0); ctx.lineTo(-bw / 2, -bh + bw / 2); ctx.arc(0, -bh + bw / 2, bw / 2, Math.PI, 0); ctx.lineTo(bw / 2, 0); ctx.closePath();
+  if (o.fill) { ctx.fillStyle = o.fill; ctx.fill(); }
+  if (o.helmet) { ctx.beginPath(); ctx.arc(0, -bh - hr * 1.45 - hr * .15, hr * 1.2, Math.PI, 0); ctx.closePath(); ctx.fillStyle = o.helmet; ctx.fill(); }
+  ctx.restore();
+}
+function checkMark(x, y, s, k, col, lw) {
+  if (k <= 0) return;
+  const a = [x - s * .5, y], b = [x - s * .12, y + s * .4], c = [x + s * .55, y - s * .45];
+  const L1 = Math.hypot(b[0] - a[0], b[1] - a[1]), L2 = Math.hypot(c[0] - b[0], c[1] - b[1]);
+  let r = (L1 + L2) * clamp(k);
+  ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(a[0], a[1]);
+  if (r <= L1) ctx.lineTo(a[0] + (b[0] - a[0]) * r / L1, a[1] + (b[1] - a[1]) * r / L1);
+  else { ctx.lineTo(b[0], b[1]); r -= L1; ctx.lineTo(b[0] + (c[0] - b[0]) * r / L2, b[1] + (c[1] - b[1]) * r / L2); }
+  ctx.stroke(); ctx.restore();
+}
+// Tampon : arrive grand et se pose.
+function stamp(x, y, w, h, lines, col, k, alpha, rot) {
+  if (k <= 0 || alpha <= 0) return;
+  const q = clamp(k), sc = 1 + .55 * (1 - E.out3(q));
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc); ctx.globalAlpha *= Math.min(1, q * 2.5) * alpha;
+  ctx.fillStyle = 'rgba(255,255,255,.72)'; rr(-w / 2, -h / 2, w, h, 10); ctx.fill();
+  ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.stroke();
+  rr(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16, 6); ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  lines.forEach(([s, font, y0, ls]) => { ctx.font = font; spacing(ls || 0); ctx.fillText(s, 0, y0); spacing(0); });
+  ctx.restore();
+}
+
+/* Tracés progressifs : une liste de polylignes dessinée au fil du crayon. */
+function polyLen(p) { let L = 0; for (let i = 2; i < p.length; i += 2) L += Math.hypot(p[i] - p[i - 2], p[i + 1] - p[i - 1]); return L; }
+function pathPrep(polys) { const lens = polys.map(polyLen); return { polys, total: lens.reduce((a, b) => a + b, 0) }; }
+function drawPath(pp, k) {
+  let rem = pp.total * clamp(k), tip = null;
+  if (rem <= 0) return null;
+  ctx.beginPath();
+  for (let n = 0; n < pp.polys.length && rem > 0; n++) {
+    const p = pp.polys[n];
+    ctx.moveTo(p[0], p[1]); tip = [p[0], p[1]];
+    for (let i = 2; i < p.length && rem > 0; i += 2) {
+      const x0 = p[i - 2], y0 = p[i - 1], x1 = p[i], y1 = p[i + 1], s = Math.hypot(x1 - x0, y1 - y0);
+      if (s <= rem) { ctx.lineTo(x1, y1); tip = [x1, y1]; rem -= s; }
+      else { const u = rem / s; tip = [x0 + (x1 - x0) * u, y0 + (y1 - y0) * u]; ctx.lineTo(tip[0], tip[1]); rem = 0; }
+    }
+  }
+  ctx.stroke();
+  return tip;
+}
+// Trait d'esquisse : léger débord aux extrémités, légère courbure.
+function sketchLine(x0, y0, x1, y1, amp) {
+  const L = Math.hypot(x1 - x0, y1 - y0), ux = (x1 - x0) / L, uy = (y1 - y0) / L, ov = 8 + rnd() * 12, bow = (rnd() - .5) * amp * 2;
+  const ax = x0 - ux * ov, ay = y0 - uy * ov, bx = x1 + ux * ov, by = y1 + uy * ov;
+  const n = Math.max(2, Math.round((L + 2 * ov) / 36)), pts = [];
+  for (let i = 0; i <= n; i++) { const u = i / n, off = bow * Math.sin(u * Math.PI) + (rnd() - .5) * 1.4; pts.push(ax + (bx - ax) * u - uy * off, ay + (by - ay) * u + ux * off); }
+  return pts;
+}
+function sketchEllipse(cx, cy, rx, ry) {
+  const pts = [], a0 = rnd() * TAU, n = 44;
+  for (let i = 0; i <= n * 1.1; i++) { const a = a0 + i / n * TAU, r = 1 + (rnd() - .5) * .03 + i / n * .06; pts.push(cx + Math.cos(a) * rx * r, cy + Math.sin(a) * ry * r); }
+  return pts;
+}
+function pencil(x, y) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(-.95);
+  ctx.fillStyle = '#F2D3A0'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(20, -7); ctx.lineTo(20, 7); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(7, -2.5); ctx.lineTo(7, 2.5); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.amber; ctx.fillRect(20, -7, 90, 14);
+  ctx.fillStyle = 'rgba(14,34,64,.18)'; ctx.fillRect(20, 2, 90, 5);
+  ctx.fillStyle = C.coral; ctx.fillRect(110, -7, 14, 14);
+  ctx.restore();
+}
+
+/* ============ Pictogrammes (centrés en x, y) ============ */
+function icoEuro(x, y, s, c) { setFont(800, s * 1.9); ctx.fillStyle = c; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('€', x, y + s * .1); }
+function icoSquare(x, y, s, c) { // équerre et crayon
+  ctx.save(); ctx.translate(x, y); ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = s * .14; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-s * .85, s * .75); ctx.lineTo(-s * .85, -s * .8); ctx.lineTo(s * .7, s * .75); ctx.closePath(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-s * .55, s * .47); ctx.lineTo(-s * .55, -s * .05); ctx.lineTo(-s * .03, s * .47); ctx.closePath(); ctx.stroke();
+  ctx.lineWidth = s * .26; ctx.beginPath(); ctx.moveTo(s * .95, -s * .95); ctx.lineTo(s * .38, -s * .38); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(s * .44, -s * .2); ctx.lineTo(s * .2, -s * .2); ctx.lineTo(s * .2, -s * .44); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function icoHelmet(x, y, s, c) {
+  ctx.save(); ctx.translate(x, y); ctx.fillStyle = c;
+  ctx.beginPath(); ctx.moveTo(-s * .8, s * .28); ctx.bezierCurveTo(-s * .8, -s * .8, s * .8, -s * .8, s * .8, s * .28); ctx.closePath(); ctx.fill();
+  rr(-s * 1.05, s * .2, s * 2.1, s * .28, s * .14); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.35)'; rr(-s * .1, -s * .56, s * .2, s * .72, s * .08); ctx.fill();
+  ctx.restore();
+}
+function icoPeople(x, y, s, c) { person(x - s * .42, y + s * .75, s * 1.25, { fill: c }); person(x + s * .42, y + s * .75, s * 1.5, { fill: c }); }
+function icoClock(x, y, s, c) {
+  ctx.save(); ctx.strokeStyle = c; ctx.lineWidth = s * .16; ctx.lineCap = 'round';
+  circle(x, y, s * .8); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - s * .5); ctx.moveTo(x, y); ctx.lineTo(x + s * .38, y + s * .1); ctx.stroke();
+  ctx.restore();
+}
+
+/* ============ Plan 1 · Un travail d'équipe (0 → 13,6 s) ============ */
+const WIN = [[1080, 1185, 1290, 1395], [1080, 1185, 1395]];
+function bldPolys(G) {
+  const rect = (x, y, w, h) => [x, y, x + w, y, x + w, y + h, x, y + h, x, y];
+  const ps = [[900, G, 1820, G], [1040, G, 1040, G - 300, 1520, G - 300, 1520, G], [1520, G - 160, 1760, G - 210, 1760, G]];
+  WIN[0].forEach(x => ps.push(rect(x, G - 260, 80, 70)));
+  WIN[1].forEach(x => ps.push(rect(x, G - 130, 80, 70)));
+  ps.push([1290, G, 1290, G - 120, 1370, G - 120, 1370, G], [1270, G - 132, 1390, G - 132], rect(1570, G - 130, 140, 90));
+  return ps;
+}
+const PB1 = pathPrep(bldPolys(800));
+function bpGrid(a) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(255,255,255,.055)'; ctx.beginPath();
+  for (let x = 40; x < W; x += 40) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); }
+  for (let y = 40; y < H; y += 40) { ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); }
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.beginPath();
+  for (let x = 200; x < W; x += 200) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); }
+  for (let y = 200; y < H; y += 200) { ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); }
+  ctx.stroke(); ctx.restore();
+}
+const Q1 = [['Qui le veut ?', C.coral, 5.8], ['Qui le paie ?', C.coral, 6.35], ['Qui le dessine ?', C.blue, 6.9], ['Qui le construit ?', C.amber, 7.45]];
+const CROWD = [[975, 78, 'moa'], [1045, 92, 'moe'], [1112, 70, 'moe'], [1180, 96, 'ent'], [1250, 84, 'ent'], [1318, 74, 'usa'], [1390, 98, 'ent'], [1460, 80, 'moe'], [1530, 90, 'moa'], [1600, 72, 'ent'], [1668, 94, 'usa'], [1736, 82, 'moe']];
+function s1(t) {
+  const out = P(t, 13.25, 13.6);
+  bpGrid(E.out3(P(t, 0, 1.4)));
+  eyebrow('L’ACTE DE CONSTRUIRE', 140, 150, C.amber, t, .3, 13.25);
+  // Filigrane de l'auteur, très discret
+  label('sur une idée de Jean-Philippe Amat', 1780, 1046, { k: E.out3(P(t, .8, 2.0)) * (1 - out), color: '#fff', alpha: .28, size: 17, font: F.b, weight: 400, align: 'right', ls: .5 });
+
+  // La façade se dessine au crayon, comme sur un tirage bleu.
+  const fk = E.out3(P(t, 4.6, 5.4));
+  if (fk > 0) {
+    ctx.save(); ctx.globalAlpha = fk; ctx.fillStyle = 'rgba(255,255,255,.07)'; ctx.fillRect(1040, 500, 480, 300);
+    ctx.beginPath(); ctx.moveTo(1520, 800); ctx.lineTo(1520, 640); ctx.lineTo(1760, 590); ctx.lineTo(1760, 800); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(160,200,255,.22)';
+    WIN[0].forEach(x => ctx.fillRect(x, 540, 80, 70)); WIN[1].forEach(x => ctx.fillRect(x, 670, 80, 70)); ctx.fillRect(1570, 670, 140, 90);
+    ctx.restore();
+  }
+  const kd = E.io3(P(t, .5, 4.8));
+  if (kd > 0) {
+    ctx.save(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const tip = drawPath(PB1, kd); ctx.restore();
+    if (tip && kd < 1) {
+      const g = ctx.createRadialGradient(tip[0], tip[1], 0, tip[0], tip[1], 28);
+      g.addColorStop(0, 'rgba(255,182,39,.7)'); g.addColorStop(1, 'rgba(255,182,39,0)');
+      ctx.fillStyle = g; circle(tip[0], tip[1], 28); ctx.fill(); ctx.fillStyle = C.amber; circle(tip[0], tip[1], 6); ctx.fill();
+    }
+  }
+  label('FAÇADE PRINCIPALE', 1040, 470, { k: E.out3(P(t, 4.8, 5.3)), color: '#fff', alpha: .55, size: 18, ls: 3 });
+
+  // Temps 1 : l'accroche
+  kWords('Un bâtiment', 140, 330, { size: 96, weight: 800, color: '#fff', t, t0: 1.0, tOut: 5.4 });
+  kWords('ne sort pas de terre', 140, 430, { size: 72, weight: 700, color: '#fff', t, t0: 1.4, tOut: 5.45, maxW: 860 });
+  kWords('tout seul.', 140, 520, { size: 72, weight: 700, color: '#fff', t, t0: 1.8, tOut: 5.5, marks: { 1: { t0: 2.6, color: C.amber, text: C.ink } } });
+
+  // Temps 2 : les questions, déjà dans la couleur de chaque famille
+  Q1.forEach(([q, col, t0], i) => {
+    const y = 330 + i * 86, k = E.back(P(t, t0, t0 + .45)) * (1 - E.in3(P(t, 9.9, 10.2)));
+    if (k > 0) { ctx.fillStyle = col; circle(160, y - 19, 12 * k); ctx.fill(); }
+    kWords(q, 196, y, { size: 56, weight: 700, color: '#fff', t, t0, tOut: 9.9 });
+  });
+  kWords('Et dans quel ordre ?', 140, 720, { size: 62, weight: 800, color: '#fff', t, t0: 8.1, tOut: 9.95, marks: { 3: { t0: 8.7, color: C.amber, text: C.ink } } });
+  // Les huit missions en germe, sous le bâtiment
+  const dl = E.io3(P(t, 8.3, 9.2));
+  if (dl > 0) {
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(1040, 880); ctx.lineTo(lerp(1040, 1760, dl), 880); ctx.stroke(); ctx.restore();
+  }
+  for (let i = 0; i < 8; i++) {
+    const k = E.back(P(t, 8.3 + i * .1, 8.7 + i * .1)); if (k <= 0) continue;
+    const x = 1040 + i * 720 / 7;
+    ctx.fillStyle = C.bp; circle(x, 880, 13 * k); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.fillStyle = i ? C.blue : C.coral; circle(x, 880, 6 * k); ctx.fill();
+  }
+
+  // Temps 3 : un travail d'équipe
+  kWords('Construire,', 140, 380, { size: 84, weight: 800, color: '#fff', t, t0: 10.1, tOut: 13.25 });
+  kWords('c’est un travail', 140, 470, { size: 84, weight: 800, color: '#fff', t, t0: 10.25, tOut: 13.25, maxW: 860 });
+  kWords('d’équipe.', 140, 560, { size: 84, weight: 800, color: '#fff', t, t0: 10.4, tOut: 13.25, marks: { 0: { t0: 11.0, color: C.amber, text: C.ink } } });
+  kWords('Des années de travail, des dizaines de métiers.', 140, 650, { size: 32, weight: 500, font: F.b, color: 'rgba(255,255,255,.88)', t, t0: 11.2, tOut: 13.3, stagger: .05, maxW: 860 });
+  CROWD.forEach(([x, h, fam], i) => {
+    const k = E.back(P(t, 10.4 + i * .07, 10.85 + i * .07)); if (k <= 0) return;
+    person(x, 800, h, { fill: FAM[fam].c, k: k * (1 - E.in3(out)) });
+  });
+}
+
+/* ============ Plan 2 · Trois rôles clés (13,6 → 28,6 s) ============ */
+const N1 = [620, 430], N2 = [330, 810], N3 = [910, 810], NR = 82;
+function ends(A, B) {
+  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, g = NR + 14;
+  return [[A[0] + ux * g, A[1] + uy * g], [B[0] - ux * g, B[1] - uy * g]];
+}
+function link(A, B, k, dashed, col, t, arrow) {
+  const [a, b] = ends(A, B), e = [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+  ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  if (dashed) { ctx.setLineDash([14, 12]); ctx.lineDashOffset = -t * 30; }
+  ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+  if (arrow && k > .9) {
+    const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), s = 20 * P(k, .9, 1);
+    ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(e[0] + Math.cos(ang) * 4, e[1] + Math.sin(ang) * 4);
+    ctx.lineTo(e[0] - Math.cos(ang - .45) * s, e[1] - Math.sin(ang - .45) * s); ctx.lineTo(e[0] - Math.cos(ang + .45) * s, e[1] - Math.sin(ang + .45) * s); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+function node(p, fam, ico, k) {
+  if (k <= 0) return;
+  ctx.save(); ctx.translate(p[0], p[1]); ctx.scale(k, k);
+  circle(0, 0, NR); ctx.fillStyle = FAM[fam].c; ctx.fill();
+  ico(0, 0, 38, C.ink);
+  ctx.restore();
+}
+function defBlock(x, y, fam, name, lines, t0, tOut, t) {
+  const a = E.out3(P(t, t0, t0 + .5)) * (1 - E.in3(P(t, tOut, tOut + .35)));
+  if (a > 0) { ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = FAM[fam].c; circle(x - 30, y - 14, 12 * a); ctx.fill(); ctx.restore(); }
+  kWords(name, x, y, { size: 40, weight: 800, color: C.ink, t, t0, tOut, maxW: 660 });
+  lines.forEach((ln, j) => kWords(ln, x, y + 46 + j * 36, { size: 27, weight: 500, font: F.b, color: j ? '#44546C' : C.ink, t, t0: t0 + .25 + j * .15, tOut, stagger: .04, maxW: 660 }));
+}
+function s2(t) {
+  eyebrow('LES TROIS RÔLES CLÉS', 140, 150, C.ink, t, 14.35, 28.25);
+  kWords('Trois rôles au cœur du projet', 140, 232, { size: 60, weight: 800, color: C.ink, t, t0: 14.5, tOut: 28.25, maxW: 940 });
+
+  // Les liens : contrats (traits pleins), direction des travaux (tirets)
+  const l1 = E.io3(P(t, 22.0, 22.6)), l2 = E.io3(P(t, 22.3, 22.9)), l3 = E.io3(P(t, 22.8, 23.5));
+  if (l1 > 0) link(N1, N2, l1, false, C.ink, t);
+  if (l2 > 0) link(N1, N3, l2, false, C.ink, t);
+  if (l3 > 0) link(N2, N3, l3, true, C.blueD, t, true);
+  // Le maître d'ouvrage paie : l'argent circule vers le maître d'œuvre et les entreprises.
+  if (t > 22.9) {
+    const mk = E.out3(P(t, 22.9, 23.4));
+    [[N1, N2], [N1, N3]].forEach(([A, B], n) => {
+      const [a, b] = ends(A, B);
+      for (let j = 0; j < 3; j++) {
+        const u = ((t - 22.9) / 2.2 + j / 3 + n * .17) % 1, x = lerp(a[0], b[0], u), y = lerp(a[1], b[1], u);
+        ctx.save(); ctx.globalAlpha = mk * Math.sin(u * Math.PI);
+        ctx.fillStyle = C.coralD; circle(x, y, 13); ctx.fill();
+        setFont(800, 16); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('€', x, y + 1);
+        ctx.restore();
+      }
+    });
+  }
+  node(N1, 'moa', icoEuro, E.back(P(t, 15.0, 15.6)));
+  node(N2, 'moe', icoSquare, E.back(P(t, 17.3, 17.9)));
+  node(N3, 'ent', icoHelmet, E.back(P(t, 19.6, 20.2)));
+  pill(N1[0], 548, 'MOA', 22, C.ink, '#fff', E.back(P(t, 15.3, 15.8)));
+  pill(N2[0], 930, 'MOE', 22, C.ink, '#fff', E.back(P(t, 17.6, 18.1)));
+  pill(N3[0], 930, 'ENTREPRISES', 22, C.ink, '#fff', E.back(P(t, 19.9, 20.4)));
+
+  // Définitions, colonne de droite
+  defBlock(1100, 410, 'moa', 'Maître d’ouvrage', ['commande l’ouvrage et le paie.', 'C’est le client : une commune, une région…'], 15.3, 23.6, t);
+  defBlock(1100, 590, 'moe', 'Maître d’œuvre', ['conçoit le projet et dirige les travaux.', 'L’architecte, avec les bureaux d’études.'], 17.6, 23.6, t);
+  defBlock(1100, 770, 'ent', 'Entreprises', ['construisent l’ouvrage.', 'Chacune réalise un lot de travaux.'], 19.9, 23.6, t);
+
+  // Ce que disent les liens
+  const lk = E.out3(P(t, 24.0, 24.5)) * (1 - E.in3(P(t, 28.25, 28.6)));
+  label('CONTRAT DE', 440, 604, { k: lk, color: C.ink, alpha: .8, size: 17, align: 'right', ls: 2 });
+  label('MAÎTRISE D’ŒUVRE', 440, 628, { k: lk, color: C.ink, alpha: .8, size: 17, align: 'right', ls: 2 });
+  label('MARCHÉS', 800, 604, { k: lk, color: C.ink, alpha: .8, size: 17, ls: 2 });
+  label('DE TRAVAUX', 800, 628, { k: lk, color: C.ink, alpha: .8, size: 17, ls: 2 });
+  label('DIRIGE ET CONTRÔLE', 620, 786, { k: lk, color: C.blueD, size: 17, weight: 700, align: 'center', ls: 2 });
+
+  const o = { size: 46, weight: 800, color: C.ink, t, tOut: 28.25, maxW: 680 };
+  kWords('Les entreprises signent', 1100, 470, { ...o, t0: 24.0, marks: { 2: { t0: 24.8, color: C.coral } } });
+  kWords('avec le maître d’ouvrage,', 1100, 536, { ...o, t0: 24.15 });
+  kWords('mais c’est le maître', 1100, 640, { ...o, t0: 25.0 });
+  kWords('d’œuvre qui les dirige.', 1100, 706, { ...o, t0: 25.15, marks: { 3: { t0: 25.8, color: C.blue } } });
+}
+
+/* ============ Plan 3 · Toute une équipe (28,6 → 42,6 s) ============ */
+const COLS = [['Côté maître d’ouvrage', 'moa'], ['Côté maître d’œuvre', 'moe'], ['Entreprises', 'ent'], ['Utilisateurs', 'usa']];
+const colX = c => 140 + c * 413, COLW = 380;
+const TEAM = [
+  ['Maître d’ouvrage', 0], ['Assistant MOA (AMO)', 0], ['Contrôleur technique', 0], ['Coordonnateur SPS', 0],
+  ['Architecte', 1], ['BET structure', 1], ['BET fluides', 1], ['Économiste', 1], ['Géomètre-topographe', 1], ['Pilote OPC', 1],
+  ['Entreprise d’un lot', 2], ['Conducteur de travaux', 2], ['Chef de chantier', 2],
+  ['Futur utilisateur', 3], ['Gestionnaire', 3]
+];
+const SLOT = (() => { const n = [0, 0, 0, 0]; return TEAM.map(([, c]) => n[c]++); })();
+const CLOUD = [[300, 400], [820, 392], [1340, 408], [560, 488], [1080, 496], [1560, 484], [310, 578], [830, 586], [1350, 574], [570, 668], [1090, 662], [1570, 674], [300, 758], [820, 766], [1340, 752]];
+const CL = [7, 2, 12, 4, 9, 0, 14, 5, 11, 3, 13, 1, 8, 10, 6];   // place de chaque carte dans le nuage
+const POPR = [5, 11, 0, 8, 13, 2, 9, 6, 14, 3, 10, 7, 1, 12, 4]; // ordre d'apparition
+function s3(t) {
+  eyebrow('AUTOUR DU TRIO', 140, 150, C.amber, t, 29.0, 42.25);
+  kWords('Toute une équipe autour du projet', 140, 232, { size: 60, weight: 800, color: '#fff', t, t0: 29.1, tOut: 42.25, maxW: 1640 });
+  label('15 MÉTIERS · 4 FAMILLES', 140, 292, { k: E.out3(P(t, 34.4, 34.9)) * (1 - E.in3(P(t, 42.25, 42.6))), color: C.amber, size: 21, ls: 3 });
+  COLS.forEach(([name, fam], c) => {
+    const k = E.out3(P(t, 31.6 + c * .1, 32.1 + c * .1)); if (k <= 0) return;
+    ctx.save(); ctx.globalAlpha = k; ctx.translate(0, (1 - k) * -24);
+    rr(colX(c), 312, COLW, 56, 16); ctx.fillStyle = FAM[fam].c; ctx.fill();
+    setFont(800, 25); ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(name, colX(c) + 22, 341);
+    ctx.restore();
+  });
+  const spot = E.io3(P(t, 34.9, 35.4)) * (1 - E.io3(P(t, 38.1, 38.6)));
+  TEAM.forEach(([name, c], i) => {
+    const tp = 29.7 + POPR[i] * .11, pk = E.back(P(t, tp, tp + .45)); if (pk <= 0) return;
+    const tf = 32.0 + i * .12, fk = E.io5(P(t, tf, tf + .8)), land = P(fk, .75, 1);
+    setFont(700, 24, F.b); const tw = ctx.measureText(name).width;
+    const w = lerp(tw + 72, COLW, fk), h = 52;
+    const [x0, y0] = CLOUD[CL[i]], x1 = colX(c) + COLW / 2, y1 = 420 + SLOT[i] * 66;
+    const cx = lerp(x0, x1, fk), cy = lerp(y0, y1, fk) - Math.sin(fk * Math.PI) * 40;
+    const me = i === 2, al = me ? 1 : 1 - .72 * spot, sc = pk * (1 + (me ? .07 * spot : 0) + .06 * Math.sin(land * Math.PI));
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc); ctx.globalAlpha = al;
+    rr(-w / 2, -h / 2, w, h, 26 - 12 * fk); ctx.fillStyle = '#fff'; ctx.fill();
+    if (land > 0) { ctx.globalAlpha = al * land; ctx.fillStyle = FAM[COLS[c][1]].c; ctx.fill(); ctx.globalAlpha = al; }
+    if (me && spot > 0) { ctx.lineWidth = 5; ctx.strokeStyle = `rgba(255,255,255,${spot})`; rr(-w / 2 - 8, -h / 2 - 8, w + 16, h + 16, 20); ctx.stroke(); }
+    circle(-w / 2 + 26, 0, 7); ctx.fillStyle = land > .5 ? C.ink : '#A3AEBD'; ctx.fill();
+    setFont(700, 24, F.b); ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(name, -w / 2 + 46, 1);
+    ctx.restore();
+  });
+  kWords('Le contrôleur technique vérifie la solidité et la sécurité.', 140, 930, { size: 42, weight: 700, font: F.b, color: '#fff', t, t0: 35.0, tOut: 38.2, stagger: .05, maxW: 1640,
+    marks: { 1: { t0: 35.8, color: C.coral, text: C.ink }, 2: { t0: 35.86, color: C.coral, text: C.ink } } });
+  kWords('Chacun sa mission, à son moment.', 140, 930, { size: 58, weight: 800, color: '#fff', t, t0: 38.6, tOut: 42.25,
+    marks: { 2: { t0: 39.3, color: C.amber, text: C.ink }, 5: { t0: 39.45, color: C.amber, text: C.ink } } });
+}
+
+/* ============ Plans 4 et 5 · Les missions de la loi MOP (42,6 → 76,2 s) ============ */
+const FR_Y = 905, FX = i => 215 + i * 205;
+const MISS = [
+  ['PROGRAMME', 'besoins, budget, délais', 'moa'], ['ESQ', 'première idée', 'moe'], ['APS', 'grandes lignes', 'moe'], ['APD', 'tout est fixé', 'moe'],
+  ['PRO', 'chaque détail', 'moe'], ['ACT', 'choisir les entreprises', 'moe'], ['DET', 'diriger le chantier', 'moe'], ['AOR', 'réceptionner', 'moe']
+];
+const PHASES = [['PROGRAMMATION', 0, 0], ['CONCEPTION', 1, 4], ['CONSULTATION', 5, 5], ['RÉALISATION', 6, 7]];
+const ST = [45.0, 47.7, 50.3, 52.9, 55.7, 59.9, 63.3, 69.6];     // chaque mission s'allume
+const STE = [47.5, 50.1, 52.7, 55.5, 59.35, 63.1, 69.4, 72.8];  // son texte sort
+const STN = [
+  { name: 'La commande', line: ['Ce que l’on veut construire,', 'pour quel budget, en combien de temps.'] },
+  { name: 'Esquisse', line: ['Une première idée,', 'dessinée à main levée.'] },
+  { name: 'Avant-projet sommaire', line: ['Les volumes, les surfaces,', 'un premier coût.'] },
+  { name: 'Avant-projet définitif', line: ['Tout est arrêté, le coût aussi.', 'Le permis de construire est déposé.'] },
+  { name: 'Projet', line: ['Chaque détail est dessiné et décrit,', 'pour que les entreprises chiffrent.'] },
+  { name: 'Passation des contrats de travaux', line: ['Pour chaque lot, l’offre la mieux notée,', 'pas forcément la moins chère.'] },
+  { name: 'Direction de l’exécution des travaux', line: ['Le maître d’œuvre dirige et contrôle ;', 'les entreprises exécutent.'] },
+  { name: 'Assistance aux opérations de réception', line: ['Le maître d’ouvrage accepte l’ouvrage,', 'avec ou sans réserves.'] }
+];
+const curStation = t => { let c = -1; for (let i = 0; i < 8; i++) if (t >= ST[i]) c = i; return c; };
+function progressX(t) {
+  const xa = FX(0) - 60;
+  let x = xa;
+  for (let i = 0; i < 8; i++) { const k = E.io3(P(t, ST[i] - .5, ST[i])); if (k <= 0) break; x = lerp(i ? FX(i - 1) : xa, FX(i), k); }
+  const k2 = E.io3(P(t, 73.0, 73.6)); if (k2 > 0) x = lerp(FX(7), FX(7) + 75, k2);
+  return x;
+}
+function frise(t) {
+  const a = E.out3(P(t, 43.6, 44.4)); if (a <= 0) return;
+  PHASES.forEach(([name, i0, i1], n) => {
+    const k = E.out3(P(t, 43.9 + n * .1, 44.5 + n * .1)); if (k <= 0) return;
+    const x0 = FX(i0) - 92, x1 = FX(i1) + 92, c = curStation(t), on = c >= i0 && c <= i1;
+    ctx.save(); ctx.globalAlpha = k; rr(x0, 846, (x1 - x0) * k, 6, 3); ctx.fillStyle = on ? C.ink : 'rgba(14,34,64,.2)'; ctx.fill(); ctx.restore();
+    label(name, (x0 + x1) / 2, 834, { k, color: C.ink, alpha: on ? .95 : .55, size: 16, weight: on ? 700 : 500, align: 'center', ls: 2 });
+  });
+  const xa = FX(0) - 60, xb = FX(7) + 75;
+  ctx.save(); ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(14,34,64,.22)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(xa, FR_Y); ctx.lineTo(lerp(xa, xb, a), FR_Y); ctx.stroke();
+  const pr = progressX(t);
+  if (pr > xa + 1) { ctx.strokeStyle = C.ink; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(xa, FR_Y); ctx.lineTo(pr, FR_Y); ctx.stroke(); }
+  if (t > 73.5) { // flèche vers l'usage du bâtiment
+    const k = E.out3(P(t, 73.5, 73.8)); ctx.fillStyle = C.ink; ctx.beginPath();
+    ctx.moveTo(pr + 16 * k, FR_Y); ctx.lineTo(pr - 6, FR_Y - 12 * k); ctx.lineTo(pr - 6, FR_Y + 12 * k); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+  const cur = curStation(t);
+  MISS.forEach(([sig, fr, who], i) => {
+    const x = FX(i), kn = E.back(P(t, 43.8 + i * .07, 44.3 + i * .07)); if (kn <= 0) return;
+    const lit = E.back(P(t, ST[i], ST[i] + .5)), f = FAM[who];
+    if (i === cur && t < 76.2) {
+      const u = ((t - ST[i]) % 1.3) / 1.3;
+      ctx.save(); ctx.globalAlpha = (1 - u) * .7; ctx.strokeStyle = f.d; ctx.lineWidth = 3; circle(x, FR_Y, 20 + u * 28); ctx.stroke(); ctx.restore();
+    }
+    ctx.save(); ctx.translate(x, FR_Y); ctx.scale(kn, kn);
+    circle(0, 0, 16); ctx.fillStyle = C.paper; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(14,34,64,.35)'; ctx.stroke();
+    if (lit > 0) { circle(0, 0, 16 * lit); ctx.fillStyle = f.c; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3.5; ctx.stroke(); }
+    ctx.restore();
+    const la = E.out3(P(t, 44.0 + i * .05, 44.5 + i * .05)), on = P(t, ST[i], ST[i] + .4);
+    label(sig, x, 954, { k: la, color: C.ink, alpha: .4 + .6 * on, size: 24, weight: 700, align: 'center', ls: 1 });
+    label(fr, x, 984, { k: la, color: C.ink, alpha: .35 + .5 * on, size: 18, font: F.b, weight: 500, align: 'center', ls: 0 });
+  });
+  // Jalons : permis de construire, ordre de service
+  [['PC', 3, 54.6], ['OS', 5, 63.2]].forEach(([s, i, t0]) => {
+    const k = E.back(P(t, t0, t0 + .5)); if (k <= 0) return;
+    const mx = (FX(i) + FX(i + 1)) / 2;
+    ctx.save(); ctx.translate(mx, FR_Y - 4); ctx.scale(k, k);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -44); ctx.stroke();
+    ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(0, -44); ctx.lineTo(48, -44); ctx.lineTo(41, -33); ctx.lineTo(48, -22); ctx.lineTo(0, -22); ctx.closePath(); ctx.fill();
+    setFont(700, 15, F.m); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, 7, -33);
+    ctx.restore();
+  });
+}
+function stationText(t, i) {
+  const t0 = ST[i], te = STE[i];
+  if (t < t0 - .05 || t > te + 1.2) return;
+  const f = FAM[MISS[i][2]], s = STN[i];
+  kWords(MISS[i][0], 140, 400, { size: 96, weight: 800, color: f.d, t, t0, tOut: te, maxW: 600 });
+  kWords(s.name, 140, 462, { size: 32, weight: 700, color: C.ink, t, t0: t0 + .15, tOut: te, maxW: 600, stagger: .05 });
+  s.line.forEach((ln, j) => kWords(ln, 140, 518 + j * 37, { size: 27, weight: 500, font: F.b, color: C.sub, t, t0: t0 + .35 + j * .1, tOut: te, stagger: .04, maxW: 600 }));
+  const k = E.out3(P(t, t0 + .5, t0 + 1)) * (1 - E.in3(P(t, te, te + .35)));
+  if (k > 0) {
+    label('MISSION DU', 140, 624, { k, color: C.ink, alpha: .65, size: 16, ls: 2 });
+    setFont(700, 20, F.b); const w = ctx.measureText(f.low).width + 30;
+    ctx.save(); ctx.globalAlpha = k; rr(264, 598, w, 36, 18); ctx.fillStyle = f.c; ctx.fill();
+    ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(f.low, 279, 617); ctx.restore();
+  }
+}
+
+/* --- La feuille de dessin : du programme au projet --- */
+const SX = 780, SY = 285, SW = 1000, SH = 490, FOLD = { x: 820, y: 380, w: 260, h: 180 };
+const WALLS = [[100, 70, 860, 70, 860, 380, 100, 380, 100, 70], [310, 70, 310, 380], [585, 70, 585, 230], [310, 230, 860, 230], [310, 280, 860, 280], [480, 280, 480, 380]];
+const PPW = pathPrep(WALLS);
+const PSK = pathPrep([
+  sketchLine(100, 70, 860, 70, 4), sketchLine(860, 70, 860, 380, 4), sketchLine(860, 380, 100, 380, 4), sketchLine(100, 380, 100, 70, 4),
+  sketchLine(310, 70, 310, 380, 5), sketchLine(310, 255, 860, 255, 5),
+  sketchEllipse(205, 225, 78, 118), sketchEllipse(585, 150, 215, 52), sketchEllipse(670, 322, 150, 40),
+  sketchLine(272, 170, 372, 150, 2), sketchLine(270, 300, 515, 320, 2)
+]);
+const tick = (x, y) => [x - 8, y + 8, x + 8, y - 8];
+const PDIM = pathPrep([
+  [100, 62, 100, 28], [860, 62, 860, 28], [100, 38, 860, 38], tick(100, 38), tick(860, 38),
+  [868, 70, 915, 70], [868, 380, 915, 380], [905, 70, 905, 380], tick(905, 70), tick(905, 380),
+  [100, 388, 100, 426], [310, 388, 310, 426], [480, 388, 480, 426], [860, 388, 860, 426], [100, 418, 860, 418],
+  tick(100, 418), tick(310, 418), tick(480, 418), tick(860, 418)
+]);
+const ROOMS = [['HALL', '104 m²', 205, 240], ['SALLE 1', '70 m²', 447, 104], ['SALLE 2', '70 m²', 722, 104], ['SANITAIRES', '27 m²', 416, 312], ['SALLE 3', '61 m²', 670, 308]];
+const PROG = [['Les besoins', 'quels espaces, pour qui', 'people'], ['Le budget', 'l’enveloppe financière', 'euro'], ['Les délais', 'la date d’ouverture', 'clock']];
+function progList(t) {
+  const out = E.in3(P(t, 47.6, 48.0));
+  if (t < 44.9 || out >= 1) return;
+  txt('PROGRAMME DE L’OPÉRATION', 60, 58, `500 16px ${F.m}`, C.ink, 'left', .6 * (1 - out) * E.out3(P(t, 44.9, 45.3)), 2);
+  PROG.forEach(([h, s, ico], r) => {
+    const k = E.out3(P(t, 45.1 + r * .2, 45.6 + r * .2)) * (1 - out); if (k <= 0) return;
+    const y = 150 + r * 108;
+    ctx.save(); ctx.globalAlpha *= k; ctx.translate((1 - k) * 30, 0);
+    ctx.fillStyle = '#FFE1D8'; circle(120, y, 40); ctx.fill();
+    if (ico === 'people') icoPeople(120, y - 6, 22, C.ink); else if (ico === 'euro') icoEuro(120, y, 24, C.ink); else icoClock(120, y, 26, C.ink);
+    setFont(800, 38); ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(h, 190, y + 2);
+    setFont(500, 22, F.b); ctx.fillStyle = '#4B5B74'; ctx.fillText(s, 190, y + 34);
+    ctx.lineWidth = 3; ctx.strokeStyle = C.ink; rr(880, y - 22, 44, 44, 9); ctx.stroke();
+    checkMark(902, y, 26, E.io3(P(t, 45.9 + r * .4, 46.2 + r * .4)), C.greenD, 5);
+    ctx.restore();
+  });
+}
+function cartouche(t) {
+  let i = -1; for (let j = 0; j < 5; j++) if (t >= ST[j]) i = j;
+  ctx.save(); ctx.strokeStyle = 'rgba(14,34,64,.45)'; ctx.lineWidth = 1.5; ctx.strokeRect(700, 436, 285, 42);
+  ctx.beginPath(); ctx.moveTo(870, 436); ctx.lineTo(870, 478); ctx.stroke(); ctx.restore();
+  txt('PHASE', 712, 452, `500 12px ${F.m}`, C.ink, 'left', .7, 1.5);
+  txt('INDICE', 882, 452, `500 12px ${F.m}`, C.ink, 'left', .7, 1.5);
+  txt(i >= 0 ? MISS[i][0] : '—', 712, 471, `700 17px ${F.m}`, C.ink, 'left', 1, 1);
+  txt(i >= 1 ? 'ABCD'[i - 1] : '—', 882, 471, `700 17px ${F.m}`, C.ink, 'left', 1, 1);
+}
+function drawing(t) {
+  cartouche(t);
+  progList(t);
+  // ESQ : l'esquisse, puis son fantôme sous le plan propre
+  const ks = P(t, 47.95, 49.9), sa = (1 - .8 * E.io3(P(t, 50.3, 50.8))) * (1 - E.io3(P(t, 55.7, 56.2)));
+  if (ks > 0 && sa > 0) {
+    ctx.save(); ctx.globalAlpha *= sa; ctx.strokeStyle = C.pencil; ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const tip = drawPath(PSK, E.io3(ks)); ctx.restore();
+    [['accueil', 205, 232, 49.0], ['salles', 585, 158, 49.3], ['services', 670, 330, 49.6]].forEach(([s, x, y, t0]) =>
+      txt(s, x, y, `italic 500 28px ${F.b}`, C.pencil, 'center', sa * E.out3(P(t, t0, t0 + .4)) * (1 - E.io3(P(t, 50.3, 50.7)))));
+    if (tip && ks < 1) { ctx.save(); ctx.globalAlpha *= sa; pencil(tip[0], tip[1]); ctx.restore(); }
+  }
+  // APS : murs au trait, pièces et surfaces
+  const kw = E.io3(P(t, 50.4, 51.5));
+  if (kw > 0) { ctx.save(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.lineCap = 'square'; ctx.lineJoin = 'miter'; drawPath(PPW, kw); ctx.restore(); }
+  ROOMS.forEach(([n, s, x, y], r) => {
+    const k = E.out3(P(t, 51.2 + r * .1, 51.7 + r * .1));
+    txt(n, x, y, `500 16px ${F.m}`, C.ink, 'center', .8 * k, 1.5);
+    txt(s, x, y + 24, `600 19px ${F.b}`, C.ink, 'center', .7 * k);
+  });
+  txt('CIRCULATION', 585, 262, `500 13px ${F.m}`, C.ink, 'center', .55 * E.out3(P(t, 51.7, 52.1)), 1.5);
+  // APD : cotes en bleu
+  const kc = E.io3(P(t, 52.95, 53.8));
+  if (kc > 0) { ctx.save(); ctx.strokeStyle = C.blueD; ctx.lineWidth = 2; ctx.lineCap = 'round'; drawPath(PDIM, kc); ctx.restore(); }
+  const kv = E.out3(P(t, 53.4, 53.9));
+  if (kv > 0) {
+    const f = `600 20px ${F.b}`;
+    txt('30,40', 480, 30, f, C.blueD, 'center', kv); txt('8,40', 205, 410, f, C.blueD, 'center', kv);
+    txt('6,80', 395, 410, f, C.blueD, 'center', kv); txt('15,20', 670, 410, f, C.blueD, 'center', kv);
+    ctx.save(); ctx.translate(927, 225); ctx.rotate(Math.PI / 2); txt('12,40', 0, 0, f, C.blueD, 'center', kv); ctx.restore();
+  }
+  // PRO : murs pochés, baies, portes, mobilier
+  const pk = E.io3(P(t, 55.8, 56.4));
+  if (pk > 0) {
+    ctx.save(); ctx.globalAlpha *= pk; ctx.strokeStyle = C.ink; ctx.lineCap = 'square';
+    ctx.lineWidth = 14; ctx.beginPath(); ctx.rect(100, 70, 760, 310); ctx.stroke();
+    ctx.lineWidth = 8; ctx.beginPath(); WALLS.slice(1).forEach(p => { ctx.moveTo(p[0], p[1]); ctx.lineTo(p[2], p[3]); }); ctx.stroke();
+    ctx.fillStyle = C.sheet;
+    [[175, 371, 70, 18], [520, 225, 45, 10], [790, 225, 45, 10], [330, 275, 34, 10], [505, 275, 45, 10], [305, 234, 10, 42],
+     [360, 62, 175, 16], [635, 62, 175, 16], [92, 140, 16, 170], [560, 372, 240, 16]].forEach(([x, y, w, h]) => ctx.fillRect(x, y, w, h));
+    ctx.lineWidth = 2; ctx.beginPath();
+    [[360, 535], [635, 810]].forEach(([a, b]) => { ctx.moveTo(a, 66); ctx.lineTo(b, 66); ctx.moveTo(a, 74); ctx.lineTo(b, 74); ctx.moveTo(a, 63); ctx.lineTo(a, 77); ctx.moveTo(b, 63); ctx.lineTo(b, 77); });
+    ctx.moveTo(96, 140); ctx.lineTo(96, 310); ctx.moveTo(104, 140); ctx.lineTo(104, 310); ctx.moveTo(93, 140); ctx.lineTo(107, 140); ctx.moveTo(93, 310); ctx.lineTo(107, 310);
+    ctx.moveTo(560, 376); ctx.lineTo(800, 376); ctx.moveTo(560, 384); ctx.lineTo(800, 384); ctx.moveTo(560, 373); ctx.lineTo(560, 387); ctx.moveTo(800, 373); ctx.lineTo(800, 387);
+    ctx.stroke();
+    const dk = E.io3(P(t, 56.2, 56.8));
+    if (dk > 0) {
+      ctx.lineWidth = 2.5; ctx.beginPath();
+      [[175, 380, 70, -Math.PI / 2, 0, 175, 310], [520, 230, 45, -Math.PI / 2, 0, 520, 185], [835, 230, 45, -Math.PI / 2, -Math.PI, 835, 185],
+       [330, 280, 34, Math.PI / 2, 0, 330, 314], [505, 280, 45, Math.PI / 2, 0, 505, 325]].forEach(([x, y, r, a0, a1, lx, ly]) => {
+        ctx.moveTo(x, y); ctx.lineTo(lerp(x, lx, dk), lerp(y, ly, dk));
+        const s = a0, e = lerp(a0, a1, dk), ccw = a1 < a0;
+        ctx.moveTo(x + Math.cos(s) * r, y + Math.sin(s) * r); ctx.arc(x, y, r, s, e, ccw);
+      });
+      ctx.stroke();
+    }
+    const fk = E.out3(P(t, 56.5, 57.1));
+    if (fk > 0) {
+      ctx.globalAlpha *= fk; ctx.lineWidth = 1.6; ctx.beginPath();
+      [340, 615].forEach(x0 => { for (let c = 0; c < 3; c++) for (let r = 0; r < 2; r++) ctx.rect(x0 + c * 60, 150 + r * 40, 50, 22); });
+      for (let i = 0; i < 3; i++) { ctx.rect(338 + i * 44, 358, 26, 14); ctx.moveTo(351 + i * 44 + 10, 352); ctx.ellipse(351 + i * 44, 352, 10, 6, 0, 0, TAU); }
+      for (let i = 0; i < 4; i++) ctx.rect(560 + i * 72, 347, 52, 22);
+      ctx.moveTo(150, 130); ctx.arc(205, 130, 55, Math.PI, 0, true);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  // Tampon du permis de construire
+  stamp(770, 150, 290, 84, [['PERMIS DE CONSTRUIRE', `800 24px ${F.d}`, -2], ['DÉPOSÉ EN MAIRIE', `500 14px ${F.m}`, 24, 2]],
+    C.coralD, P(t, 54.6, 54.85), 1 - E.io3(P(t, 55.6, 56.0)), -.12);
+}
+function sheet(t) {
+  const a = E.out3(P(t, 44.1, 44.7)), fold = E.io3(P(t, 59.7, 60.4));
+  if (a <= 0 || t > 60.45) return;
+  const sc = lerp(1, FOLD.w / SW, fold), x = lerp(SX, FOLD.x, fold), y = lerp(SY + (1 - a) * 40, FOLD.y, fold);
+  ctx.save(); ctx.globalAlpha = a * (1 - P(fold, .55, 1)); ctx.translate(x, y); ctx.scale(sc, sc);
+  ctx.save(); ctx.shadowColor = 'rgba(14,34,64,.16)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
+  rr(0, 0, SW, SH, 12); ctx.fillStyle = C.sheet; ctx.fill(); ctx.restore();
+  ctx.save(); rr(0, 0, SW, SH, 12); ctx.clip();
+  ctx.strokeStyle = 'rgba(47,111,214,.06)'; ctx.lineWidth = 1; ctx.beginPath();
+  for (let gx = 20; gx < SW; gx += 20) { ctx.moveTo(gx + .5, 0); ctx.lineTo(gx + .5, SH); }
+  for (let gy = 20; gy < SH; gy += 20) { ctx.moveTo(0, gy + .5); ctx.lineTo(SW, gy + .5); }
+  ctx.stroke();
+  drawing(t);
+  ctx.restore(); ctx.restore();
+}
+
+/* --- ACT : le dossier part, les offres reviennent --- */
+const OFFERS = [['Offre A', '1 280 k€', '71/100'], ['Offre B', '1 195 k€', '78/100'], ['Offre C', '1 240 k€', '86/100']];
+function dce(t) {
+  if (t < 59.9 || t > 63.6) return;
+  const fo = E.in3(P(t, 63.1, 63.5)), a = E.out3(P(t, 60.1, 60.5)) * (1 - fo);
+  const { x, y, w, h } = FOLD;
+  if (a > 0) {
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.ink;
+    rr(x, y - 22, 110, 34, 8); ctx.fill(); rr(x, y, w, h, 12); ctx.fill();
+    setFont(800, 60); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText('DCE', x + w / 2, y + h / 2 + 22);
+    ctx.restore();
+    label('DOSSIER DE CONSULTATION', x + w / 2, y + h + 42, { k: a, color: C.ink, alpha: .75, size: 16, align: 'center', ls: 2 });
+    label('DES ENTREPRISES', x + w / 2, y + h + 66, { k: a, color: C.ink, alpha: .75, size: 16, align: 'center', ls: 2 });
+  }
+  const sel = E.out3(P(t, 61.9, 62.3));
+  OFFERS.forEach(([n, price, note], i) => {
+    const cy = 385 + i * 140;
+    const ak = E.io3(P(t, 60.5 + i * .12, 61.1 + i * .12)) * (1 - fo);
+    if (ak > 0) {
+      const A = [x + w + 16, y + h / 2], B = [1284, cy], M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2 - 30];
+      ctx.save(); ctx.globalAlpha = ak * (i === 2 ? 1 : 1 - .6 * sel); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.setLineDash([8, 9]); ctx.lineCap = 'round';
+      ctx.beginPath(); for (let s = 0; s <= 24; s++) { const u = ak * s / 24, qx = (1 - u) * (1 - u) * A[0] + 2 * (1 - u) * u * M[0] + u * u * B[0], qy = (1 - u) * (1 - u) * A[1] + 2 * (1 - u) * u * M[1] + u * u * B[1]; s ? ctx.lineTo(qx, qy) : ctx.moveTo(qx, qy); }
+      ctx.stroke(); ctx.restore();
+    }
+    const ck = E.out5(P(t, 60.9 + i * .15, 61.5 + i * .15)) * (1 - fo); if (ck <= 0) return;
+    const chosen = i === 2, dim = chosen ? 1 : 1 - .62 * sel;
+    ctx.save(); ctx.globalAlpha = ck * dim; ctx.translate((1 - ck) * 120, 0);
+    ctx.save(); ctx.shadowColor = 'rgba(14,34,64,.14)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 10; rr(1300, cy - 55, 440, 110, 16); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+    if (chosen && sel > 0) { rr(1300, cy - 55, 440, 110, 16); ctx.strokeStyle = C.amber; ctx.lineWidth = 6 * sel; ctx.stroke(); }
+    ctx.fillStyle = C.amber; circle(1356, cy, 32); ctx.fill(); icoHelmet(1356, cy + 3, 20, C.ink);
+    setFont(800, 30); ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(n, 1408, cy - 6);
+    setFont(500, 22, F.b); ctx.fillStyle = C.sub; ctx.fillText(`${price} · note ${note}`, 1408, cy + 28);
+    if (chosen && sel > 0) { ctx.fillStyle = C.greenD; circle(1700, cy, 22 * sel); ctx.fill(); checkMark(1700, cy, 22, P(t, 62.1, 62.4), '#fff', 5); }
+    ctx.restore();
+  });
+  stamp(1630, 385 + 280 + 92, 250, 70, [['MARCHÉ SIGNÉ', `800 24px ${F.d}`, 0], ['PAR LE MAÎTRE D’OUVRAGE', `500 12px ${F.m}`, 22, 1.5]],
+    C.coralD, P(t, 62.4, 62.65), 1 - fo, -.1);
+}
+
+/* --- DET et AOR : le bâtiment sort de terre --- */
+const GC = 760;
+function crane(t) {
+  const up = E.out3(P(t, 63.6, 64.3)), jb = E.out3(P(t, 64.1, 64.6)), down = E.in3(P(t, 68.5, 69.1));
+  const k = up * (1 - down); if (k <= 0) return;
+  const x = 905, top = lerp(GC, 365, k), jy = top - 26, jk = jb * (1 - down);
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = C.amberD; ctx.lineWidth = 4; ctx.beginPath();
+  ctx.moveTo(x - 14, GC); ctx.lineTo(x - 14, top); ctx.moveTo(x + 14, GC); ctx.lineTo(x + 14, top);
+  for (let y = GC; y > top + 28; y -= 28) { ctx.moveTo(x - 14, y); ctx.lineTo(x + 14, y - 28); }
+  ctx.stroke();
+  if (jk > 0) {
+    const xr = x + 575 * jk, xl = x - 90 * jk;
+    ctx.beginPath(); ctx.moveTo(xl, jy); ctx.lineTo(xr, jy); ctx.moveTo(xl, jy - 16); ctx.lineTo(xr - 30 * jk, jy - 16);
+    for (let xx = x + 20; xx < xr - 40; xx += 32) { ctx.moveTo(xx, jy); ctx.lineTo(xx + 16, jy - 16); ctx.lineTo(xx + 32, jy); }
+    ctx.moveTo(x, jy - 60); ctx.lineTo(xr - 30 * jk, jy - 16); ctx.moveTo(x, jy - 60); ctx.lineTo(xl, jy - 16);
+    ctx.moveTo(x - 12, jy - 16); ctx.lineTo(x, jy - 60); ctx.lineTo(x + 12, jy - 16);
+    ctx.stroke();
+    ctx.fillStyle = C.ink; ctx.fillRect(xl - 4, jy - 4, 44 * jk, 34);
+    const ph = t - 64.6, tx = x + lerp(130, 520, .5 + .5 * Math.sin(ph * 1.2)) * jk, hy = jy + lerp(70, 210, .5 + .5 * Math.sin(ph * 1.7 + 1));
+    ctx.fillStyle = C.ink; ctx.fillRect(tx - 12, jy - 3, 24, 9);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(tx, jy + 6); ctx.lineTo(tx, hy); ctx.stroke();
+    ctx.fillRect(tx - 48, hy, 96, 13);
+  }
+  ctx.fillStyle = C.amber; rr(x - 22, top - 26, 44, 28, 5); ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.restore();
+}
+function building(t) {
+  const G = GC;
+  const gk = E.io3(P(t, 63.4, 63.9));
+  if (gk <= 0) return;
+  ctx.fillStyle = 'rgba(14,34,64,.07)'; ctx.fillRect(1290 - 470 * gk, G, 960 * gk, 26);
+  ctx.save(); ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(1290 - 470 * gk, G); ctx.lineTo(1290 + 490 * gk, G); ctx.stroke(); ctx.restore();
+  const fk = E.out3(P(t, 64.0, 64.5));
+  if (fk > 0) { ctx.fillStyle = '#8C98A8'; ctx.fillRect(1030, G + 2, 500, 20 * fk); ctx.fillRect(1520, G + 2, 250, 20 * fk); }
+  crane(t);
+  ctx.save(); ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.lineJoin = 'round';
+  const ak = E.io3(P(t, 65.0, 66.0));
+  if (ak > 0) {
+    ctx.save(); ctx.beginPath(); ctx.rect(1500, G - 212 * ak, 300, 212 * ak + 2); ctx.clip();
+    ctx.beginPath(); ctx.moveTo(1520, G); ctx.lineTo(1520, G - 160); ctx.lineTo(1760, G - 210); ctx.lineTo(1760, G); ctx.closePath();
+    ctx.fillStyle = '#FFFFFF'; ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+  const h = 150 * E.io3(P(t, 64.5, 65.4)) + 150 * E.io3(P(t, 65.5, 66.3));
+  if (h > 0) {
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(1040, G - h, 480, h); ctx.strokeRect(1040, G - h, 480, h);
+    if (h > 150) { ctx.fillStyle = C.ink; ctx.fillRect(1036, G - 153, 488, 6); }
+  }
+  const rk = E.out3(P(t, 66.3, 66.7));
+  if (rk > 0) { ctx.fillStyle = C.ink; ctx.fillRect(1280 - 252 * rk, G - 306, 504 * rk, 12); }
+  const wins = [...WIN[0].map(x => [x, G - 260, 80, 70]), ...WIN[1].map(x => [x, G - 130, 80, 70]), [1570, G - 130, 140, 90]];
+  wins.forEach(([x, y, w, hh], n) => {
+    const k = E.back(P(t, 66.8 + n * .08, 67.2 + n * .08)); if (k <= 0) return;
+    ctx.save(); ctx.translate(x + w / 2, y + hh / 2); ctx.scale(k, k);
+    ctx.fillStyle = C.glass; ctx.fillRect(-w / 2, -hh / 2, w, hh); ctx.lineWidth = 3; ctx.strokeRect(-w / 2, -hh / 2, w, hh);
+    ctx.beginPath(); ctx.moveTo(0, -hh / 2); ctx.lineTo(0, hh / 2); ctx.stroke();
+    ctx.restore();
+  });
+  const dk = E.out3(P(t, 67.5, 67.8));
+  if (dk > 0) { ctx.fillStyle = C.ink; ctx.fillRect(1290, G - 120 * dk, 80, 120 * dk); ctx.fillStyle = C.amber; ctx.fillRect(1356, G - 62, 6, 6 * dk); }
+  const ck = E.out3(P(t, 67.7, 68.0));
+  if (ck > 0) { ctx.fillStyle = C.ink; ctx.fillRect(1270, G - 136, 120 * ck, 8); }
+  ctx.restore();
+  // Deux compagnons sur le chantier
+  const wk = E.back(P(t, 64.4, 64.8)) * (1 - E.in3(P(t, 68.5, 68.9)));
+  if (wk > 0) [[1170, 0], [1450, 1.3]].forEach(([x, ph]) => person(x + Math.sin((t + ph) * 2) * 6, G, 62, { fill: C.ink, helmet: C.amber, k: wk }));
+  // AOR : procès-verbal, réserves puis levée des réserves
+  stamp(1270, 395, 330, 78, [['PV DE RÉCEPTION', `800 28px ${F.d}`, 2], ['SIGNÉ PAR LE MAÎTRE D’OUVRAGE', `500 12px ${F.m}`, 24, 1.5]],
+    C.coralD, P(t, 70.2, 70.45), 1 - E.io3(P(t, 72.8, 73.2)), -.08);
+  const pins = [[1120, G - 225], [1225, G - 95], [1640, G - 85]];
+  const pOut = 1 - E.io3(P(t, 73.0, 73.4));
+  pins.forEach(([x, y], i) => {
+    const k = E.back(P(t, 70.8 + i * .15, 71.2 + i * .15)) * pOut; if (k <= 0) return;
+    const ok = P(t, 71.9 + i * .15, 72.2 + i * .15);
+    ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+    circle(0, 0, 20); ctx.fillStyle = ok > .5 ? C.greenD : C.coralD; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.restore();
+    if (ok > .5) checkMark(x, y, 18 * k, 1, '#fff', 4);
+    else { setFont(800, 24); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('!', x, y + 1); }
+  });
+  const rl = E.out3(P(t, 70.9, 71.3)) * pOut, lev = t >= 71.9;
+  label(lev ? 'RÉSERVES LEVÉES' : 'RÉSERVES', 1760, 500, { k: rl, color: lev ? C.greenD : C.coralD, size: 18, weight: 700, align: 'right', ls: 2 });
+  // Les utilisateurs s'installent
+  for (let j = 0; j < 3; j++) {
+    const u = P(t, 73.2 + j * .4, 75.1 + j * .4); if (u <= 0) continue;
+    const x = lerp(780 - j * 90, 1330, u), a = E.out3(P(u, 0, .12)) * (1 - P(u, .88, 1));
+    ctx.save(); ctx.globalAlpha = a; person(x, G - Math.abs(Math.sin(u * 18)) * 4, 74 - j * 6, { fill: C.greenD }); ctx.restore();
+  }
+}
+const GAR = [['1 an', 'parfait achèvement'], ['2 ans', 'bon fonctionnement'], ['10 ans', 'garantie décennale']];
+function s45(t) {
+  eyebrow('LOI MOP · 1985', 140, 150, C.blueD, t, 43.3, 75.95);
+  kWords('Les études : de l’idée au projet', 140, 232, { size: 60, weight: 800, color: C.ink, t, t0: 43.4, tOut: 59.35, maxW: 1640 });
+  kWords('Le chantier : des marchés à la réception', 140, 232, { size: 60, weight: 800, color: C.ink, t, t0: 59.8, tOut: 75.95, maxW: 1640 });
+  sheet(t);
+  dce(t);
+  building(t);
+  frise(t);
+  for (let i = 0; i < 8; i++) stationText(t, i);
+  // DET : l'ordre de service, puis les réunions de chantier
+  label('ORDRE DE SERVICE : LE CHANTIER DÉMARRE', 140, 700, { k: E.out3(P(t, 63.5, 63.9)) * (1 - E.in3(P(t, 64.9, 65.2))), color: C.ink, size: 18, weight: 700, ls: 2 });
+  const n = 1 + Math.floor(55 * P(t, 65.2, 69.2));
+  label(`RÉUNION DE CHANTIER Nº ${n}`, 140, 700, { k: E.out3(P(t, 65.2, 65.6)) * (1 - E.in3(P(t, 69.2, 69.5))), color: C.ink, size: 18, weight: 700, ls: 2 });
+  // Après la réception : les garanties
+  kWords('Et après ?', 140, 400, { size: 96, weight: 800, color: C.ink, t, t0: 73.0, tOut: 75.95 });
+  kWords('La réception fait démarrer les garanties :', 140, 462, { size: 30, weight: 700, color: C.ink, t, t0: 73.2, tOut: 75.95, maxW: 600, stagger: .05 });
+  GAR.forEach(([d, s], r) => {
+    const k = E.back(P(t, 73.5 + r * .3, 73.9 + r * .3)) * (1 - E.in3(P(t, 75.95, 76.2))); if (k <= 0) return;
+    const y = 540 + r * 64;
+    ctx.save(); ctx.globalAlpha = clamp(k); ctx.translate(140, y); ctx.scale(k, k);
+    rr(0, -24, 112, 46, 23); ctx.fillStyle = C.amber; ctx.fill();
+    setFont(800, 24); ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(d, 56, 0);
+    setFont(600, 27, F.b); ctx.textAlign = 'left'; ctx.fillText(s, 130, 1);
+    ctx.restore();
+  });
+}
+
+/* ============ Plan 6 · À retenir (76,2 → 90 s) ============ */
+const MX = i => 590 + i * 158;
+const MROWS = [['moa', 450], ['moe', 540], ['ent', 630], ['usa', 720]];
+const LANES = {
+  moa: [[0, 7, 'décide, finance et valide chaque étape']],
+  moe: [[1, 7, 'conçoit le projet, puis dirige et contrôle les travaux']],
+  ent: [[5, 7, 'répondent, puis construisent']],
+  usa: [[0, 0, 'besoins'], [7, 7, 's’installent']]
+};
+const ENDS = ['dessiner les plans', 'chiffrer les travaux', 'mesurer le terrain'];
+function s6(t) {
+  eyebrow('À RETENIR', 140, 150, C.amber, t, 76.9, null);
+  label('Loi MOP (1985), reprise dans le Code de la commande publique', 1780, 150, { k: E.out3(P(t, 78.0, 78.6)), color: '#fff', alpha: .5, size: 17, align: 'right', ls: .5 });
+  kWords('Qui fait quoi, et quand ?', 140, 232, { size: 60, weight: 800, color: '#fff', t, t0: 77.0 });
+  for (let i = 0; i < 8; i += 2) {
+    const k = E.out3(P(t, 77.2, 77.8));
+    ctx.fillStyle = `rgba(255,255,255,${.035 * k})`; ctx.fillRect(MX(i) - 79, 330, 158, 430);
+  }
+  PHASES.forEach(([name, i0, i1], n) => {
+    const k = E.out3(P(t, 77.2 + n * .08, 77.7 + n * .08)); if (k <= 0) return;
+    const x0 = MX(i0) - 72, x1 = MX(i1) + 72;
+    ctx.save(); ctx.globalAlpha = k; rr(x0, 306, (x1 - x0) * k, 4, 2); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fill(); ctx.restore();
+    label(name, (x0 + x1) / 2, 294, { k, color: '#fff', alpha: .7, size: 14, align: 'center', ls: 2 });
+  });
+  MISS.forEach(([sig], i) => label(sig, MX(i), 362, { k: E.out3(P(t, 77.3 + i * .05, 77.8 + i * .05)), color: '#fff', size: 21, weight: 700, align: 'center', ls: 1 }));
+  const hl = E.io3(P(t, 85.2, 85.7));
+  MROWS.forEach(([fam, y], r) => {
+    const t0 = 77.7 + r * .55, f = FAM[fam], dimR = fam === 'moe' ? 1 : 1 - .6 * hl;
+    const lk = E.out3(P(t, t0, t0 + .5));
+    if (lk > 0) {
+      ctx.save(); ctx.globalAlpha = lk * dimR; ctx.fillStyle = f.c; circle(152, y, 11); ctx.fill();
+      setFont(800, 28); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(f.name, 178, y + 1);
+      ctx.restore();
+    }
+    LANES[fam].forEach(([i0, i1, s], j) => {
+      const bk = E.io3(P(t, t0 + .15 + j * .12, t0 + .95 + j * .12)); if (bk <= 0) return;
+      const x0 = MX(i0) - 72, x1 = MX(i1) + 72, w = (x1 - x0) * bk;
+      ctx.save(); ctx.globalAlpha = dimR;
+      rr(x0, y - 27, Math.max(w, 2), 54, 27); ctx.fillStyle = f.c; ctx.fill();
+      if (fam === 'moe' && hl > 0) {
+        const u = ((t - 85.2) % 1.4) / 1.4;
+        ctx.globalAlpha = hl * (1 - u); ctx.strokeStyle = C.amber; ctx.lineWidth = 4; rr(x0 - 6 - u * 10, y - 33 - u * 10, w + 12 + u * 20, 66 + u * 20, 33 + u * 10); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      const tk = P(t, t0 + .75, t0 + 1.15);
+      if (tk > 0) {
+        ctx.save(); rr(x0, y - 27, Math.max(w, 2), 54, 27); ctx.clip();
+        ctx.globalAlpha = dimR * tk; setFont(700, s.length > 12 ? 21 : 19, F.b); ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(s, (x0 + x1) / 2, y + 1); ctx.restore();
+      }
+      ctx.restore();
+    });
+  });
+  kWords('Des acteurs, des missions, des phases :', 140, 865, { size: 52, weight: 800, color: '#fff', t, t0: 80.6, tOut: 84.4, maxW: 1640,
+    marks: { 1: { t0: 81.3, color: C.amber, text: C.ink }, 3: { t0: 81.45, color: C.amber, text: C.ink }, 5: { t0: 81.6, color: C.amber, text: C.ink } } });
+  kWords('c’est l’acte de construire.', 140, 940, { size: 52, weight: 800, color: '#fff', t, t0: 80.8, tOut: 84.4 });
+  kWords('Et toi, quelle place', 140, 865, { size: 56, weight: 700, color: '#fff', t, t0: 84.7 });
+  kWords('prendras-tu dans l’équipe ?', 140, 940, { size: 56, weight: 800, color: '#fff', t, t0: 84.85, marks: { 2: { t0: 85.4, color: C.amber, text: C.ink } } });
+  setFont(700, 24, F.b);
+  let px = 140;
+  ENDS.forEach((s, i) => { const w = ctx.measureText(s).width + 28.8; pill(px + w / 2, 1012, s, 24, '#fff', C.ink, E.back(P(t, 85.8 + i * .15, 86.3 + i * .15))); px += w + 14; setFont(700, 24, F.b); });
+}
+
+/* ============ Montage : plans + transitions ============ */
+const SC = [
+  { t0: 0, bg: C.bp, draw: s1 },
+  { t0: 13.6, bg: C.paper, draw: s2, wipe: { type: 'circle', x: 1400, y: 650, layers: [C.amber] } },
+  { t0: 28.6, bg: C.ink, draw: s3, wipe: { type: 'bars', layers: [C.coral, C.blue] } },
+  { t0: 42.6, bg: C.paper, draw: s45, wipe: { type: 'circle', x: 960, y: 590, layers: [C.amber] } },
+  { t0: 59.6, bg: C.paper, draw: s45 }, // même décor : la frise continue sans coupure
+  { t0: 76.2, bg: C.ink, draw: s6, wipe: { type: 'circle', x: FX(7), y: FR_Y, layers: [C.amber, C.coral] } }
+];
+const wipeDur = w => w.type === 'circle' ? w.layers.length * .1 + .75 : w.layers.length * .12 + .8;
+function wipeCircle(t, T, x, y, layers, next) {
+  const maxR = Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 4;
+  const k = i => E.io3(P(t, T + i * .1, T + i * .1 + .75));
+  layers.forEach((col, i) => { const r = maxR * k(i); if (r > 0) { ctx.fillStyle = col; circle(x, y, r); ctx.fill(); } });
+  const r = maxR * k(layers.length);
+  if (r > 0) { ctx.save(); circle(x, y, r); ctx.clip(); next(); ctx.restore(); }
+}
+function wipeBars(t, T, layers, next) {
+  const n = 8, bw = W / n;
+  const k = (li, j) => E.io3(P(t, T + li * .12 + j * .035, T + li * .12 + j * .035 + .55));
+  layers.forEach((col, li) => { ctx.fillStyle = col; for (let j = 0; j < n; j++) { const h = H * k(li, j); if (h > 0) ctx.fillRect(j * bw, H - h, bw + 1, h); } });
+  ctx.save(); ctx.beginPath(); let any = false;
+  for (let j = 0; j < n; j++) { const h = H * k(layers.length, j); if (h > 0) { ctx.rect(j * bw, H - h, bw + 1, h); any = true; } }
+  if (any) { ctx.clip(); next(); }
+  ctx.restore();
+}
+const grainC = document.createElement('canvas'); grainC.width = grainC.height = 256;
+(() => { const g = grainC.getContext('2d'), id = g.createImageData(256, 256); for (let i = 0; i < 65536; i++) { const v = (rnd() * 255) | 0; id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255; } g.putImageData(id, 0, 0); })();
+const grainP = ctx.createPattern(grainC, 'repeat');
+function grain(t) {
+  const f = Math.floor(t * 24), ox = (f * 97) % 256, oy = (f * 57) % 256;
+  ctx.save(); ctx.globalAlpha = .06; ctx.globalCompositeOperation = 'overlay'; ctx.translate(-ox, -oy);
+  ctx.fillStyle = grainP; ctx.fillRect(ox, oy, W, H); ctx.restore();
+}
+const sceneAt = t => { let i = SC.length - 1; while (i > 0 && t < SC[i].t0) i--; return i; };
+function render(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([]);
+  const i = sceneAt(t), s = SC[i];
+  const full = () => { ctx.fillStyle = s.bg; ctx.fillRect(0, 0, W, H); s.draw(t); };
+  if (i > 0 && s.wipe && t < s.t0 + wipeDur(s.wipe)) {
+    const p = SC[i - 1]; ctx.fillStyle = p.bg; ctx.fillRect(0, 0, W, H); p.draw(t);
+    if (s.wipe.type === 'circle') wipeCircle(t, s.t0, s.wipe.x, s.wipe.y, s.wipe.layers, full);
+    else wipeBars(t, s.t0, s.wipe.layers, full);
+  } else full();
+  grain(t);
+}
+
+/* ============ Son (synthétisé, hors ligne) ============ */
+const AU = { ctx: null, pad: null, chord: -1, beat: -1 };
+const snd = document.getElementById('snd');
+function impulse(c, sec, decay) {
+  const len = (c.sampleRate * sec) | 0, b = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
+  return b;
+}
+function audioInit() {
+  if (AU.ctx) return AU.ctx;
+  const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
+  const c = new A(); AU.ctx = c;
+  AU.out = c.createGain(); AU.out.gain.value = snd.checked ? 1 : 0;
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -20; comp.knee.value = 12; comp.ratio.value = 3;
+  comp.connect(AU.out); AU.out.connect(c.destination);
+  if (c.createMediaStreamDestination) { AU.dest = c.createMediaStreamDestination(); AU.out.connect(AU.dest); }
+  AU.bus = c.createGain(); AU.bus.gain.value = .9; AU.bus.connect(comp);
+  const conv = c.createConvolver(); conv.buffer = impulse(c, 2.6, 2.4);
+  AU.rev = c.createGain(); AU.rev.gain.value = .3; AU.rev.connect(conv); conv.connect(comp);
+  const nb = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), d = nb.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  AU.noise = nb;
+  return c;
+}
+function env(g, t, a, peak, dec) { g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(.0001, t + a + dec); }
+function voice(type, hz, vol, dec, o = {}) {
+  const c = AU.ctx, t = c.currentTime, osc = c.createOscillator(); osc.type = type;
+  if (o.glide) { osc.frequency.setValueAtTime(hz * o.glide, t); osc.frequency.exponentialRampToValueAtTime(hz, t + .06); } else osc.frequency.value = hz;
+  const g = c.createGain(); env(g, t, .006, vol, dec); osc.connect(g); g.connect(AU.bus);
+  if (o.rev) { const s = c.createGain(); s.gain.value = o.rev; g.connect(s); s.connect(AU.rev); }
+  osc.start(t); osc.stop(t + dec + .1);
+}
+const SFX = {
+  pop: (hz = 660, vol = .07) => voice('sine', hz, vol, .22, { glide: 1.6, rev: .25 }),
+  pluck: (hz, vol = .03) => voice('triangle', hz, vol, .38, { rev: .45 }),
+  tick: (hz = 1400, vol = .022) => voice('sine', hz, vol, .06, { rev: .15 }),
+  chime: (hz = 880, vol = .06) => [1, 2, 3.01, 4.2].forEach((m, i) => voice('sine', hz * m, vol / (i + 1), 1.6 - i * .25, { rev: .6 })),
+  boom: () => {
+    const c = AU.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(38, t + 1.4);
+    const g = c.createGain(); env(g, t, .02, .3, 1.5); o.connect(g); g.connect(AU.bus); o.start(t); o.stop(t + 1.7);
+  },
+  thud: () => { // coup de tampon
+    const c = AU.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(55, t + .22);
+    const g = c.createGain(); env(g, t, .004, .34, .32); o.connect(g); g.connect(AU.bus); o.start(t); o.stop(t + .4);
+    SFX.whoosh(.14, .07);
+  },
+  whoosh: (dur = .75, vol = .16) => {
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.1;
+    f.frequency.setValueAtTime(350, t); f.frequency.exponentialRampToValueAtTime(3200, t + dur * .55); f.frequency.exponentialRampToValueAtTime(900, t + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + dur * .5); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(AU.bus); const r = c.createGain(); r.gain.value = .3; g.connect(r); r.connect(AU.rev);
+    s.start(t); s.stop(t + dur + .05);
+  },
+  scratch: (dur, vol) => { // crayon sur le papier
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise; s.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3600; f.Q.value = .8;
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .06);
+    g.gain.setValueAtTime(vol, t + Math.max(.07, dur - .12)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    const l = c.createOscillator(); l.frequency.value = 6.5; const lg = c.createGain(); lg.gain.value = vol * .7; l.connect(lg); lg.connect(g.gain);
+    s.connect(f); f.connect(g); g.connect(AU.bus); s.start(t); s.stop(t + dur + .05); l.start(t); l.stop(t + dur + .05);
+  }
+};
+// Grille d'accords (ré majeur), deux ou trois accords par plan.
+const CD = { D: [146.83, 220, 293.66, 369.99], Bm: [123.47, 185, 293.66, 369.99], G: [98, 146.83, 246.94, 392], A: [110, 164.81, 277.18, 329.63], Em: [82.41, 123.47, 246.94, 329.63], Fm: [92.5, 138.59, 277.18, 369.99] };
+const CHORD_TL = [
+  [0, CD.D], [5.8, CD.Bm], [10.1, CD.G],
+  [13.6, CD.A], [17.3, CD.D], [19.6, CD.G], [22.0, CD.Em], [24.0, CD.A],
+  [28.6, CD.Bm], [32.0, CD.G], [35.0, CD.D], [38.6, CD.A],
+  [42.6, CD.D], [45.0, CD.G], [47.7, CD.A], [50.3, CD.Bm], [52.9, CD.G], [55.7, CD.A],
+  [59.6, CD.D], [63.3, CD.Bm], [66.0, CD.G], [69.6, CD.A], [73.0, CD.D],
+  [76.2, CD.G], [80.6, CD.A], [84.7, CD.D]
+].map(([t, c]) => [t, c]);
+const chordAt = t => { let i = 0; while (i + 1 < CHORD_TL.length && t >= CHORD_TL[i + 1][0]) i++; return i; };
+function padStart(ch) {
+  if (AU.pad || !AU.ctx) return;
+  const c = AU.ctx, t = c.currentTime, f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 650; f.Q.value = .7;
+  const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12, t + .8);
+  f.connect(g); g.connect(AU.bus); const rs = c.createGain(); rs.gain.value = .5; g.connect(rs); rs.connect(AU.rev);
+  const oscs = [];
+  ch.forEach((hz, i) => [-6, 6].forEach(dt => {
+    const o = c.createOscillator(); o.type = i === 0 ? 'triangle' : 'sawtooth'; o.frequency.value = hz; o.detune.value = dt;
+    const og = c.createGain(); og.gain.value = i === 0 ? .35 : .09; o.connect(og); og.connect(f); o.start(t); oscs.push({ o, i });
+  }));
+  const lfo = c.createOscillator(); lfo.frequency.value = .12; const lg = c.createGain(); lg.gain.value = 180; lfo.connect(lg); lg.connect(f.frequency); lfo.start(t);
+  AU.pad = { oscs, g, lfo };
+}
+function padChord(ch) { if (!AU.pad) return; const t = AU.ctx.currentTime; AU.pad.oscs.forEach(({ o, i }) => o.frequency.setTargetAtTime(ch[i], t, .18)); }
+function padStop() {
+  const p = AU.pad; if (!p) return; AU.pad = null;
+  const t = AU.ctx.currentTime; p.g.gain.cancelScheduledValues(t); p.g.gain.setTargetAtTime(.0001, t, .12);
+  setTimeout(() => { try { p.oscs.forEach(({ o }) => o.stop()); p.lfo.stop(); } catch (e) {} }, 900);
+}
+const CUES = [
+  [.05, () => SFX.boom()], [.5, () => SFX.scratch(4.3, .011)], [1.0, () => SFX.pop(523, .06)], [1.4, () => SFX.pop(587, .045)], [1.8, () => SFX.pop(659, .045)],
+  [5.8, () => SFX.pop(587, .05)], [6.35, () => SFX.pop(659, .05)], [6.9, () => SFX.pop(740, .05)], [7.45, () => SFX.pop(880, .05)], [8.1, () => SFX.chime(988, .04)],
+  [10.1, () => SFX.pop(440, .06)], [11.0, () => SFX.chime(1175, .05)], [13.5, () => SFX.whoosh()],
+  [15.0, () => SFX.pop(294, .09)], [17.3, () => SFX.pop(370, .09)], [19.6, () => SFX.pop(440, .09)],
+  [22.0, () => SFX.whoosh(.6, .05)], [22.3, () => SFX.whoosh(.6, .05)], [22.8, () => SFX.whoosh(.6, .04)], [24.0, () => SFX.chime(880, .06)], [28.5, () => SFX.whoosh()],
+  [34.4, () => SFX.chime(1175, .04)], [34.9, () => SFX.pop(660, .05)], [38.6, () => SFX.pop(587, .05)], [39.3, () => SFX.chime(988, .035)], [42.5, () => SFX.whoosh()],
+  [43.6, () => SFX.whoosh(.7, .05)], [47.95, () => SFX.scratch(1.9, .014)], [50.4, () => SFX.scratch(1.1, .01)], [52.95, () => SFX.scratch(.85, .008)],
+  [54.6, () => SFX.thud()], [56.4, () => SFX.chime(880, .03)],
+  [59.7, () => SFX.whoosh(.6, .05)], [61.9, () => SFX.chime(988, .05)], [62.4, () => SFX.thud()], [63.2, () => SFX.pop(392, .06)], [63.4, () => SFX.whoosh(.5, .04)],
+  [68.5, () => SFX.whoosh(.8, .05)], [70.2, () => SFX.thud()], [73.0, () => SFX.chime(1175, .05)], [76.1, () => SFX.whoosh()],
+  [80.6, () => SFX.chime(880, .05)], [84.7, () => SFX.chime(1175, .07)],
+  [88.4, () => { if (AU.pad) AU.pad.g.gain.setTargetAtTime(.0001, AU.ctx.currentTime, .6); }]
+];
+for (let i = 0; i < 8; i++) CUES.push([8.3 + i * .1, () => SFX.tick(1200 + i * 90)]);
+CROWD.forEach((c, i) => CUES.push([10.4 + i * .07, () => SFX.tick(900 + (i % 4) * 150, .018)]));
+POPR.forEach((r, i) => CUES.push([29.7 + r * .11, () => SFX.pop(500 + r * 30, .03)]));
+for (let c = 0; c < 4; c++) CUES.push([31.6 + c * .1, () => SFX.pluck(440 * (1 + c * .125), .05)]);
+TEAM.forEach((m, i) => CUES.push([32.8 + i * .12, () => SFX.tick(900 + i * 35, .02)]));
+for (let i = 0; i < 8; i++) CUES.push([43.8 + i * .07, () => SFX.tick(1100 + i * 80)]);
+ST.forEach((s, i) => CUES.push([s, () => SFX.pop(440 + i * 45, .06)]));
+[45.9, 46.3, 46.7].forEach(c => CUES.push([c, () => SFX.pop(880, .03)]));
+[60.9, 61.05, 61.2].forEach((c, i) => CUES.push([c, () => SFX.pop(523 + i * 60, .04)]));
+for (let k = 0; k < 18; k++) CUES.push([64.0 + k * .2, () => SFX.tick(600 + (k % 4) * 80, .02)]);
+for (let n = 0; n < 8; n++) CUES.push([66.8 + n * .08, () => SFX.tick(1300 + n * 60, .018)]);
+[70.8, 70.95, 71.1].forEach(c => CUES.push([c, () => SFX.pop(330, .05)]));
+[71.9, 72.05, 72.2].forEach((c, i) => CUES.push([c, () => SFX.pop(880 + i * 110, .04)]));
+[73.5, 73.8, 74.1].forEach((c, i) => CUES.push([c, () => SFX.pop(587 + i * 80, .045)]));
+MROWS.forEach((m, r) => CUES.push([77.7 + r * .55, () => SFX.pop(294 + r * 74, .06)]));
+[85.8, 85.95, 86.1].forEach((c, i) => CUES.push([c, () => SFX.pop(880 + i * 110, .04)]));
+CUES.sort((a, b) => a[0] - b[0]);
+function audioTick(a, b) {
+  if (!AU.ctx || !snd.checked) return;
+  for (const [ct, fn] of CUES) if (ct > a && ct <= b) { try { fn(); } catch (e) {} }
+  const ci = chordAt(b);
+  if (ci !== AU.chord) { AU.chord = ci; padChord(CHORD_TL[ci][1]); }
+  if (b >= 5.8 && b < 76.2) {
+    const beat = Math.floor((b - 5.8) / .3);
+    if (beat !== AU.beat) {
+      AU.beat = beat;
+      const every = sceneAt(b) === 2 ? 2 : 1, pat = [1, 2, 3, 2, 1, 3, 2, 3];
+      if (beat % every === 0) SFX.pluck(CHORD_TL[ci][1][pat[beat % 8]] * 2, .026);
+    }
+  }
+}
+
+/* ============ Lecteur ============ */
+const $ = id => document.getElementById(id);
+const scrub = $('scrub'), tc = $('tc'), playB = $('play'), bigplay = $('bigplay'), pz = $('pz'), qcard = $('qcard'), expB = $('exp'), recB = $('rec');
+const ICON = {
+  play: '<svg width="18" height="20" viewBox="0 0 18 20" aria-hidden="true"><path d="M3 2v16l13-8z" fill="currentColor"/></svg>',
+  pause: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="4" height="14" rx="1" fill="currentColor"/><rect x="11" y="2" width="4" height="14" rx="1" fill="currentColor"/></svg>'
+};
+const CH = [
+  { t: 0, key: 8.6, title: 'Un travail d’équipe', idea: 'Un bâtiment ne sort pas de terre tout seul : qui le veut, le paie, le dessine, le construit, et dans quel ordre ?', q: 'Qui le veut, qui le paie, qui le dessine, qui le construit ? Proposez un métier pour chaque question.' },
+  { t: 13.6, key: 26.8, title: 'Trois rôles clés', idea: 'Le maître d’ouvrage commande et paie, le maître d’œuvre conçoit et dirige, les entreprises construisent.', q: 'Qui paie les entreprises ? Qui leur donne les consignes sur le chantier ? Pourquoi n’est-ce pas le même acteur ?' },
+  { t: 28.6, key: 36.6, title: 'Toute une équipe', idea: 'Quinze métiers rangés en quatre familles autour du trio.', q: 'Le contrôleur technique est payé par le maître d’ouvrage, pas par l’architecte. À votre avis, pourquoi ?' },
+  { t: 42.6, key: 57.8, title: 'Les études', idea: 'Programme, puis ESQ, APS, APD et PRO : le projet se précise jusqu’au moindre détail.', q: 'Vaut-il mieux changer d’avis à l’esquisse ou au projet ? Pourquoi ? Donnez un exemple.' },
+  { t: 59.6, key: 67.8, title: 'Le chantier', idea: 'ACT, DET, AOR : choisir les entreprises, diriger les travaux, réceptionner, puis les garanties.', q: 'Sur le chantier, qui dirige ? Qui exécute ? Qui décide que l’ouvrage est accepté ?' },
+  { t: 76.2, key: 83.8, title: 'À retenir', idea: 'Qui fait quoi, et quand : quatre familles d’acteurs sur les huit missions.', q: 'Et toi, quelle place prendras-tu dans l’équipe ?' }
+];
+const PAUSES = [13.1, 28.1, 42.1, 59.2, 75.8];
+const POSTER = 26.8;
+let T = 0, poster = true, playing = false, from = 0, wall0 = 0, lastT = 0, nextPause = null;
+let recording = false, recorder = null;
+
+const fmt = s => { s = clamp(s, 0, DUR); return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0'); };
+const note = msg => { $('expnote').textContent = msg; };
+
+const board = $('board'), cards = [];
+CH.forEach((c, i) => {
+  const li = document.createElement('li'), b = document.createElement('button');
+  b.type = 'button'; b.className = 'card';
+  const cvs = document.createElement('canvas'); cvs.width = 480; cvs.height = 270; cvs.setAttribute('aria-hidden', 'true');
+  const meta = document.createElement('div'); meta.className = 'meta';
+  meta.innerHTML = `<span class="tm">${fmt(c.t)}</span><h3></h3>`; meta.querySelector('h3').textContent = `${i + 1}. ${c.title}`;
+  const p = document.createElement('p'); p.textContent = c.idea;
+  b.append(cvs, meta, p); b.addEventListener('click', () => goChapter(i));
+  li.append(b); board.append(li); cards.push(b);
+});
+CH.slice(1).forEach(c => { const i = document.createElement('i'); i.style.left = (c.t / DUR * 100) + '%'; $('ticks').append(i); });
+
+function ui() {
+  const shown = poster ? 0 : T;
+  scrub.value = shown; scrub.style.setProperty('--p', (shown / DUR * 100) + '%');
+  tc.textContent = fmt(shown) + ' / ' + fmt(DUR);
+  playB.innerHTML = playing ? ICON.pause : ICON.play;
+  playB.setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
+  const ci = poster ? -1 : sceneAt(T);
+  cards.forEach((c, i) => c.setAttribute('aria-current', i === ci ? 'true' : 'false'));
+}
+function hideQ() { qcard.hidden = true; }
+function showQ(i) {
+  $('qk').textContent = `Pause question · plan ${i + 1} sur 6 · ${CH[i].title}`;
+  $('qt').textContent = CH[i].q;
+  qcard.hidden = false; $('qgo').focus({ preventScroll: true });
+}
+const computeNext = () => (!pz.checked || recording) ? null : (PAUSES.find(p => p > T + .05) ?? null);
+function seek(t) {
+  poster = false; bigplay.hidden = true; hideQ();
+  T = clamp(t, 0, DUR); lastT = T; AU.beat = -1;
+  if (playing) { from = T; wall0 = performance.now(); nextPause = computeNext(); }
+  render(T); ui();
+}
+function play() {
+  if (poster) { poster = false; T = 0; }
+  if (T >= DUR - .02) T = 0;
+  hideQ(); bigplay.hidden = true;
+  playing = true; from = T; lastT = T; wall0 = performance.now(); nextPause = computeNext(); AU.beat = -1;
+  if (snd.checked) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+  ui(); requestAnimationFrame(loop);
+}
+function pause() { playing = false; padStop(); ui(); }
+const toggle = () => playing ? pause() : play();
+function step(t) {
+  audioTick(lastT, t); T = t; lastT = t; render(T); ui();
+  if (recording) recB.textContent = `Enregistrement · ${fmt(T)} sur ${fmt(DUR)} · Échap pour annuler`;
+}
+function loop(now) {
+  if (!playing) return;
+  const t = from + (now - wall0) / 1000;
+  if (nextPause != null && t >= nextPause) { const np = nextPause; step(np); pause(); showQ(PAUSES.indexOf(np)); return; }
+  if (t >= DUR) { step(DUR); pause(); ended(); return; }
+  step(t); requestAnimationFrame(loop);
+}
+function ended() {
+  if (recording) { setTimeout(() => { try { recorder.stop(); } catch (e) {} }, 300); return; }
+  $('bigtxt').textContent = 'Revoir · 1 min 30'; bigplay.hidden = false;
+}
+function goChapter(i) { if (recording) return; seek(CH[i].t + .001); if (!playing) play(); }
+function fullscreen() {
+  const el = $('screen');
+  if (document.fullscreenElement) { document.exitFullscreen && document.exitFullscreen().catch(() => {}); return; }
+  const r = el.requestFullscreen ? el.requestFullscreen() : null;
+  if (r && r.catch) r.catch(() => note('Le plein écran n’est pas disponible ici.')); else if (!r) note('Le plein écran n’est pas disponible ici.');
+}
+
+/* ============ Export vidéo ============ */
+const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+const canRec = !!(window.MediaRecorder && cv.captureStream);
+const EXPORT_HELP = '« Exporter en vidéo » enregistre l’animation en temps réel (1 min 30), avec le son si « Son » est coché. Gardez l’onglet visible pendant l’enregistrement.';
+if (framed) { expB.disabled = true; note('L’export vidéo fonctionne quand la page est ouverte depuis son fichier HTML, sur l’ordinateur : ici, le navigateur bloque le téléchargement.'); }
+else if (!canRec) { expB.disabled = true; note('Ce navigateur ne sait pas enregistrer une vidéo depuis la page. Essayez un Chrome, Edge ou Firefox récent.'); }
+else note(EXPORT_HELP);
+function pickMime() {
+  const L = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  for (const m of L) { try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) {} }
+  return '';
+}
+function setRec(on) {
+  recording = on; recB.hidden = !on;
+  expB.textContent = on ? 'Annuler l’enregistrement' : 'Exporter en vidéo';
+  [playB, $('restart'), scrub, $('fs'), pz].forEach(el => { el.disabled = on; });
+  cards.forEach(c => { c.disabled = on; });
+}
+function startExport() {
+  const mime = pickMime();
+  if (!mime) { note('Aucun format vidéo disponible dans ce navigateur.'); return; }
+  if (playing) pause(); hideQ(); bigplay.hidden = true;
+  const tracks = [...cv.captureStream(60).getVideoTracks()];
+  if (snd.checked) { const c = audioInit(); if (c && AU.dest) { c.resume(); tracks.push(...AU.dest.stream.getAudioTracks()); } }
+  const chunks = [];
+  try { recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: mime, videoBitsPerSecond: 14000000 }); }
+  catch (e) { note('L’enregistrement n’a pas pu démarrer dans ce navigateur.'); return; }
+  recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = () => {
+    const type = mime.split(';')[0], blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'Acte de construire en 90 secondes.' + (type === 'video/mp4' ? 'mp4' : 'webm');
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 8000);
+    setRec(false); bigplay.hidden = false;
+    note(`Vidéo enregistrée : ${(blob.size / 1048576).toFixed(1)} Mo, format ${type === 'video/mp4' ? 'MP4' : 'WebM'}. Elle est dans le dossier Téléchargements.`);
+  };
+  setRec(true); poster = false; T = 0; lastT = 0; render(0); ui();
+  recorder.start(500);
+  setTimeout(play, 150);
+}
+function cancelExport() {
+  if (!recording) return;
+  pause();
+  recorder.onstop = () => { setRec(false); note('Enregistrement annulé. ' + EXPORT_HELP); };
+  try { recorder.stop(); } catch (e) { setRec(false); }
+}
+
+/* ============ Événements ============ */
+playB.addEventListener('click', toggle);
+bigplay.addEventListener('click', () => { if (T >= DUR - .02) T = 0; play(); });
+$('restart').addEventListener('click', () => { seek(0); });
+$('qgo').addEventListener('click', () => { hideQ(); play(); });
+$('fs').addEventListener('click', fullscreen);
+expB.addEventListener('click', () => recording ? cancelExport() : startExport());
+cv.addEventListener('click', () => { if (!recording) toggle(); });
+scrub.addEventListener('input', () => { if (recording) return; if (playing) pause(); seek(+scrub.value); });
+snd.addEventListener('change', () => {
+  if (AU.ctx) AU.out.gain.setTargetAtTime(snd.checked ? 1 : 0, AU.ctx.currentTime, .05);
+  if (snd.checked && playing) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+});
+pz.addEventListener('change', () => { if (playing) nextPause = computeNext(); });
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const tg = e.target, tag = tg.tagName;
+  if (e.key === 'Escape' && recording) { cancelExport(); return; }
+  if (recording) return;
+  if (e.key === ' ') { if (tag === 'BUTTON' || (tag === 'INPUT' && tg.type === 'checkbox')) return; e.preventDefault(); toggle(); }
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const wasPlaying = playing; seek((poster ? 0 : T) + (e.key === 'ArrowRight' ? 1 : -1)); if (wasPlaying && !playing) play(); }
+  else if (/^[1-6]$/.test(e.key)) goChapter(+e.key - 1);
+  else if (e.key === 'f' || e.key === 'F') fullscreen();
+  else if (e.key === 'm' || e.key === 'M') { snd.checked = !snd.checked; snd.dispatchEvent(new Event('change')); }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden && playing && !recording) pause(); });
+
+/* ============ Démarrage ============ */
+function thumbs() {
+  CH.forEach((c, i) => { render(c.key); cards[i].querySelector('canvas').getContext('2d').drawImage(cv, 0, 0, 480, 270); });
+  render(poster ? POSTER : T);
+}
+render(POSTER); ui(); thumbs();
+if (document.fonts && document.fonts.load) {
+  const faces = ['800 100px "Bricolage Grotesque"', '700 100px "Bricolage Grotesque"', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"', '700 20px "Instrument Sans"', 'italic 500 20px "Instrument Sans"', '500 20px "IBM Plex Mono"', '700 20px "IBM Plex Mono"'];
+  Promise.race([Promise.all(faces.map(f => document.fonts.load(f).catch(() => null))), new Promise(r => setTimeout(r, 3000))])
+    .then(() => { if (!playing) thumbs(); });
+}
+})();
+</script>
+
+</html>

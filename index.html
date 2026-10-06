@@ -647,26 +647,29 @@ const DONNEES = {
             { nom: 'Acte de construire · diaporama', type: 'sup', url: WIX + 'copie-de-world-café-les-acteurs-1' },
             { nom: 'Missions et phases', type: 'wc', url: 'phases-missions.html' },   // page du carnet (ex-application « acte-de-construire-world-cafe »)
             { nom: 'ARC, ÉCO, GÉOM', type: 'wc', url: 'metiers.html' },   // page du carnet (ex-application « métiers : architecte, économiste, géomètre »)
-            { nom: 'Lecture de plans', type: 'wc', url: 'lecture-de-plans.html' },   // page du carnet (ex-application Mirales)
           ] },
-          { nom: 'Activité 2', url: WIX + 'copie-de-activité-3' },
+          { nom: 'Activité 2', url: WIX + 'copie-de-activité-3', ateliers: [
+            { nom: 'Lecture de plans', type: 'wc', url: 'lecture-de-plans.html' },   // page du carnet (ex-application Mirales)
+            { nom: 'Pièces graphiques', type: 'wc', url: WIX + 'copie-de-retour-de-pfmp' },
+          ] },
           { nom: 'Activité 3', url: WIX + 'copie-de-activité-4', ateliers: [
             { nom: 'PFMP', type: 'wc', url: WIX + 'retour-de-pfmp' },
-            { nom: 'Pièces graphiques', type: 'wc', url: WIX + 'copie-de-retour-de-pfmp' },
             { nom: 'CCTP', type: 'wc', url: WIX + 'world-café-cctp' },
             { nom: 'Maquette numérique', type: 'wc', url: WIX + 'copie-de-world-café-cctp' },
           ] },
           { nom: 'Activité 4', url: WIX + 'copie-de-activité-5-1' },
           { nom: 'Activité 5', url: WIX + 'copie-de-activité-6', ateliers: [
             { nom: 'Avant-métré', type: 'wc', url: WIX + 'copie-de-world-café-avant-métré' },
-            { nom: 'PLU', type: 'wc', url: WIX + 'world-café-plu' },
+            { nom: 'PLU', type: 'wc', url: 'plu.html' },   // page du carnet (ex-application « L’urbanisme et le PLU »)
             { nom: 'Permis de construire', type: 'wc', url: WIX + 'world-café-permis-de-construire' },
             { nom: 'Accessibilité', type: 'wc', url: WIX + 'copie-de-world-café-permis-de-construire' },
             { nom: 'Gros œuvre', type: 'wc', url: WIX + 'world-café-gros-oeuvre' },
           ] },
           { nom: 'Activité 6', url: WIX + 'copie-de-activité-5' },
         ] },
-        { code: 'SQ02', nom: 'Séquence n°2', url: WIX + 'copie-de-séquence-n-1', activites: [
+        { code: 'SQ02', nom: 'Séquence n°2', url: WIX + 'copie-de-séquence-n-1', ateliers: [
+          { nom: 'La perspective', type: 'wc', url: 'perspective.html' },   // page du carnet (ex-application « La perspective architecturale »)
+        ], activites: [
           { nom: 'Activité 1', url: WIX + 'copie-de-activité-1' },
           { nom: 'Activité 2', url: WIX + 'copie-de-seq2-activité-1' },
           { nom: 'Activité 3', url: WIX + 'copie-de-seq2-activité-3' },
@@ -675,7 +678,7 @@ const DONNEES = {
     { num: '02', nom: 'Maison Lisa', couleur: 'violet', modele: 'lisa', url: WIX + 'copie-de-le-projet-1',
       resume: 'L’avant-projet définitif (APD) et le descriptif d’une maison individuelle.',
       ateliers: [
-        { nom: 'Excel', type: 'wc', url: WIX + 'copie-de-world-café-gros-oeuvre' },
+        { nom: 'Excel', type: 'wc', url: 'excel.html' },   // page du carnet (ex-application « Exercices tableur »)
         { nom: 'Avant-métré', type: 'wc', url: WIX + 'copie-de-world-café-excel' },
       ],
       sequences: [
@@ -1055,7 +1058,7 @@ function construirePage() {
 
   // --- Compteurs en bâtons (calculés, jamais écrits à la main)
   const P = DONNEES.projets, seqs = P.flatMap(p => p.sequences), acts = seqs.flatMap(s => s.activites);
-  const wc = [...P.flatMap(p => p.ateliers || []), ...acts.flatMap(a => a.ateliers || [])].filter(a => a.type === 'wc').length;
+  const wc = [...P.flatMap(p => p.ateliers || []), ...seqs.flatMap(s => s.ateliers || []), ...acts.flatMap(a => a.ateliers || [])].filter(a => a.type === 'wc').length;
   $('#batons').innerHTML = [[P.length, 'projets', 'var(--bleu)'], [seqs.length, 'séquences', 'var(--rouge)'], [acts.length, 'activités', 'var(--vert)'], [wc, 'World cafés', '#b8681f']]
     .map(([v, l, c], i) => `<div class="baton rv" style="--i:${i};--c:${c};--r:${[-1.2, .8, -.6, 1.1][i]}deg"><b>${v}</b><span>${l}</span>${batons(v)}</div>`).join('');
   $('#legende-cadenas').innerHTML = cadenas(true) + 'espace réservé (mot de passe)';
@@ -1064,8 +1067,9 @@ function construirePage() {
   const rp = [-2, 1.5, -1, 2.2, -1.6, .8, -2.4];
   const postits = L => `<ul class="postits">${L.map((c, i) => `<li><a class="postit${c.type === 'sup' ? ' postit--sup' : ''}" ${interne(c.url) ? `href="${esc(c.url)}"` : ext(c.url)} style="--r:${rp[i % rp.length]}deg">${esc(c.nom)}<span class="sr"> (${c.type === 'wc' ? 'World café' : 'support de cours'}${interne(c.url) ? '' : ', nouvel onglet'})</span></a></li>`).join('')}</ul>`;
   const sequence = s => {
-    const nAt = s.activites.reduce((t, a) => t + (a.ateliers ? a.ateliers.length : 0), 0), tuiles = !s.activites.some(a => a.ateliers);
-    return `<div class="seq"><a class="seq__tete" ${ext(s.url)}><span class="seq__code">${esc(s.code)}${CERCLE}</span><span class="seq__nom">${esc(s.nom)}</span><span class="seq__meta">${s.activites.length} activités${nAt ? ` · ${nAt} ateliers` : ''}</span>${GRIB}${NO}</a>
+    const nAt = (s.ateliers ? s.ateliers.length : 0) + s.activites.reduce((t, a) => t + (a.ateliers ? a.ateliers.length : 0), 0), tuiles = !s.activites.some(a => a.ateliers);
+    return `<div class="seq"><a class="seq__tete" ${ext(s.url)}><span class="seq__code">${esc(s.code)}${CERCLE}</span><span class="seq__nom">${esc(s.nom)}</span><span class="seq__meta">${s.activites.length} activités${nAt ? ` · ${nAt} atelier${nAt > 1 ? 's' : ''}` : ''}</span>${GRIB}${NO}</a>
+      ${s.ateliers ? postits(s.ateliers) : ''}
       <ol class="acts${tuiles ? ' acts--tuiles' : ''}">${s.activites.map(a => `<li class="act"><a class="act__lien" ${ext(a.url)}>${CASE}<span>${esc(a.nom)}</span>${NO}</a>${a.ateliers ? postits(a.ateliers) : ''}</li>`).join('')}</ol></div>`;
   };
   $('#projets-liste').innerHTML = '<svg class="chemin" id="chemin" aria-hidden="true"></svg>' + P.map((p, i) => `
@@ -1601,6 +1605,7 @@ function indexer() {
     (p.ateliers || []).forEach(a => aj(a.type === 'wc' ? 'World café' : 'Support', a.type === 'wc' ? `World café · ${a.nom}` : a.nom, a.url, p.nom));
     for (const s of p.sequences) {
       aj('Séquence', s.nom, s.url, `${p.nom} · ${s.code}`);
+      (s.ateliers || []).forEach(t => aj(t.type === 'wc' ? 'World café' : 'Support', t.type === 'wc' ? `World café · ${t.nom}` : t.nom, t.url, `${p.nom} › ${s.code}`));
       s.activites.forEach(a => {
         aj('Activité', `${s.nom} · ${a.nom}`, a.url, `${p.nom} › ${s.code}`);
         (a.ateliers || []).forEach(t => aj(t.type === 'wc' ? 'World café' : 'Support', t.type === 'wc' ? `World café · ${t.nom}` : t.nom, t.url, `${p.nom} › ${s.code} › ${a.nom}`));
