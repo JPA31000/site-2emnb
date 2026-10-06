@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atelier Structure — banc d'essai du bâtiment</title>
+<style>
+  :root{
+    --bg:#0e0e10; --panel:#161618; --panel-2:#1d1d20; --line:#2a2a2e;
+    --ink:#ecebe6; --ink-dim:#9a988f; --ink-faint:#65645e;
+    --accent:#e6a049; --accent-soft:#3a2c16;
+    --cyan:#5fb9c4; --danger:#d06b5a; --ok:#7fb069;
+    --radius:12px;
+    --mono:ui-monospace,'Cascadia Mono','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:'Sora','Segoe UI',system-ui,-apple-system,sans-serif;
+    --display:'Fraunces',Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(900px 520px at 82% -12%, #1b1a17 0%, transparent 60%),
+      radial-gradient(700px 420px at -8% 110%, #14161a 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--sans); font-weight:300;
+    -webkit-font-smoothing:antialiased; padding:18px 20px 34px;
+  }
+  ::-webkit-scrollbar{width:10px}
+  ::-webkit-scrollbar-thumb{background:#2c2c30;border-radius:8px}
+
+  header{max-width:1320px;margin:0 auto 16px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  header h1{font-family:var(--display);font-weight:600;font-size:28px;letter-spacing:.2px}
+  header h1 .spark{color:var(--accent)}
+  header .sub{color:var(--ink-dim);font-size:13.5px}
+  header .badge{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--accent);
+    border:1px solid var(--accent-soft);background:rgba(230,160,73,.06);padding:4px 10px;border-radius:999px}
+
+  .wrap{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(340px,1fr);gap:16px}
+  @media (max-width:1050px){.wrap{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .card h2{font-family:var(--display);font-weight:500;font-size:16.5px;margin-bottom:4px}
+  .card .hint{color:var(--ink-faint);font-size:12px;margin-bottom:10px}
+  .stack{display:flex;flex-direction:column;gap:16px}
+
+  /* ---------- Alertes ---------- */
+  #alerts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  .alert{font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap;line-height:1.5}
+  .alert.warn{border-color:rgba(230,160,73,.5);color:var(--accent)}
+  .alert.danger{border-color:rgba(208,107,90,.6);color:var(--danger);background:rgba(208,107,90,.07)}
+  .alert.good{border-color:rgba(127,176,105,.5);color:var(--ok)}
+  .alert button{margin-left:auto;background:var(--danger);color:#1a0e0b;border:none;border-radius:7px;
+    padding:6px 12px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer}
+  .alert.warn button{background:var(--accent)}
+
+  /* ---------- Schéma ---------- */
+  #schema,#diag{width:100%;height:auto;display:block;user-select:none}
+  .sol{stroke:#7d7c74;stroke-width:2.4;fill:none}
+  .hatch{stroke:#4b4a45;stroke-width:1.4}
+  .comp{stroke:var(--ink);stroke-width:2.2;fill:none;stroke-linecap:round}
+  .comp-fill{fill:var(--panel-2)}
+  .beam{fill:#2f2d29;stroke:var(--ink);stroke-width:2}
+  .dalle{fill:#232128;stroke:var(--ink-dim);stroke-width:1.6}
+  .load{stroke:var(--accent);stroke-width:2;fill:none;stroke-linecap:round}
+  .load-head{fill:var(--accent)}
+  .deform{stroke:var(--cyan);stroke-width:2.2;fill:none;stroke-dasharray:5 5}
+  .diago{stroke:var(--ok);stroke-width:4;stroke-linecap:round}
+  .flow{stroke:var(--accent);stroke-width:2.6;fill:none;stroke-linecap:round;
+        stroke-dasharray:4 11;opacity:0;transition:opacity .35s}
+  .flow.on{opacity:.95}
+  .lbl{fill:var(--ink-dim);font-family:var(--mono);font-size:11px;text-anchor:middle}
+  .lbl-strong{fill:var(--ink);font-family:var(--sans);font-weight:500;font-size:12.5px;text-anchor:middle}
+  .lbl-danger{fill:var(--danger);font-family:var(--mono);font-size:11px;text-anchor:middle}
+  .lbl-ok{fill:var(--ok);font-family:var(--mono);font-size:11px;text-anchor:middle}
+  .node{fill:var(--ink)}
+  .hit{cursor:pointer;fill:transparent}
+  .wind{stroke:var(--cyan);stroke-width:2.4;fill:none;stroke-linecap:round}
+  .wind-head{fill:var(--cyan)}
+  .blown-x{stroke:var(--danger);stroke-width:3;stroke-linecap:round}
+  .probe{cursor:pointer}
+  .probe circle,.probe rect{fill:var(--panel-2);stroke:var(--ink-faint);stroke-width:1.6;transition:all .2s}
+  .probe text{font-family:var(--mono);font-size:10.5px;font-weight:600;fill:var(--ink-dim);text-anchor:middle;pointer-events:none;transition:fill .2s}
+  .probe:hover circle,.probe:hover rect{stroke:var(--ink-dim)}
+  .probe.sel-m circle{fill:var(--accent);stroke:var(--accent)}
+  .probe.sel-m text{fill:#1a1208}
+  .probe.sel-r rect{fill:var(--cyan);stroke:var(--cyan)}
+  .probe.sel-r text{fill:#0b1c1f}
+
+  /* ---------- Diagrammes ---------- */
+  .dg-axis{stroke:var(--ink-faint);stroke-width:1.4}
+  .dg-m{fill:rgba(230,160,73,.22);stroke:var(--accent);stroke-width:2}
+  .dg-v{fill:rgba(95,185,196,.18);stroke:var(--cyan);stroke-width:2}
+  .dg-lbl{fill:var(--ink-dim);font-family:var(--mono);font-size:10.5px}
+  .dg-mark{stroke:var(--ink);stroke-width:1;stroke-dasharray:3 4}
+
+  /* ---------- Contrôles ---------- */
+  .controls{display:grid;grid-template-columns:auto 1fr;gap:13px 20px;align-items:center}
+  @media (max-width:600px){.controls{grid-template-columns:1fr}}
+  .ctl-label{font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.08em}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .chip{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    border-radius:999px;padding:7px 13px;font-family:var(--sans);font-size:13px;cursor:pointer;transition:all .18s}
+  .chip:hover:not(:disabled){color:var(--ink);border-color:var(--ink-faint)}
+  .chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .chip:disabled{opacity:.35;cursor:not-allowed}
+  .chip.danger-chip.on{background:rgba(208,107,90,.12);border-color:var(--danger);color:var(--danger)}
+
+  .gen-row{display:flex;align-items:center;gap:14px}
+  input[type=range]{flex:1;accent-color:var(--accent);height:4px;cursor:pointer;max-width:230px}
+  .gen-val{font-family:var(--mono);font-size:20px;color:var(--accent);min-width:74px}
+  .gen-val small{font-size:11px;color:var(--ink-faint)}
+
+  .knob-row{display:flex;align-items:center;gap:18px}
+  #knob{cursor:grab;touch-action:none}
+  #knob:active{cursor:grabbing}
+  .knob-val{font-family:var(--mono);font-size:20px;color:var(--accent)}
+  .knob-val small{font-size:11px;color:var(--ink-faint);display:block}
+
+  /* ---------- Cadrans ---------- */
+  .gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .gauge{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:6px 4px 2px;text-align:center}
+  .gauge svg{width:100%;height:auto;display:block}
+  .g-arc{stroke:#3c3b37;stroke-width:2;fill:none}
+  .g-red{stroke:var(--danger);stroke-width:3.4;fill:none;opacity:.8}
+  .g-tick{stroke:var(--ink-dim);stroke-width:1.4}
+  .g-tick-min{stroke:var(--ink-faint);stroke-width:1}
+  .g-num{fill:var(--ink-dim);font-family:var(--mono);font-size:9px;text-anchor:middle}
+  .g-needle{stroke:var(--danger);stroke-width:2;stroke-linecap:round}
+  .g-pivot{fill:#3c3b37;stroke:var(--ink-faint);stroke-width:1}
+  .g-name{fill:var(--ink);font-family:var(--display);font-size:11.5px;text-anchor:middle}
+  .g-read{font-family:var(--mono);font-size:14px;color:var(--ink);padding:2px 0 4px}
+  .g-read small{color:var(--ink-faint)}
+  .mode-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .mode-row .ctl-label{min-width:96px}
+
+  /* ---------- Contrôle bureau d'études ---------- */
+  .taux-bar{position:relative;height:42px;margin:12px 2px 4px}
+  .taux-track{position:absolute;inset:14px 0;height:12px;border-radius:6px;background:linear-gradient(90deg,#131313,#5a4a23 55%,#e6a049 70%,#8d3a2c)}
+  .taux-zone{position:absolute;top:10px;height:20px;border:1.6px solid var(--ok);border-radius:6px;background:rgba(127,176,105,.12);left:46.7%;width:20%}
+  .taux-marker{position:absolute;top:0;width:2px;height:40px;background:var(--ink);transition:left .4s cubic-bezier(.3,1.2,.5,1)}
+  .taux-marker::after{content:"";position:absolute;top:-1px;left:-4px;border:5px solid transparent;border-top-color:var(--ink)}
+  .taux-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-faint)}
+  .taux-status{margin-top:10px;font-size:13.5px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);line-height:1.55}
+  .taux-status.ok{border-color:rgba(127,176,105,.5);color:var(--ok)}
+  .taux-status.low{color:var(--ink-dim)}
+  .taux-status.high{border-color:rgba(208,107,90,.45);color:var(--danger)}
+  table.check{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+  table.check td{padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-dim)}
+  table.check td:first-child{color:var(--ink)}
+  table.check td.v{font-family:var(--mono);text-align:right;color:var(--ink)}
+  table.check tr.ko td{color:var(--danger)}
+  table.check tr.oki td.v{color:var(--ok)}
+
+  .calc{font-family:var(--mono);font-size:12.5px;line-height:1.95;color:var(--ink-dim);white-space:pre-line}
+  .calc b{color:var(--accent);font-weight:600}
+  .calc .res{color:var(--ink)}
+  .defis{list-style:none;display:flex;flex-direction:column;gap:7px}
+  .defis li{font-size:13px;color:var(--ink-dim);display:flex;gap:10px;align-items:baseline;
+    padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);transition:all .3s}
+  .defis li::before{content:"○";color:var(--ink-faint);font-size:13px}
+  .defis li.done{color:var(--ok);border-color:rgba(127,176,105,.45)}
+  .defis li.done::before{content:"✓";color:var(--ok)}
+
+  footer{max-width:1320px;margin:22px auto 0;color:var(--ink-faint);font-size:11.5px;display:flex;gap:10px;flex-wrap:wrap}
+  footer .dot{color:var(--accent)}
+
+  @media (prefers-reduced-motion: reduce){
+    .taux-marker,.deform{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="spark">▲</span> Atelier Structure</h1>
+  <div class="sub">Banc d'essai du bâtiment — Bac Pro TEBAA · charges, RDM, descente de charges, stabilité</div>
+  <div class="badge">100 % hors-ligne</div>
+</header>
+
+<div class="wrap">
+
+  <!-- Colonne gauche -->
+  <div class="stack">
+    <div class="card">
+      <h2>Coupe de la structure</h2>
+      <div class="hint">Déplace les capteurs <b style="color:var(--cyan)">R</b> (efforts, en kN) et <b style="color:var(--accent)">M</b> (moments, en kN·m) sur la structure. Clique sur le schéma d'appui pour changer de configuration.</div>
+      <div id="alerts"></div>
+      <svg id="schema" viewBox="0 0 780 470" role="img" aria-label="Coupe de la structure : plancher, poutre, poteaux, semelles"></svg>
+    </div>
+
+    <div class="card">
+      <h2>Diagrammes des efforts</h2>
+      <div class="hint">Moment fléchissant M (tracé côté tendu) et effort tranchant V le long de la poutre.</div>
+      <svg id="diag" viewBox="0 0 780 232" role="img" aria-label="Diagrammes du moment fléchissant et de l'effort tranchant"></svg>
+    </div>
+
+    <div class="card">
+      <h2>Charges &amp; poutre</h2>
+      <div class="controls">
+        <div class="ctl-label">Plancher</div>
+        <div class="chips" id="chipsPlancher"></div>
+
+        <div class="ctl-label">Destination</div>
+        <div class="chips" id="chipsUsage"></div>
+
+        <div class="ctl-label">Largeur reprise</div>
+        <div class="gen-row">
+          <input type="range" id="bSlider" min="1" max="6" step="0.5" value="2">
+          <div class="gen-val"><span id="bVal">2,0</span> m <small>surface d'influence</small></div>
+        </div>
+
+        <div class="ctl-label">Portée L</div>
+        <div class="knob-row">
+          <svg id="knob" width="92" height="92" viewBox="0 0 120 120" aria-label="Portée de la poutre"></svg>
+          <div class="knob-val"><span id="LVal">4,00</span> m<small>portée de la poutre</small></div>
+        </div>
+
+        <div class="ctl-label">Poutre</div>
+        <div class="chips" id="chipsPoutre"></div>
+
+        <div class="ctl-label">Appuis</div>
+        <div class="chips" id="chipsAppuis"></div>
+
+        <div class="ctl-label">Combinaison</div>
+        <div class="chips" id="chipsCombi"></div>
+
+        <div class="ctl-label">Critère flèche</div>
+        <div class="chips" id="chipsCrit"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Poteaux &amp; stabilité</h2>
+      <div class="controls">
+        <div class="ctl-label">Poteau</div>
+        <div class="chips" id="chipsPoteau"></div>
+
+        <div class="ctl-label">Hauteur h</div>
+        <div class="chips" id="chipsH"></div>
+
+        <div class="ctl-label">Liaisons</div>
+        <div class="chips" id="chipsLiaison"></div>
+
+        <div class="ctl-label">Étages au-dessus</div>
+        <div class="chips" id="chipsEtages"></div>
+
+        <div class="ctl-label">Vent</div>
+        <div class="chips" id="chipsVent"></div>
+
+        <div class="ctl-label">Contreventement</div>
+        <div class="chips" id="chipsContrev"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne droite -->
+  <div class="stack">
+    <div class="card">
+      <h2>Appareils de mesure</h2>
+      <div class="hint">Les cadrans lisent ce que mesurent les capteurs placés sur la structure.</div>
+      <div class="gauges">
+        <div class="gauge"><svg id="gR" viewBox="0 0 200 132"></svg><div class="g-read"><span id="rR">—</span> <small>kN</small></div></div>
+        <div class="gauge"><svg id="gM" viewBox="0 0 200 132"></svg><div class="g-read"><span id="rM">—</span> <small>kN·m</small></div></div>
+        <div class="gauge"><svg id="gF" viewBox="0 0 200 132"></svg><div class="g-read"><span id="rF">—</span> <small>mm</small></div></div>
+      </div>
+      <div class="mode-row">
+        <span class="ctl-label">Capteur R</span>
+        <div class="chips" id="chipsProbeR"></div>
+      </div>
+      <div class="mode-row">
+        <span class="ctl-label">Capteur M</span>
+        <div class="chips" id="chipsProbeM"></div>
+      </div>
+      <div class="mode-row">
+        <span class="ctl-label">Charge q</span>
+        <div class="gen-val" style="font-size:17px"><span id="qVal">—</span> kN/m</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Contrôle du bureau d'études</h2>
+      <div class="hint">Taux de travail = effort réel ÷ ce que l'élément peut supporter.</div>
+      <div class="taux-bar">
+        <div class="taux-track"></div>
+        <div class="taux-zone"></div>
+        <div class="taux-marker" id="tauxMarker"></div>
+      </div>
+      <div class="taux-scale"><span>0</span><span>50</span><span>100</span><span>150 %</span></div>
+      <div class="taux-status" id="tauxStatus"></div>
+      <table class="check"><tbody id="checkBody"></tbody></table>
+    </div>
+
+    <div class="card">
+      <h2>Calculs en direct</h2>
+      <div class="calc" id="calc"></div>
+    </div>
+
+    <div class="card">
+      <h2>Défis — manips à réaliser</h2>
+      <div class="hint">Les défis se cochent tout seuls quand tu réussis la manipulation.</div>
+      <ul class="defis" id="defis">
+        <li data-d="eco">Amener le taux de travail de la poutre dans la zone verte (70–100 %)</li>
+        <li data-d="fleche">Rendre la flèche non conforme <b>sans</b> casser la poutre</li>
+        <li data-d="poteau">Diviser le moment par 4 en ajoutant un poteau intermédiaire</li>
+        <li data-d="console">Passer en porte-à-faux et voir le moment multiplié par 4</li>
+        <li data-d="gseul">Se faire piéger : calculer avec « G seul » et casser quand même la poutre</li>
+        <li data-d="rupture">Provoquer la rupture d'une poutre par excès de moment</li>
+        <li data-d="flambe">Faire flamber un poteau (jouer sur la longueur de flambement)</li>
+        <li data-d="vent">Faire s'effondrer la structure au vent, sans contreventement</li>
+        <li data-d="repare">Réparer : remplacer un élément ou poser une palée triangulée</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Atelier Structure</span><span class="dot">·</span>
+  <span>Poutres : Bois LC 100×300 (EI 2 475 kN·m², M<sub>Rd</sub> 36) · IPE 200 (4 080 / 45) · IPE 300 (17 550 / 130) · BA 20×40 (32 000 / 65) · BA 20×50 (62 500 / 110)</span><span class="dot">·</span>
+  <span>Poteaux : BA 20×20 (EI 4 000, N<sub>Rd</sub> 550) · Bois 100×100 (92 / 210) · Tube 60×60×3 (78 / 160)</span><span class="dot">·</span>
+  <span>Tirant de contreventement Ø12 : 25 kN · vent pris en valeur caractéristique (simplification pédagogique)</span>
+</footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   ATELIER STRUCTURE — banc d'essai Bac Pro TEBAA
+   Descente de charges (G, Q, surface d'influence, ELU/ELS),
+   RDM (réactions, moment fléchissant, effort tranchant, flèche),
+   stabilité (flambement, contreventement, vent).
+   Modèle : voir compute() — toutes les formules y sont explicites.
+   ===================================================================== */
+
+const SVGNS = "http://www.w3.org/2000/svg";
+
+const FLOORS = {
+  bois:    { nom: "Plancher bois",       court: "bois",    G: 2.0 },
+  hourdis: { nom: "Hourdis 16+4",        court: "hourdis", G: 4.0 },
+  dalle20: { nom: "Dalle BA 20",         court: "dalle 20",G: 6.0 },
+  dalle25: { nom: "Dalle BA 25",         court: "dalle 25",G: 7.0 }
+};
+const USES = {
+  logement: { nom: "Logement",       Q: 1.5 },
+  bureaux:  { nom: "Bureaux",        Q: 2.5 },
+  reunion:  { nom: "Salle réunion",  Q: 4.0 },
+  commerce: { nom: "Commerce",       Q: 5.0 }
+};
+const BEAMS = {
+  boisLC: { nom: "Bois LC 100×300", court: "Bois LC", EI: 2475,  MRd: 36,  g0: 0.15, ep: 15 },
+  ipe200: { nom: "IPE 200",         court: "IPE 200", EI: 4080,  MRd: 45,  g0: 0.20, ep: 12 },
+  ipe300: { nom: "IPE 300",         court: "IPE 300", EI: 17550, MRd: 130, g0: 0.40, ep: 17 },
+  ba2040: { nom: "BA 20×40",        court: "BA 20×40",EI: 32000, MRd: 65,  g0: 2.00, ep: 19 },
+  ba2050: { nom: "BA 20×50",        court: "BA 20×50",EI: 62500, MRd: 110, g0: 2.50, ep: 23 }
+};
+const COLS = {
+  potBA:   { nom: "BA 20×20",       EI: 4000, NRd: 550, g0: 3.0, ep: 18 },
+  potBois: { nom: "Bois 100×100",   EI: 92,   NRd: 210, g0: 0.2, ep: 12 },
+  potTube: { nom: "Tube 60×60×3",   EI: 78,   NRd: 160, g0: 0.2, ep: 9  }
+};
+const LIAISONS = {
+  artic:    { nom: "Articulé–articulé", k: 1.0, enc: false },
+  encArt:   { nom: "Encastré–articulé", k: 0.7, enc: true  },
+  encEnc:   { nom: "Encastré–encastré", k: 0.5, enc: true  },
+  encLibre: { nom: "Encastré–libre",    k: 2.0, enc: true  }
+};
+const WINDS   = { nul: { nom: "Nul", w: 0 }, modere: { nom: "Modéré", w: 0.5 }, tempete: { nom: "Tempête", w: 1.2 } };
+const CRITS   = { toiture: { nom: "L/200 toiture", d: 200 }, plancher: { nom: "L/300 plancher", d: 300 }, fragile: { nom: "L/500 cloisons", d: 500 } };
+const APPUIS  = { deux: "2 appuis", trois: "3 appuis", console: "Porte-à-faux" };
+const COMBIS  = { elu: "ELU 1,35G+1,5Q", els: "ELS G+Q", gseul: "G seul ⚠" };
+const CONTREV = { palee: "Palée triangulée", aucun: "Aucun ⚠" };
+const T_RD    = 25;      /* résistance du tirant de contreventement (kN) */
+const SWAY_LIM_DIV = 250;
+
+const state = {
+  plancher: "hourdis", usage: "logement", b: 2.0, Lpct: 40, h: 3.0,
+  poutre: "ba2050", poteau: "potBA", liaison: "artic", appuis: "deux",
+  combi: "els", crit: "plancher", vent: "nul", contrev: "palee", etages: 0,
+  probeR: "RA", probeM: "mi",
+  blown: { poutre: false, poteau: false, diag: false },
+  ach: {}
+};
+const spanL = () => 2 + 5 * state.Lpct / 100;
+
+/* ---------------------------------------------------------------------
+   MÉCANIQUE
+--------------------------------------------------------------------- */
+function efforts(q, L, EI, appuis){
+  const o = { RA:0, RB:0, RC:0, Mtravee:0, Mappui:0, Mquart:0, Vmax:0, f:0 };
+  if (appuis === "deux") {
+    o.RA = o.RB = q * L / 2;
+    o.Mtravee = q * L * L / 8;
+    o.Mquart  = 3 * q * L * L / 32;
+    o.Vmax    = q * L / 2;
+    o.f       = 5 * q * Math.pow(L, 4) / (384 * EI);
+  } else if (appuis === "trois") {
+    const l = L / 2;                       /* deux travées de L/2 */
+    o.RA = o.RB = 3 * q * l / 8;
+    o.RC = 10 * q * l / 8;
+    o.Mtravee = 9 * q * l * l / 128;
+    o.Mappui  = q * l * l / 8;
+    o.Mquart  = o.Mtravee;
+    o.Vmax    = 5 * q * l / 8;
+    o.f       = q * Math.pow(l, 4) / (185 * EI);
+  } else {                                 /* console encastrée à gauche */
+    o.RA      = q * L;
+    o.Mappui  = q * L * L / 2;
+    o.Mquart  = q * Math.pow(L / 4, 2) / 2;
+    o.Vmax    = q * L;
+    o.f       = q * Math.pow(L, 4) / (8 * EI);
+  }
+  return o;
+}
+
+function compute(s){
+  const L = spanL(), h = s.h, b = s.b, n = s.etages;
+  const G = FLOORS[s.plancher].G, Q = USES[s.usage].Q;
+  const B = BEAMS[s.poutre], P = COLS[s.poteau], LI = LIAISONS[s.liaison];
+  const o = { L, h, b, G, Q, B, P, LI, console: s.appuis === "console" };
+
+  /* --- charges linéiques (kN/m) --- */
+  o.qG   = G * b + B.g0;
+  o.qQ   = Q * b;
+  o.qELS = o.qG + o.qQ;
+  o.qELU = 1.35 * o.qG + 1.5 * o.qQ;
+  o.q    = { elu: o.qELU, els: o.qELS, gseul: o.qG }[s.combi];
+
+  /* --- vent et stabilité latérale --- */
+  o.H  = o.console ? 0 : WINDS[s.vent].w * b * h / 2;
+  o.d  = Math.sqrt(L * L + h * h);
+  o.Lf = LI.k * h;
+  o.Ncr  = Math.PI * Math.PI * P.EI / (o.Lf * o.Lf);
+  o.Nlim = Math.min(P.NRd, o.Ncr);
+  o.ecrase = P.NRd <= o.Ncr;
+  o.swayLim = h * 1000 / SWAY_LIM_DIV;
+
+  if (o.console) { o.mecanisme = false; o.Tdiag = 0; o.dN = 0; o.sway = 0; o.Mpot = 0; }
+  else if (s.contrev === "palee") {
+    o.mecanisme = false;
+    o.Tdiag = o.H * o.d / L;               /* tirant : T = H · d / L    */
+    o.dN    = o.H * h / L;                 /* couple de renversement    */
+    o.sway  = 0; o.Mpot = 0;
+  } else {
+    o.Tdiag = 0; o.dN = 0;
+    if (!LI.enc) { o.mecanisme = o.H > 0; o.sway = 0; o.Mpot = 0; }
+    else {
+      o.mecanisme = false;
+      o.sway = o.H * Math.pow(h, 3) / (6 * P.EI) * 1000;   /* mm */
+      o.Mpot = o.H * h / 2;
+    }
+  }
+
+  o.ruine = s.blown.poutre || s.blown.poteau || s.blown.diag || o.mecanisme;
+
+  const e  = efforts(o.q,    L, B.EI, s.appuis);
+  const eU = efforts(o.qELU, L, B.EI, s.appuis);
+  const eS = efforts(o.qELS, L, B.EI, s.appuis);
+  o.e = e; o.eU = eU;
+
+  o.Mmax  = Math.max(e.Mtravee,  e.Mappui);
+  o.MmaxU = Math.max(eU.Mtravee, eU.Mappui);
+  o.MmaxAvant = o.Mmax;
+  o.fS   = eS.f * 1000;                    /* flèche toujours à l'ELS, en mm */
+  o.fadm = L * 1000 / CRITS[s.crit].d;
+
+  /* --- descente de charges sur le poteau instrumenté --- */
+  const Rcol  = o.console ? e.RA  : e.RB;
+  const RcolU = o.console ? eU.RA : eU.RB;
+  o.Ntete  = Rcol  * (1 + n) + o.dN;
+  o.Npied  = o.Ntete + P.g0 * (1 + n);
+  o.NpiedU = RcolU * (1 + n) + o.dN + P.g0 * (1 + n);
+
+  o.tauxM = o.MmaxU / B.MRd;
+  o.tauxF = o.fS / o.fadm;
+  o.tauxN = o.NpiedU / o.Nlim;
+  o.taux  = Math.max(o.tauxM, o.tauxF);
+
+  if (o.ruine) {
+    for (const k in e) e[k] = 0;
+    o.Mmax = 0; o.fS = 0; o.Ntete = 0; o.Npied = 0; o.Tdiag = 0; o.sway = 0;
+  }
+  return o;
+}
+
+/* boucle d'incidents : la vérification se fait TOUJOURS sur les charges
+   réelles (ELU pour la résistance) — quelle que soit la combinaison affichée */
+function simulate(){
+  let c, guard = 0;
+  while (guard++ < 6) {
+    c = compute(state);
+    if (c.mecanisme) { win("vent"); break; }
+    if (!state.blown.poutre && c.MmaxU > BEAMS[state.poutre].MRd + 1e-9) {
+      state.blown.poutre = true; win("rupture");
+      if (state.combi === "gseul") win("gseul");
+      continue;
+    }
+    if (!state.blown.poteau && c.NpiedU > c.Nlim + 1e-9) {
+      state.blown.poteau = c.ecrase ? "ecrase" : "flambe";
+      if (state.blown.poteau === "flambe") win("flambe");
+      continue;
+    }
+    if (!state.blown.diag && state.contrev === "palee" && c.Tdiag > T_RD + 1e-9) {
+      state.blown.diag = true; continue;
+    }
+    break;
+  }
+  return c;
+}
+
+/* ---------------------------------------------------------------------
+   OUTILS
+--------------------------------------------------------------------- */
+function el(tag, attrs, parent){
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function txt(x, y, str, cls, parent){
+  const t = el("text", { x, y, class: cls }, parent);
+  t.textContent = str;
+  return t;
+}
+function fr(n, dec){
+  if (!isFinite(n)) return "∞";
+  return n.toLocaleString("fr-FR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+function win(id){ state.ach[id] = true; }
+const $ = id => document.getElementById(id);
+
+/* ---------------------------------------------------------------------
+   SCHÉMA
+--------------------------------------------------------------------- */
+const schema = $("schema");
+const Y_SOL = 420, PX_M = 35, X_MID = 390;
+const refs = { flows: [], probesR: {}, probesM: {}, arrows: [] };
+
+function probeR(x, y, id, parent){
+  const g = el("g", { class: "probe", "data-r": id }, parent);
+  el("rect", { x: x - 11, y: y - 11, width: 22, height: 22, rx: 4 }, g);
+  txt(x, y + 4, "R", "", g);
+  g.addEventListener("click", () => { state.probeR = id; update(); });
+  refs.probesR[id] = g;
+}
+function probeM(x, y, id, parent){
+  const g = el("g", { class: "probe", "data-m": id }, parent);
+  el("circle", { cx: x, cy: y, r: 11.5 }, g);
+  txt(x, y + 4, "M", "", g);
+  g.addEventListener("click", () => { state.probeM = id; update(); });
+  refs.probesM[id] = g;
+}
+function flowPath(d, parent){
+  const p = el("path", { d, class: "flow" }, parent);
+  refs.flows.push({ path: p, current: 0, offset: 0 });
+  return refs.flows[refs.flows.length - 1];
+}
+
+function buildSchema(){
+  schema.innerHTML = "";
+  refs.flows = []; refs.probesR = {}; refs.probesM = {}; refs.arrows = [];
+
+  const c0 = compute(state);
+  const L = c0.L, h = state.h;
+  const cons = c0.console, trois = state.appuis === "trois";
+  const meca = c0.mecanisme;
+  const dx = meca ? 54 : 0;                       /* structure effondrée */
+  const xA = X_MID - L * PX_M, xB = X_MID + L * PX_M, xC = X_MID;
+  const yB = Y_SOL - h * 48;
+  const B = BEAMS[state.poutre], P = COLS[state.poteau];
+  const epB = B.ep, epP = P.ep;
+  const yDalle = yB - 72;
+  /* cadrage vertical adapté à la hauteur du poteau */
+  const top = yDalle - 88;
+  schema.setAttribute("viewBox", `0 ${top} 780 ${466 - top}`);
+
+  const gBack  = el("g", {}, schema);
+  const gFlow  = el("g", {}, schema);
+  const gComp  = el("g", {}, schema);
+  const gProbe = el("g", {}, schema);
+
+  /* --- sol + hachures --- */
+  el("line", { x1: 40, y1: Y_SOL, x2: 740, y2: Y_SOL, class: "sol" }, gBack);
+  for (let x = 44; x < 740; x += 22)
+    el("line", { x1: x, y1: Y_SOL, x2: x - 12, y2: Y_SOL + 13, class: "hatch" }, gBack);
+
+  /* --- semelles --- */
+  const semelles = cons ? [xA] : (trois ? [xA, xC, xB] : [xA, xB]);
+  semelles.forEach(x => {
+    el("path", { d: `M${x-34},${Y_SOL} L${x+34},${Y_SOL} L${x+24},${Y_SOL+20} L${x-24},${Y_SOL+20} Z`,
+                 class: "comp comp-fill" }, gComp);
+  });
+  txt(semelles[semelles.length - 1], Y_SOL + 36, "semelle", "lbl", gComp);
+
+  /* --- poteaux --- */
+  const poteaux = cons ? [xA] : (trois ? [xA, xC, xB] : [xA, xB]);
+  refs.poteauShapes = [];
+  poteaux.forEach(x => {
+    const g = el("g", {}, gComp);
+    const droit = el("rect", { x: x - epP/2 + dx, y: yB, width: epP, height: Y_SOL - yB, class: "comp comp-fill" }, g);
+    if (meca) {
+      /* le pied reste sur la semelle, la tête part de dx : cisaillement du cadre */
+      const Hc = Y_SOL - yB, ang = Math.atan(-dx / Hc) * 180 / Math.PI;
+      droit.setAttribute("transform", `translate(${(dx * yB / Hc).toFixed(2)},0) skewX(${ang.toFixed(3)})`);
+    }
+    const flamb = el("path", {
+      d: `M${x},${Y_SOL} C${x - 26},${Y_SOL - (Y_SOL-yB)*0.35} ${x + 26},${yB + (Y_SOL-yB)*0.35} ${x},${yB}`,
+      class: "comp", "stroke-width": epP, "stroke-linecap": "butt", display: "none",
+      stroke: "var(--danger)", fill: "none"
+    }, g);
+    const bx = el("g", { display: "none" }, g);
+    const ym = (yB + Y_SOL) / 2;
+    el("line", { x1: x-14, y1: ym-14, x2: x+14, y2: ym+14, class: "blown-x" }, bx);
+    el("line", { x1: x-14, y1: ym+14, x2: x+14, y2: ym-14, class: "blown-x" }, bx);
+    refs.poteauShapes.push({ droit, flamb, bx, x, ym });
+  });
+
+  /* --- poutre --- */
+  const gBeam = el("g", {}, gComp);
+  refs.beam = el("rect", { x: xA - 12, y: yB - epB, width: (xB - xA) + 24, height: epB, class: "beam" }, gBeam);
+  if (meca) gBeam.setAttribute("transform", `translate(${dx},0)`);
+  refs.beamLbl = txt(28, Y_SOL + 36, "poutre " + B.nom + " · portée L = " + fr(L, 2) + " m", "lbl", gComp);
+  refs.beamLbl.style.textAnchor = "start";   /* .style bat la règle CSS de .lbl */
+
+  /* rupture de la poutre : rotule + croix */
+  const xr = cons ? xA + 10 : (xA + xB) / 2;
+  refs.beamBroken = el("g", { display: "none" }, gBeam);
+  el("line", { x1: xr, y1: yB - epB - 12, x2: xr, y2: yB + 12, class: "blown-x" }, refs.beamBroken);
+  el("line", { x1: xr-16, y1: yB - epB - 10, x2: xr+16, y2: yB + 10, class: "blown-x" }, refs.beamBroken);
+  txt(xr, yB - epB - 20, "rupture", "lbl-danger", refs.beamBroken);
+
+  /* --- déformée --- */
+  refs.deform = el("path", { d: "", class: "deform" }, gBeam);
+
+  /* --- dalle (surface reprise) --- */
+  el("rect", { x: xA - 30 + dx, y: yDalle, width: (xB - xA) + 60, height: 13, class: "dalle" }, gComp);
+  refs.dalleLbl = txt(X_MID + dx, yDalle - 70, "", "lbl", gComp);
+
+  /* --- flèches de charge --- */
+  const nA = 9;
+  for (let i = 0; i < nA; i++) {
+    const x = xA + (xB - xA) * (i + 0.5) / nA + dx;
+    const g = el("g", {}, gComp);
+    const ln = el("line", { x1: x, y1: yDalle - 40, x2: x, y2: yDalle - 3, class: "load" }, g);
+    el("path", { d: `M${x},${yDalle-1} l-4.5,-8 l9,0 z`, class: "load-head" }, g);
+    refs.arrows.push({ ln, x, y0: yDalle });
+  }
+  refs.qLbl = txt(X_MID + dx, yDalle - 52, "", "lbl-strong", gComp);
+
+  /* --- appuis --- */
+  function appuiSimple(x, y){
+    el("path", { d: `M${x + dx},${y} l-13,20 l26,0 z`, class: "comp comp-fill" }, gComp);
+  }
+  if (cons) {
+    /* encastrement à gauche */
+    el("rect", { x: xA - 20, y: yB - epB - 12, width: 16, height: epB + 24, class: "comp comp-fill" }, gComp);
+    for (let k = 0; k < 5; k++)
+      el("line", { x1: xA - 20, y1: yB - epB - 10 + k * 9, x2: xA - 30, y2: yB - epB - 2 + k * 9, class: "hatch" }, gComp);
+    txt(xA - 4, yB - epB - 22, "encastrement", "lbl", gComp);
+    txt(xB + 10, yB - epB - 16, "extrémité libre", "lbl", gComp);
+  } else {
+    appuiSimple(xA, yB + 2); appuiSimple(xB, yB + 2);
+    if (trois) appuiSimple(xC, yB + 2);
+  }
+
+  /* --- contreventement --- */
+  if (!cons && state.contrev === "palee") {
+    const xd0 = trois ? xC : xA;
+    refs.diago = el("line", { x1: xd0, y1: Y_SOL, x2: xB, y2: yB + 4, class: "diago" }, gComp);
+    refs.diagoBx = el("g", { display: "none" }, gComp);
+    const mx = (xd0 + xB) / 2, my = (Y_SOL + yB) / 2;
+    el("line", { x1: mx-13, y1: my-13, x2: mx+13, y2: my+13, class: "blown-x" }, refs.diagoBx);
+    el("line", { x1: mx-13, y1: my+13, x2: mx+13, y2: my-13, class: "blown-x" }, refs.diagoBx);
+    refs.diagMid = [mx, my];
+  } else { refs.diago = null; refs.diagMid = null; }
+
+  /* --- vent --- */
+  if (c0.H > 0) {
+    for (let k = 0; k < 3; k++) {
+      const y = yB + 46 + k * 30;
+      el("line", { x1: xA - 96, y1: y, x2: xA - 44, y2: y, class: "wind" }, gComp);
+      el("path", { d: `M${xA-40},${y} l-9,-4.5 l0,9 z`, class: "wind-head" }, gComp);
+    }
+    txt(xA - 70, yB + 26, "vent " + fr(c0.H, 2) + " kN", "lbl", gComp);
+  }
+
+  if (meca) txt(X_MID, Y_SOL - 44, "⚠ EFFONDREMENT — structure non contreventée", "lbl-danger", gComp)
+              .setAttribute("font-size", "14");
+
+  /* --- flux : descente des charges --- */
+  if (!meca) {
+    if (cons) {
+      refs.flows = [];
+      flowPath(`M${xB},${yB - epB/2} L${xA},${yB - epB/2}`, gFlow);
+      flowPath(`M${xA},${yB} L${xA},${Y_SOL + 16}`, gFlow);
+    } else if (trois) {
+      flowPath(`M${xC},${yB - epB/2} L${xA},${yB - epB/2}`, gFlow);
+      flowPath(`M${xC},${yB - epB/2} L${xB},${yB - epB/2}`, gFlow);
+      flowPath(`M${xA},${yB} L${xA},${Y_SOL + 16}`, gFlow);
+      flowPath(`M${xC},${yB} L${xC},${Y_SOL + 16}`, gFlow);
+      flowPath(`M${xB},${yB} L${xB},${Y_SOL + 16}`, gFlow);
+    } else {
+      flowPath(`M${X_MID},${yB - epB/2} L${xA},${yB - epB/2}`, gFlow);
+      flowPath(`M${X_MID},${yB - epB/2} L${xB},${yB - epB/2}`, gFlow);
+      flowPath(`M${xA},${yB} L${xA},${Y_SOL + 16}`, gFlow);
+      flowPath(`M${xB},${yB} L${xB},${Y_SOL + 16}`, gFlow);
+    }
+  }
+
+  /* --- capteurs --- */
+  probeR(xA - 30, yB + 26, "RA", gProbe);
+  if (!cons) probeR(xB + 30, yB + 26, "RB", gProbe);
+  if (trois) probeR(xC + 30, yB + 26, "RC", gProbe);
+  const xPot = cons ? xA : xB, sgn = cons ? -1 : 1;
+  probeR(xPot + sgn * 30, yB + 74, "tete", gProbe);
+  probeR(xPot + sgn * 30, Y_SOL - 18, "pied", gProbe);
+  if (refs.diagMid) probeR(refs.diagMid[0] + 24, refs.diagMid[1] - 16, "diag", gProbe);
+
+  probeM((xA + xB) / 2, yB - epB - 16, "mi", gProbe);
+  probeM(xA + (xB - xA) / 4, yB - epB - 16, "x1", gProbe);
+  probeM(cons ? xA + 26 : (trois ? xC : xA + 30), yB + 26, "app", gProbe);
+  if (!cons) probeM(xPot - sgn * 28, Y_SOL - 18, "pot", gProbe);
+
+  /* clic sur la poutre : cycle des schémas d'appui */
+  const hit = el("rect", { x: xA, y: yB - epB - 4, width: xB - xA, height: epB + 8, class: "hit" }, gComp);
+  hit.addEventListener("click", () => {
+    const ordre = ["deux", "trois", "console"];
+    setAppuis(ordre[(ordre.indexOf(state.appuis) + 1) % 3]);
+  });
+
+  refs.geo = { xA, xB, xC, yB, epB, L, cons, trois, dx };
+}
+
+/* ---------------------------------------------------------------------
+   DIAGRAMMES M ET V
+--------------------------------------------------------------------- */
+const diag = $("diag");
+function buildDiag(c){
+  diag.innerHTML = "";
+  const x0 = 110, x1 = 690, yM = 72, yV = 170, AMP = 40;
+  const L = c.L, q = c.q, e = c.e, cons = c.console, trois = state.appuis === "trois";
+
+  el("line", { x1: x0, y1: yM, x2: x1, y2: yM, class: "dg-axis" }, diag);
+  el("line", { x1: x0, y1: yV, x2: x1, y2: yV, class: "dg-axis" }, diag);
+  txt(14, yM + 4, "M (kN·m)", "dg-lbl", diag);
+  txt(14, yV + 4, "V (kN)", "dg-lbl", diag);
+
+  if (c.ruine || q <= 0) {
+    txt(400, yM - 18, c.ruine ? "structure hors service" : "pas de charge", "dg-lbl", diag)
+      .setAttribute("text-anchor", "middle");
+    return;
+  }
+  const px = x => x0 + (x1 - x0) * x / L;
+  const N = 60;
+  const Mv = [], Vv = [];
+  for (let i = 0; i <= N; i++) {
+    const x = L * i / N;
+    let M, V;
+    if (cons) { M = -q * Math.pow(L - x, 2) / 2; V = q * (L - x); }
+    else if (trois) {
+      const l = L / 2, RA = 3 * q * l / 8;
+      const xx = x <= l ? x : L - x;
+      M = RA * xx - q * xx * xx / 2;
+      V = (x <= l ? RA - q * x : -(RA - q * (L - x)));
+    } else { M = q * x * (L - x) / 2; V = q * (L / 2 - x); }
+    Mv.push([x, M]); Vv.push([x, V]);
+  }
+  const mMax = Math.max(...Mv.map(p => Math.abs(p[1]))) || 1;
+  const vMax = Math.max(...Vv.map(p => Math.abs(p[1]))) || 1;
+
+  /* M : sagging tracé vers le bas (côté tendu) — V : positif vers le haut */
+  const poly = (vals, max, yAxis, sgn, cls) => {
+    let d = `M${px(0)},${yAxis}`;
+    vals.forEach(p => { d += ` L${px(p[0]).toFixed(1)},${(yAxis + sgn * p[1] / max * AMP).toFixed(1)}`; });
+    d += ` L${px(L)},${yAxis} Z`;
+    el("path", { d, class: cls }, diag);
+  };
+  poly(Mv, mMax, yM,  1, "dg-m");
+  poly(Vv, vMax, yV, -1, "dg-v");
+
+  const mark = (x, v, yAxis, max, sgn, lab) => {
+    const X = px(x), Y = yAxis + sgn * v / max * AMP;
+    el("line", { x1: X, y1: yAxis, x2: X, y2: Y, class: "dg-mark" }, diag);
+    const t = txt(X, Y + (Y >= yAxis ? 14 : -6), lab, "dg-lbl", diag);
+    t.setAttribute("text-anchor", "middle");
+  };
+  if (cons) {
+    mark(0, -q * L * L / 2, yM, mMax,  1, "−" + fr(e.Mappui, 1));
+    mark(0, q * L,          yV, vMax, -1, fr(e.Vmax, 1));
+  } else if (trois) {
+    mark(L / 2,      -q * L * L / 32, yM, mMax,  1, "−" + fr(e.Mappui, 1));
+    mark(3 * L / 16, e.Mtravee,       yM, mMax,  1, fr(e.Mtravee, 1));
+    mark(0,          e.RA,            yV, vMax, -1, fr(e.RA, 1));
+  } else {
+    mark(L / 2, e.Mtravee, yM, mMax,  1, fr(e.Mtravee, 1));
+    mark(0,     e.Vmax,    yV, vMax, -1, fr(e.Vmax, 1));
+    mark(L,    -e.Vmax,    yV, vMax, -1, "−" + fr(e.Vmax, 1));
+  }
+  txt(x0, 18, "0", "dg-lbl", diag);
+  txt(x1 - 4, 18, "L = " + fr(L, 2) + " m", "dg-lbl", diag).setAttribute("text-anchor", "end");
+}
+
+/* ---------------------------------------------------------------------
+   CADRANS
+--------------------------------------------------------------------- */
+function buildGauge(id, name, unit, max, majors, redFrom){
+  const svg = $(id);
+  svg.innerHTML = "";
+  const cx = 100, cy = 116, r = 84, a0 = -50, a1 = 50;
+  const rad = a => (a - 90) * Math.PI / 180;
+  const pt = (a, rr) => [cx + rr * Math.cos(rad(a)), cy + rr * Math.sin(rad(a))];
+  const arc = (aa, ab, rr, cls) => {
+    const [px0, py0] = pt(aa, rr), [px1, py1] = pt(ab, rr);
+    el("path", { d: `M${px0},${py0} A${rr},${rr} 0 0 1 ${px1},${py1}`, class: cls }, svg);
+  };
+  arc(a0, a1, r, "g-arc");
+  if (redFrom != null) arc(a0 + (a1 - a0) * redFrom / max, a1, r, "g-red");
+  const nTicks = majors * 5;
+  for (let i = 0; i <= nTicks; i++) {
+    const a = a0 + (a1 - a0) * i / nTicks;
+    const major = i % 5 === 0;
+    const [tx0, ty0] = pt(a, r), [tx1, ty1] = pt(a, r - (major ? 10 : 5));
+    el("line", { x1: tx0, y1: ty0, x2: tx1, y2: ty1, class: major ? "g-tick" : "g-tick-min" }, svg);
+    if (major) {
+      const [nx, ny] = pt(a, r - 20);
+      txt(nx, ny + 3, fr(max * i / nTicks, max < 60 ? 0 : 0), "g-num", svg);
+    }
+  }
+  txt(cx, cy - 34, name + " (" + unit + ")", "g-name", svg);
+  const gN = el("g", {}, svg);
+  el("line", { x1: 0, y1: 4, x2: 0, y2: -(r - 8), class: "g-needle" }, gN);
+  el("circle", { cx, cy, r: 5, class: "g-pivot" }, svg);
+  return { gN, cx, cy, a0, a1, max, angle: a0, vel: 0, target: a0 };
+}
+const gauges = {
+  R: buildGauge("gR", "Effort", "kN",   300, 6, 240),
+  M: buildGauge("gM", "Moment", "kN·m", 200, 5, 150),
+  F: buildGauge("gF", "Flèche", "mm",    50, 5,  30)
+};
+function setGauge(g, value){
+  const f = Math.max(0, Math.min(1, value / g.max));
+  g.target = g.a0 + (g.a1 - g.a0) * f;
+}
+
+/* ---------------------------------------------------------------------
+   BOUTON ROTATIF (portée L)
+--------------------------------------------------------------------- */
+const knob = $("knob");
+let knobInd;
+(function buildKnob(){
+  const cx = 60, cy = 60;
+  el("circle", { cx, cy, r: 52, fill: "var(--panel-2)", stroke: "var(--line)", "stroke-width": 2 }, knob);
+  for (let i = 0; i < 36; i++) {
+    const a = i * 10 * Math.PI / 180;
+    el("line", {
+      x1: cx + 46 * Math.cos(a), y1: cy + 46 * Math.sin(a),
+      x2: cx + 52 * Math.cos(a), y2: cy + 52 * Math.sin(a),
+      stroke: "#34333a", "stroke-width": 2.4
+    }, knob);
+  }
+  el("circle", { cx, cy, r: 40, fill: "#222127", stroke: "#3a3940", "stroke-width": 1.5 }, knob);
+  txt(18, 112, "2 m", "g-num", knob);
+  txt(102, 112, "7 m", "g-num", knob);
+  const g = el("g", {}, knob);
+  knobInd = el("line", { x1: 0, y1: -16, x2: 0, y2: -38, stroke: "var(--accent)", "stroke-width": 4, "stroke-linecap": "round" }, g);
+  g.setAttribute("transform", `translate(${cx},${cy})`);
+  knobInd._g = g;
+})();
+function knobPctFromEvent(ev){
+  const rect = knob.getBoundingClientRect();
+  const x = ev.clientX - (rect.left + rect.width / 2);
+  const y = ev.clientY - (rect.top + rect.height / 2);
+  let rel = ((Math.atan2(y, x) * 180 / Math.PI - 90) + 360) % 360;
+  rel = Math.max(45, Math.min(315, rel));
+  return Math.round((rel - 45) / 270 * 100 / 5) * 5;
+}
+function setL(pct){
+  if (pct === state.Lpct) return;
+  state.Lpct = pct; rebuild();
+}
+let knobDrag = false;
+knob.addEventListener("pointerdown", ev => {
+  knobDrag = true;
+  if (knob.setPointerCapture) knob.setPointerCapture(ev.pointerId);
+  setL(knobPctFromEvent(ev));
+});
+knob.addEventListener("pointermove", ev => { if (knobDrag) setL(knobPctFromEvent(ev)); });
+knob.addEventListener("pointerup", () => { knobDrag = false; });
+knob.setAttribute("tabindex", "0");
+knob.addEventListener("keydown", ev => {
+  if (ev.key === "ArrowRight" || ev.key === "ArrowUp")   setL(Math.min(100, state.Lpct + 5));
+  if (ev.key === "ArrowLeft"  || ev.key === "ArrowDown") setL(Math.max(0,   state.Lpct - 5));
+});
+
+/* ---------------------------------------------------------------------
+   CONSTRUCTION DES BOUTONS
+--------------------------------------------------------------------- */
+function chipGroup(containerId, entries, getVal, setVal, opts){
+  const box = $(containerId);
+  box.innerHTML = "";
+  entries.forEach(([val, label, danger]) => {
+    const b = document.createElement("button");
+    b.className = "chip" + (danger ? " danger-chip" : "");
+    b.dataset.v = val;
+    b.textContent = label;
+    b.addEventListener("click", () => { if (!b.disabled) setVal(val); });
+    box.appendChild(b);
+  });
+  box._get = getVal;
+}
+function syncChips(containerId){
+  const box = $(containerId);
+  const v = String(box._get());
+  box.querySelectorAll(".chip").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+}
+
+function setAppuis(v){
+  state.appuis = v;
+  if (v === "console") {
+    if (state.probeR === "RB" || state.probeR === "RC" || state.probeR === "diag") state.probeR = "RA";
+    if (state.probeM === "pot") state.probeM = "app";
+  }
+  if (v !== "trois" && state.probeR === "RC") state.probeR = "RA";
+  if (!(v !== "console" && state.contrev === "palee") && state.probeR === "diag") state.probeR = "RA";
+  rebuild();
+}
+
+chipGroup("chipsPlancher", Object.keys(FLOORS).map(k => [k, FLOORS[k].nom + " · " + fr(FLOORS[k].G, 1)]),
+  () => state.plancher, v => { state.plancher = v; update(); });
+chipGroup("chipsUsage", Object.keys(USES).map(k => [k, USES[k].nom + " · " + fr(USES[k].Q, 1)]),
+  () => state.usage, v => { state.usage = v; update(); });
+chipGroup("chipsPoutre", Object.keys(BEAMS).map(k => [k, BEAMS[k].nom]),
+  () => state.poutre, v => { state.poutre = v; state.blown.poutre = false; rebuild(); });
+chipGroup("chipsAppuis", Object.keys(APPUIS).map(k => [k, APPUIS[k], k === "console"]),
+  () => state.appuis, setAppuis);
+chipGroup("chipsCombi", Object.keys(COMBIS).map(k => [k, COMBIS[k], k === "gseul"]),
+  () => state.combi, v => { state.combi = v; update(); });
+chipGroup("chipsCrit", Object.keys(CRITS).map(k => [k, CRITS[k].nom]),
+  () => state.crit, v => { state.crit = v; update(); });
+chipGroup("chipsPoteau", Object.keys(COLS).map(k => [k, COLS[k].nom]),
+  () => state.poteau, v => { state.poteau = v; state.blown.poteau = false; rebuild(); });
+chipGroup("chipsH", [[2.5, "2,50 m"], [3, "3,00 m"], [4, "4,00 m"]],
+  () => state.h, v => { state.h = +v; rebuild(); });
+chipGroup("chipsLiaison",
+  Object.keys(LIAISONS).map(k => [k, LIAISONS[k].nom + " · Lf = " + fr(LIAISONS[k].k, 1).replace(",0", "") + " h"]),
+  () => state.liaison, v => { state.liaison = v; rebuild(); });
+chipGroup("chipsEtages", [[0, "0"], [1, "1"], [2, "2"], [3, "3"]],
+  () => state.etages, v => { state.etages = +v; update(); });
+chipGroup("chipsVent", Object.keys(WINDS).map(k => [k, WINDS[k].nom]),
+  () => state.vent, v => { state.vent = v; rebuild(); });
+chipGroup("chipsContrev", Object.keys(CONTREV).map(k => [k, CONTREV[k], k === "aucun"]),
+  () => state.contrev, v => { state.contrev = v; state.blown.diag = false; rebuild(); });
+
+const PROBES_R = { RA: "Appui A", RB: "Appui B", RC: "Appui central", tete: "Tête poteau", pied: "Pied poteau", diag: "Tirant" };
+const PROBES_M = { mi: "Mi-travée", x1: "Au quart", app: "Sur appui", pot: "Pied poteau" };
+chipGroup("chipsProbeR", Object.keys(PROBES_R).map(k => [k, PROBES_R[k]]), () => state.probeR, v => { state.probeR = v; update(); });
+chipGroup("chipsProbeM", Object.keys(PROBES_M).map(k => [k, PROBES_M[k]]), () => state.probeM, v => { state.probeM = v; update(); });
+
+$("bSlider").addEventListener("input", ev => { state.b = +ev.target.value; update(); });
+
+/* ---------------------------------------------------------------------
+   RÉPARATIONS
+--------------------------------------------------------------------- */
+function reparerPoutre(){ state.blown.poutre = false; win("repare"); rebuild(); }
+function reparerPoteau(){ state.blown.poteau = false; win("repare"); rebuild(); }
+function reparerTirant(){ state.blown.diag = false; win("repare"); rebuild(); }
+function poserPalee(){ state.contrev = "palee"; win("repare"); rebuild(); }
+
+/* ---------------------------------------------------------------------
+   MISE À JOUR
+--------------------------------------------------------------------- */
+function rebuild(){ buildSchema(); update(); }
+
+function update(){
+  const c = simulate();
+  const L = c.L, e = c.e, cons = c.console, trois = state.appuis === "trois";
+  const B = BEAMS[state.poutre];
+
+  /* --- commandes --- */
+  $("bVal").textContent = fr(state.b, 1);
+  $("LVal").textContent = fr(L, 2);
+  knobInd._g.setAttribute("transform", `translate(60,60) rotate(${-135 + 2.7 * state.Lpct})`);
+  ["chipsPlancher","chipsUsage","chipsPoutre","chipsAppuis","chipsCombi","chipsCrit",
+   "chipsPoteau","chipsH","chipsLiaison","chipsEtages","chipsVent","chipsContrev",
+   "chipsProbeR","chipsProbeM"].forEach(syncChips);
+  $("chipsProbeR").querySelectorAll(".chip").forEach(b => {
+    b.disabled = (b.dataset.v === "RC" && !trois)
+              || (b.dataset.v === "diag" && !(refs.diago && !state.blown.diag))
+              || (b.dataset.v === "RB" && cons);
+  });
+  $("chipsProbeM").querySelectorAll(".chip").forEach(b => { b.disabled = (b.dataset.v === "pot" && cons); });
+  $("chipsContrev").querySelectorAll(".chip").forEach(b => { b.disabled = cons; });
+  $("chipsVent").querySelectorAll(".chip").forEach(b => { b.disabled = cons; });
+
+  /* --- schéma : charges, déformée, avaries --- */
+  refs.qLbl.textContent = "q = " + fr(c.q, 2) + " kN/m   (" + COMBIS[state.combi].replace(" ⚠", "") + ")";
+  refs.dalleLbl.textContent = FLOORS[state.plancher].nom + " · G = " + fr(c.G, 1) + " kN/m²  ·  "
+    + USES[state.usage].nom + " · Q = " + fr(c.Q, 1) + " kN/m²  ·  largeur reprise b = " + fr(c.b, 1) + " m";
+  const len = Math.max(10, Math.min(44, 8 + c.q * 1.1));
+  refs.arrows.forEach(a => {
+    a.ln.setAttribute("y1", a.y0 - len);
+    a.ln.setAttribute("y2", a.y0 - 3);
+  });
+
+  const g = refs.geo;
+  if (!c.ruine && c.fS > 0) {
+    const sag = Math.max(3, Math.min(38, c.fS / c.fadm * 14));
+    const yb = g.yB - g.epB / 2;
+    if (cons) refs.deform.setAttribute("d", `M${g.xA},${yb} Q${(g.xA+g.xB)/2},${yb + sag*0.35} ${g.xB},${yb + sag}`);
+    else if (trois) refs.deform.setAttribute("d",
+      `M${g.xA},${yb} Q${(g.xA+g.xC)/2},${yb + sag} ${g.xC},${yb} Q${(g.xC+g.xB)/2},${yb + sag} ${g.xB},${yb}`);
+    else refs.deform.setAttribute("d", `M${g.xA},${yb} Q${(g.xA+g.xB)/2},${yb + sag*2} ${g.xB},${yb}`);
+    refs.deform.setAttribute("display", "");
+  } else refs.deform.setAttribute("display", "none");
+
+  refs.beamBroken.setAttribute("display", state.blown.poutre ? "" : "none");
+  refs.beam.setAttribute("stroke", state.blown.poutre ? "var(--danger)" : "var(--ink)");
+  if (refs.diagoBx) refs.diagoBx.setAttribute("display", state.blown.diag ? "" : "none");
+  if (refs.diago) refs.diago.setAttribute("stroke", state.blown.diag ? "#4a4a48" : "var(--ok)");
+  refs.poteauShapes.forEach(p => {
+    const fl = state.blown.poteau === "flambe";
+    p.flamb.setAttribute("display", fl ? "" : "none");
+    p.droit.setAttribute("display", fl ? "none" : "");
+    p.bx.setAttribute("display", state.blown.poteau === "ecrase" ? "" : "none");
+  });
+
+  /* --- flux --- */
+  let currents;
+  if (cons) currents = [e.RA, c.Npied];
+  else if (trois) currents = [e.RA, e.RB, e.RA, e.RC, c.Npied];
+  else currents = [e.RA, e.RB, e.RA, c.Npied];
+  refs.flows.forEach((f, i) => {
+    f.current = currents[i] || 0;
+    f.path.classList.toggle("on", !c.ruine && f.current > 0.01);
+  });
+
+  /* --- capteurs sélectionnés --- */
+  for (const id in refs.probesR) refs.probesR[id].classList.toggle("sel-r", id === state.probeR);
+  for (const id in refs.probesM) refs.probesM[id].classList.toggle("sel-m", id === state.probeM);
+
+  const valR = { RA: e.RA, RB: e.RB, RC: e.RC, tete: c.Ntete, pied: c.Npied, diag: c.Tdiag }[state.probeR] || 0;
+  const valM = { mi: e.Mtravee, x1: e.Mquart, app: e.Mappui, pot: c.ruine ? 0 : c.Mpot }[state.probeM] || 0;
+  setGauge(gauges.R, valR); setGauge(gauges.M, valM); setGauge(gauges.F, c.fS);
+  $("rR").textContent = fr(valR, 1);
+  $("rM").textContent = fr(valM, 1);
+  $("rF").textContent = fr(c.fS, 2);
+  $("qVal").textContent = fr(c.q, 2);
+
+  /* --- contrôle du bureau d'études --- */
+  const T = Math.min(150, c.taux * 100);
+  $("tauxMarker").style.left = (T / 150 * 100) + "%";
+  const st = $("tauxStatus");
+  if (c.ruine) {
+    st.className = "taux-status high";
+    st.innerHTML = "<b>Structure hors service</b> — répare l'élément avarié avant de continuer.";
+  } else if (c.taux > 1) {
+    st.className = "taux-status high";
+    st.innerHTML = `<b>${fr(c.taux*100,0)} %</b> — dimensionnement <b>insuffisant</b> : l'élément dépasse ce qu'il peut supporter.`;
+  } else if (c.taux >= 0.7) {
+    st.className = "taux-status ok";
+    st.innerHTML = `<b>${fr(c.taux*100,0)} %</b> — dimensionnement <b>juste et économique</b> ✓ (zone verte 70–100 %).`;
+    win("eco");
+  } else {
+    st.className = "taux-status low";
+    st.innerHTML = `<b>${fr(c.taux*100,0)} %</b> — <b>surdimensionné</b> : la structure tient largement, mais on paie de la matière pour rien.`;
+  }
+  const rows = [
+    ["Résistance poutre — M<sub>Ed</sub> / M<sub>Rd</sub>", fr(c.MmaxU,1) + " / " + fr(B.MRd,0) + " kN·m", c.tauxM],
+    ["Flèche ELS — f / f<sub>adm</sub>", fr(c.fS,2) + " / " + fr(c.fadm,2) + " mm", c.tauxF],
+    ["Poteau — N<sub>Ed</sub> / N<sub>lim</sub>", fr(c.NpiedU,1) + " / " + fr(c.Nlim,1) + " kN", c.tauxN],
+    ["Charge critique de flambement N<sub>cr</sub>", fr(c.Ncr,1) + " kN", null],
+    ["Résistance à l'écrasement N<sub>Rd</sub>", fr(COLS[state.poteau].NRd,0) + " kN", null],
+    ["Longueur de flambement L<sub>f</sub> = " + fr(c.LI.k,1).replace(",0","") + " × h", fr(c.Lf,2) + " m", null]
+  ];
+  $("checkBody").innerHTML = rows.map(r => {
+    const cls = r[2] == null ? "" : (r[2] > 1 ? "ko" : "oki");
+    const pct = r[2] == null ? "" : " <span style=\"opacity:.7\">(" + fr(r[2]*100,0) + " %)</span>";
+    return `<tr class="${cls}"><td>${r[0]}</td><td class="v">${r[1]}${pct}</td></tr>`;
+  }).join("");
+
+  /* --- défis --- */
+  if (!c.ruine && c.tauxF > 1 && c.tauxM <= 1) win("fleche");
+  if (!c.ruine && state.appuis === "deux") state._M2 = e.Mtravee;
+  if (!c.ruine && trois && state._M2 > 0 && state._M2 / Math.max(e.Mtravee, e.Mappui) > 3.5) win("poteau");
+  if (!c.ruine && cons && state._M2 > 0 && Math.max(e.Mtravee, e.Mappui) / state._M2 > 3.5) win("console");
+  document.querySelectorAll("#defis li").forEach(li => li.classList.toggle("done", !!state.ach[li.dataset.d]));
+
+  buildDiag(c);
+  renderAlerts(c);
+  renderCalc(c);
+}
+
+/* ---------------------------------------------------------------------
+   ALERTES
+--------------------------------------------------------------------- */
+function renderAlerts(c){
+  const box = $("alerts");
+  box.innerHTML = "";
+  const add = (cls, html, btnLabel, btnFn) => {
+    const d = document.createElement("div");
+    d.className = "alert " + cls;
+    d.innerHTML = html;
+    if (btnLabel) {
+      const b = document.createElement("button");
+      b.textContent = btnLabel;
+      b.addEventListener("click", btnFn);
+      d.appendChild(b);
+    }
+    box.appendChild(d);
+  };
+  const B = BEAMS[state.poutre];
+
+  if (c.mecanisme)
+    add("danger", "💥 <b>Effondrement</b> — un rectangle articulé est un <b>mécanisme</b> : sans triangulation, la moindre poussée horizontale le transforme en parallélogramme.",
+        "Poser une palée triangulée", poserPalee);
+  if (state.blown.poutre) {
+    let sup = "";
+    if (state.combi === "gseul")
+      sup = ` Ton calcul « G seul » annonçait M = ${fr(c.MmaxAvant,1)} kN·m… mais la charge réelle à l'ELU donne <b>${fr(c.MmaxU,1)} kN·m</b>. <b>Q avait été oublié.</b>`;
+    else if (state.combi === "els")
+      sup = ` Attention : la <b>résistance</b> se vérifie à l'<b>ELU</b> (1,35G + 1,5Q = ${fr(c.MmaxU,1)} kN·m), pas à l'ELS.`;
+    add("danger", `💥 <b>Rupture de la poutre</b> — moment ELU ${fr(c.MmaxU,1)} kN·m > M<sub>Rd</sub> = ${fr(B.MRd,0)} kN·m.${sup}`,
+        "Remplacer la poutre", reparerPoutre);
+  }
+  if (state.blown.poteau === "flambe")
+    add("danger", `💥 <b>Flambement du poteau</b> — N = ${fr(c.NpiedU,1)} kN a dépassé la charge critique N<sub>cr</sub> = ${fr(c.Ncr,1)} kN (L<sub>f</sub> = ${fr(c.Lf,2)} m). Le poteau s'est dérobé latéralement.`,
+        "Remplacer le poteau", reparerPoteau);
+  if (state.blown.poteau === "ecrase")
+    add("danger", `💥 <b>Écrasement du poteau</b> — N = ${fr(c.NpiedU,1)} kN > N<sub>Rd</sub> = ${fr(COLS[state.poteau].NRd,0)} kN. Trapu, il ne flambe pas : il est écrasé.`,
+        "Remplacer le poteau", reparerPoteau);
+  if (state.blown.diag)
+    add("danger", `💥 <b>Rupture du tirant de contreventement</b> — effort ${fr(T_RD,0)} kN dépassé. La structure n'est plus contreventée.`,
+        "Remplacer le tirant", reparerTirant);
+
+  if (state.combi === "gseul" && !state.blown.poutre)
+    add("warn", "⚠ <b>Combinaison incomplète</b> — tu ne comptes que les charges permanentes G. Le contrôle réglementaire, lui, utilise toujours <b>1,35 G + 1,5 Q</b> : compare la valeur affichée et la ligne « Résistance poutre ».");
+  if (state.combi === "els" && !state.blown.poutre && c.tauxM > 0.9)
+    add("warn", "ℹ <b>ELS ≠ ELU</b> — l'ELS (G+Q) sert à vérifier la <b>flèche</b>. Pour la <b>résistance</b>, il faut l'ELU (1,35G+1,5Q), toujours plus grand.");
+  if (state.probeM === "app" && state.appuis === "deux" && !c.ruine)
+    add("warn", "ℹ <b>Capteur M sur un appui simple</b> : il lit <b>0 kN·m</b>, c'est normal — un appui simple ne transmet pas de moment. Le moment maximal est <b>à mi-travée</b>.");
+  if (state.probeM === "mi" && state.appuis === "console" && !c.ruine)
+    add("warn", "ℹ <b>Porte-à-faux</b> : le moment maximal n'est pas en travée mais à l'<b>encastrement</b>. Déplace le capteur M sur « Sur appui ».");
+  if (!c.ruine && c.tauxF > 1)
+    add("warn", `⚠ <b>Flèche non conforme</b> — f = ${fr(c.fS,2)} mm > ${CRITS[state.crit].nom} = ${fr(c.fadm,2)} mm. La poutre ne casse pas, mais le plancher vibre et les cloisons fissurent.`);
+  if (!c.ruine && c.sway > c.swayLim)
+    add("warn", `⚠ <b>Déplacement en tête excessif</b> — ${fr(c.sway,1)} mm sous le vent, pour une limite h/${SWAY_LIM_DIV} = ${fr(c.swayLim,1)} mm. Sans triangulation, seuls les encastrements retiennent la structure.`);
+  if (!c.ruine && state.contrev === "aucun" && c.H === 0 && !c.console)
+    add("warn", "ℹ <b>Aucun contreventement</b> — rien ne se passe tant qu'il n'y a pas de vent. Mets du vent pour voir…");
+  if (!c.ruine && c.Tdiag > 0)
+    add("good", `✓ <b>Palée triangulée active</b> — le tirant reprend ${fr(c.Tdiag,2)} kN et transmet ${fr(c.dN,2)} kN de plus au poteau sous le vent.`);
+}
+
+/* ---------------------------------------------------------------------
+   CALCULS EN DIRECT
+--------------------------------------------------------------------- */
+function renderCalc(c){
+  const calc = $("calc");
+  const L = c.L, e = c.e, B = BEAMS[state.poutre];
+  const nomCombi = COMBIS[state.combi].replace(" ⚠", "");
+  const tete = `q = (G + Q) × b + g₀ (poids propre)
+G × b = ${fr(c.G,1)} × ${fr(c.b,1)} = <b>${fr(c.G*c.b,2)}</b> kN/m   ·   Q × b = ${fr(c.Q,1)} × ${fr(c.b,1)} = <b>${fr(c.Q*c.b,2)}</b> kN/m
+g₀ (${B.court}) = ${fr(B.g0,2)} kN/m
+qG = <span class="res">${fr(c.qG,2)}</span> kN/m   ·   qQ = <span class="res">${fr(c.qQ,2)}</span> kN/m
+<b>${nomCombi}</b> → q = <span class="res">${fr(c.q,2)} kN/m</span>`;
+
+  if (c.mecanisme) {
+    calc.innerHTML = `<b>Mécanisme</b> : cadre articulé sans triangulation.
+Sous H = ${fr(c.H,2)} kN, le déplacement n'est retenu par rien → <span class="res">effondrement</span>.
+Un <b>triangle</b> est indéformable : c'est le principe de la palée.`;
+    return;
+  }
+  if (c.ruine) {
+    calc.innerHTML = `<b>Élément avarié</b> : la structure ne transmet plus les charges.
+Les capteurs lisent <span class="res">0</span>. Répare avant de poursuivre.`;
+    return;
+  }
+  let corps;
+  if (c.console) {
+    corps = `Porte-à-faux, longueur ${fr(L,2)} m :
+R (encastrement) = q × L = <span class="res">${fr(e.RA,2)} kN</span>
+<b>M = q × L² / 2</b> = ${fr(c.q,2)} × ${fr(L*L,2)} / 2 = <span class="res">${fr(e.Mappui,2)} kN·m</span>
+f = q L⁴ / (8 EI) = <span class="res">${fr(c.fS,2)} mm</span>   (limite ${fr(c.fadm,2)} mm)`;
+  } else if (state.appuis === "trois") {
+    const l = L / 2;
+    corps = `Poutre continue, 2 travées de ${fr(l,2)} m :
+R(A) = R(B) = 3 q l / 8 = <span class="res">${fr(e.RA,2)} kN</span>  ·  R(central) = 10 q l / 8 = <span class="res">${fr(e.RC,2)} kN</span>
+Σ R = ${fr(e.RA*2 + e.RC,2)} kN = q × L = ${fr(c.q*L,2)} kN ✓
+M(appui central) = q l² / 8 = <span class="res">${fr(e.Mappui,2)} kN·m</span>  ·  M(travée) = 9 q l² / 128 = <span class="res">${fr(e.Mtravee,2)} kN·m</span>
+f = q l⁴ / (185 EI) = <span class="res">${fr(c.fS,2)} mm</span>   (limite ${fr(c.fadm,2)} mm)`;
+  } else {
+    corps = `Poutre sur 2 appuis, portée ${fr(L,2)} m :
+R(A) = R(B) = q × L / 2 = <span class="res">${fr(e.RA,2)} kN</span>   (Σ R = ${fr(e.RA*2,2)} = q × L ✓)
+<b>M = q × L² / 8</b> = ${fr(c.q,2)} × ${fr(L*L,2)} / 8 = <span class="res">${fr(e.Mtravee,2)} kN·m</span>
+V(appui) = q L / 2 = <span class="res">${fr(e.Vmax,2)} kN</span>
+<b>f = 5 q L⁴ / (384 EI)</b> = <span class="res">${fr(c.fS,2)} mm</span>   (limite ${CRITS[state.crit].nom} = ${fr(c.fadm,2)} mm)`;
+  }
+  const pied = `Descente de charges (poteau ${COLS[state.poteau].nom}, ${state.etages} étage(s) au-dessus) :
+N(tête) = R × (1 + ${state.etages})${c.dN > 0 ? " + " + fr(c.dN,2) + " (vent)" : ""} = <span class="res">${fr(c.Ntete,2)} kN</span>
+N(pied) = N(tête) + ${fr(COLS[state.poteau].g0,1)} × ${1 + state.etages} = <span class="res">${fr(c.Npied,2)} kN</span>
+<b>N(cr) = π² EI / Lf²</b> = π² × ${fr(COLS[state.poteau].EI,0)} / ${fr(c.Lf,2)}² = <span class="res">${fr(c.Ncr,1)} kN</span>`;
+  const vent = c.H > 0
+    ? `\nVent : H = w × b × h / 2 = ${fr(WINDS[state.vent].w,1)} × ${fr(c.b,1)} × ${fr(c.h,2)} / 2 = <span class="res">${fr(c.H,2)} kN</span>`
+      + (state.contrev === "palee"
+          ? `\nTirant : d = √(L² + h²) = ${fr(c.d,3)} m  →  <b>T = H × d / L</b> = <span class="res">${fr(c.Tdiag,2)} kN</span>\nRenversement : ΔN = H × h / L = <span class="res">${fr(c.dN,2)} kN</span>`
+          : `\nSans triangulation, les encastrements fléchissent : Δ = H h³ / (6 EI) = <span class="res">${fr(c.sway,1)} mm</span>`)
+    : "";
+  calc.innerHTML = tete + "\n\n" + corps + "\n\n" + pied + vent;
+}
+
+/* ---------------------------------------------------------------------
+   ANIMATION
+--------------------------------------------------------------------- */
+const reduceMotion = typeof window.matchMedia === "function"
+  && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let lastT = typeof performance !== "undefined" ? performance.now() : 0;
+function tick(t){
+  const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t;
+  for (const k in gauges) {
+    const g = gauges[k];
+    if (reduceMotion) g.angle = g.target;
+    else {
+      g.vel += (g.target - g.angle) * 28 * dt;
+      g.vel *= Math.pow(0.012, dt);
+      g.angle += g.vel * 60 * dt * 0.16 + (g.target - g.angle) * 3 * dt;
+    }
+    g.gN.setAttribute("transform", `translate(${g.cx},${g.cy}) rotate(${g.angle})`);
+  }
+  if (!reduceMotion) {
+    refs.flows.forEach(f => {
+      if (f.current > 0.01 && f.path.classList.contains("on")) {
+        f.offset = (f.offset - Math.min(f.current, 120) * 2.4 * dt) % 15;
+        f.path.setAttribute("stroke-dashoffset", f.offset);
+      }
+    });
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------------------------------------------------------------------
+   DÉMARRAGE
+--------------------------------------------------------------------- */
+buildSchema();
+update();
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
