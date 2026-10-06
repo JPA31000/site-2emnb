@@ -395,6 +395,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .frise__svg .prepa{fill:url(#hach-bleu);stroke:var(--bleu);stroke-width:1.4;stroke-dasharray:4 4}
 .frise__svg .lbl-stage{font-size:15px;fill:#25693f}
 .frise__svg .lbl-prepa{font-size:14px;fill:var(--bleu)}
+.frise__svg .lbl-stage,.frise__svg .lbl-prepa{paint-order:stroke;stroke:var(--fiche);stroke-width:4px;stroke-linejoin:round}   /* un liseré de papier : le repère « aujourd’hui » passe derrière sans barrer le nom */
 .frise__svg .auj{stroke:var(--rouge2);stroke-width:2}
 .frise__svg .curseur{stroke:var(--rouge2);stroke-width:1.6;stroke-dasharray:3 4;pointer-events:none}
 .frise__svg .anim{clip-path:inset(0 100% 0 0);transition:clip-path 1.6s var(--e-io)}
@@ -1244,18 +1245,18 @@ const DONNEES = {
 
   // Calendrier des stages des secondes Bac Pro (dates : du lundi au vendredi)
   stages: {
-    annee: '2025-2026', debut: '2025-09-01', fin: '2026-07-10',
+    annee: '2026-2027', debut: '2026-09-01', fin: '2027-07-09',
     periodes: [
-      { nom: 'Préparation des PFMP', du: '2025-10-06', au: '2025-10-17', genre: 'prepa' },
-      { nom: 'PFMP n°1', du: '2025-11-03', au: '2025-11-21', genre: 'stage' },
-      { nom: 'PFMP n°2', du: '2026-06-08', au: '2026-06-26', genre: 'stage' },
+      { nom: 'Préparation des PFMP', du: '2026-10-05', au: '2026-10-16', genre: 'prepa' },   // semaines 41 et 42, comme l'an dernier
+      { nom: 'PFMP n°1', du: '2027-01-25', au: '2027-02-12', genre: 'stage' },   // semaines 04, 05 et 06
+      { nom: 'PFMP n°2', du: '2027-06-14', au: '2027-07-02', genre: 'stage' },   // semaines 24, 25 et 26
     ],
-    vacances: [
-      { nom: 'vacances de la Toussaint', du: '2025-10-20', au: '2025-10-31' },
-      { nom: 'vacances de Noël', du: '2025-12-22', au: '2026-01-02' },
-      { nom: 'vacances d’hiver', du: '2026-02-23', au: '2026-03-06' },
-      { nom: 'vacances de printemps', du: '2026-04-20', au: '2026-05-01' },
-      { nom: 'vacances d’été', du: '2026-07-06', au: '2026-07-10' },
+    vacances: [   // zone C (académie de Toulouse), calendrier officiel 2026-2027
+      { nom: 'vacances de la Toussaint', du: '2026-10-19', au: '2026-10-30' },
+      { nom: 'vacances de Noël', du: '2026-12-21', au: '2027-01-01' },
+      { nom: 'vacances d’hiver', du: '2027-02-08', au: '2027-02-19' },
+      { nom: 'vacances de printemps', du: '2027-04-05', au: '2027-04-16' },
+      { nom: 'vacances d’été', du: '2027-07-05', au: '2027-07-09' },
     ],
   },
 
@@ -1845,8 +1846,9 @@ function initFrise() {
     anim += `<text class="lbl-${p.genre}" x="${x + w / 2}" y="${YB + 50}" text-anchor="middle">${esc(p.nom)}${p.genre === 'stage' ? ` · ${nb} sem.` : ''}</text>`;
   }
   const auj = new Date(); auj.setHours(0, 0, 0, 0);
-  if (auj >= debut && auj <= fin) { const x = X0 + ((auj - debut) / (7 * 864e5)) * CW; h += `<path class="auj" d="M${x.toFixed(1)} ${YS - 4}V${YB + 36}"/><text x="${x.toFixed(1)}" y="${YB + 50}" text-anchor="middle" style="fill:var(--rouge)">aujourd’hui</text>`; }
-  svg.setAttribute('viewBox', `0 0 ${LW} 112`);
+  const aujourdhui = auj >= debut && auj <= fin;   // le repère « aujourd’hui » a sa propre rangée, sous les noms des périodes (sinon il les recouvre)
+  if (aujourdhui) { const x = X0 + ((auj - debut) / (7 * 864e5)) * CW; h += `<path class="auj" d="M${x.toFixed(1)} ${YS - 4}V${YB + 54}"/><text x="${x.toFixed(1)}" y="${YB + 68}" text-anchor="middle" style="fill:var(--rouge)">aujourd’hui</text>`; }
+  svg.setAttribute('viewBox', `0 0 ${LW} ${aujourdhui ? 130 : 112}`);
   svg.innerHTML = h + `<g class="anim">${anim}</g><path class="curseur" id="frise-curseur" d="M0 ${YS - 4}V${YB + 34}" visibility="hidden"/>`;
   $('#frise-resume').textContent = D.periodes.map(p => `${p.nom} du ${fj(jour(p.du))} au ${fj(jour(p.au), true)}`).join(' ; ') + '.';
   const curseur = $('#frise-curseur', svg);

@@ -455,7 +455,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   </a>
   <nav class="nav__liens" aria-label="Sections du site">
     <a href="#projets">Projets</a><a href="#espace">Mon espace</a><a href="#ateliers">Ateliers</a><a href="#decouvrir">Découvrir</a>
-    <a id="nav-synth" target="_blank" rel="noopener">Synthèses ↗<span class="sr"> (nouvel onglet)</span></a>
+    <a id="nav-synth" href="syntheses.html">Synthèses</a>
   </nav>
   <button class="nav__chercher" type="button" data-chercher aria-label="Chercher dans le site (Ctrl K)">
     <svg class="loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20.5 20.5l-5.2-5.2"/></svg>
@@ -470,6 +470,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   <a href="#espace" style="--i:1"><span>02</span>Mon espace</a>
   <a href="#ateliers" style="--i:2"><span>03</span>Ateliers</a>
   <a href="#decouvrir" style="--i:3"><span>04</span>Découvrir</a>
+  <a href="syntheses.html" style="--i:4"><span>→</span>Synthèses</a>
 </div>
 
 <main>
@@ -645,7 +646,7 @@ const DONNEES = {
             { nom: 'Carte des acteurs', type: 'sup', url: WIX + 'copie-de-les-acteurs-diapo' },
             { nom: 'Acte de construire · diaporama', type: 'sup', url: WIX + 'copie-de-world-café-les-acteurs-1' },
             { nom: 'Missions et phases', type: 'wc', url: 'phases-missions.html' },   // page du carnet (ex-application « acte-de-construire-world-cafe »)
-            { nom: 'ARC, ÉCO, GÉOM', type: 'wc', url: WIX + 'copie-de-world-café-missions-et-phases' },
+            { nom: 'ARC, ÉCO, GÉOM', type: 'wc', url: 'metiers.html' },   // page du carnet (ex-application « métiers : architecte, économiste, géomètre »)
             { nom: 'Lecture de plans', type: 'wc', url: 'lecture-de-plans.html' },   // page du carnet (ex-application Mirales)
           ] },
           { nom: 'Activité 2', url: WIX + 'copie-de-activité-3' },
@@ -707,14 +708,21 @@ const DONNEES = {
       ] },
   ],
 
-  syntheses: { url: WIX + 'synthèses-de-cours',
-    resume: 'Pour réviser : les acteurs, missions et phases, la programmation, le CCTP, le rapport de stage, la lecture de plan, la maquette numérique et le BIM.' },
+  // Synthèses : une page du carnet (carnet NotebookLM + trois animations), qui remplace la page Wix « synthèses-de-cours »
+  syntheses: { url: 'syntheses.html',
+    resume: 'Pour réviser : le carnet de synthèses sur NotebookLM et trois animations à revoir, l’acte de construire, lire un plan et l’EDD.',
+    notebook: 'https://notebooklm.google.com/notebook/ff0a62c4-bd78-4c13-b3d5-2353d4391152?artifactId=9e7150fa-20dd-467b-8a40-3a62509abe45',
+    animations: [
+      { nom: 'L’acte de construire en 90 secondes', url: 'animation-acte-de-construire.html', resume: 'Les acteurs, les missions et les phases' },
+      { nom: 'Lire un plan en 2 min 30', url: 'animation-lecture-de-plan.html', resume: 'Du plan de masse à la perspective' },
+      { nom: 'L’EDD en 90 secondes', url: 'animation-edd.html', resume: 'De l’empreinte écologique aux 17 objectifs' },
+    ] },
 
   // Mon espace — taille : 'xl' (grande), 'large' (deux colonnes) ou rien
   espace: [
     { nom: 'BIM Éducation', etiq: 'Maquette numérique', taille: 'xl', visuel: 'bim', couleur: 'cyan', url: WIX + 'bim-educ',
-      resume: 'Le BIM, c’est une seule maquette numérique partagée par tous les acteurs du projet : de la structure à la toiture, chaque couche a sa place.' },
-    { nom: 'Livret élève', etiq: 'À garder sous la main', taille: 'large', visuel: 'livret', couleur: 'violet', url: WIX + 'livret-élève',
+      resume: 'Une application pour toi, où tu pourras créer tes premières maquettes numériques, modéliser en 3D avec des informations techniques associées… les premiers pas vers la méthode de travail dénommée BIM (Building Information Model).' },
+    { nom: 'Pas à pas', etiq: 'À garder sous la main', taille: 'large', visuel: 'livret', couleur: 'violet', url: WIX + 'livret-élève',
       resume: 'Votre livret de seconde EMNB.' },
     { nom: 'PFMP', etiq: 'Dossier Drive', visuel: 'pfmp', couleur: 'orange', url: 'https://drive.google.com/drive/folders/1Maiq6JEMeCLcvDfrNs1FdcfClXfUmSlN?usp=drive_link',
       resume: 'Les périodes de formation en milieu professionnel.' },
@@ -754,6 +762,7 @@ const DONNEES = {
     { groupe: 'Apprendre autrement', items: [
       { nom: 'Les tutos vidéo', icone: 'tuto', url: WIX + 'tuto-et-podcast', resume: 'Revit et Twinmotion, pas à pas.' },
       { nom: 'Les podcasts', icone: 'podcast', url: WIX + 'tuto-et-podcast', resume: 'Bâtir l’invisible, décoder les plans, le chantier en coulisses…' },
+      { nom: 'L’EDD en 90 secondes', icone: 'edd', url: 'animation-edd.html', resume: 'Animation : de l’empreinte écologique aux 17 objectifs de développement durable.' },   // page du carnet
       { nom: 'Les bots', icone: 'bot', url: WIX + 'les-bots', resume: 'Un prof à la maison : posez vos questions à Knowledge’BOT.' },
       { nom: 'Jeux pédagogiques', icone: 'jeux', url: 'https://profgcce1.wixsite.com/my-site-2', resume: 'BTP’s Game : pendu, puzzle, mots mêlés, memory.' },
       { nom: 'Auto-évaluation', icone: 'autoeval', url: WIX + 'general-5', resume: 'Des quiz et des jeux pour faire le point.' },
@@ -808,6 +817,7 @@ const ICONES = {
   orientation: '<path d="M12 21.5V3"/><path d="M5 5.5h11l2.5 2.25L16 10H5zM19 12.5H8l-2.5 2.25L8 17h11z"/>',
   tuto: '<rect x="2.5" y="4.5" width="19" height="13.5" rx="2"/><path d="M10 8.5v5l4.3-2.5zM7 21h10"/>',
   podcast: '<path d="M3.5 17v-4a8.5 8.5 0 0 1 17 0v4"/><rect x="3" y="14" width="4" height="6.5" rx="1.5"/><rect x="17" y="14" width="4" height="6.5" rx="1.5"/>',
+  edd: '<path d="M12 21.5V12"/><path d="M12 12c0-4.2-2.8-6.7-8.2-6.7 0 4.8 2.9 6.9 8.2 6.7z"/><path d="M12 14.5c0-3.4 2.3-5.6 8.2-5.6 0 4-2.7 6-8.2 5.6z"/><path d="M8.5 21.5h7"/>',
   bot: '<rect x="4" y="8" width="16" height="11.5" rx="3"/><path d="M12 8V4.5M2 12.5v3M22 12.5v3"/><circle cx="12" cy="3.5" r="1"/><circle cx="9" cy="13.5" r="1.2"/><circle cx="15" cy="13.5" r="1.2"/>',
   jeux: '<path d="M7 7.5h10a4.5 4.5 0 0 1 4.4 5.5l-.8 3.6a2.6 2.6 0 0 1-4.5 1.1l-1.7-2.2H9.6l-1.7 2.2a2.6 2.6 0 0 1-4.5-1.1l-.8-3.6A4.5 4.5 0 0 1 7 7.5z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".7" fill="currentColor"/><circle cx="17.5" cy="13" r=".7" fill="currentColor"/>',
   autoeval: '<path d="M15.5 4.5l4 4L9 19H5v-4z"/><path d="M13 7l4 4"/>',
@@ -1063,8 +1073,8 @@ function construirePage() {
       </div>
     </article>`).join('');
   const S = DONNEES.syntheses;
-  $('#synth').innerHTML = `<a class="synth rv" ${ext(S.url)}><div class="fiches" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <div><span class="main" style="font-size:18px;color:var(--bleu)">révisions</span><h3>Synthèses de cours</h3><p>${esc(S.resume)}</p></div>${FLECHE_RONDE}${NO}</a>`;
+  $('#synth').innerHTML = `<a class="synth rv" href="${esc(S.url)}"><div class="fiches" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div><span class="main" style="font-size:18px;color:var(--bleu)">révisions</span><h3>Synthèses de cours</h3><p>${esc(S.resume)}</p></div>${FLECHE_RONDE}</a>`;
 
   // --- Mon espace : objets de papier
   $('#bento').innerHTML = DONNEES.espace.map((c, i) => `
@@ -1087,11 +1097,11 @@ function construirePage() {
   // --- Découvrir : sommaire du carnet
   let k = 0;
   $('#index').innerHTML = DONNEES.decouvrir.map(g => `<div class="index__grp"><h3 class="index__gt rv">${esc(g.groupe)}</h3>
-    ${g.items.map(it => `<a class="ligne-i rv" ${ext(it.url)} data-apercu="${it.icone}" data-groupe="${esc(g.groupe)}"><span class="ligne-i__n">${++k}</span><span class="ligne-i__t">${esc(it.nom)}</span><span class="ligne-i__d">${esc(it.resume)}</span>${FLECHE_RONDE}${NO}</a>`).join('')}</div>`).join('');
+    ${g.items.map(it => `<a class="ligne-i rv" ${interne(it.url) ? `href="${esc(it.url)}"` : ext(it.url)} data-apercu="${it.icone}" data-groupe="${esc(g.groupe)}"><span class="ligne-i__n">${++k}</span><span class="ligne-i__t">${esc(it.nom)}</span><span class="ligne-i__d">${esc(it.resume)}</span>${FLECHE_RONDE}${interne(it.url) ? '' : NO}</a>`).join('')}</div>`).join('');
 
   // --- Pied de page : raccourcis
   const rac = ['ENT', 'Cahier de texte', 'Portfolio'].map(nom => DONNEES.outils.find(o => o.nom === nom)).filter(Boolean);
-  $('#pied-raccourcis').innerHTML = rac.map(o => `<li><a ${ext(o.url)}>${esc(o.nom)}${NO}</a></li>`).join('') + `<li><a ${ext(DONNEES.syntheses.url)}>Synthèses${NO}</a></li>`;
+  $('#pied-raccourcis').innerHTML = rac.map(o => `<li><a ${ext(o.url)}>${esc(o.nom)}${NO}</a></li>`).join('') + `<li><a href="${esc(DONNEES.syntheses.url)}">Synthèses</a></li>`;
 }
 
 /* =====================================================================
@@ -1587,7 +1597,9 @@ function indexer() {
       });
     }
   }
-  aj('Révisions', 'Synthèses de cours', D.syntheses.url, 'Projets', false, true);
+  aj('Révisions', 'Synthèses de cours', D.syntheses.url, 'Menu › Synthèses', false, true);
+  aj('Révisions', 'Carnet de synthèses · NotebookLM', D.syntheses.notebook, 'Synthèses', false, true);
+  D.syntheses.animations.forEach(a => aj('Animation', a.nom, a.url, 'Synthèses', false, true));
   D.espace.forEach(c => aj('Mon espace', c.nom, c.url, c.etiq, !!c.protege));
   D.ateliers.forEach(c => aj('Atelier', c.nom, c.url, c.etiq));
   D.decouvrir.forEach(g => g.items.forEach(it => aj('Découvrir', it.nom, it.url, g.groupe)));
