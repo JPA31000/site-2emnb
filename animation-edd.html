@@ -1,0 +1,1204 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EDD en 90 secondes</title>
+<meta name="description" content="Animation motion design d’une minute trente sur l’éducation au développement durable, avec pauses questions et guide d’exploitation en classe.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{
+  --bg:#E4EBE7; --surface:#F4F8F5; --ink:#0E2240; --muted:#4B5B74; --line:#C6D2CC;
+  --accent:#17814F; --accent-soft:#D3EBDD; --screen:#0B1A30; --focus:#2F6FD6;
+  --fd:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --fb:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --fm:"IBM Plex Mono",Consolas,"Cascadia Mono",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+    --accent:#48C585; --accent-soft:#143A2C; --screen:#050C16; --focus:#7FB0FF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+  --accent:#48C585; --accent-soft:#143A2C; --screen:#050C16; --focus:#7FB0FF;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--fb)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:clamp(16px,4vw,40px);padding-block:36px 72px;display:grid;gap:36px}
+.head{display:grid;gap:12px;max-width:780px}
+.kicker{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0;font:500 12.5px/1.3 var(--fm);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:10px;height:10px;border-radius:50%;display:block}
+h1{font:800 clamp(36px,5.6vw,64px)/1 var(--fd);letter-spacing:-.025em;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);font-size:17px;max-width:62ch;text-wrap:pretty}
+
+.player{display:grid;gap:10px}
+.screen{position:relative;border-radius:18px;overflow:hidden;background:var(--screen);box-shadow:0 30px 70px -40px rgba(8,20,40,.7)}
+.screen canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;cursor:pointer}
+.screen:fullscreen{display:grid;place-items:center;border-radius:0;background:#000}
+.screen:fullscreen canvas{width:min(100vw,177.78vh)}
+.bigplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:12px;padding:10px 22px 10px 10px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 clamp(14px,1.6vw,18px)/1 var(--fb);cursor:pointer;box-shadow:0 16px 40px -14px rgba(0,0,0,.6);white-space:nowrap}
+.bigplay .tri{width:40px;height:40px;border-radius:50%;background:#0E2240;color:#FFB627;display:grid;place-items:center;flex:none}
+.bigplay:hover{background:#FFC24D}
+.qcard{position:absolute;left:3%;bottom:6%;max-width:min(580px,90%);background:rgba(9,22,42,.95);color:#fff;border-radius:16px;padding:16px 18px 18px;display:grid;gap:8px;box-shadow:0 20px 50px -20px rgba(0,0,0,.7)}
+.qcard .qk{margin:0;font:500 12px/1.3 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:#FFB627}
+.qcard .qt{margin:0;font:700 clamp(16px,2.1vw,23px)/1.28 var(--fd);text-wrap:pretty}
+.qcard button{justify-self:start;margin-top:4px;height:38px;padding:0 18px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 14px var(--fb);cursor:pointer}
+.rec{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;background:rgba(9,22,42,.92);color:#fff;font:500 13px/1 var(--fm);padding:8px 12px;border-radius:999px}
+.rec::before{content:"";width:9px;height:9px;border-radius:50%;background:#FF5A4A;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
+.ib{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.ib.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ib svg{display:block}
+.track{flex:1 1 260px;min-width:0;position:relative;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:0;pointer-events:none}
+.ticks i{position:absolute;top:-10px;width:2px;height:20px;margin-left:-1px;background:var(--muted);opacity:.45;border-radius:1px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;margin:0;border-radius:999px;background:linear-gradient(to right,var(--accent) var(--p,0%),var(--line) var(--p,0%));cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ink);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ink)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ink);border:3px solid var(--bg)}
+.tc{font:500 14px var(--fm);font-variant-numeric:tabular-nums;color:var(--muted);min-width:10ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tog{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font:600 14px var(--fb);cursor:pointer;user-select:none}
+.tog input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.btn{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--fb);cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:hover:not(:disabled),.ib:hover,.tog:hover{border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.help{margin:0;font:500 12.5px/1.5 var(--fm);color:var(--muted)}
+.note{margin:0;font-size:14px;color:var(--muted);max-width:80ch}
+
+.sec{display:grid;gap:16px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+.sec-head h2{font:800 clamp(24px,2.8vw,32px)/1.1 var(--fd);margin:0;letter-spacing:-.015em}
+.sec-head p{margin:0;color:var(--muted);font-size:15px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+@media (max-width:900px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.board{grid-template-columns:1fr}}
+.card{width:100%;height:100%;display:grid;grid-template-rows:auto auto 1fr;gap:8px;text-align:left;padding:10px 10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:inherit;font:inherit;cursor:pointer}
+.card:hover{border-color:var(--ink)}
+.card canvas{width:100%;height:auto;aspect-ratio:16/9;display:block;border-radius:9px;background:var(--screen)}
+.card .meta{display:flex;align-items:baseline;gap:10px;padding-inline:4px}
+.card .tm{font:500 12.5px var(--fm);color:var(--muted);font-variant-numeric:tabular-nums}
+.card h3{margin:0;font:700 18px/1.2 var(--fd)}
+.card p{margin:0;padding-inline:4px;font-size:14.5px;line-height:1.45;color:var(--muted)}
+.card[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;display:grid;gap:8px;align-content:start}
+.step .when{font:500 12.5px/1.3 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.step h3{margin:0;font:700 20px/1.2 var(--fd)}
+.step p{margin:0;font-size:15px;text-wrap:pretty}
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 32px;border-top:1px solid var(--line);padding-top:4px}
+@media (max-width:860px){.more{grid-template-columns:1fr}}
+.more h3{font:700 17px/1.2 var(--fd);margin:16px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:14px;padding:4px 11px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.more ul{margin:0;padding-left:18px;display:grid;gap:7px;font-size:14.5px}
+.more li::marker{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){.rec::before{animation:none}}
+.retour{margin:0 0 2px;font:500 13px/1.3 var(--fm)}.retour a{color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}.retour a:hover{color:var(--ink)}
+</style>
+
+<main class="wrap">
+  <header class="head">
+    <p class="retour"><a href="index.html" onclick="try{if(document.referrer&&new window.URL(document.referrer).origin===window.location.origin){window.history.back();return false}}catch(e){}">← Retour au carnet 2EMNB</a></p>
+    <p class="kicker"><span class="dots" aria-hidden="true"><i style="background:#3FBF7F"></i><i style="background:#FF7A59"></i><i style="background:#4D8FEA"></i></span>Éducation au développement durable · motion design · 1 min 30</p>
+    <h1>L’EDD en 90 secondes</h1>
+    <p class="lede">Six plans d’environ 15 secondes, de l’empreinte écologique jusqu’à l’action, sans voix off&nbsp;: le texte animé porte le message et chaque plan laisse le temps de lire. À projeter en ouverture de séquence, d’une traite puis avec les pauses questions.</p>
+  </header>
+
+  <section class="player" aria-label="Lecteur de l’animation">
+    <div class="screen" id="screen">
+      <canvas id="stage" width="1920" height="1080" role="img" aria-label="Animation en six plans : empreinte écologique, définition du développement durable, trois dimensions, 17 objectifs de développement durable, échelles d’action, question finale."></canvas>
+      <button class="bigplay" id="bigplay" type="button"><span class="tri"><svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true"><path d="M2 1.5v15L15 9z" fill="currentColor"/></svg></span><span id="bigtxt">Lancer l’animation · 1&nbsp;min&nbsp;30</span></button>
+      <div class="qcard" id="qcard" role="dialog" aria-live="polite" aria-labelledby="qt" hidden>
+        <p class="qk" id="qk"></p>
+        <p class="qt" id="qt"></p>
+        <button type="button" id="qgo">Continuer</button>
+      </div>
+      <div class="rec" id="rec" hidden></div>
+    </div>
+    <div class="bar">
+      <button class="ib primary" id="play" type="button" aria-label="Lecture"></button>
+      <button class="ib" id="restart" type="button" aria-label="Revenir au début"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 2v14M15 2.5v13L5.5 9z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
+      <div class="track">
+        <input type="range" id="scrub" min="0" max="90" step="0.01" value="0" aria-label="Position dans l’animation">
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+      </div>
+      <span class="tc" id="tc">0:00 / 1:30</span>
+      <div class="opts">
+        <label class="tog"><input type="checkbox" id="snd" checked> Son</label>
+        <label class="tog"><input type="checkbox" id="pz"> Pauses questions</label>
+        <button class="btn" id="fs" type="button">Plein écran</button>
+        <button class="btn" id="exp" type="button">Exporter en vidéo</button>
+      </div>
+    </div>
+    <p class="help">Espace&nbsp;: lecture ou pause · ← →&nbsp;: une seconde · 1 à 6&nbsp;: aller au plan · F&nbsp;: plein écran · M&nbsp;: son</p>
+    <p class="note" id="expnote"></p>
+  </section>
+
+  <section class="sec" aria-labelledby="h-plans">
+    <div class="sec-head"><h2 id="h-plans">Les six plans</h2><p>Cliquez un plan pour le lire depuis son début.</p></div>
+    <ol class="board" id="board"></ol>
+  </section>
+
+  <section class="sec" aria-labelledby="h-classe">
+    <div class="sec-head"><h2 id="h-classe">Exploiter en classe</h2><p>Une séance d’ouverture d’environ 25 minutes.</p></div>
+    <div class="steps">
+      <article class="step">
+        <span class="when">Avant · 3 min</span>
+        <h3>Recueillir les représentations</h3>
+        <p>«&nbsp;Durable&nbsp;», pour vous, ça veut dire quoi&#8239;? Un mot par élève, écrit au tableau sans correction. On y reviendra à la fin.</p>
+      </article>
+      <article class="step">
+        <span class="when">Pendant · 2 × 1 min 30</span>
+        <h3>Voir, puis revoir</h3>
+        <p>Premier passage d’une traite, sans prise de notes. Second passage avec «&nbsp;Pauses questions&nbsp;» cochée&nbsp;: l’animation s’arrête à la fin de chaque plan sur une question, une minute d’échange en binôme.</p>
+      </article>
+      <article class="step">
+        <span class="when">Après · 15 min</span>
+        <h3>Passer à l’action</h3>
+        <p>Chaque groupe prend une échelle (geste, classe, lycée, territoire) et propose une action mesurable&nbsp;: quoi, qui, quel indicateur de réussite. Puis retour aux mots du début&nbsp;: lesquels garder, lesquels corriger&#8239;?</p>
+      </article>
+    </div>
+    <div class="more">
+      <div>
+        <h3>Vocabulaire à retenir</h3>
+        <div class="chips"><span>empreinte écologique</span><span>hectare global</span><span>besoins essentiels</span><span>développement durable</span><span>pilier ou dimension</span><span>vivable · viable · équitable</span><span>ODD</span><span>interdépendance</span><span>échelle d’action</span></div>
+      </div>
+      <div>
+        <h3>Comment l’animation est construite</h3>
+        <ul>
+          <li>Une idée par plan, six plans qu’on peut arrêter (segmentation).</li>
+          <li>Chaque plan dure environ 15 s&nbsp;: le temps de lire, puis de regarder.</li>
+          <li>Peu de mots à l’écran et aucun décor gratuit (cohérence).</li>
+          <li>Le mot-clé se surligne au moment où il compte (signalement).</li>
+          <li>Le texte est posé à côté de l’image qu’il commente (contiguïté).</li>
+          <li>Chaque plan naît du précédent&nbsp;: la planète s’ouvre sur la définition, les cercles fusionnent vers les ODD, les ODD se resserrent sur «&nbsp;moi&nbsp;».</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Sources</h3>
+        <ul>
+          <li>Rapport Brundtland, <i>Notre avenir à tous</i>, ONU, 1987.</li>
+          <li>Agenda 2030, ONU, 2015&nbsp;: 17 objectifs, 169 cibles, 193 États.</li>
+          <li>Global Footprint Network&nbsp;: empreinte de l’humanité ≈ 1,7 planète.</li>
+          <li>Éco-délégués et démarche E3D&nbsp;: Éducation nationale.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+/* ============ Réglages de base ============ */
+const W = 1920, H = 1080, DUR = 90, TAU = Math.PI * 2, RAD = Math.PI / 180;
+const cv = document.getElementById('stage');
+const ctx = cv.getContext('2d');
+const C = {
+  ink:'#0E2240', paper:'#EAF0EC', forest:'#0F3B2F', amber:'#FFB627', white:'#FFFFFF',
+  green:'#3FBF7F', coral:'#FF7A59', blue:'#4D8FEA',
+  greenD:'#1F9D5C', coralD:'#F2603D', blueD:'#2F6FD6', greenText:'#17814F', ocean:'#1D5FBF'
+};
+const F = {
+  d:'"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif',
+  b:'"Instrument Sans","Segoe UI",system-ui,sans-serif',
+  m:'"IBM Plex Mono",Consolas,"Cascadia Mono",monospace'
+};
+
+/* ============ Mouvement ============ */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const E = {
+  out3: k => 1 - Math.pow(1 - k, 3),
+  in3: k => k * k * k,
+  io3: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  out5: k => 1 - Math.pow(1 - k, 5),
+  io5: k => k < .5 ? 16 * Math.pow(k, 5) : 1 - Math.pow(-2 * k + 2, 5) / 2,
+  back: k => { const c1 = 1.70158, c3 = c1 + 1; return k <= 0 ? 0 : 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
+  elastic: k => k <= 0 ? 0 : k >= 1 ? 1 : Math.pow(2, -10 * k) * Math.sin((k * 10 - .75) * (TAU / 3)) + 1
+};
+const qb = (a, b, c, u) => [(1-u)*(1-u)*a[0] + 2*(1-u)*u*b[0] + u*u*c[0], (1-u)*(1-u)*a[1] + 2*(1-u)*u*b[1] + u*u*c[1]];
+const rnd = (s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(20260926);
+
+/* ============ Outils de dessin ============ */
+function setFont(w, s, f) { ctx.font = `${w} ${s}px ${f || F.d}`; }
+function spacing(px) { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; }
+function rr(x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); }
+
+// Typographie cinétique : chaque mot monte d'un masque, puis ressort par le haut.
+function kWords(str, x, y, o) {
+  const size = o.size, t = o.t;
+  setFont(o.weight || 800, size, o.font);
+  const ws = str.split(' ');
+  const sp = ctx.measureText(' ').width;
+  const wd = ws.map(w => ctx.measureText(w).width);
+  const total = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  let cx = o.align === 'center' ? x - total / 2 : o.align === 'right' ? x - total : x;
+  const st = o.stagger ?? .08, du = o.dur ?? .7, lift = size * 1.3;
+  const boxes = [];
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx - 60, y - size * 1.1, total + 120, size * 1.5); ctx.clip();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  for (let i = 0; i < ws.length; i++) {
+    const d = o.t0 + i * st;
+    const a = E.out5(P(t, d, d + du));
+    const b = o.tOut != null ? E.in3(P(t, o.tOut + i * st * .5, o.tOut + i * st * .5 + .4)) : 0;
+    const dy = (1 - a) * lift - b * lift;
+    boxes.push({ x: cx, w: wd[i], k: a * (1 - b) });
+    if (a > 0 && b < 1) {
+      let col = (o.colors && o.colors[i]) || o.color;
+      const m = o.marks && o.marks[i];
+      if (m) {
+        const mk = E.io3(P(t, m.t0, m.t0 + .45));
+        if (mk > 0) { ctx.fillStyle = m.color; ctx.fillRect(cx - 10, y - size * .8 + dy, (wd[i] + 20) * mk, size); }
+        if (mk > .55 && m.text) col = m.text;
+      }
+      ctx.fillStyle = col; ctx.fillText(ws[i], cx, y + dy);
+    }
+    cx += wd[i] + sp;
+  }
+  ctx.restore();
+  return boxes;
+}
+function eyebrow(txt, x, y, col, t, t0, tOut) {
+  const a = E.out5(P(t, t0, t0 + .7)), b = tOut != null ? E.in3(P(t, tOut, tOut + .35)) : 0, k = a * (1 - b);
+  if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = col;
+  ctx.fillRect(x, y - 9, 40 * a, 4);
+  setFont(500, 22, F.m); spacing(4); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x + 56 - (1 - a) * 16, y);
+  spacing(0); ctx.restore();
+}
+function label(txt, x, y, o) {
+  const k = o.k; if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k * (o.alpha ?? 1); ctx.fillStyle = o.color;
+  setFont(o.weight || 500, o.size || 22, o.font || F.m); spacing(o.ls ?? 3);
+  ctx.textAlign = o.align || 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x, y + (1 - k) * 12);
+  spacing(0); ctx.restore();
+}
+function pill(cx, cy, text, size, bg, fg, k, stroke) {
+  if (k <= .001) return;
+  setFont(700, size, F.b);
+  const w = ctx.measureText(text).width + size * 1.2, h = size * 1.75;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(k, k);
+  rr(-w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = bg; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2.5; ctx.stroke(); }
+  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, size * .06);
+  ctx.restore();
+}
+function swash(x1, x2, y, k, color, lw) {
+  if (k <= 0) return;
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  const n = 48, m = Math.max(1, Math.floor(n * k));
+  for (let i = 0; i <= m; i++) {
+    const u = i / n, px = x1 + (x2 - x1) * u, py = y + Math.sin(u * Math.PI * 3.2) * 7 * (1 - u * .4) + u * 5;
+    i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+  }
+  ctx.stroke(); ctx.restore();
+}
+function wrap(text, maxW) {
+  const ws = text.split(' '), lines = []; let cur = '';
+  for (const w of ws) { const s = cur ? cur + ' ' + w : w; if (ctx.measureText(s).width > maxW && cur) { lines.push(cur); cur = w; } else cur = s; }
+  if (cur) lines.push(cur); return lines;
+}
+// Silhouette : pieds en (x, y), hauteur h.
+function person(x, y, h, o) {
+  const hr = h * .14, bw = h * .46, bh = h * .56, k = o.k ?? 1;
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.beginPath(); ctx.arc(0, -bh - hr * 1.45, hr, 0, TAU);
+  ctx.moveTo(-bw / 2, 0); ctx.lineTo(-bw / 2, -bh + bw / 2); ctx.arc(0, -bh + bw / 2, bw / 2, Math.PI, 0); ctx.lineTo(bw / 2, 0); ctx.closePath();
+  if (o.fill) { ctx.fillStyle = o.fill; ctx.fill(); }
+  if (o.stroke) { ctx.strokeStyle = o.stroke; ctx.lineWidth = o.lw || 5; ctx.lineJoin = 'round'; ctx.stroke(); }
+  ctx.restore();
+}
+function leaf(x, y, s, rot, col, vein) {
+  if (s <= 0) return;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  ctx.beginPath(); ctx.moveTo(0, -s); ctx.quadraticCurveTo(s * .95, -s * .1, 0, s); ctx.quadraticCurveTo(-s * .95, -s * .1, 0, -s);
+  ctx.fillStyle = col; ctx.fill();
+  ctx.strokeStyle = vein; ctx.lineWidth = Math.max(1, s * .09); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0, -s * .65); ctx.lineTo(0, s * 1.15); ctx.stroke();
+  ctx.restore();
+}
+const icoLeaf = (x, y, s, c) => leaf(x, y, s * .9, .55, c, C.paper);
+function icoPeople(x, y, s, c) { person(x - s * .42, y + s * .75, s * 1.25, { fill: c }); person(x + s * .42, y + s * .75, s * 1.5, { fill: c }); }
+function icoBars(x, y, s, c) {
+  ctx.fillStyle = c; const bw = s * .38;
+  [.55, .95, 1.4].forEach((h, i) => { rr(x - s * .7 + i * (bw + s * .14), y + s * .75 - h * s, bw, h * s, 4); ctx.fill(); });
+}
+// Pictogrammes des besoins essentiels (centrés en 0,0).
+function needIcon(kind, s) {
+  ctx.strokeStyle = C.ink; ctx.fillStyle = C.ink; ctx.lineWidth = s * .12; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (kind === 'bowl') {
+    ctx.beginPath(); ctx.moveTo(-s * .75, 0); ctx.lineTo(s * .75, 0); ctx.arc(0, 0, s * .75, 0, Math.PI); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-s * .25, -s * .22); ctx.quadraticCurveTo(-s * .42, -s * .45, -s * .25, -s * .68);
+    ctx.moveTo(s * .2, -s * .22); ctx.quadraticCurveTo(s * .03, -s * .45, s * .2, -s * .68); ctx.stroke();
+  } else if (kind === 'house') {
+    ctx.beginPath(); ctx.moveTo(-s * .75, -s * .05); ctx.lineTo(0, -s * .72); ctx.lineTo(s * .75, -s * .05); ctx.stroke();
+    ctx.fillRect(-s * .5, -s * .08, s, s * .72); ctx.fillStyle = '#fff'; ctx.fillRect(-s * .14, s * .24, s * .28, s * .4);
+  } else if (kind === 'cross') {
+    ctx.fillStyle = C.coralD; ctx.fillRect(-s * .2, -s * .65, s * .4, s * 1.3); ctx.fillRect(-s * .65, -s * .2, s * 1.3, s * .4);
+  } else {
+    ctx.beginPath(); ctx.moveTo(0, -s * .45); ctx.quadraticCurveTo(-s * .4, -s * .62, -s * .82, -s * .45); ctx.lineTo(-s * .82, s * .45);
+    ctx.quadraticCurveTo(-s * .4, s * .3, 0, s * .45); ctx.quadraticCurveTo(s * .4, s * .3, s * .82, s * .45); ctx.lineTo(s * .82, -s * .45);
+    ctx.quadraticCurveTo(s * .4, -s * .62, 0, -s * .45); ctx.closePath(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, -s * .45); ctx.lineTo(0, s * .45); ctx.stroke();
+  }
+}
+
+/* ============ Globe (projection orthographique) ============ */
+const LAND = [
+  [-168,66,-162,70,-150,71,-140,70,-128,70,-115,68,-95,72,-80,73,-68,66,-62,58,-56,52,-64,46,-70,43,-75,38,-76,35,-81,31,-80,26,-81,25,-83,27,-84,30,-90,30,-97,27,-97,22,-92,18.5,-88,16,-84,11,-80,8,-78,8,-83,10,-87,13,-92,15,-98,16,-106,23,-112,29,-117,32,-121,35,-124,40,-124,46,-128,51,-136,58,-146,60,-153,58,-160,56,-165,60],
+  [-78,8,-72,12,-63,10.5,-52,4.5,-50,0,-44,-2,-35,-6,-38,-13,-40,-21,-48,-26,-53,-34,-58,-38,-62,-40,-65,-45,-68,-52,-70,-55,-74,-50,-75,-42,-72,-30,-71,-18,-76,-14,-81,-6,-80,0,-78,3],
+  [-73,78,-66,81,-40,83.5,-22,82,-20,75,-22,70,-32,68,-40,65,-43,60,-48,61,-52,64.5,-54,68,-56,72,-66,76],
+  [-90,72,-80,73.8,-70,71.8,-62,66.8,-65,63.5,-72,63.5,-78,64.5,-76,67.5,-82,69.5],
+  [-120,75,-100,79,-80,81.5,-62,82.5,-78,76.5,-95,74.5,-115,72],
+  [-24,65.5,-18,66.5,-14,65.5,-15,64,-20,63.4,-22.5,64],
+  [-9.5,43,-9,38.7,-8.9,37,-6,36.2,-5.4,36,-2,36.7,0,38.8,.2,40,3.2,41.9,3.1,43.1,4.8,43.4,7,43.6,8.8,44.4,10.3,43.5,12.3,41.7,15.6,40,15.7,38.1,16.6,38.9,17.1,39.4,18.5,40.1,16.9,41.2,13.9,42.6,12.3,44.8,13.7,45.6,15.5,44.2,19.4,41.8,20,39.6,21.7,36.8,23.2,38.2,22.6,40.5,24,40.9,26.3,40.9,26.3,40.1,26.9,38.4,27.4,37,28.8,36.7,30.6,36.7,32.6,36.1,36,36.8,35.9,35.2,35,33,34.3,31.3,34.9,29.5,35.5,28,37.4,24.3,39.1,21.5,40.8,19,42.7,16,43.3,13,45,12.8,48.6,14,52.2,15.6,55.3,17.2,57.8,19,59.8,22.4,58.5,23.6,56.4,24.9,56.3,26.3,55.5,25.5,54,24.1,51.6,24.3,51.3,26.1,50.1,25.9,49.5,27.1,48.1,29.3,48.5,30,50.1,30.2,51.5,27.9,54.7,26.5,56.9,27.1,59.5,25.5,61.6,25.2,66.5,25.4,67.5,23.8,70.2,22.6,72.8,21,73,17.5,74.4,14.6,75.8,11.3,77.3,8.1,78.3,8.9,79.9,10.3,80.3,13,80.2,15.4,82.2,16.6,84.9,19.3,86.9,21.3,88.9,21.8,90.6,22.4,91.8,22.5,92.4,20.7,94.3,18.2,94.2,16,97.2,16.9,97.6,14.8,98.6,11.6,98.3,7.8,100.4,5.5,101.3,2.8,103.4,1.3,104.2,1.6,103.4,4.8,102.1,6.2,100.6,7.2,99.9,9.1,99.2,10.5,100,12.6,100.9,13.4,102.6,12.2,104.3,10.5,105.1,8.6,106.7,10.4,109.2,11.7,108.4,15.4,106.6,17.3,105.7,19,106.7,20.7,108.1,21.6,110.4,21.2,111.8,21.6,113.8,22.5,116.5,22.9,119.5,25.4,121.5,28.3,121.9,31.7,120.8,32.6,119.2,34.9,120.7,36.1,122.5,37.4,121.1,37.8,118.9,37.4,117.8,38.9,121,40.8,124.3,39.9,126.2,37.7,126.3,34.6,128.9,35.1,129.5,36.8,128.4,38.6,127.5,39.8,129.5,40.9,130.7,42.3,132.9,42.8,135.5,43.9,138.2,46.8,140.5,50,141.4,52.3,139.2,54.2,137.2,54,135.1,54.7,136.7,56.1,140.1,58.9,143,59.3,148.2,59.4,151.3,58.9,155,59.2,156.7,57,156.5,51.2,158.5,53,160,54.5,162,56.2,163.3,58,166,60.2,170.3,60,172.2,61,177.4,62.5,179.2,62.3,180,65,180,68.9,175,69.8,170,70.1,160,69.7,153,70.9,146,72.3,140,72.4,132,71.8,128,72.7,126,73.6,113,73.7,104,77.7,100,76.4,95,76.1,88,75.2,80,73.6,73,71.5,70,73,68,70,66,69.5,60,69.8,55,68.4,50,67.9,44,68.5,43.5,66.2,40,66.5,37,66.3,41,67.7,35,69.2,30,69.8,25,71.1,20,70.1,16,69,13.5,68,12,66,10.5,64.5,8,63.3,5,62,5,60,5.5,58.9,6.9,58.1,8.4,58.2,10.5,59.3,11.1,58.9,10.6,57.7,8.6,57.1,8.1,55.5,8.7,54,7,53.5,4.7,53,3.6,51.4,1.6,50.9,1.6,50.2,.2,49.7,-1.3,49.7,-1.9,49.7,-1.6,48.7,-3,48.8,-4.7,48.4,-4.2,47.8,-2.2,47.1,-1.2,46.1,-1.2,44.6,-1.5,43.5,-4,43.4,-8,43.7],
+  [-5.5,50,1.5,51,1.7,52.8,0,53.5,-1.5,55.5,-2,57.5,-4,58.6,-5.5,57.5,-6.2,56,-4.8,54.7,-3,53.3,-4.5,52.8,-5.2,51.7],
+  [-6,52,-6,54.5,-8,55.2,-10,54,-10,51.7],
+  [-5.9,35.8,-2.2,35.1,1,36.5,3.2,36.8,6.5,37.1,9.9,37.3,11.1,37,10.2,35.5,11,34.2,10.1,33.8,11.5,33.1,15.2,32.3,18.4,30.5,20,30.9,20.1,32.3,22,32.9,25,31.9,29,30.9,31.9,31.5,32.6,29.9,33.8,27.3,35.6,23.2,37.2,21,37.4,18.6,38.5,17.9,39.3,15.9,41.2,14.5,43.1,12.7,44.1,10.4,47,11.1,51.1,11.9,51,10.4,48.9,5.4,46.5,2.5,43.1,-.1,41.6,-1.7,40.2,-2.8,39.2,-4.7,39.4,-6.9,39.5,-9.8,40.5,-10.8,40.8,-14.7,40,-16.3,37.4,-17.6,35.3,-22.1,35.5,-24.1,32.9,-26,32.5,-28.6,30.1,-31.3,27.5,-33.2,25.8,-33.9,22.6,-33.9,20,-34.8,18.4,-34.1,18.2,-31.7,17.1,-29.2,15.2,-27.1,14.4,-22.7,13.4,-20.9,11.8,-17.3,12.2,-14.4,13.6,-12,13.2,-9.2,12.2,-6.1,11.9,-3.4,9.4,-1.4,9.8,2.3,9.6,3.9,8.5,4.5,6.1,4.3,4.3,6.3,2.7,6.3,1,5.9,-1.9,4.8,-4.6,5.2,-7.5,4.4,-9.3,5.5,-11.4,6.8,-13.1,8.2,-15,10.9,-16.7,12.4,-17.2,14.7,-16.5,16.2,-16.1,18.5,-17.1,21,-15.8,23.7,-14.4,26.3,-12.9,27.9,-9.6,29.9,-9.8,31.3,-8.4,33.4,-6.8,34.1],
+  [44,-25,47,-25,50.5,-15.5,49.5,-12,47.5,-14,44,-17],
+  [130,31.5,131.5,34,135,34,140,35.5,141,38,142,40.5,141.5,45,145,43.5,143,42,140,41.5,140,40,139.5,38,137,37,136,35.5,132.5,35.5,130.5,33.5],
+  [95.5,5.5,98,4,103.5,-1,106,-6,104,-5.5,101,-2,98.5,1.5,95.5,4],
+  [109,1.5,111,-2.5,115,-4,117,-1,119,1,117.5,5.5,116,7,113,3.5],
+  [105,-6,110,-7,114.5,-8.5,114,-8.7,110,-8,106,-7.5],
+  [120,18.5,122.3,18.5,122,15,124.1,12.6,126.4,7.3,125.5,5.9,122.1,7,123,10.5,120.6,14.5],
+  [131,-1,135,-3.5,138,-1.5,144,-3.5,147.5,-6,150,-10.5,146,-8.5,143,-9,141,-9,138,-8,136,-4.5,132.5,-4],
+  [113.5,-22,114,-26,115,-34,118,-35,123.5,-33.8,129,-31.6,132,-32,135.5,-34.8,138,-35,139.5,-37.5,144,-38.3,147.5,-38,150,-37.5,152.5,-32.5,153.5,-28,153,-25,150.5,-22.5,146,-19,145.4,-15,143.5,-14,142.5,-10.7,141.5,-13,141.5,-17,140,-17.5,136.5,-15.5,136,-12,132,-11.3,129.5,-15,126,-14,123,-17,121,-19.5,117,-20.7],
+  [172.7,-34.4,178.5,-37.7,175.3,-41.6,173,-41.3,172.5,-43.8,169,-46.6,166.5,-45.6,171,-42,173,-40,174.6,-36.9]
+];
+const LAKES = [
+  [28,41.3,28,43.5,29.6,45.2,30.9,46.5,33.5,46,32.6,45.3,33.5,44.5,36.5,45.3,38,47.1,39.3,47,38.2,46.3,37.7,45.2,39.7,43.4,41.6,41.6,38.3,40.9,35.1,42,33.3,42,31.2,41.1,29.1,41.2],
+  [47.1,44.6,49.2,46.4,51.3,47,53.2,46.8,53.2,45.3,51.3,44.5,51.1,43.1,52.8,41.8,52.9,40.1,53.9,38.9,53.9,37.3,51,36.7,49.2,37.6,48.9,38.5,49.4,40.2,50.3,40.3,48.6,41.8,47.5,42.9],
+  [10.8,54.1,13.8,54.1,18,54.8,21,55.3,21,56.9,23.5,57.1,24.3,58.9,29.8,59.9,22.9,59.9,21.4,60.6,21.3,63.1,25.2,65.1,22.3,65.8,17.8,62.8,18.9,60.1,16.5,57,14.1,55.4,12.4,56.1,10.9,55.6],
+  [-94.8,59,-92.6,57,-88.9,56.8,-85,55.3,-82.3,55.1,-82.2,52.9,-80,51.3,-78.9,52.2,-79.3,54.2,-76.5,56.4,-77.3,58.2,-78.2,60.8,-77.6,62.4,-82,62.7,-86.5,64,-87.5,64.5,-90.8,63.6,-92.9,62.1,-94.6,60.1]
+];
+function proj(lon, lat, l0, p0, R) {
+  const l = (lon - l0) * RAD, p = lat * RAD, q = p0 * RAD;
+  const cp = Math.cos(p), sp = Math.sin(p), cl = Math.cos(l);
+  const cosc = Math.sin(q) * sp + Math.cos(q) * cp * cl;
+  let x = R * cp * Math.sin(l), y = -R * (Math.cos(q) * sp - Math.sin(q) * cp * cl);
+  if (cosc < 0) { const m = Math.hypot(x, y) || 1; x = x / m * R; y = y / m * R; }
+  return [x, y, cosc];
+}
+function polyGlobe(poly, x, y, r, l0, p0) {
+  let vis = false; ctx.beginPath();
+  for (let i = 0; i < poly.length; i += 2) {
+    const q = proj(poly[i], poly[i + 1], l0, p0, r);
+    if (q[2] > 0) vis = true;
+    i ? ctx.lineTo(x + q[0], y + q[1]) : ctx.moveTo(x + q[0], y + q[1]);
+  }
+  ctx.closePath(); return vis;
+}
+function globe(x, y, r, l0, p0, o = {}) {
+  if (r <= .5) return;
+  ctx.save();
+  if (o.glow) {
+    const g = ctx.createRadialGradient(x, y, r * .92, x, y, r * 1.28);
+    g.addColorStop(0, 'rgba(120,190,255,.32)'); g.addColorStop(1, 'rgba(120,190,255,0)');
+    ctx.fillStyle = g; circle(x, y, r * 1.28); ctx.fill();
+  }
+  circle(x, y, r); ctx.fillStyle = C.ocean; ctx.fill(); ctx.clip();
+  ctx.strokeStyle = 'rgba(255,255,255,.09)'; ctx.lineWidth = Math.max(1, r * .005);
+  for (let lon = -180; lon < 180; lon += 30) {
+    ctx.beginPath(); let on = false;
+    for (let lat = -90; lat <= 90; lat += 5) { const q = proj(lon, lat, l0, p0, r); if (q[2] > 0) { on ? ctx.lineTo(x + q[0], y + q[1]) : ctx.moveTo(x + q[0], y + q[1]); on = true; } else on = false; }
+    ctx.stroke();
+  }
+  for (let lat = -60; lat <= 60; lat += 30) {
+    ctx.beginPath(); let on = false;
+    for (let lon = -180; lon <= 180; lon += 5) { const q = proj(lon, lat, l0, p0, r); if (q[2] > 0) { on ? ctx.lineTo(x + q[0], y + q[1]) : ctx.moveTo(x + q[0], y + q[1]); on = true; } else on = false; }
+    ctx.stroke();
+  }
+  ctx.fillStyle = C.green;
+  for (const poly of LAND) if (polyGlobe(poly, x, y, r, l0, p0)) ctx.fill();
+  ctx.fillStyle = C.ocean;
+  for (const poly of LAKES) if (polyGlobe(poly, x, y, r, l0, p0)) ctx.fill();
+  const sh = ctx.createRadialGradient(x - r * .35, y - r * .4, r * .08, x, y, r * 1.02);
+  sh.addColorStop(0, 'rgba(255,255,255,.24)'); sh.addColorStop(.45, 'rgba(255,255,255,0)'); sh.addColorStop(1, 'rgba(4,14,34,.5)');
+  ctx.fillStyle = sh; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+  ctx.restore();
+}
+
+/* ============ Plan 1 · Une seule planète (0 → 15 s) ============ */
+const STARS = Array.from({ length: 120 }, () => ({ x: rnd() * W, y: rnd() * H, r: .8 + rnd() * 1.8, p: rnd() * TAU }));
+function stars(t, a) {
+  ctx.save(); ctx.fillStyle = '#fff';
+  for (const s of STARS) { ctx.globalAlpha = a * (.2 + .35 * (.5 + .5 * Math.sin(t * 1.6 + s.p))); circle(s.x, s.y, s.r); ctx.fill(); }
+  ctx.restore();
+}
+function s1(t) {
+  const out = P(t, 14.3, 14.65);
+  stars(t, E.out3(P(t, 0, 1.2)));
+  eyebrow('EMPREINTE ÉCOLOGIQUE', 140, 150, C.amber, t, .3, 14.25);
+  // Filigrane de l'auteur, très discret
+  label('sur une idée de Jean-Philippe Amat', 1780, 1046, { k: E.out3(P(t, .8, 2.0)) * (1 - out), color: '#fff', alpha: .28, size: 17, font: F.b, weight: 400, align: 'right', ls: .5 });
+
+  // Temps 1 : ce qu'est l'empreinte écologique
+  kWords('L’empreinte écologique,', 140, 262, { size: 72, weight: 800, color: '#fff', t, t0: 1.2, tOut: 6.2 });
+  const dl = { size: 40, weight: 500, font: F.b, color: 'rgba(255,255,255,.9)', t, tOut: 6.3, stagger: .05 };
+  kWords('c’est la surface de terre et de mer', 140, 350, { ...dl, t0: 2.1, marks: { 2: { t0: 3.6, color: C.amber, text: C.ink } } });
+  kWords('qu’il faut pour produire ce que nous', 140, 404, { ...dl, t0: 2.5 });
+  kWords('consommons et absorber nos déchets.', 140, 458, { ...dl, t0: 2.9 });
+  label('Unité : l’hectare global (hag)', 140, 540, { k: E.out3(P(t, 4.1, 4.6)) * (1 - P(t, 6.3, 6.6)), color: C.amber, size: 22, ls: 1 });
+
+  // La Terre
+  const mv = E.io5(P(t, 6.6, 7.6));
+  const px = lerp(1350, 1150, mv), py = 600, pr = lerp(240, 210, mv);
+  const dk = E.io3(P(t, .05, .95));
+  if (dk > 0) {
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,' + (.9 - .55 * P(t, 1.2, 2)) + ')'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(px, py, pr + 14, -Math.PI / 2, -Math.PI / 2 + TAU * dk); ctx.stroke(); ctx.restore();
+  }
+  globe(px, py, pr * E.out5(P(t, .55, 1.35)), 40 - t * 4.5, 18, { glow: true });
+  label('LA TERRE', px, py + 268, { k: E.out3(P(t, 8.3, 8.8)) * (1 - out), color: '#fff', size: 22, align: 'center' });
+
+  // Temps 2 : 1,7 planète
+  kWords('Chaque année, l’humanité consomme', 140, 265, { size: 64, weight: 700, color: '#fff', t, t0: 7.0, tOut: 14.25 });
+  const ga = E.back(P(t, 7.85, 8.5));
+  if (ga > 0) {
+    const shake = t > 10.2 && t < 10.9 ? Math.sin(t * 70) * 10 * (1 - P(t, 10.2, 10.9)) : 0;
+    const gx = 1580 + shake, gy = 600, gr = 210 * ga, lv = .7 * E.io3(P(t, 8.0, 9.6));
+    ctx.save(); circle(gx, gy, gr); ctx.fillStyle = 'rgba(255,122,89,.08)'; ctx.fill(); ctx.clip();
+    if (lv > 0) {
+      const top = gy + gr - 2 * gr * lv;
+      ctx.beginPath(); ctx.moveTo(gx - gr, gy + gr);
+      for (let dx = -gr; dx <= gr; dx += 8) ctx.lineTo(gx + dx, top + Math.sin(dx * .03 + t * 4) * 6);
+      ctx.lineTo(gx + gr, gy + gr); ctx.closePath(); ctx.fillStyle = 'rgba(255,122,89,.55)'; ctx.fill();
+    }
+    ctx.restore();
+    ctx.save(); ctx.setLineDash([16, 12]); ctx.lineDashOffset = -t * 40; ctx.strokeStyle = C.coral; ctx.lineWidth = 4;
+    circle(gx, gy, gr); ctx.stroke(); ctx.restore();
+    if (lv > .02) {
+      ctx.save(); ctx.globalAlpha = P(lv, .02, .2) * (1 - out); setFont(800, 64); ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+      ctx.fillText('+ ' + lv.toFixed(1).replace('.', ','), gx, gy + 22); ctx.restore();
+    }
+    label('PLANÈTE MANQUANTE', gx, gy + 268, { k: E.out3(P(t, 10.1, 10.6)) * (1 - out), color: C.coral, size: 22, align: 'center' });
+  }
+  const ca = E.out5(P(t, 7.8, 8.3)), co = E.in3(P(t, 14.25, 14.65));
+  if (ca > 0 && co < 1) {
+    const v = 1 + .7 * E.io3(P(t, 8.0, 9.6));
+    ctx.save(); ctx.globalAlpha = ca * (1 - co); ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+    const yy = 610 + (1 - ca) * 50 - co * 40;
+    setFont(800, 290); ctx.fillStyle = C.amber; ctx.fillText(v.toFixed(1).replace('.', ','), 130, yy);
+    const w = ctx.measureText('1,7').width;
+    setFont(700, 84); ctx.fillStyle = '#fff'; ctx.fillText('planète', 130 + w + 28, yy);
+    ctx.restore();
+  }
+
+  // Temps 3 : une seule Terre
+  label('Source : Global Footprint Network', 1780, 150, { k: E.out3(P(t, 11.0, 11.6)) * (1 - out), color: '#fff', alpha: .6, size: 20, align: 'right', ls: 1 });
+  const mk = { t0: 11.5, color: C.amber, text: C.ink };
+  kWords('Pourtant, nous n’avons qu’une seule Terre.', 140, 990, { size: 60, weight: 800, color: '#fff', t, t0: 10.8, tOut: 14.25,
+    marks: { 3: mk, 4: { ...mk, t0: 11.58 }, 5: { ...mk, t0: 11.66 } } });
+}
+
+/* ============ Plan 2 · Définition (15 → 30 s) ============ */
+const Q0 = [370, 650], Q1 = [960, 470], Q2 = [1545, 705];
+const NEEDS = [['SE NOURRIR', 'bowl'], ['SE LOGER', 'house'], ['SE SOIGNER', 'cross'], ['APPRENDRE', 'book']];
+function s2(t) {
+  const ex = E.in3(P(t, 29.3, 29.7));
+  eyebrow('DÉFINITION', 140, 150, C.ink, t, 15.35, 29.3);
+  kWords('Le développement durable, c’est…', 140, 255, { size: 54, weight: 600, color: C.ink, t, t0: 15.5, tOut: 29.3 });
+  kWords('répondre aux besoins d’aujourd’hui', 140, 368, { size: 86, weight: 800, color: C.ink, t, t0: 16.3, tOut: 29.35, marks: { 2: { t0: 18.0, color: '#fff' } } });
+
+  const ak = E.io3(P(t, 16.6, 17.6)) * (1 - ex);
+  if (ak > 0) {
+    ctx.save(); ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const xe = 150 + (1770 - 150) * ak;
+    ctx.beginPath(); ctx.moveTo(150, 905); ctx.lineTo(xe, 905); ctx.stroke();
+    const h = E.out3(P(ak, .85, 1));
+    if (h > 0) { ctx.beginPath(); ctx.moveTo(xe - 24 * h, 905 - 16 * h); ctx.lineTo(xe, 905); ctx.lineTo(xe - 24 * h, 905 + 16 * h); ctx.stroke(); }
+    ctx.restore();
+  }
+  [[290, 150], [370, 172], [450, 140]].forEach(([x, h], i) => {
+    const k = E.back(P(t, 17.0 + i * .12, 17.6 + i * .12)) * (1 - ex);
+    if (k > 0) person(x, 897, h, { fill: C.ink, k });
+  });
+  label('NOUS, AUJOURD’HUI', 370, 962, { k: E.out3(P(t, 17.5, 18.0)) * (1 - ex), color: C.ink, size: 22, align: 'center' });
+
+  // Temps 2 : les besoins essentiels
+  NEEDS.forEach(([name, kind], i) => {
+    const k = E.back(P(t, 18.3 + i * .15, 18.9 + i * .15)) * (1 - E.in3(P(t, 21.6 + i * .06, 22.0 + i * .06)));
+    if (k <= 0) return;
+    const x = 250 + i * 190, y = 610;
+    ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+    ctx.fillStyle = '#fff'; circle(0, 0, 46); ctx.fill(); needIcon(kind, 30);
+    ctx.restore();
+    label(name, x, y + 80, { k: clamp(k), color: C.ink, size: 18, align: 'center', ls: 2 });
+  });
+  label('← LES BESOINS ESSENTIELS', 950, 618, { k: E.out3(P(t, 19.0, 19.5)) * (1 - E.in3(P(t, 21.6, 22.0))), color: C.ink, size: 22 });
+
+  // Temps 3 : ceux de demain
+  const bx = kWords('sans compromettre ceux de demain.', 140, 478, { size: 86, weight: 800, color: C.ink, t, t0: 22.3, tOut: 29.4 });
+  const d = bx[4];
+  swash(d.x - 4, d.x + d.w * .9, 506, E.io3(P(t, 23.6, 24.2)) * (1 - E.in3(P(t, 29.35, 29.7))), '#fff', 9);
+  const arrive = E.out3(P(t, 25.75, 26.15));
+  [[1470, 104], [1545, 118], [1620, 96]].forEach(([x, h], i) => {
+    const k = E.back(P(t, 23.0 + i * .12, 23.6 + i * .12)) * (1 - ex);
+    if (k > 0) person(x, 897, h, { fill: arrive > 0 ? `rgba(255,255,255,${arrive})` : null, stroke: C.ink, lw: 5, k });
+  });
+  label('LES GÉNÉRATIONS FUTURES', 1545, 962, { k: E.out3(P(t, 23.5, 24.0)) * (1 - ex), color: C.ink, size: 22, align: 'center' });
+  label('D’après le rapport Brundtland · ONU · 1987', 1780, 1040, { k: E.out3(P(t, 23.0, 23.6)) * (1 - ex), color: C.ink, alpha: .7, size: 20, align: 'right', ls: 1 });
+
+  const la = E.back(P(t, 24.0, 24.4)), lu = E.io3(P(t, 24.5, 25.8)), lz = 1 - E.in3(P(t, 25.8, 26.05));
+  if (lu > 0) {
+    ctx.save(); ctx.setLineDash([2, 16]); ctx.lineCap = 'round'; ctx.strokeStyle = 'rgba(14,34,64,.55)'; ctx.lineWidth = 6; ctx.globalAlpha = 1 - ex;
+    ctx.beginPath();
+    for (let i = 0; i <= 40; i++) { const q = qb(Q0, Q1, Q2, lu * i / 40); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }
+    ctx.stroke(); ctx.restore();
+  }
+  if (la > 0 && lz > 0) { const q = qb(Q0, Q1, Q2, lu); leaf(q[0], q[1], 34 * la * lz, -.6 + lu * 1.8, C.greenD, 'rgba(255,255,255,.8)'); }
+  const bu = P(t, 25.8, 26.5);
+  if (bu > 0 && bu < 1) { ctx.save(); ctx.strokeStyle = '#fff'; ctx.globalAlpha = 1 - bu; ctx.lineWidth = 5; circle(1545, 790, 30 + E.out3(bu) * 120); ctx.stroke(); ctx.restore(); }
+  label('RESSOURCES PRÉSERVÉES', 960, 632, { k: E.out3(P(t, 25.0, 25.5)) * (1 - ex), color: C.ink, size: 20, align: 'center' });
+}
+
+/* ============ Plan 3 · Trois dimensions (30 → 46 s) ============ */
+const VA = [960, 490], VB = [825, 725], VC = [1095, 725], VR = 240, VM = [960, 660];
+const PIL = [['Environnement', ['préserver le vivant', 'et les ressources'], C.greenD], ['Social', ['répondre aux besoins', 'de chacun, sans exclure'], C.coralD], ['Économie', ['produire et partager', 'les richesses'], C.blueD]];
+function s3(t) {
+  const lo = 1 - E.in3(P(t, 45.2, 45.5));
+  eyebrow('LES TROIS PILIERS', 140, 150, C.greenText, t, 30.4, 45.3);
+  kWords('Trois dimensions à concilier', 140, 226, { size: 60, weight: 800, color: C.ink, t, t0: 30.5, tOut: 45.3 });
+
+  const conv = E.in3(P(t, 45.35, 45.95));
+  const defs = [[VA, [960, -320], C.green, 31.0], [VB, [-320, 1400], C.coral, 32.8], [VC, [2240, 1400], C.blue, 34.6]];
+  ctx.save(); ctx.globalCompositeOperation = 'multiply';
+  defs.forEach(([to, from, col, ts]) => {
+    const k = E.back(P(t, ts, ts + .9)), k2 = E.out3(P(t, ts, ts + .9));
+    if (k2 <= 0) return;
+    let x = lerp(from[0], to[0], k), y = lerp(from[1], to[1], k), r = VR * (.55 + .45 * k2);
+    x = lerp(x, VM[0], conv); y = lerp(y, VM[1], conv); r *= 1 - conv;
+    if (r > .5) { ctx.fillStyle = col; circle(x, y, r); ctx.fill(); }
+  });
+  ctx.restore();
+
+  [[960, 320, 'Environnement', icoLeaf, 31.5], [720, 735, 'Social', icoPeople, 33.3], [1200, 735, 'Économie', icoBars, 35.1]].forEach(([x, y, txt, ico, ts]) => {
+    const k = E.back(P(t, ts, ts + .6)) * lo; if (k <= 0) return;
+    ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ico(0, 0, 34, C.ink);
+    setFont(800, 36); ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText(txt, 0, 72);
+    ctx.restore();
+  });
+  // Définition de chaque pilier, colonne de droite
+  PIL.forEach(([name, lines, col], i) => {
+    const t0 = 31.3 + i * 1.8, y = 500 + i * 140, ko = 39.5 + i * .05;
+    const a = E.out3(P(t, t0, t0 + .5)) * (1 - E.in3(P(t, ko, ko + .35)));
+    if (a > 0) { ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = col; circle(1412, y - 12, 11 * a); ctx.fill(); ctx.restore(); }
+    kWords(name, 1440, y, { size: 36, weight: 800, color: C.ink, t, t0, tOut: ko });
+    lines.forEach((ln, j) => kWords(ln, 1440, y + 42 + j * 34, { size: 27, weight: 500, font: F.b, color: C.ink, t, t0: t0 + .25 + j * .12, tOut: ko, stagger: .05 }));
+  });
+  [[830, 570, 'Vivable', 36.6, 'VIVABLE = ENVIRONNEMENT + SOCIAL'], [1090, 570, 'Viable', 37.4, 'VIABLE = ENVIRONNEMENT + ÉCONOMIE'], [960, 795, 'Équitable', 38.2, 'ÉQUITABLE = SOCIAL + ÉCONOMIE']].forEach(([x, y, txt, ts, def], i) => {
+    pill(x, y, txt, 28, '#fff', C.ink, E.back(P(t, ts, ts + .5)) * lo);
+    label(def, 140, 850 + i * 44, { k: E.out3(P(t, ts + .1, ts + .6)) * lo, color: C.ink, alpha: .78, size: 20, ls: 1.5 });
+  });
+  for (let j = 0; j < 2; j++) {
+    const u = P(t, 39.45 + j * .3, 40.7 + j * .3);
+    if (u > 0 && u < 1) { ctx.save(); ctx.globalAlpha = (1 - u) * .9 * lo; ctx.strokeStyle = C.amber; ctx.lineWidth = 5; circle(VM[0], VM[1], 50 + E.out3(u) * 150); ctx.stroke(); ctx.restore(); }
+  }
+  pill(VM[0], VM[1], 'Durable', 34, C.ink, C.amber, E.back(P(t, 39.4, 40.0)) * lo);
+
+  const o = { size: 62, weight: 800, color: C.ink, t, tOut: 45.3 };
+  kWords('Durable,', 1400, 580, { ...o, t0: 40.2 });
+  kWords('c’est tenir', 1400, 656, { ...o, t0: 40.3 });
+  kWords('les trois', 1400, 732, { ...o, t0: 40.45, marks: { 0: { t0: 41.0, color: C.amber }, 1: { t0: 41.06, color: C.amber } } });
+  kWords('à la fois.', 1400, 808, { ...o, t0: 40.55 });
+}
+
+/* ============ Plan 4 · 17 objectifs (46 → 61 s) ============ */
+const ODD = [
+  ['Pas de pauvreté', '#E5243B'], ['Faim zéro', '#DDA63A'], ['Bonne santé et bien-être', '#4C9F38'],
+  ['Éducation de qualité', '#C5192D'], ['Égalité entre les sexes', '#FF3A21'], ['Eau propre et assainissement', '#26BDE2'],
+  ['Énergie propre et abordable', '#FCC30B'], ['Travail décent et croissance', '#A21942'], ['Industrie, innovation, infrastructures', '#FD6925'],
+  ['Inégalités réduites', '#DD1367'], ['Villes et communautés durables', '#FD9D24'], ['Consommation et production responsables', '#BF8B2E'],
+  ['Lutte contre le changement climatique', '#3F7E44'], ['Vie aquatique', '#0A97D9'], ['Vie terrestre', '#56C02B'],
+  ['Paix, justice et institutions', '#00689D'], ['Partenariats pour les objectifs', '#19486A']
+];
+const LINKS = [[13,7],[13,11],[13,14],[13,15],[6,3],[6,14],[4,5],[4,8],[1,2],[1,8],[2,15],[12,13],[12,8],[11,9],[9,7],[16,17],[17,4],[10,1],[5,10],[3,2],[12,14],[11,3],[7,1],[15,6],[16,10]];
+const BATI = new Set([7, 11, 12, 13]);
+const GX = 230, GY = 280, TW = 230, TH = 176, GG = 16, CONV = [1230, 590];
+const tileXY = i => [GX + (i % 6) * (TW + GG) + TW / 2, GY + ((i / 6) | 0) * (TH + GG) + TH / 2];
+const tileT = i => 46.85 + ((i % 6) + ((i / 6) | 0) * 1.3) * .075;
+function s4(t) {
+  eyebrow('AGENDA 2030 · ONU', 230, 150, C.amber, t, 46.35, 60.3);
+  kWords('17 objectifs de développement durable', 230, 232, { size: 64, weight: 800, color: '#fff', t, t0: 46.5, tOut: 60.3 });
+  const dim = E.io3(P(t, 52.2, 52.7)) * (1 - E.io3(P(t, 55.5, 56.0)));
+  for (let i = 0; i < 18; i++) {
+    const [cx, cy] = tileXY(i), d = tileT(i), a = P(t, d, d + .55);
+    if (a <= 0) continue;
+    const s = E.back(a), dl = ((i * 7) % 18) * .012, e = E.in3(P(t, 60.45 + dl, 60.9 + dl));
+    const hl = BATI.has(i + 1), sc = s * (1 - e) * (hl ? 1 + .06 * dim : 1);
+    if (sc <= .001) continue;
+    ctx.save(); ctx.translate(lerp(cx, CONV[0], e), lerp(cy, CONV[1], e)); ctx.scale(sc, sc); ctx.rotate((1 - E.out3(a)) * -.3);
+    ctx.globalAlpha = hl ? 1 : 1 - .72 * dim;
+    rr(-TW / 2, -TH / 2, TW, TH, 14);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    if (i < 17) {
+      ctx.fillStyle = ODD[i][1]; ctx.fill(); ctx.fillStyle = '#fff';
+      setFont(800, 58); ctx.fillText(String(i + 1), -TW / 2 + 18, -TH / 2 + 64);
+      setFont(600, 20, F.b); const lines = wrap(ODD[i][0], TW - 36);
+      lines.forEach((ln, j) => ctx.fillText(ln, -TW / 2 + 18, TH / 2 - 18 - (lines.length - 1 - j) * 23));
+      if (hl && dim > 0) { ctx.globalAlpha = dim; ctx.strokeStyle = C.amber; ctx.lineWidth = 7; ctx.stroke(); }
+    } else {
+      ctx.fillStyle = '#fff'; ctx.fill(); ctx.fillStyle = C.ink;
+      setFont(800, 58); ctx.fillText('2030', -TW / 2 + 18, -TH / 2 + 64);
+      setFont(600, 20, F.b); ctx.fillText('l’horizon commun', -TW / 2 + 18, TH / 2 - 18);
+    }
+    ctx.restore();
+  }
+  if (t > 56.1) {
+    const nk = 1 - E.in3(P(t, 60.2, 60.5));
+    ctx.save(); ctx.lineCap = 'round'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.5;
+    const nodes = new Set();
+    LINKS.forEach(([a, b], j) => {
+      const u = E.io3(P(t, 56.2 + j * .06, 56.7 + j * .06)); if (u <= 0) return;
+      nodes.add(a); nodes.add(b);
+      const A = tileXY(a - 1), B = tileXY(b - 1), dx = B[0] - A[0], dy = B[1] - A[1];
+      const M = [(A[0] + B[0]) / 2 - dy * .18, (A[1] + B[1]) / 2 + dx * .18];
+      ctx.globalAlpha = .88 * nk; ctx.beginPath();
+      for (let s = 0; s <= 24; s++) { const q = qb(A, M, B, u * s / 24); s ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }
+      ctx.stroke();
+    });
+    ctx.globalAlpha = nk; ctx.fillStyle = '#fff'; ctx.strokeStyle = C.ink; ctx.lineWidth = 3;
+    nodes.forEach(n => { const [x, y] = tileXY(n - 1); circle(x, y, 9); ctx.fill(); ctx.stroke(); });
+    ctx.restore();
+  }
+  kWords('Adoptés en 2015 par 193 pays, avec 169 cibles.', 230, 935, { size: 42, weight: 600, font: F.b, color: 'rgba(255,255,255,.9)', t, t0: 48.4, tOut: 51.8 });
+  kWords('Le bâtiment agit sur les ODD 7, 11, 12 et 13.', 230, 940, { size: 50, weight: 800, color: '#fff', t, t0: 52.4, tOut: 55.6, marks: { 1: { t0: 53.0, color: C.amber, text: C.ink } } });
+  kWords('Et tous sont liés entre eux.', 230, 940, { size: 54, weight: 800, color: '#fff', t, t0: 56.3, tOut: 60.3, marks: { 3: { t0: 57.0, color: C.amber, text: C.ink } } });
+}
+
+/* ============ Plan 5 · Toutes les échelles (61 → 78 s) ============ */
+const LV_R = [60, 270, 1215, 5470, 32000];
+const LAD = [['Mes gestes', 'éteindre, trier, réparer'], ['Ma classe', 'les éco-délégués'], ['Mon lycée', 'la démarche E3D'], ['Mon territoire', 'mobilités, biodiversité'], ['La planète', 'climat, ressources partagées']];
+const ZOOM = [[64.6, 65.5], [68.0, 68.9], [71.4, 72.3], [74.8, 75.7]];
+const CAPS = [
+  ['Éteindre, trier, réparer : chaque geste compte.', 62.3, 64.3],
+  ['Les éco-délégués portent les projets de la classe.', 65.7, 67.7],
+  ['Le lycée s’engage : démarche E3D, tri, énergie.', 69.1, 71.1],
+  ['Commune, quartier : mobilités, nature en ville.', 72.5, 74.5]
+];
+const levelL = t => ZOOM.reduce((L, [a, b]) => L + E.io3(P(t, a, b)), 0);
+const DESKS = [];
+[[-150, [-160, -80, 0, 80, 160]], [-75, [-170, -95, 95, 170]], [0, [-175, -100, 100, 175]], [75, [-170, -95, 95, 170]], [150, [-160, -80, 0, 80, 160]]].forEach(([y, xs]) => xs.forEach(x => DESKS.push([x, y])));
+const TREES = [[-1000, 150], [-980, -250], [-920, 520], [1000, 150], [980, -250], [920, 520], [-600, -800], [-300, -880], [0, -900], [300, -880], [600, -800], [-700, 800], [700, 800]];
+function ring(r, S) { ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 2.5 / S; circle(0, 0, r); ctx.stroke(); }
+const LV = [
+  S => { // mes gestes
+    ctx.fillStyle = C.amber; circle(0, 0, 60); ctx.fill();
+    person(0, 26, 50, { fill: C.ink });
+    ctx.strokeStyle = C.ink; ctx.fillStyle = C.ink; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    circle(-36, -21, 6.5); ctx.stroke();                                  // ampoule : éteindre
+    ctx.beginPath(); ctx.moveTo(-39, -11); ctx.lineTo(-33, -11); ctx.moveTo(-38.5, -7.5); ctx.lineTo(-33.5, -7.5); ctx.stroke();
+    ctx.beginPath(); ctx.arc(36, -16, 7, .5, TAU - .4); ctx.stroke();       // flèche circulaire : trier
+    const ax = 36 + 7 * Math.cos(TAU - .4), ay = -16 + 7 * Math.sin(TAU - .4);
+    ctx.beginPath(); ctx.moveTo(ax - 4, ay - 3); ctx.lineTo(ax + 1, ay + 1); ctx.lineTo(ax - 5, ay + 3); ctx.stroke();
+    ctx.save(); ctx.translate(0, 44); ctx.rotate(-.8);                     // clé : réparer
+    ctx.lineWidth = 3.4; ctx.beginPath(); ctx.moveTo(-7, 0); ctx.lineTo(5, 0); ctx.stroke();
+    ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(8, 0, 4, -2.2, 2.2); ctx.stroke(); ctx.restore();
+    ring(60, S);
+  },
+  S => { // ma classe
+    ctx.fillStyle = '#EAF0EC'; circle(0, 0, 270); ctx.fill();
+    ctx.fillStyle = C.ink; rr(-75, -240, 150, 11, 4); ctx.fill();
+    ctx.fillStyle = 'rgba(14,34,64,.22)'; rr(-40, -205, 80, 22, 5); ctx.fill();
+    const heads = [C.greenD, C.coralD, C.blueD, C.amber, C.ink];
+    DESKS.forEach(([x, y], i) => {
+      ctx.fillStyle = 'rgba(14,34,64,.16)'; rr(x - 24, y - 8, 48, 18, 5); ctx.fill();
+      ctx.fillStyle = heads[i % 5]; circle(x, y - 17, 8); ctx.fill();
+    });
+    ring(270, S);
+  },
+  S => { // mon lycée
+    const r = 1215;
+    ctx.save(); circle(0, 0, r); ctx.fillStyle = '#BFE3C8'; ctx.fill(); ctx.clip();
+    ctx.fillStyle = '#EEF3EC'; ctx.fillRect(-r, 470, 2 * r, 80); ctx.fillRect(-560, -r, 80, 2 * r);
+    ctx.fillStyle = '#74C48A'; rr(-430, 600, 860, 400, 40); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 10; rr(-390, 640, 780, 320, 24); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, 640); ctx.lineTo(0, 960); ctx.stroke(); circle(0, 800, 70); ctx.stroke();
+    ctx.fillStyle = '#F7F9F5'; ctx.strokeStyle = 'rgba(14,34,64,.35)'; ctx.lineWidth = 10; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(-760, -580); ctx.lineTo(760, -580); ctx.lineTo(760, 340); ctx.lineTo(460, 340); ctx.lineTo(460, -260);
+    ctx.lineTo(-460, -260); ctx.lineTo(-460, 340); ctx.lineTo(-760, 340); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#2F5FB0';
+    for (let row = 0; row < 3; row++) for (let col = 0; col < 11; col++) ctx.fillRect(-640 + col * 118, -545 + row * 92, 100, 70);
+    TREES.forEach(([x, y]) => { ctx.fillStyle = '#2E8B57'; circle(x, y, 58); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.18)'; circle(x - 16, y - 16, 24); ctx.fill(); });
+    ctx.restore(); ring(r, S);
+  },
+  S => { // mon territoire
+    const r = 5470, sp = 1100, o = -4950;
+    ctx.save(); circle(0, 0, r); ctx.fillStyle = '#2F7F5E'; ctx.fill(); ctx.clip();
+    for (let i = -1; i < 10; i++) for (let j = -1; j < 10; j++) {
+      const x = o + i * sp, y = o + j * sp, h = ((i * 7 + j * 13) % 6 + 6) % 6;
+      if (h === 5) continue;
+      if (h === 3) { ctx.fillStyle = '#4FA57A'; circle(x + sp / 2, y + sp / 2, 380); ctx.fill(); }
+      else { ctx.fillStyle = h === 4 ? 'rgba(8,36,28,.28)' : 'rgba(8,36,28,.45)'; ctx.fillRect(x + 140, y + 140, sp - 280, sp - 280); }
+    }
+    ctx.strokeStyle = 'rgba(234,240,236,.28)'; ctx.lineWidth = 120; ctx.beginPath();
+    for (let k = 0; k < 10; k++) { const v = o + k * sp; ctx.moveTo(v, -r); ctx.lineTo(v, r); ctx.moveTo(-r, v); ctx.lineTo(r, v); }
+    ctx.stroke();
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 460; ctx.lineCap = 'round'; ctx.beginPath();
+    ctx.moveTo(-6000, 2500); ctx.bezierCurveTo(-2600, 1700, -1200, 3700, 1500, 3000); ctx.bezierCurveTo(3500, 2450, 4300, 1300, 6000, 1600); ctx.stroke();
+    ctx.restore(); ring(r, S);
+  },
+  S => { globe(0, 0, 32000, 1.44, 43.6, { glow: true }); } // la planète, centrée sur Toulouse
+];
+function ladder(t, L) {
+  const x = 160, ys = [880, 770, 660, 550, 440], la = E.out3(P(t, 61.4, 62.0));
+  if (la <= 0) return;
+  ctx.save(); ctx.lineCap = 'round'; ctx.globalAlpha = la;
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x, 880); ctx.lineTo(x, 440); ctx.stroke();
+  ctx.strokeStyle = C.amber; ctx.beginPath(); ctx.moveTo(x, 880); ctx.lineTo(x, lerp(880, 440, L / 4)); ctx.stroke();
+  ctx.restore();
+  LAD.forEach(([a, b], i) => {
+    const ap = E.out3(P(t, 61.5 + i * .08, 62.1 + i * .08)); if (ap <= 0) return;
+    const act = clamp(1 - Math.abs(L - i) * 1.25), passed = L >= i - .02;
+    ctx.save(); ctx.globalAlpha = ap;
+    circle(x, ys[i], passed ? 8 + act * 5 : 6); ctx.fillStyle = passed ? C.amber : 'rgba(255,255,255,.55)'; ctx.fill();
+    ctx.globalAlpha = ap * (.32 + .68 * act); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    setFont(800, 40); ctx.fillStyle = '#fff'; ctx.fillText(a, x + 40 + act * 10, ys[i] + 12);
+    setFont(500, 24, F.b); ctx.fillStyle = act > .5 ? C.amber : '#fff'; ctx.fillText(b, x + 40 + act * 10, ys[i] + 44);
+    ctx.restore();
+  });
+}
+function s5(t) {
+  const cx = 1230, cy = 590, D = 330, L = levelL(t);
+  const i0 = Math.min(3, Math.floor(L)), f = L - i0;
+  const S = D / Math.exp(lerp(Math.log(LV_R[i0]), Math.log(LV_R[i0 + 1]), f));
+  const intro = E.back(P(t, 61.15, 61.85));
+  if (intro > 0) {
+    const Sx = S * intro;
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(Sx, Sx);
+    for (let k = 4; k >= 0; k--) {
+      const sr = LV_R[k] * Sx; if (sr > 1150 || sr < 1.5) continue;
+      let a = (1 - P(sr, 560, 1100)) * P(sr, 3, 12);
+      if (k <= 3) a *= 1 - P(L, 3.45, 3.95);
+      if (a <= .004) continue;
+      ctx.globalAlpha = a; LV[k](Sx);
+    }
+    ctx.restore();
+  }
+  const pk = E.back(P(L, 3.75, 4));
+  if (pk > 0) {
+    const pu = ((t - 75.5) % 1.4 + 1.4) % 1.4 / 1.4, lk = clamp(pk);
+    ctx.save(); ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.globalAlpha = (1 - pu) * .9; circle(cx, cy, 12 + pu * 46); ctx.stroke();
+    ctx.globalAlpha = 1; circle(cx, cy, 11 * pk); ctx.fillStyle = C.amber; ctx.fill(); ctx.strokeStyle = C.ink; ctx.stroke();
+    ctx.globalAlpha = lk * .9; ctx.fillStyle = C.ink; rr(cx + 22, cy - 50, 212, 40, 20); ctx.fill(); ctx.restore();
+    label('VOUS ÊTES ICI', cx + 40, cy - 22, { k: lk, color: '#fff', size: 20, ls: 2 });
+  }
+  ladder(t, L);
+  eyebrow('DU GESTE À LA PLANÈTE', 140, 150, C.amber, t, 61.4, null);
+  kWords('Agir à toutes les échelles', 140, 240, { size: 64, weight: 800, color: '#fff', t, t0: 61.5 });
+  CAPS.forEach(([txt, t0, tOut]) => kWords(txt, cx, 1010, { align: 'center', size: 40, weight: 700, font: F.b, color: '#fff', t, t0, tOut, stagger: .06 }));
+  kWords('Penser global, agir local.', cx, 1010, { align: 'center', size: 54, weight: 800, color: '#fff', t, t0: 75.9,
+    marks: { 2: { t0: 76.4, color: C.amber, text: C.ink }, 3: { t0: 76.47, color: C.amber, text: C.ink } } });
+}
+
+/* ============ Plan 6 · Et toi ? (78 → 90 s) ============ */
+const STARTS = ['un geste', 'un projet de classe', 'une action au lycée'];
+function s6(t) {
+  let x = 140;
+  [['E', C.greenD], ['D', C.coralD], ['D', C.blueD]].forEach(([ch, col], i) => {
+    setFont(800, 300); const w = ctx.measureText(ch).width, k = P(t, 78.25 + i * .15, 78.95 + i * .15);
+    if (k > 0) {
+      const e = E.back(k);
+      ctx.save(); ctx.translate(x + w / 2, 430); ctx.rotate((1 - E.out3(k)) * (i % 2 ? .25 : -.25)); ctx.translate(0, -(1 - e) * 260);
+      ctx.globalAlpha = Math.min(1, k * 3); ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText(ch, 0, 0);
+      ctx.restore();
+    }
+    x += w - 6;
+  });
+  kWords('Éducation au développement durable', 150, 520, { size: 44, weight: 600, font: F.b, color: C.ink, t, t0: 78.8 });
+  kWords('Comprendre le monde', 150, 690, { size: 78, weight: 800, color: C.ink, t, t0: 79.4 });
+  kWords('pour mieux agir.', 150, 785, { size: 78, weight: 800, color: C.ink, t, t0: 79.6, marks: { 2: { t0: 80.1, color: C.amber } } });
+
+  const cx = 1480, cy = 430, bk = E.elastic(P(t, 81.0, 82.1));
+  if (t > 82.5) {
+    for (let j = 0; j < 2; j++) {
+      const u = ((t - 82.5 - j) % 2 + 2) % 2 / 2;
+      ctx.save(); ctx.globalAlpha = (1 - u) * .35; ctx.strokeStyle = C.coralD; ctx.lineWidth = 3; circle(cx, cy, 160 + u * 230); ctx.stroke(); ctx.restore();
+    }
+  }
+  if (bk > 0) {
+    [C.green, C.coral, C.blue].forEach((col, i) => {
+      const a = t * 1.1 + i * TAU / 3, r2 = 192 * Math.min(1, bk);
+      ctx.fillStyle = col; circle(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2, 16 * Math.min(1, bk)); ctx.fill();
+    });
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(bk, bk);
+    ctx.fillStyle = C.coralD; circle(0, 0, 150); ctx.fill();
+    setFont(800, 220); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText('?', 0, 78);
+    ctx.restore();
+  }
+  kWords('Et toi,', cx, 720, { align: 'center', size: 56, weight: 700, color: C.ink, t, t0: 81.4 });
+  kWords('par quoi commences-tu ?', cx, 798, { align: 'center', size: 56, weight: 800, color: C.ink, t, t0: 81.55 });
+  // Trois points de départ possibles
+  setFont(700, 26, F.b);
+  const ws = STARTS.map(s => ctx.measureText(s).width + 44), gap = 16, tot = ws.reduce((a, b) => a + b, 0) + gap * (ws.length - 1);
+  let px = cx - tot / 2;
+  STARTS.forEach((s, i) => { pill(px + ws[i] / 2, 885, s, 26, '#fff', C.ink, E.back(P(t, 82.8 + i * .15, 83.3 + i * .15)), C.ink); px += ws[i] + gap; });
+  label('Sources : rapport Brundtland (ONU, 1987) · Agenda 2030 (ONU, 2015) · Global Footprint Network', 140, 1030, { k: E.out3(P(t, 80.5, 81.1)), color: C.ink, alpha: .6, size: 19, ls: .5 });
+}
+
+/* ============ Montage : plans + transitions ============ */
+const SC = [
+  { t0: 0, bg: C.ink, draw: s1 },
+  { t0: 15, bg: C.amber, draw: s2, wipe: { type: 'circle', x: 1150, y: 600, layers: [C.green] } },
+  { t0: 30, bg: C.paper, draw: s3, wipe: { type: 'bars', layers: [C.coral, C.green] } },
+  { t0: 46, bg: C.ink, draw: s4, wipe: { type: 'circle', x: VM[0], y: VM[1], layers: [C.blue] } },
+  { t0: 61, bg: C.forest, draw: s5, wipe: { type: 'circle', x: CONV[0], y: CONV[1], layers: [C.amber] } },
+  { t0: 78, bg: C.paper, draw: s6, wipe: { type: 'circle', x: CONV[0], y: CONV[1], layers: [C.amber, C.green] } }
+];
+const wipeDur = w => w.type === 'circle' ? w.layers.length * .1 + .75 : w.layers.length * .12 + .8;
+function wipeCircle(t, T, x, y, layers, next) {
+  const maxR = Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 4;
+  const k = i => E.io3(P(t, T + i * .1, T + i * .1 + .75));
+  layers.forEach((col, i) => { const r = maxR * k(i); if (r > 0) { ctx.fillStyle = col; circle(x, y, r); ctx.fill(); } });
+  const r = maxR * k(layers.length);
+  if (r > 0) { ctx.save(); circle(x, y, r); ctx.clip(); next(); ctx.restore(); }
+}
+function wipeBars(t, T, layers, next) {
+  const n = 8, bw = W / n;
+  const k = (li, j) => E.io3(P(t, T + li * .12 + j * .035, T + li * .12 + j * .035 + .55));
+  layers.forEach((col, li) => { ctx.fillStyle = col; for (let j = 0; j < n; j++) { const h = H * k(li, j); if (h > 0) ctx.fillRect(j * bw, H - h, bw + 1, h); } });
+  ctx.save(); ctx.beginPath(); let any = false;
+  for (let j = 0; j < n; j++) { const h = H * k(layers.length, j); if (h > 0) { ctx.rect(j * bw, H - h, bw + 1, h); any = true; } }
+  if (any) { ctx.clip(); next(); }
+  ctx.restore();
+}
+const grainC = document.createElement('canvas'); grainC.width = grainC.height = 256;
+(() => { const g = grainC.getContext('2d'), id = g.createImageData(256, 256); for (let i = 0; i < 65536; i++) { const v = (rnd() * 255) | 0; id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255; } g.putImageData(id, 0, 0); })();
+const grainP = ctx.createPattern(grainC, 'repeat');
+function grain(t) {
+  const f = Math.floor(t * 24), ox = (f * 97) % 256, oy = (f * 57) % 256;
+  ctx.save(); ctx.globalAlpha = .07; ctx.globalCompositeOperation = 'overlay'; ctx.translate(-ox, -oy);
+  ctx.fillStyle = grainP; ctx.fillRect(ox, oy, W, H); ctx.restore();
+}
+const sceneAt = t => { let i = SC.length - 1; while (i > 0 && t < SC[i].t0) i--; return i; };
+function render(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  const i = sceneAt(t), s = SC[i];
+  const full = () => { ctx.fillStyle = s.bg; ctx.fillRect(0, 0, W, H); s.draw(t); };
+  if (i > 0 && s.wipe && t < s.t0 + wipeDur(s.wipe)) {
+    const p = SC[i - 1]; ctx.fillStyle = p.bg; ctx.fillRect(0, 0, W, H); p.draw(t);
+    if (s.wipe.type === 'circle') wipeCircle(t, s.t0, s.wipe.x, s.wipe.y, s.wipe.layers, full);
+    else wipeBars(t, s.t0, s.wipe.layers, full);
+  } else full();
+  grain(t);
+}
+
+/* ============ Son (synthétisé, hors ligne) ============ */
+const AU = { ctx: null, pad: null, chord: -1, beat: -1 };
+const snd = document.getElementById('snd');
+function impulse(c, sec, decay) {
+  const len = (c.sampleRate * sec) | 0, b = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
+  return b;
+}
+function audioInit() {
+  if (AU.ctx) return AU.ctx;
+  const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
+  const c = new A(); AU.ctx = c;
+  AU.out = c.createGain(); AU.out.gain.value = snd.checked ? 1 : 0;
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -20; comp.knee.value = 12; comp.ratio.value = 3;
+  comp.connect(AU.out); AU.out.connect(c.destination);
+  if (c.createMediaStreamDestination) { AU.dest = c.createMediaStreamDestination(); AU.out.connect(AU.dest); }
+  AU.bus = c.createGain(); AU.bus.gain.value = .9; AU.bus.connect(comp);
+  const conv = c.createConvolver(); conv.buffer = impulse(c, 2.6, 2.4);
+  AU.rev = c.createGain(); AU.rev.gain.value = .3; AU.rev.connect(conv); conv.connect(comp);
+  const nb = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), d = nb.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  AU.noise = nb;
+  return c;
+}
+function env(g, t, a, peak, dec) { g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(.0001, t + a + dec); }
+function voice(type, hz, vol, dec, o = {}) {
+  const c = AU.ctx, t = c.currentTime, osc = c.createOscillator(); osc.type = type;
+  if (o.glide) { osc.frequency.setValueAtTime(hz * o.glide, t); osc.frequency.exponentialRampToValueAtTime(hz, t + .06); } else osc.frequency.value = hz;
+  const g = c.createGain(); env(g, t, .006, vol, dec); osc.connect(g); g.connect(AU.bus);
+  if (o.rev) { const s = c.createGain(); s.gain.value = o.rev; g.connect(s); s.connect(AU.rev); }
+  osc.start(t); osc.stop(t + dec + .1);
+}
+const SFX = {
+  pop: (hz = 660, vol = .07) => voice('sine', hz, vol, .22, { glide: 1.6, rev: .25 }),
+  pluck: (hz, vol = .03) => voice('triangle', hz, vol, .38, { rev: .45 }),
+  tick: (hz = 1400, vol = .022) => voice('sine', hz, vol, .06, { rev: .15 }),
+  chime: (hz = 880, vol = .06) => [1, 2, 3.01, 4.2].forEach((m, i) => voice('sine', hz * m, vol / (i + 1), 1.6 - i * .25, { rev: .6 })),
+  wobble: () => [110, 117].forEach(hz => voice('triangle', hz, .09, .7, { rev: .2 })),
+  boom: () => {
+    const c = AU.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(38, t + 1.4);
+    const g = c.createGain(); env(g, t, .02, .32, 1.5); o.connect(g); g.connect(AU.bus); o.start(t); o.stop(t + 1.7);
+  },
+  whoosh: (dur = .75, vol = .16) => {
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.1;
+    f.frequency.setValueAtTime(350, t); f.frequency.exponentialRampToValueAtTime(3200, t + dur * .55); f.frequency.exponentialRampToValueAtTime(900, t + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + dur * .5); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(AU.bus); const r = c.createGain(); r.gain.value = .3; g.connect(r); r.connect(AU.rev);
+    s.start(t); s.stop(t + dur + .05);
+  }
+};
+// Grille d'accords (ré majeur), deux ou trois accords par plan.
+const CHORD_TL = [
+  [0, [146.83, 220, 329.63, 369.99]], [7, [123.47, 185, 293.66, 369.99]],
+  [15, [98, 146.83, 246.94, 392]], [22.3, [110, 164.81, 277.18, 329.63]],
+  [30, [146.83, 220, 293.66, 369.99]], [36.6, [92.5, 138.59, 277.18, 369.99]], [39.4, [98, 146.83, 246.94, 369.99]],
+  [46, [82.41, 123.47, 246.94, 329.63]], [52.2, [98, 146.83, 246.94, 392]], [56.2, [110, 164.81, 277.18, 329.63]],
+  [61, [123.47, 185, 293.66, 440]], [68, [98, 146.83, 246.94, 392]], [71.4, [110, 164.81, 277.18, 329.63]], [74.8, [146.83, 220, 293.66, 369.99]],
+  [78, [98, 146.83, 246.94, 369.99]], [81, [110, 164.81, 277.18, 329.63]], [82.8, [146.83, 220, 293.66, 369.99]]
+];
+const chordAt = t => { let i = 0; while (i + 1 < CHORD_TL.length && t >= CHORD_TL[i + 1][0]) i++; return i; };
+function padStart(ch) {
+  if (AU.pad || !AU.ctx) return;
+  const c = AU.ctx, t = c.currentTime, f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 650; f.Q.value = .7;
+  const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12, t + .8);
+  f.connect(g); g.connect(AU.bus); const rs = c.createGain(); rs.gain.value = .5; g.connect(rs); rs.connect(AU.rev);
+  const oscs = [];
+  ch.forEach((hz, i) => [-6, 6].forEach(dt => {
+    const o = c.createOscillator(); o.type = i === 0 ? 'triangle' : 'sawtooth'; o.frequency.value = hz; o.detune.value = dt;
+    const og = c.createGain(); og.gain.value = i === 0 ? .35 : .09; o.connect(og); og.connect(f); o.start(t); oscs.push({ o, i });
+  }));
+  const lfo = c.createOscillator(); lfo.frequency.value = .12; const lg = c.createGain(); lg.gain.value = 180; lfo.connect(lg); lg.connect(f.frequency); lfo.start(t);
+  AU.pad = { oscs, g, lfo };
+}
+function padChord(ch) { if (!AU.pad) return; const t = AU.ctx.currentTime; AU.pad.oscs.forEach(({ o, i }) => o.frequency.setTargetAtTime(ch[i], t, .18)); }
+function padStop() {
+  const p = AU.pad; if (!p) return; AU.pad = null;
+  const t = AU.ctx.currentTime; p.g.gain.cancelScheduledValues(t); p.g.gain.setTargetAtTime(.0001, t, .12);
+  setTimeout(() => { try { p.oscs.forEach(({ o }) => o.stop()); p.lfo.stop(); } catch (e) {} }, 900);
+}
+const CUES = [
+  [.05, () => SFX.boom()], [1.05, () => SFX.pop(523, .07)], [3.6, () => SFX.pop(660, .045)], [4.1, () => SFX.pop(784, .035)],
+  [6.6, () => SFX.whoosh(.8, .06)], [7.9, () => SFX.pop(392, .06)],
+  [8.0, () => SFX.pluck(587, .04)], [8.35, () => SFX.pluck(659, .04)], [8.7, () => SFX.pluck(740, .04)], [9.05, () => SFX.pluck(880, .045)], [9.4, () => SFX.pluck(988, .05)],
+  [10.2, () => SFX.wobble()], [11.5, () => SFX.pop(660, .05)], [14.9, () => SFX.whoosh()],
+  [17.0, () => SFX.pop(440, .05)], [17.12, () => SFX.pop(494, .05)], [17.24, () => SFX.pop(554, .05)],
+  [18.3, () => SFX.pop(587, .045)], [18.45, () => SFX.pop(659, .045)], [18.6, () => SFX.pop(740, .045)], [18.75, () => SFX.pop(831, .045)],
+  [23.0, () => SFX.pop(659, .04)], [23.12, () => SFX.pop(740, .04)], [23.24, () => SFX.pop(831, .04)],
+  [24.0, () => SFX.pop(880, .05)], [24.5, () => SFX.whoosh(.9, .06)], [25.8, () => SFX.chime(1175, .05)], [29.9, () => SFX.whoosh()],
+  [31.0, () => SFX.pop(294, .09)], [32.8, () => SFX.pop(370, .09)], [34.6, () => SFX.pop(440, .09)],
+  [36.6, () => SFX.pop(587, .06)], [37.4, () => SFX.pop(659, .06)], [38.2, () => SFX.pop(740, .06)], [39.4, () => SFX.chime(880, .07)], [45.9, () => SFX.whoosh()],
+  [52.3, () => SFX.chime(988, .04)], [56.2, () => SFX.chime(1318, .035)], [60.9, () => SFX.whoosh()],
+  [64.6, () => SFX.whoosh(.8, .06)], [68.0, () => SFX.whoosh(.8, .06)], [71.4, () => SFX.whoosh(.8, .06)], [74.8, () => SFX.whoosh(.8, .07)],
+  [75.9, () => SFX.chime(740, .05)], [77.9, () => SFX.whoosh()],
+  [78.25, () => SFX.pop(587, .08)], [78.4, () => SFX.pop(740, .08)], [78.55, () => SFX.pop(880, .08)],
+  [81.0, () => SFX.chime(1175, .08)], [82.8, () => SFX.pop(880, .04)], [82.95, () => SFX.pop(988, .04)], [83.1, () => SFX.pop(1175, .04)],
+  [88.3, () => { if (AU.pad) AU.pad.g.gain.setTargetAtTime(.0001, AU.ctx.currentTime, .6); }]
+];
+for (let i = 0; i < 18; i++) CUES.push([tileT(i), () => SFX.tick(1200 + (i % 6) * 110)]);
+CUES.sort((a, b) => a[0] - b[0]);
+function audioTick(a, b) {
+  if (!AU.ctx || !snd.checked) return;
+  for (const [ct, fn] of CUES) if (ct > a && ct <= b) { try { fn(); } catch (e) {} }
+  const ci = chordAt(b);
+  if (ci !== AU.chord) { AU.chord = ci; padChord(CHORD_TL[ci][1]); }
+  if (b >= 6.8 && b < 78) {
+    const beat = Math.floor((b - 6.8) / .3);
+    if (beat !== AU.beat) {
+      AU.beat = beat;
+      const every = sceneAt(b) === 2 ? 2 : 1, pat = [1, 2, 3, 2, 1, 3, 2, 3];
+      if (beat % every === 0) SFX.pluck(CHORD_TL[ci][1][pat[beat % 8]] * 2, .026);
+    }
+  }
+}
+
+/* ============ Lecteur ============ */
+const $ = id => document.getElementById(id);
+const scrub = $('scrub'), tc = $('tc'), playB = $('play'), bigplay = $('bigplay'), pz = $('pz'), qcard = $('qcard'), expB = $('exp'), recB = $('rec');
+const ICON = {
+  play: '<svg width="18" height="20" viewBox="0 0 18 20" aria-hidden="true"><path d="M3 2v16l13-8z" fill="currentColor"/></svg>',
+  pause: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="4" height="14" rx="1" fill="currentColor"/><rect x="11" y="2" width="4" height="14" rx="1" fill="currentColor"/></svg>'
+};
+const CH = [
+  { t: 0, key: 14.0, title: 'Une seule planète', idea: 'L’empreinte écologique, et une humanité qui consomme 1,7 planète par an.', q: 'Qu’est-ce que l’empreinte écologique ? Pourquoi dépasse-t-elle ce que la Terre régénère ? Donnez deux exemples tirés de votre quotidien.' },
+  { t: 15, key: 28.8, title: 'Une définition', idea: 'Répondre aux besoins essentiels d’aujourd’hui sans compromettre ceux de demain.', q: 'Citez un besoin essentiel et un simple désir. Où placez-vous la frontière ?' },
+  { t: 30, key: 44.6, title: 'Trois dimensions', idea: 'Environnement, social, économie : durable quand les trois tiennent ensemble.', q: 'Prenez un objet de la salle. Est-il vivable, viable, équitable ?' },
+  { t: 46, key: 59.9, title: '17 objectifs', idea: 'L’Agenda 2030 fixe 17 ODD, tous liés ; le bâtiment agit sur les ODD 7, 11, 12 et 13.', q: 'Choisissez un ODD. Quels autres objectifs touche-t-il ? Et sur un chantier ?' },
+  { t: 61, key: 77.6, title: 'Toutes les échelles', idea: 'Du geste à la planète, en passant par la classe, le lycée et le territoire.', q: 'Quelle action notre classe pourrait-elle porter ? Et le lycée ?' },
+  { t: 78, key: 89.5, title: 'Et toi ?', idea: 'Comprendre le monde pour mieux agir : un geste, un projet de classe, une action au lycée.', q: 'Et toi, par quoi commences-tu ?' }
+];
+const PAUSES = [14.1, 29.1, 45.1, 60.1, 77.8];
+const POSTER = 44.6;
+let T = 0, poster = true, playing = false, from = 0, wall0 = 0, lastT = 0, nextPause = null;
+let recording = false, recorder = null;
+
+const fmt = s => { s = clamp(s, 0, DUR); return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0'); };
+const note = msg => { $('expnote').textContent = msg; };
+
+const board = $('board'), cards = [];
+CH.forEach((c, i) => {
+  const li = document.createElement('li'), b = document.createElement('button');
+  b.type = 'button'; b.className = 'card';
+  const cvs = document.createElement('canvas'); cvs.width = 480; cvs.height = 270; cvs.setAttribute('aria-hidden', 'true');
+  const meta = document.createElement('div'); meta.className = 'meta';
+  meta.innerHTML = `<span class="tm">${fmt(c.t)}</span><h3></h3>`; meta.querySelector('h3').textContent = `${i + 1}. ${c.title}`;
+  const p = document.createElement('p'); p.textContent = c.idea;
+  b.append(cvs, meta, p); b.addEventListener('click', () => goChapter(i));
+  li.append(b); board.append(li); cards.push(b);
+});
+CH.slice(1).forEach(c => { const i = document.createElement('i'); i.style.left = (c.t / DUR * 100) + '%'; $('ticks').append(i); });
+
+function ui() {
+  const shown = poster ? 0 : T;
+  scrub.value = shown; scrub.style.setProperty('--p', (shown / DUR * 100) + '%');
+  tc.textContent = fmt(shown) + ' / ' + fmt(DUR);
+  playB.innerHTML = playing ? ICON.pause : ICON.play;
+  playB.setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
+  const ci = poster ? -1 : sceneAt(T);
+  cards.forEach((c, i) => c.setAttribute('aria-current', i === ci ? 'true' : 'false'));
+}
+function hideQ() { qcard.hidden = true; }
+function showQ(i) {
+  $('qk').textContent = `Pause question · plan ${i + 1} sur 6 · ${CH[i].title}`;
+  $('qt').textContent = CH[i].q;
+  qcard.hidden = false; $('qgo').focus({ preventScroll: true });
+}
+const computeNext = () => (!pz.checked || recording) ? null : (PAUSES.find(p => p > T + .05) ?? null);
+function seek(t) {
+  poster = false; bigplay.hidden = true; hideQ();
+  T = clamp(t, 0, DUR); lastT = T; AU.beat = -1;
+  if (playing) { from = T; wall0 = performance.now(); nextPause = computeNext(); }
+  render(T); ui();
+}
+function play() {
+  if (poster) { poster = false; T = 0; }
+  if (T >= DUR - .02) T = 0;
+  hideQ(); bigplay.hidden = true;
+  playing = true; from = T; lastT = T; wall0 = performance.now(); nextPause = computeNext(); AU.beat = -1;
+  if (snd.checked) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+  ui(); requestAnimationFrame(loop);
+}
+function pause() { playing = false; padStop(); ui(); }
+const toggle = () => playing ? pause() : play();
+function step(t) {
+  audioTick(lastT, t); T = t; lastT = t; render(T); ui();
+  if (recording) recB.textContent = `Enregistrement · ${fmt(T)} sur ${fmt(DUR)} · Échap pour annuler`;
+}
+function loop(now) {
+  if (!playing) return;
+  const t = from + (now - wall0) / 1000;
+  if (nextPause != null && t >= nextPause) { const np = nextPause; step(np); pause(); showQ(PAUSES.indexOf(np)); return; }
+  if (t >= DUR) { step(DUR); pause(); ended(); return; }
+  step(t); requestAnimationFrame(loop);
+}
+function ended() {
+  if (recording) { setTimeout(() => { try { recorder.stop(); } catch (e) {} }, 300); return; }
+  $('bigtxt').textContent = 'Revoir · 1 min 30'; bigplay.hidden = false;
+}
+function goChapter(i) { if (recording) return; seek(CH[i].t + .001); if (!playing) play(); }
+function fullscreen() {
+  const el = $('screen');
+  if (document.fullscreenElement) { document.exitFullscreen && document.exitFullscreen().catch(() => {}); return; }
+  const r = el.requestFullscreen ? el.requestFullscreen() : null;
+  if (r && r.catch) r.catch(() => note('Le plein écran n’est pas disponible ici.')); else if (!r) note('Le plein écran n’est pas disponible ici.');
+}
+
+/* ============ Export vidéo ============ */
+const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+const canRec = !!(window.MediaRecorder && cv.captureStream);
+const EXPORT_HELP = '« Exporter en vidéo » enregistre l’animation en temps réel (1 min 30), avec le son si « Son » est coché. Gardez l’onglet visible pendant l’enregistrement.';
+if (framed) { expB.disabled = true; note('L’export vidéo fonctionne quand la page est ouverte depuis son fichier HTML, sur l’ordinateur : ici, le navigateur bloque le téléchargement.'); }
+else if (!canRec) { expB.disabled = true; note('Ce navigateur ne sait pas enregistrer une vidéo depuis la page. Essayez un Chrome, Edge ou Firefox récent.'); }
+else note(EXPORT_HELP);
+function pickMime() {
+  const L = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  for (const m of L) { try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) {} }
+  return '';
+}
+function setRec(on) {
+  recording = on; recB.hidden = !on;
+  expB.textContent = on ? 'Annuler l’enregistrement' : 'Exporter en vidéo';
+  [playB, $('restart'), scrub, $('fs'), pz].forEach(el => { el.disabled = on; });
+  cards.forEach(c => { c.disabled = on; });
+}
+function startExport() {
+  const mime = pickMime();
+  if (!mime) { note('Aucun format vidéo disponible dans ce navigateur.'); return; }
+  if (playing) pause(); hideQ(); bigplay.hidden = true;
+  const tracks = [...cv.captureStream(60).getVideoTracks()];
+  if (snd.checked) { const c = audioInit(); if (c && AU.dest) { c.resume(); tracks.push(...AU.dest.stream.getAudioTracks()); } }
+  const chunks = [];
+  try { recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: mime, videoBitsPerSecond: 14000000 }); }
+  catch (e) { note('L’enregistrement n’a pas pu démarrer dans ce navigateur.'); return; }
+  recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = () => {
+    const type = mime.split(';')[0], blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'EDD en 90 secondes.' + (type === 'video/mp4' ? 'mp4' : 'webm');
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 8000);
+    setRec(false); bigplay.hidden = false;
+    note(`Vidéo enregistrée : ${(blob.size / 1048576).toFixed(1)} Mo, format ${type === 'video/mp4' ? 'MP4' : 'WebM'}. Elle est dans le dossier Téléchargements.`);
+  };
+  setRec(true); poster = false; T = 0; lastT = 0; render(0); ui();
+  recorder.start(500);
+  setTimeout(play, 150);
+}
+function cancelExport() {
+  if (!recording) return;
+  pause();
+  recorder.onstop = () => { setRec(false); note('Enregistrement annulé. ' + EXPORT_HELP); };
+  try { recorder.stop(); } catch (e) { setRec(false); }
+}
+
+/* ============ Événements ============ */
+playB.addEventListener('click', toggle);
+bigplay.addEventListener('click', () => { if (T >= DUR - .02) T = 0; play(); });
+$('restart').addEventListener('click', () => { seek(0); });
+$('qgo').addEventListener('click', () => { hideQ(); play(); });
+$('fs').addEventListener('click', fullscreen);
+expB.addEventListener('click', () => recording ? cancelExport() : startExport());
+cv.addEventListener('click', () => { if (!recording) toggle(); });
+scrub.addEventListener('input', () => { if (recording) return; if (playing) pause(); seek(+scrub.value); });
+snd.addEventListener('change', () => {
+  if (AU.ctx) AU.out.gain.setTargetAtTime(snd.checked ? 1 : 0, AU.ctx.currentTime, .05);
+  if (snd.checked && playing) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+});
+pz.addEventListener('change', () => { if (playing) nextPause = computeNext(); });
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const tg = e.target, tag = tg.tagName;
+  if (e.key === 'Escape' && recording) { cancelExport(); return; }
+  if (recording) return;
+  if (e.key === ' ') { if (tag === 'BUTTON' || (tag === 'INPUT' && tg.type === 'checkbox')) return; e.preventDefault(); toggle(); }
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const wasPlaying = playing; seek((poster ? 0 : T) + (e.key === 'ArrowRight' ? 1 : -1)); if (wasPlaying && !playing) play(); }
+  else if (/^[1-6]$/.test(e.key)) goChapter(+e.key - 1);
+  else if (e.key === 'f' || e.key === 'F') fullscreen();
+  else if (e.key === 'm' || e.key === 'M') { snd.checked = !snd.checked; snd.dispatchEvent(new Event('change')); }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden && playing && !recording) pause(); });
+
+/* ============ Démarrage ============ */
+function thumbs() {
+  CH.forEach((c, i) => { render(c.key); cards[i].querySelector('canvas').getContext('2d').drawImage(cv, 0, 0, 480, 270); });
+  render(poster ? POSTER : T);
+}
+render(POSTER); ui(); thumbs();
+if (document.fonts && document.fonts.load) {
+  const faces = ['800 100px "Bricolage Grotesque"', '700 100px "Bricolage Grotesque"', '600 100px "Bricolage Grotesque"', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"', '500 20px "IBM Plex Mono"'];
+  Promise.race([Promise.all(faces.map(f => document.fonts.load(f).catch(() => null))), new Promise(r => setTimeout(r, 3000))])
+    .then(() => { if (!playing) thumbs(); });
+}
+})();
+</script>
+
+</html>
