@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Synthèses · 2EMNB</title>
-<meta name="description" content="Pour réviser en seconde Bac Pro EMNB : le carnet de synthèses sur NotebookLM et trois animations (l’acte de construire, lire un plan, l’EDD).">
+<meta name="description" content="Pour réviser en seconde Bac Pro EMNB : le carnet de synthèses sur NotebookLM et quatre animations (l’acte de construire, lire un plan, l’EDD, du CCTP au jumeau numérique).">
 <meta name="theme-color" content="#f7f4ec">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Synthèses · 2EMNB">
-<meta property="og:description" content="Le carnet de synthèses et trois animations pour réviser l’essentiel.">
+<meta property="og:description" content="Le carnet de synthèses et quatre animations pour réviser l’essentiel.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M6 25l2-7 5 5z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -195,7 +195,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .eventail{--ang:16deg;--w:clamp(150px,15vw,190px);position:relative;height:clamp(330px,38vw,430px);margin:0}
 .carte-e{--h:0px;position:absolute;left:50%;bottom:4px;z-index:var(--z);display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:var(--w);height:calc(var(--w) * 1.42);margin-left:calc(var(--w) / -2);padding:24px 12px 12px;
   background-color:var(--fiche);background-image:repeating-linear-gradient(transparent 0 25px,rgba(47,111,214,.2) 25px 26px);background-position:0 10px;
-  box-shadow:var(--ombre);transform-origin:50% 135%;transform:rotate(calc((var(--i) - 1.5) * var(--ang))) translateY(var(--h));transition:transform .6s var(--e-ressort),box-shadow .3s}
+  box-shadow:var(--ombre);transform-origin:50% 135%;transform:rotate(calc((var(--i) - var(--mid,1.5)) * var(--ang) * var(--k,1))) translateY(var(--h));transition:transform .6s var(--e-ressort),box-shadow .3s}
 .carte-e::before{content:"";position:absolute;top:-10px;left:50%;width:62px;height:20px;margin-left:-31px;background:rgba(255,222,40,.6);transform:rotate(calc(var(--i) * 3deg - 4deg))}
 .carte-e svg{width:36px;height:36px;overflow:visible;filter:url(#crayon)}
 .carte-e svg *{fill:none;stroke:var(--c);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -220,7 +220,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .nb__aide{margin:10px 0 0;font:400 16px var(--main);color:var(--gr2)}
 
 /* ---------- Les animations ---------- */
-.anims{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px 28px;margin-top:48px}
+.anims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 32px;margin-top:48px}
 .anim{--r:0deg;position:relative;display:flex;flex-direction:column;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(var(--r));transition:transform .5s var(--e-ressort),box-shadow .4s}
 .anim::before{content:"";position:absolute;top:-12px;left:50%;z-index:2;width:96px;height:24px;margin-left:-48px;background:rgba(255,222,40,.55);transform:rotate(var(--rt,-3deg))}
 .anim:hover{transform:rotate(0) translateY(-6px);box-shadow:0 2px 2px rgba(0,0,0,.05),0 30px 42px -26px rgba(0,0,0,.55)}
@@ -249,7 +249,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .anim:hover .poster__play{transform:scale(1.14) rotate(-8deg)}
 .anim__corps{display:flex;flex:1;flex-direction:column;gap:10px;padding:16px 20px 20px}
 .anim__kicker{margin:0;font:400 16px var(--main);color:var(--ca)}
-.anim h3{margin:0;font:400 clamp(1.45rem,2vw,1.8rem)/1.12 var(--main)}
+.anim h3{margin:0;font:400 clamp(1.45rem,2vw,1.8rem)/1.12 var(--main);text-wrap:balance}
 .anim p.resume{margin:0;color:var(--gr);font-size:16px;line-height:1.5}
 .chips-s{display:flex;flex-wrap:wrap;gap:6px}
 .chips-s span{padding:1px 10px;font:400 14.5px var(--main);color:var(--gr2);border:1.5px dashed var(--ca);border-radius:10px}
@@ -277,7 +277,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 @media (max-width:700px){
   body{font-size:16.5px}
   .anims{grid-template-columns:minmax(0,1fr)}
-  .eventail{--w:128px;height:270px}
+  .eventail{--w:128px;--k:.88;height:270px}   /* cinq cartes sur un petit écran : le pas d'angle se resserre */
   .carte-e{padding:20px 8px 8px}
   .carte-e svg{width:28px;height:28px}
   .carte-e small{font-size:13.5px}
@@ -326,13 +326,13 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
       <p class="retour"><a href="index.html"><span aria-hidden="true">←</span>Accueil du carnet</a></p>
       <p class="lycee">Révisions · seconde Bac Pro EMNB</p>
       <h1 id="t-accueil">Les <span class="entoure">synthèses<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 160 0 188 26C212 50 140 80 60 72C10 66 2 40 34 18C56 6 96 6 124 9"/></svg></span></h1>
-      <p class="chapo">Pour réviser et revoir l’essentiel&nbsp;: <strong>le carnet de synthèses</strong> à ouvrir dans NotebookLM, puis <strong>trois animations</strong> à regarder d’une traite ou avec des pauses questions.</p>
+      <p class="chapo">Pour réviser et revoir l’essentiel&nbsp;: <strong>le carnet de synthèses</strong> à ouvrir dans NotebookLM, puis <strong>quatre animations</strong> à regarder d’une traite ou avec des pauses questions.</p>
       <div class="cta">
         <a class="btn btn--plein" id="cta-notebook" target="_blank" rel="noopener">Ouvrir le carnet NotebookLM<span class="sr"> (nouvel onglet)</span></a>
         <a class="btn" href="#animations">Voir les animations</a>
       </div>
     </div>
-    <div class="eventail" id="eventail" role="group" aria-label="Les quatre synthèses : choisissez une fiche"></div>
+    <div class="eventail" id="eventail" role="group" aria-label="Les cinq synthèses : choisissez une fiche"></div>
   </section>
 
   <!-- ===================== LE CARNET NOTEBOOKLM ===================== -->
@@ -348,7 +348,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   <section class="section" id="animations" aria-labelledby="t-animations">
     <header class="entete">
       <div class="entete__haut"><p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>02 · les animations</p></div>
-      <h2 class="titre" id="t-animations" data-ecrit>Trois animations <span class="souligne">à revoir.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 6C60 10 130 2 197 7"/></svg></span></h2>
+      <h2 class="titre" id="t-animations" data-ecrit>Quatre animations <span class="souligne">à revoir.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 6C60 10 130 2 197 7"/></svg></span></h2>
       <p class="chapo-sec rv">Chaque animation se regarde d’une traite, ou avec une pause question à la fin de chaque plan. Un guide pour la classe suit le lecteur.</p>
     </header>
     <div class="anims" id="anims"></div>
@@ -362,7 +362,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 <footer class="pied">
   <span class="pied__mot rv" aria-hidden="true">Réviser<svg viewBox="0 0 400 20" preserveAspectRatio="none"><path pathLength="1" d="M4 12C100 4 230 18 396 8"/></svg></span>
   <div class="pied__cols">
-    <div><h4>Les synthèses</h4><p>Le carnet NotebookLM et trois animations pour réviser. Seconde Bac Pro EMNB, lycée Urbain Vitry, Toulouse.</p></div>
+    <div><h4>Les synthèses</h4><p>Le carnet NotebookLM et quatre animations pour réviser. Seconde Bac Pro EMNB, lycée Urbain Vitry, Toulouse.</p></div>
     <div><h4>Les animations</h4><ul id="pied-anims"></ul></div>
     <div><h4>Pour prolonger</h4><ul id="pied-wc"></ul></div>
     <div><h4>Le carnet</h4><ul><li><a href="index.html">Accueil du carnet</a></li><li><a href="index.html#projets">Projets</a></li><li><a href="index.html#decouvrir">Découvrir</a></li></ul></div>
@@ -370,7 +370,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · aucun cookie</span><a href="#accueil">Haut de page ↑</a></div>
 </footer>
 
-<noscript><div class="noscript">Cette page a besoin de JavaScript. Le carnet de synthèses est ici&nbsp;: <a href="https://notebooklm.google.com/notebook/ff0a62c4-bd78-4c13-b3d5-2353d4391152?artifactId=9e7150fa-20dd-467b-8a40-3a62509abe45">NotebookLM</a>. Les animations&nbsp;: <a href="animation-acte-de-construire.html">l’acte de construire</a>, <a href="animation-lecture-de-plan.html">lire un plan</a>, <a href="animation-edd.html">l’EDD</a>.</div></noscript>
+<noscript><div class="noscript">Cette page a besoin de JavaScript. Le carnet de synthèses est ici&nbsp;: <a href="https://notebooklm.google.com/notebook/ff0a62c4-bd78-4c13-b3d5-2353d4391152?artifactId=9e7150fa-20dd-467b-8a40-3a62509abe45">NotebookLM</a>. Les animations&nbsp;: <a href="animation-acte-de-construire.html">l’acte de construire</a>, <a href="animation-lecture-de-plan.html">lire un plan</a>, <a href="animation-edd.html">l’EDD</a>, <a href="animation-cctp-jumeau.html">du CCTP au jumeau numérique</a>.</div></noscript>
 <script>
 (() => {
 'use strict';
@@ -399,6 +399,9 @@ const DONNEES = {
     { id: 'edd', fichier: 'animation-edd.html', titre: 'L’EDD en 90 secondes', court: 'L’EDD', eventail: 'EDD', duree: '1 min 30', plans: 6, couleur: 'var(--vert)', icone: 'edd',
       resume: 'De l’empreinte écologique aux 17 objectifs de développement durable, puis à l’action : et toi ?',
       prolonger: [] },
+    { id: 'cctp', fichier: 'animation-cctp-jumeau.html', titre: 'Du CCTP au jumeau numérique en 90 secondes', court: 'Du CCTP au jumeau', eventail: 'CCTP', duree: '1 min 30', plans: 6, couleur: '#7a5cb8', icone: 'cctp',
+      resume: 'Le CCTP décrit les ouvrages, la maquette numérique les modélise, le jumeau numérique les mesure : et quel lien les relie aujourd’hui ?',
+      prolonger: [['World café « CCTP »', 'cctp.html'], ['World café « Maquette numérique »', 'maquette-numerique.html']] },
   ],
 };
 
@@ -428,6 +431,7 @@ const PICTO = {
   carnet: '<rect x="5" y="3" width="14" height="18" rx="1.8"/><path d="M5 7H3M5 12H3M5 17H3M9 8h6M9 12h6M9 16h4"/>',
   acte: '<circle cx="12" cy="6" r="3"/><circle cx="5.5" cy="16.5" r="3"/><circle cx="18.5" cy="16.5" r="3"/><path d="M10 8.6L7 14M14 8.6L17 14M8.6 17h6.8"/>',
   plan: '<path d="M3.5 5.5h17v13h-17zM3.5 12h8V5.5M16 18.5V14M11.5 12H14"/>',
+  cctp: '<path d="M4 3.5h8.5v15H4z"/><path d="M6.3 7.5h4M6.3 10.5h4M6.3 13.5h2.6"/><path d="M17.5 8.5l4 2.2v4.6l-4 2.2-4-2.2v-4.6z"/><path d="M13.5 10.7l4 2.2 4-2.2M17.5 12.9v4.6"/>',
   edd: '<path d="M12 21.5V12"/><path d="M12 12c0-4.2-2.8-6.7-8.2-6.7 0 4.8 2.9 6.9 8.2 6.7z"/><path d="M12 14.5c0-3.4 2.3-5.6 8.2-5.6 0 4-2.7 6-8.2 5.6z"/><path d="M8.5 21.5h7"/>',
 };
 const picto = n => `<svg viewBox="0 0 24 24" aria-hidden="true">${PICTO[n] || ''}</svg>`;
@@ -464,6 +468,18 @@ const VIGNETTES = {
     + A(rond(60, 104, 8), 'f-v', 4) + A(rond(260, 104, 8), 'f-o', 4) + A(rond(160, 142, 8), 'f-b', 4)
     + P(rond(60, 104, 8), 'tv', 4) + P(rond(260, 104, 8), 'to', 4) + P(rond(160, 142, 8), 'tb', 4)
     + T(60, 128, 'social', 'petit', 5) + T(260, 128, 'économie', 'petit', 5) + T(160, 168, 'environnement', 'petit', 5),
+  // écrire, modéliser, mesurer : la page du CCTP, le bloc de la maquette (isométrique) et le bâtiment qui émet ses mesures
+  // (composition serrée à gauche : la pastille de lecture, en bas à droite, ne doit rien recouvrir quelle que soit la largeur de la fiche)
+  cctp: () => A('M12 22H68V138H12Z', 'f-j', 1) + P('M12 22H68V138H12Z', 't', 0)
+    + T(40, 41, 'CCTP', '', 1) + P('M20 52H60M20 64H60M20 76H60M20 88H48M20 106H60M20 118H54', 't2', 1)
+    + P('M74 80H92M87 74L92 80L87 86', 'tr', 2)
+    + A('M128 38L162 55V97L128 114L94 97V55Z', 'f-b', 3) + P('M128 38L162 55V97L128 114L94 97V55Z', 'tb', 3)
+    + P('M94 55L128 72L162 55M128 72V114', 'tb', 4)
+    + P('M170 80H188M183 74L188 80L183 86', 'tr', 4)
+    + A('M196 138V70L226 48L256 70V138Z', 'f-v', 5) + P('M196 138V70L226 48L256 70V138Z', 'tv', 5)
+    + P('M208 86h12v12h-12zM232 86h12v12h-12zM218 138V114h16v24', 't2', 6)
+    + P('M218 32a12 12 0 0 1 16 0M213 24a19 19 0 0 1 26 0', 'tv', 6) + P('M184 138H268', 't', 5)
+    + T(40, 160, 'écrire', 'petit', 6) + T(128, 160, 'modéliser', 'petit', 6) + T(226, 160, 'mesurer', 'petit', 6),
   // un carnet à spirale (section NotebookLM)
   carnet: () => A('M64 24H240a8 8 0 0 1 8 8V222a8 8 0 0 1-8 8H64Z', 'f-b', 0) + P('M64 24H240a8 8 0 0 1 8 8V222a8 8 0 0 1-8 8H64Z', 'tf', 0)
     + [44, 68, 92, 116, 140, 164, 188, 212].map(y => P(`M46 ${y}c12-9 30-9 42 0`, 't', 1)).join('')
@@ -488,6 +504,7 @@ function construirePage() {
 
   // --- l'éventail : une fiche par synthèse, qui mène à sa partie de la page
   const fiches = [['carnet', 'Carnet', 'NotebookLM', '#notebook', 'var(--rouge2)'], ...D.animations.map(a => [a.icone, a.eventail, a.duree, '#anim-' + a.id, a.couleur])];
+  $('#eventail').style.setProperty('--mid', (fiches.length - 1) / 2);   // le milieu de l'éventail, quel que soit le nombre de cartes
   $('#eventail').innerHTML = fiches.map(([ico, titre, sous, ancre, c], i) => `<a class="carte-e" href="${ancre}" style="--i:${i};--z:${i + 1};--c:${c}">${picto(ico)}<b>${esc(titre)}</b><small>${esc(sous)}</small></a>`).join('');
 
   // --- le carnet NotebookLM
