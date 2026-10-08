@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Du CCTP au jumeau numérique en 90 secondes</title>
+<meta name="description" content="Animation motion design d’une minute trente : le CCTP décrit les ouvrages, la maquette numérique les modélise, le jumeau numérique les mesure — et le lien qui les relie aujourd’hui.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500;700&family=Instrument+Sans:ital,wght@0,400..700;1,500&display=swap">
+<style>
+:root{
+  --bg:#E5EAF0; --surface:#F5F7FA; --ink:#0E2240; --muted:#4B5B74; --line:#C8D1DD;
+  --accent:#2F6FD6; --accent-soft:#DCE6F7; --screen:#0B1A30; --focus:#2F6FD6;
+  --fd:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --fb:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --fm:"IBM Plex Mono",Consolas,"Cascadia Mono",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+    --accent:#7FB0FF; --accent-soft:#16305A; --screen:#050C16; --focus:#7FB0FF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#09131F; --surface:#0F1E31; --ink:#E5ECF4; --muted:#9BACC3; --line:#223856;
+  --accent:#7FB0FF; --accent-soft:#16305A; --screen:#050C16; --focus:#7FB0FF;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--fb)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:clamp(16px,4vw,40px);padding-block:36px 72px;display:grid;gap:36px}
+.head{display:grid;gap:12px;max-width:800px}
+.kicker{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0;font:500 12.5px/1.3 var(--fm);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:10px;height:10px;border-radius:50%;display:block}
+h1{font:800 clamp(34px,5.4vw,62px)/1 var(--fd);letter-spacing:-.025em;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);font-size:17px;max-width:64ch;text-wrap:pretty}
+
+.player{display:grid;gap:10px}
+.screen{position:relative;border-radius:18px;overflow:hidden;background:var(--screen);box-shadow:0 30px 70px -40px rgba(8,20,40,.7)}
+.screen canvas{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:16/9;cursor:pointer}
+.screen:fullscreen{display:grid;place-items:center;border-radius:0;background:#000}
+.screen:fullscreen canvas{width:min(100vw,177.78vh)}
+.bigplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:12px;padding:10px 22px 10px 10px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 clamp(14px,1.6vw,18px)/1 var(--fb);cursor:pointer;box-shadow:0 16px 40px -14px rgba(0,0,0,.6);white-space:nowrap}
+.bigplay .tri{width:40px;height:40px;border-radius:50%;background:#0E2240;color:#FFB627;display:grid;place-items:center;flex:none}
+.bigplay:hover{background:#FFC24D}
+.qcard{position:absolute;left:3%;bottom:6%;max-width:min(600px,90%);background:rgba(9,22,42,.95);color:#fff;border-radius:16px;padding:16px 18px 18px;display:grid;gap:8px;box-shadow:0 20px 50px -20px rgba(0,0,0,.7)}
+.qcard .qk{margin:0;font:500 12px/1.3 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:#FFB627}
+.qcard .qt{margin:0;font:700 clamp(16px,2.1vw,23px)/1.28 var(--fd);text-wrap:pretty}
+.qcard button{justify-self:start;margin-top:4px;height:38px;padding:0 18px;border:0;border-radius:999px;background:#FFB627;color:#0E2240;font:700 14px var(--fb);cursor:pointer}
+.rec{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;background:rgba(9,22,42,.92);color:#fff;font:500 13px/1 var(--fm);padding:8px 12px;border-radius:999px}
+.rec::before{content:"";width:9px;height:9px;border-radius:50%;background:#FF5A4A;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
+.ib{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.ib.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ib svg{display:block}
+.track{flex:1 1 260px;min-width:0;position:relative;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:0;pointer-events:none}
+.ticks i{position:absolute;top:-10px;width:2px;height:20px;margin-left:-1px;background:var(--muted);opacity:.45;border-radius:1px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;margin:0;border-radius:999px;background:linear-gradient(to right,var(--accent) var(--p,0%),var(--line) var(--p,0%));cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ink);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ink)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ink);border:3px solid var(--bg)}
+.tc{font:500 14px var(--fm);font-variant-numeric:tabular-nums;color:var(--muted);min-width:10ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tog{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font:600 14px var(--fb);cursor:pointer;user-select:none}
+.tog input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.btn{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--fb);cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:hover:not(:disabled),.ib:hover,.tog:hover{border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.help{margin:0;font:500 12.5px/1.5 var(--fm);color:var(--muted)}
+.note{margin:0;font-size:14px;color:var(--muted);max-width:80ch}
+
+.sec{display:grid;gap:16px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+.sec-head h2{font:800 clamp(24px,2.8vw,32px)/1.1 var(--fd);margin:0;letter-spacing:-.015em}
+.sec-head p{margin:0;color:var(--muted);font-size:15px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+@media (max-width:900px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.board{grid-template-columns:1fr}}
+.card{width:100%;height:100%;display:grid;grid-template-rows:auto auto 1fr;gap:8px;text-align:left;padding:10px 10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:inherit;font:inherit;cursor:pointer}
+.card:hover{border-color:var(--ink)}
+.card canvas{width:100%;max-width:100%;height:auto;aspect-ratio:16/9;display:block;border-radius:9px;background:var(--screen)}
+.card .meta{display:flex;align-items:baseline;gap:10px;padding-inline:4px}
+.card .tm{font:500 12.5px var(--fm);color:var(--muted);font-variant-numeric:tabular-nums}
+.card h3{margin:0;font:700 18px/1.2 var(--fd)}
+.card p{margin:0;padding-inline:4px;font-size:14.5px;line-height:1.45;color:var(--muted)}
+.card[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;display:grid;gap:8px;align-content:start}
+.step .when{font:500 12.5px/1.3 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.step h3{margin:0;font:700 20px/1.2 var(--fd)}
+.step p{margin:0;font-size:15px;text-wrap:pretty}
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 32px;border-top:1px solid var(--line);padding-top:4px}
+@media (max-width:860px){.more{grid-template-columns:1fr}}
+.more h3{font:700 17px/1.2 var(--fd);margin:16px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:14px;padding:4px 11px;border-radius:999px;background:var(--accent-soft);color:var(--ink)}
+.more ul{margin:0;padding-left:18px;display:grid;gap:7px;font-size:14.5px}
+.more li::marker{color:var(--accent)}
+.fam{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;padding:0;list-style:none;font-size:14.5px}
+.fam li{display:inline-flex;align-items:center;gap:7px}
+.fam i{width:12px;height:12px;border-radius:50%;display:block;flex:none}
+@media (prefers-reduced-motion: reduce){.rec::before{animation:none}}
+.retour{margin:0 0 2px;font:500 13px/1.3 var(--fm)}.retour a{color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}.retour a:hover{color:var(--ink)}
+</style>
+
+<main class="wrap">
+  <header class="head">
+    <p class="retour"><a href="index.html" onclick="try{if(document.referrer&&new window.URL(document.referrer).origin===window.location.origin){window.history.back();return false}}catch(e){}">← Retour au carnet 2EMNB</a></p>
+    <p class="kicker"><span class="dots" aria-hidden="true"><i style="background:#FFB627"></i><i style="background:#4D8FEA"></i><i style="background:#FF7A59"></i><i style="background:#3FBF7F"></i></span>CCTP · maquette numérique · jumeau numérique · motion design · 1 min 30</p>
+    <h1>Du CCTP au jumeau numérique en 90 secondes</h1>
+    <p class="lede">Six plans pour répondre à une question&nbsp;: comment décrit-on un ouvrage, comment le modélise-t-on, et quel lien relie aujourd’hui le texte, la maquette et le bâtiment réel&nbsp;? Sans voix off&nbsp;: le texte animé porte le message et chaque plan laisse le temps de lire. À projeter en ouverture de séquence, d’une traite puis avec les pauses questions.</p>
+  </header>
+
+  <section class="player" aria-label="Lecteur de l’animation">
+    <div class="screen" id="screen">
+      <canvas id="stage" width="1920" height="1080" role="img" aria-label="Animation en six plans : un plan montre mais ne décrit pas ; le CCTP décrit chaque ouvrage ; la maquette numérique BIM porte la forme et les informations de chaque objet ; le lien entre un objet de la maquette et un article du CCTP ; le jumeau numérique compare le bâtiment réel aux exigences du CCTP ; synthèse écrire, modéliser, mesurer."></canvas>
+      <button class="bigplay" id="bigplay" type="button"><span class="tri"><svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true"><path d="M2 1.5v15L15 9z" fill="currentColor"/></svg></span><span id="bigtxt">Lancer l’animation · 1&nbsp;min&nbsp;30</span></button>
+      <div class="qcard" id="qcard" role="dialog" aria-live="polite" aria-labelledby="qt" hidden>
+        <p class="qk" id="qk"></p>
+        <p class="qt" id="qt"></p>
+        <button type="button" id="qgo">Continuer</button>
+      </div>
+      <div class="rec" id="rec" hidden></div>
+    </div>
+    <div class="bar">
+      <button class="ib primary" id="play" type="button" aria-label="Lecture"></button>
+      <button class="ib" id="restart" type="button" aria-label="Revenir au début"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 2v14M15 2.5v13L5.5 9z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
+      <div class="track">
+        <input type="range" id="scrub" min="0" max="90" step="0.01" value="0" aria-label="Position dans l’animation">
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+      </div>
+      <span class="tc" id="tc">0:00 / 1:30</span>
+      <div class="opts">
+        <label class="tog"><input type="checkbox" id="snd" checked> Son</label>
+        <label class="tog"><input type="checkbox" id="pz"> Pauses questions</label>
+        <button class="btn" id="fs" type="button">Plein écran</button>
+        <button class="btn" id="exp" type="button">Exporter en vidéo</button>
+      </div>
+    </div>
+    <p class="help">Espace&nbsp;: lecture ou pause · ← →&nbsp;: une seconde · 1 à 6&nbsp;: aller au plan · F&nbsp;: plein écran · M&nbsp;: son</p>
+    <p class="note" id="expnote"></p>
+  </section>
+
+  <section class="sec" aria-labelledby="h-plans">
+    <div class="sec-head"><h2 id="h-plans">Les six plans</h2><p>Cliquez un plan pour le lire depuis son début.</p></div>
+    <ol class="board" id="board"></ol>
+  </section>
+
+  <section class="sec" aria-labelledby="h-classe">
+    <div class="sec-head"><h2 id="h-classe">Exploiter en classe</h2><p>Une séance d’environ 30 minutes.</p></div>
+    <div class="steps">
+      <article class="step">
+        <span class="when">Avant · 3 min</span>
+        <h3>Recueillir les représentations</h3>
+        <p>«&nbsp;Comment l’entreprise sait-elle de quoi est fait un mur&nbsp;?&nbsp;» Chaque élève note deux sources d’information possibles (plan, texte, maquette, appel…). On les affiche sans les trier&nbsp;: on y reviendra.</p>
+      </article>
+      <article class="step">
+        <span class="when">Pendant · 2 × 1 min 30</span>
+        <h3>Voir, puis revoir</h3>
+        <p>Premier passage d’une traite, sans prise de notes. Second passage avec «&nbsp;Pauses questions&nbsp;» cochée&nbsp;: l’animation s’arrête à la fin de chaque plan sur une question, une minute d’échange en binôme.</p>
+      </article>
+      <article class="step">
+        <span class="when">Après · 25 min</span>
+        <h3>Relier le texte, la maquette, le réel</h3>
+        <p>À partir d’un extrait de plan et d’un article de CCTP (lot gros œuvre), chaque groupe repère trois informations présentes dans l’un et absentes de l’autre, propose la propriété à renseigner dans la maquette, puis imagine le capteur qui vérifierait une exigence du CCTP.</p>
+      </article>
+    </div>
+    <div class="more">
+      <div>
+        <h3>Vocabulaire à retenir</h3>
+        <div class="chips"><span>CCTP</span><span>CCAP</span><span>DPGF</span><span>DCE</span><span>lot</span><span>DTU</span><span>norme NF EN</span><span>pièces du marché</span><span>BIM</span><span>maquette numérique</span><span>objet</span><span>propriétés</span><span>IFC</span><span>code d’ouvrage</span><span>convention BIM</span><span>DOE</span><span>maquette « telle que construite »</span><span>jumeau numérique</span><span>capteur</span><span>exploitation-maintenance</span></div>
+      </div>
+      <div>
+        <h3>Comment l’animation est construite</h3>
+        <ul>
+          <li>Une idée par plan, six plans qu’on peut arrêter.</li>
+          <li>Chaque notion garde sa couleur du début à la fin&nbsp;:
+            <ul class="fam" aria-label="Couleurs des notions">
+              <li><i style="background:#FFB627"></i>l’écrit (CCTP)</li>
+              <li><i style="background:#4D8FEA"></i>la maquette</li>
+              <li><i style="background:#FF7A59"></i>le lien</li>
+              <li><i style="background:#3FBF7F"></i>le réel mesuré</li>
+            </ul>
+          </li>
+          <li>Le même mur de façade traverse l’animation&nbsp;: dessiné, décrit, modélisé, relié, surveillé.</li>
+          <li>La chaîne se referme à la fin&nbsp;: les mesures du jumeau enrichissent le CCTP du projet suivant.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Sources et choix</h3>
+        <ul>
+          <li>CCTP&nbsp;: pièce écrite du marché de travaux, avec le CCAP, les plans et les pièces de prix. L’ordre de priorité des pièces est fixé par le CCAP.</li>
+          <li>IFC&nbsp;: format ouvert normalisé (ISO 16739-1, buildingSMART). Organisation de l’information en BIM&nbsp;: série ISO 19650.</li>
+          <li>L’article 2.3.1 cite la NF EN 771-3 et le DTU 20.1 à titre d’exemple&nbsp;; le mur (6,40 × 2,70 m, 17,3 m²) et les mesures du jumeau sont fictifs.</li>
+          <li>Le lien automatique entre un objet et un article de CCTP est un principe&nbsp;: il dépend des outils et de la convention BIM du projet.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+/* ============ Réglages de base ============ */
+const W = 1920, H = 1080, DUR = 90, TAU = Math.PI * 2;
+const cv = document.getElementById('stage');
+const ctx = cv.getContext('2d');
+const C = {
+  ink:'#0E2240', paper:'#EAF0EC', bp:'#123C78', amber:'#FFB627', white:'#FFFFFF',
+  green:'#3FBF7F', coral:'#FF7A59', blue:'#4D8FEA',
+  greenD:'#1F9D5C', coralD:'#E4502C', blueD:'#2F6FD6', amberD:'#B87D00',
+  pencil:'#56667E', sheet:'#FBFCFA', glass:'#BFD7F5', sub:'#33445E'
+};
+// Une couleur par famille d'acteurs, tenue de bout en bout.
+const FAM = {
+  moa: { c: C.coral, d: C.coralD, name: 'Maître d’ouvrage', low: 'maître d’ouvrage' },
+  moe: { c: C.blue, d: C.blueD, name: 'Maître d’œuvre', low: 'maître d’œuvre' },
+  ent: { c: C.amber, d: C.amberD, name: 'Entreprises', low: 'entreprises' },
+  usa: { c: C.green, d: C.greenD, name: 'Utilisateurs', low: 'utilisateurs' }
+};
+const F = {
+  d:'"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif',
+  b:'"Instrument Sans","Segoe UI",system-ui,sans-serif',
+  m:'"IBM Plex Mono",Consolas,"Cascadia Mono",monospace'
+};
+
+/* ============ Mouvement ============ */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const E = {
+  out3: k => 1 - Math.pow(1 - k, 3),
+  in3: k => k * k * k,
+  io3: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  out5: k => 1 - Math.pow(1 - k, 5),
+  io5: k => k < .5 ? 16 * Math.pow(k, 5) : 1 - Math.pow(-2 * k + 2, 5) / 2,
+  back: k => { const c1 = 1.70158, c3 = c1 + 1; return k <= 0 ? 0 : 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
+  elastic: k => k <= 0 ? 0 : k >= 1 ? 1 : Math.pow(2, -10 * k) * Math.sin((k * 10 - .75) * (TAU / 3)) + 1
+};
+const rnd = (s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(19850712);
+
+/* ============ Outils de dessin ============ */
+function setFont(w, s, f) { ctx.font = `${w} ${s}px ${f || F.d}`; }
+function spacing(px) { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; }
+function rr(x, y, w, h, r) {
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); }
+
+// Typographie cinétique : chaque mot monte d'un masque, puis ressort par le haut.
+function kWords(str, x, y, o) {
+  const t = o.t, ws = str.split(' '), st = o.stagger ?? .08, du = o.dur ?? .7;
+  if (t < o.t0) return;
+  if (o.tOut != null && t > o.tOut + ws.length * st * .5 + .45) return;
+  let size = o.size;
+  setFont(o.weight || 800, size, o.font);
+  let sp = ctx.measureText(' ').width, wd = ws.map(w => ctx.measureText(w).width);
+  let total = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  if (o.maxW && total > o.maxW) {
+    size *= o.maxW / total; setFont(o.weight || 800, size, o.font);
+    sp = ctx.measureText(' ').width; wd = ws.map(w => ctx.measureText(w).width);
+    total = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  }
+  let cx = o.align === 'center' ? x - total / 2 : o.align === 'right' ? x - total : x;
+  const lift = size * 1.3;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx - 60, y - size * 1.1, total + 120, size * 1.5); ctx.clip();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  for (let i = 0; i < ws.length; i++) {
+    const d = o.t0 + i * st;
+    const a = E.out5(P(t, d, d + du));
+    const b = o.tOut != null ? E.in3(P(t, o.tOut + i * st * .5, o.tOut + i * st * .5 + .4)) : 0;
+    const dy = (1 - a) * lift - b * lift;
+    if (a > 0 && b < 1) {
+      let col = o.color;
+      const m = o.marks && o.marks[i];
+      if (m) {
+        const mk = E.io3(P(t, m.t0, m.t0 + .45));
+        if (mk > 0) { ctx.fillStyle = m.color; ctx.fillRect(cx - 10, y - size * .8 + dy, (wd[i] + 20) * mk, size); }
+        if (mk > .55 && m.text) col = m.text;
+      }
+      ctx.fillStyle = col; ctx.fillText(ws[i], cx, y + dy);
+    }
+    cx += wd[i] + sp;
+  }
+  ctx.restore();
+}
+function eyebrow(txt, x, y, col, t, t0, tOut) {
+  const a = E.out5(P(t, t0, t0 + .7)), b = tOut != null ? E.in3(P(t, tOut, tOut + .35)) : 0, k = a * (1 - b);
+  if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = col;
+  ctx.fillRect(x, y - 9, 40 * a, 4);
+  setFont(500, 22, F.m); spacing(4); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x + 56 - (1 - a) * 16, y);
+  spacing(0); ctx.restore();
+}
+function label(txt, x, y, o) {
+  const k = o.k; if (k <= .001) return;
+  ctx.save(); ctx.globalAlpha = k * (o.alpha ?? 1); ctx.fillStyle = o.color;
+  setFont(o.weight || 500, o.size || 22, o.font || F.m); spacing(o.ls ?? 3);
+  ctx.textAlign = o.align || 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(txt, x, y + (1 - k) * 12);
+  spacing(0); ctx.restore();
+}
+// Texte simple qui respecte l'opacité en cours (pour ce qui est dessiné dans la feuille).
+function txt(s, x, y, font, col, align, alpha, ls) {
+  if (alpha <= .001) return;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.font = font; ctx.fillStyle = col; spacing(ls || 0);
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(s, x, y);
+  spacing(0); ctx.restore();
+}
+function pill(cx, cy, text, size, bg, fg, k, stroke) {
+  if (k <= .001) return;
+  setFont(700, size, F.b);
+  const w = ctx.measureText(text).width + size * 1.2, h = size * 1.75;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(k, k);
+  rr(-w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = bg; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2.5; ctx.stroke(); }
+  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, size * .06);
+  ctx.restore();
+}
+// Silhouette : pieds en (x, y), hauteur h.
+function person(x, y, h, o) {
+  const hr = h * .14, bw = h * .46, bh = h * .56, k = o.k ?? 1;
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.beginPath(); ctx.arc(0, -bh - hr * 1.45, hr, 0, TAU);
+  ctx.moveTo(-bw / 2, 0); ctx.lineTo(-bw / 2, -bh + bw / 2); ctx.arc(0, -bh + bw / 2, bw / 2, Math.PI, 0); ctx.lineTo(bw / 2, 0); ctx.closePath();
+  if (o.fill) { ctx.fillStyle = o.fill; ctx.fill(); }
+  if (o.helmet) { ctx.beginPath(); ctx.arc(0, -bh - hr * 1.45 - hr * .15, hr * 1.2, Math.PI, 0); ctx.closePath(); ctx.fillStyle = o.helmet; ctx.fill(); }
+  ctx.restore();
+}
+function checkMark(x, y, s, k, col, lw) {
+  if (k <= 0) return;
+  const a = [x - s * .5, y], b = [x - s * .12, y + s * .4], c = [x + s * .55, y - s * .45];
+  const L1 = Math.hypot(b[0] - a[0], b[1] - a[1]), L2 = Math.hypot(c[0] - b[0], c[1] - b[1]);
+  let r = (L1 + L2) * clamp(k);
+  ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(a[0], a[1]);
+  if (r <= L1) ctx.lineTo(a[0] + (b[0] - a[0]) * r / L1, a[1] + (b[1] - a[1]) * r / L1);
+  else { ctx.lineTo(b[0], b[1]); r -= L1; ctx.lineTo(b[0] + (c[0] - b[0]) * r / L2, b[1] + (c[1] - b[1]) * r / L2); }
+  ctx.stroke(); ctx.restore();
+}
+// Tampon : arrive grand et se pose.
+function stamp(x, y, w, h, lines, col, k, alpha, rot) {
+  if (k <= 0 || alpha <= 0) return;
+  const q = clamp(k), sc = 1 + .55 * (1 - E.out3(q));
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc); ctx.globalAlpha *= Math.min(1, q * 2.5) * alpha;
+  ctx.fillStyle = 'rgba(255,255,255,.72)'; rr(-w / 2, -h / 2, w, h, 10); ctx.fill();
+  ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.stroke();
+  rr(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16, 6); ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  lines.forEach(([s, font, y0, ls]) => { ctx.font = font; spacing(ls || 0); ctx.fillText(s, 0, y0); spacing(0); });
+  ctx.restore();
+}
+
+/* Tracés progressifs : une liste de polylignes dessinée au fil du crayon. */
+function polyLen(p) { let L = 0; for (let i = 2; i < p.length; i += 2) L += Math.hypot(p[i] - p[i - 2], p[i + 1] - p[i - 1]); return L; }
+function pathPrep(polys) { const lens = polys.map(polyLen); return { polys, total: lens.reduce((a, b) => a + b, 0) }; }
+function drawPath(pp, k) {
+  let rem = pp.total * clamp(k), tip = null;
+  if (rem <= 0) return null;
+  ctx.beginPath();
+  for (let n = 0; n < pp.polys.length && rem > 0; n++) {
+    const p = pp.polys[n];
+    ctx.moveTo(p[0], p[1]); tip = [p[0], p[1]];
+    for (let i = 2; i < p.length && rem > 0; i += 2) {
+      const x0 = p[i - 2], y0 = p[i - 1], x1 = p[i], y1 = p[i + 1], s = Math.hypot(x1 - x0, y1 - y0);
+      if (s <= rem) { ctx.lineTo(x1, y1); tip = [x1, y1]; rem -= s; }
+      else { const u = rem / s; tip = [x0 + (x1 - x0) * u, y0 + (y1 - y0) * u]; ctx.lineTo(tip[0], tip[1]); rem = 0; }
+    }
+  }
+  ctx.stroke();
+  return tip;
+}
+// Trait d'esquisse : léger débord aux extrémités, légère courbure.
+function sketchLine(x0, y0, x1, y1, amp) {
+  const L = Math.hypot(x1 - x0, y1 - y0), ux = (x1 - x0) / L, uy = (y1 - y0) / L, ov = 8 + rnd() * 12, bow = (rnd() - .5) * amp * 2;
+  const ax = x0 - ux * ov, ay = y0 - uy * ov, bx = x1 + ux * ov, by = y1 + uy * ov;
+  const n = Math.max(2, Math.round((L + 2 * ov) / 36)), pts = [];
+  for (let i = 0; i <= n; i++) { const u = i / n, off = bow * Math.sin(u * Math.PI) + (rnd() - .5) * 1.4; pts.push(ax + (bx - ax) * u - uy * off, ay + (by - ay) * u + ux * off); }
+  return pts;
+}
+function sketchEllipse(cx, cy, rx, ry) {
+  const pts = [], a0 = rnd() * TAU, n = 44;
+  for (let i = 0; i <= n * 1.1; i++) { const a = a0 + i / n * TAU, r = 1 + (rnd() - .5) * .03 + i / n * .06; pts.push(cx + Math.cos(a) * rx * r, cy + Math.sin(a) * ry * r); }
+  return pts;
+}
+function pencil(x, y) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(-.95);
+  ctx.fillStyle = '#F2D3A0'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(20, -7); ctx.lineTo(20, 7); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(7, -2.5); ctx.lineTo(7, 2.5); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.amber; ctx.fillRect(20, -7, 90, 14);
+  ctx.fillStyle = 'rgba(14,34,64,.18)'; ctx.fillRect(20, 2, 90, 5);
+  ctx.fillStyle = C.coral; ctx.fillRect(110, -7, 14, 14);
+  ctx.restore();
+}
+
+/* ============ Pictogrammes (centrés en x, y) ============ */
+function icoEuro(x, y, s, c) { setFont(800, s * 1.9); ctx.fillStyle = c; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('€', x, y + s * .1); }
+function icoSquare(x, y, s, c) { // équerre et crayon
+  ctx.save(); ctx.translate(x, y); ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = s * .14; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-s * .85, s * .75); ctx.lineTo(-s * .85, -s * .8); ctx.lineTo(s * .7, s * .75); ctx.closePath(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-s * .55, s * .47); ctx.lineTo(-s * .55, -s * .05); ctx.lineTo(-s * .03, s * .47); ctx.closePath(); ctx.stroke();
+  ctx.lineWidth = s * .26; ctx.beginPath(); ctx.moveTo(s * .95, -s * .95); ctx.lineTo(s * .38, -s * .38); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(s * .44, -s * .2); ctx.lineTo(s * .2, -s * .2); ctx.lineTo(s * .2, -s * .44); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function icoHelmet(x, y, s, c) {
+  ctx.save(); ctx.translate(x, y); ctx.fillStyle = c;
+  ctx.beginPath(); ctx.moveTo(-s * .8, s * .28); ctx.bezierCurveTo(-s * .8, -s * .8, s * .8, -s * .8, s * .8, s * .28); ctx.closePath(); ctx.fill();
+  rr(-s * 1.05, s * .2, s * 2.1, s * .28, s * .14); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.35)'; rr(-s * .1, -s * .56, s * .2, s * .72, s * .08); ctx.fill();
+  ctx.restore();
+}
+function icoPeople(x, y, s, c) { person(x - s * .42, y + s * .75, s * 1.25, { fill: c }); person(x + s * .42, y + s * .75, s * 1.5, { fill: c }); }
+function icoClock(x, y, s, c) {
+  ctx.save(); ctx.strokeStyle = c; ctx.lineWidth = s * .16; ctx.lineCap = 'round';
+  circle(x, y, s * .8); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - s * .5); ctx.moveTo(x, y); ctx.lineTo(x + s * .38, y + s * .1); ctx.stroke();
+  ctx.restore();
+}
+
+
+/* ============ Outils propres à cette animation ============ */
+const LINE = '#C8D1DD';
+const TS = [0, 12.8, 29.4, 45.6, 61.8, 78.0];   // début de chaque plan ; chaque plan est écrit en temps local u
+const SCDUR = [12.8, 16.6, 16.2, 16.2, 16.2, 12.0];
+// Quatre rôles de couleur, tenus de bout en bout : écrit = ambre, maquette = bleu, lien = corail, réel mesuré = vert.
+function typed(s, x, y, font, col, k, alpha) { const n = Math.floor(s.length * clamp(k) + .0001); if (n > 0) txt(s.slice(0, n), x, y, font, col, 'left', alpha ?? 1); }
+function card(x, y, w, h, fill, stroke, r, lw) {
+  rr(x, y, w, h, r ?? 18); ctx.fillStyle = fill; ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw ?? 2; ctx.stroke(); }
+}
+function docPage(x, y, w, h) {
+  ctx.save(); ctx.shadowColor = 'rgba(14,34,64,.28)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18;
+  ctx.fillStyle = C.sheet; rr(x, y, w, h, 14); ctx.fill(); ctx.restore();
+  ctx.strokeStyle = LINE; ctx.lineWidth = 2; rr(x, y, w, h, 14); ctx.stroke();
+}
+function cursorArrow(x, y, k) {
+  if (k <= 0) return;
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 36); ctx.lineTo(9, 28); ctx.lineTo(16, 43); ctx.lineTo(24, 39); ctx.lineTo(17, 25); ctx.lineTo(29, 25); ctx.closePath();
+  ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore();
+}
+function warnTri(x, y, s, k, col) {
+  if (k <= 0) return;
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.beginPath(); ctx.moveTo(0, -s * .62); ctx.lineTo(s * .58, s * .42); ctx.lineTo(-s * .58, s * .42); ctx.closePath();
+  ctx.fillStyle = col; ctx.lineJoin = 'round'; ctx.lineWidth = s * .14; ctx.strokeStyle = col; ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#fff'; setFont(800, s * .55, F.d); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('!', 0, s * .12);
+  ctx.restore();
+}
+
+/* ---- Maquette 3D isométrique (écrite à la main) ---- */
+const ISO = { cx: 960, cy: 600, sc: 56 };
+const pj = (x, y, z) => [ISO.cx + (x - y) * .866 * ISO.sc, ISO.cy + (x + y) * .5 * ISO.sc - z * ISO.sc];
+function poly(pts, fill, stroke, lw) {
+  ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 2; ctx.lineJoin = 'round'; ctx.stroke(); }
+}
+function isoBox(x, y, z, w, d, h, c) {
+  if (h <= .001) return;
+  poly([pj(x, y, z + h), pj(x + w, y, z + h), pj(x + w, y + d, z + h), pj(x, y + d, z + h)], c.top, c.line, 1.6);
+  poly([pj(x + w, y, z), pj(x + w, y + d, z), pj(x + w, y + d, z + h), pj(x + w, y, z + h)], c.r, c.line, 1.6);
+  poly([pj(x, y + d, z), pj(x + w, y + d, z), pj(x + w, y + d, z + h), pj(x, y + d, z + h)], c.l, c.line, 1.6);
+}
+const HX = 6.4, HY = 5.0, HH = 2.7, HT = .2;          // pavillon : 6,40 × 5,00 m, hauteur 2,70 m, murs de 20 cm
+const BC = { top: '#9CC2FF', r: '#3F7DE3', l: '#2C5FB8', line: 'rgba(255,255,255,.5)' };
+const SLC = { top: '#1B3A66', r: '#12294A', l: '#0E2140', line: 'rgba(120,170,255,.45)' };
+const faceA = (x0, x1, z0, z1) => [pj(x0, HT, z0), pj(x1, HT, z0), pj(x1, HT, z1), pj(x0, HT, z1)];   // face intérieure du mur « long » (y = 0)
+const faceB = (y0, y1, z0, z1) => [pj(HT, y0, z0), pj(HT, y1, z0), pj(HT, y1, z1), pj(HT, y0, z1)];   // face intérieure du mur « court » (x = 0)
+function house(o) {
+  ctx.save();
+  if (o.slab > 0) {
+    ctx.save(); ctx.globalAlpha *= o.slab;
+    const dz = (1 - o.slab) * 2.2;
+    isoBox(-.15, -.15, -.3 + dz, HX + .3, HY + .3, .3, SLC);
+    ctx.restore();
+  }
+  isoBox(0, 0, 0, HT, HY, HH * o.wallB, BC);
+  isoBox(HT, 0, 0, HX - HT, HT, HH * o.wallA, BC);
+  if (o.win > 0 && o.wallA > .98) {
+    ctx.save(); ctx.globalAlpha *= o.win;
+    poly(faceA(1.6, 3.0, .9, 2.1), 'rgba(205,225,250,.7)', '#fff', 2.5);
+    poly(faceA(4.6, 5.5, 0, 2.1), 'rgba(14,34,64,.55)', '#fff', 2.5);
+    poly(faceB(1.4, 3.0, .9, 2.1), 'rgba(205,225,250,.7)', '#fff', 2.5);
+    ctx.restore();
+  }
+  if (o.sel > 0) { poly(faceA(HT, HX, 0, HH), `rgba(255,182,39,${.28 * o.sel})`, null); ctx.save(); ctx.globalAlpha = o.sel; poly(faceA(HT, HX, 0, HH), null, C.amber, 5 + Math.sin((o.pulse || 0) * 6) * 1.2); ctx.restore(); }
+  if (o.alert > 0) { poly(faceA(HT, HX, 0, HH), `rgba(255,122,89,${.3 * o.alert})`, null); ctx.save(); ctx.globalAlpha = o.alert; poly(faceA(HT, HX, 0, HH), null, C.coral, 5 + Math.sin((o.pulse || 0) * 8) * 1.5); ctx.restore(); }
+  if (o.roof > 0) {
+    const z0 = HH + o.lift, z1 = z0 + 1.1;
+    ctx.save(); ctx.globalAlpha *= o.roof;
+    const fill = o.ghost ? 'rgba(156,194,255,.12)' : 'rgba(156,194,255,.3)';
+    poly([pj(-.3, -.3, z0), pj(HX + .3, -.3, z0), pj(HX + .3, HY / 2, z1), pj(-.3, HY / 2, z1)], fill, 'rgba(255,255,255,.6)', 2);
+    poly([pj(-.3, HY / 2, z1), pj(HX + .3, HY / 2, z1), pj(HX + .3, HY + .3, z0), pj(-.3, HY + .3, z0)], fill, 'rgba(255,255,255,.6)', 2);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/* ============ Plan 1 · Dire ce qu'on construit (0 → 12,8 s) ============ */
+const WX = 1040, WY = 470, WW = 720, WHT = 300, BR = 12, BWID = 60, BH = 25;
+function wallPolys() {
+  const ps = [[WX, WY, WX + WW, WY, WX + WW, WY + WHT, WX, WY + WHT, WX, WY]];
+  for (let r = 1; r < BR; r++) ps.push([WX, WY + r * BH, WX + WW, WY + r * BH]);
+  for (let r = 0; r < BR; r++) { const off = r % 2 ? BWID / 2 : BWID; for (let x = WX + off; x < WX + WW - 1; x += BWID) ps.push([x, WY + r * BH, x, WY + (r + 1) * BH]); }
+  return ps;
+}
+const PW1 = pathPrep(wallPolys());
+const YH = WY + WHT + 54, XV = WX + WW + 54;
+const COTE_H = pathPrep([[WX, WY + WHT + 14, WX, YH + 12], [WX + WW, WY + WHT + 14, WX + WW, YH + 12], [WX - 14, YH, WX + WW + 14, YH], [WX - 12, YH + 12, WX + 12, YH - 12], [WX + WW - 12, YH + 12, WX + WW + 12, YH - 12]]);
+const COTE_V = pathPrep([[WX + WW + 14, WY, XV + 12, WY], [WX + WW + 14, WY + WHT, XV + 12, WY + WHT], [XV, WY - 14, XV, WY + WHT + 14], [XV - 12, WY + 12, XV + 12, WY - 12], [XV - 12, WY + WHT + 12, XV + 12, WY + WHT - 12]]);
+function s1(u) {
+  const K = (s, x, y, o) => kWords(s, x, y, { t: u, ...o });
+  bpGrid(E.out3(P(u, 0, 1.4)));
+  eyebrow('CCTP · MAQUETTE NUMÉRIQUE · JUMEAU', 140, 150, C.amber, u, .3);
+  label('sur une idée de Jean-Philippe Amat', 1780, 1046, { k: E.out3(P(u, .8, 2.0)), color: '#fff', alpha: .28, size: 17, font: F.b, weight: 400, align: 'right', ls: .5 });
+
+  // Le mur de façade se dessine au crayon, bloc par bloc.
+  const fk = E.out3(P(u, 4.6, 5.4));
+  if (fk > 0) { ctx.save(); ctx.globalAlpha = fk; ctx.fillStyle = 'rgba(255,255,255,.07)'; ctx.fillRect(WX, WY, WW, WHT); ctx.restore(); }
+  const kd = E.io3(P(u, .5, 4.6));
+  if (kd > 0) {
+    ctx.save(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const tip = drawPath(PW1, kd); ctx.restore();
+    if (tip && kd < 1) {
+      const g = ctx.createRadialGradient(tip[0], tip[1], 0, tip[0], tip[1], 28);
+      g.addColorStop(0, 'rgba(255,182,39,.7)'); g.addColorStop(1, 'rgba(255,182,39,0)');
+      ctx.fillStyle = g; circle(tip[0], tip[1], 28); ctx.fill(); ctx.fillStyle = C.amber; circle(tip[0], tip[1], 6); ctx.fill();
+    }
+  }
+  label('MUR DE FAÇADE · ÉLÉVATION', WX, WY - 30, { k: E.out3(P(u, 4.6, 5.1)), color: '#fff', alpha: .55, size: 18, ls: 3 });
+
+  // Temps 1 : l'accroche
+  K('Comment dire', 140, 330, { size: 96, weight: 800, color: '#fff', t0: 1.0, tOut: 5.2 });
+  K('à l’entreprise ce qu’elle', 140, 430, { size: 68, weight: 700, color: '#fff', t0: 1.4, tOut: 5.25, maxW: 860 });
+  K('doit construire ?', 140, 520, { size: 68, weight: 700, color: '#fff', t0: 1.8, tOut: 5.3, marks: { 1: { t0: 2.6, color: C.amber, text: C.ink } } });
+
+  // Temps 2 : le plan montre — les cotes
+  const ck = E.io3(P(u, 5.9, 7.3)), cf = 1 - E.in3(P(u, 8.2, 8.6));
+  if (ck > 0 && cf > 0) {
+    ctx.save(); ctx.globalAlpha = cf; ctx.strokeStyle = C.amber; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    drawPath(COTE_H, ck); drawPath(COTE_V, ck); ctx.restore();
+    label('6,40 m', WX + WW / 2, YH + 48, { k: E.out3(P(u, 6.8, 7.3)) * cf, color: C.amber, size: 26, weight: 700, align: 'center', ls: 2 });
+    ctx.save(); ctx.translate(XV + 44, WY + WHT / 2); ctx.rotate(-Math.PI / 2);
+    label('2,70 m', 0, 0, { k: E.out3(P(u, 7.0, 7.5)) * cf, color: C.amber, size: 26, weight: 700, align: 'center', ls: 2 });
+    ctx.restore();
+  }
+  K('Le plan montre', 140, 330, { size: 92, weight: 800, color: '#fff', t0: 5.7, tOut: 8.4, marks: { 1: { t0: 6.3, color: C.amber, text: C.ink } } });
+  K('la forme, les cotes,', 140, 430, { size: 58, weight: 700, color: '#fff', t0: 6.1, tOut: 8.45 });
+  K('la position.', 140, 505, { size: 58, weight: 700, color: '#fff', t0: 6.3, tOut: 8.5 });
+
+  // Temps 3 : mais il ne dit pas…
+  K('Mais il ne dit pas…', 140, 300, { size: 64, weight: 800, color: '#fff', t0: 8.7, tOut: 11.2 });
+  [['de quoi le mur est fait', 9.0], ['comment on le monte', 9.5], ['comment on le vérifie', 10.0]].forEach(([s, t0], i) => {
+    const y = 400 + i * 84, k = E.back(P(u, t0, t0 + .45)) * (1 - E.in3(P(u, 11.2, 11.5)));
+    if (k > 0) { ctx.fillStyle = C.amber; circle(160, y - 17, 11 * k); ctx.fill(); }
+    K(s, 196, y, { size: 52, weight: 700, color: '#fff', t0, tOut: 11.2 });
+  });
+  [[1190, 600], [1400, 690], [1610, 580]].forEach(([x, y], i) => {
+    const k = E.back(P(u, 9.0 + i * .5, 9.45 + i * .5)) * (1 - E.in3(P(u, 11.2, 11.5)));
+    if (k <= 0) return;
+    ctx.fillStyle = C.amber; circle(x, y, 44 * k); ctx.fill();
+    setFont(800, 60 * k, F.d); ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', x, y + 4);
+  });
+
+  // Temps 4 : il faut des mots
+  K('Il faut aussi', 140, 430, { size: 92, weight: 800, color: '#fff', t0: 11.35 });
+  K('des mots.', 140, 535, { size: 92, weight: 800, color: '#fff', t0: 11.6, marks: { 1: { t0: 12.0, color: C.amber, text: C.ink } } });
+}
+
+/* ============ Plan 2 · Le CCTP (12,8 → 29,4 s) ============ */
+const DOCX = 1020, DOCY = 130, DOCW = 760, DOCH = 830;
+const ART = [
+  ['2.3.1', 'Nature', ['Blocs de béton creux B40,', 'épaisseur 20 cm.']],
+  ['2.3.2', 'Qualité', ['Blocs conformes à la', 'norme NF EN 771-3.']],
+  ['2.3.3', 'Mise en œuvre', ['Pose à joints décalés,', 'selon le DTU 20.1.']],
+  ['2.3.4', 'Contrôles', ['Verticalité vérifiée', 'avant l’enduit.']]
+];
+const QS = [['Quoi ?', 'la nature et les dimensions'], ['Quelle qualité ?', 'les matériaux et les normes'], ['Comment ?', 'la mise en œuvre, les DTU'], ['Comment vérifier ?', 'les contrôles et les tolérances']];
+const QT = [6.2, 7.6, 9.0, 10.4];
+const LOTS = ['Terrassement', 'Gros œuvre', 'Charpente', 'Couverture', 'Menuiseries', 'Plomberie', 'Électricité', 'Peinture'];
+const DCE = [['Plans', 'ce qu’on voit'], ['CCTP', 'ce qu’on décrit'], ['CCAP', 'les règles du marché'], ['DPGF', 'les prix']];
+function s2(u) {
+  const K = (s, x, y, o) => kWords(s, x, y, { t: u, ...o });
+  eyebrow('LE CCTP', 140, 150, C.ink, u, .3);
+
+  // Temps 1 : le titre
+  K('Le CCTP', 140, 330, { size: 132, weight: 800, color: C.ink, t0: .5, tOut: 6.0, marks: { 0: { t0: 1.2, color: C.amber, text: C.ink } } });
+  K('Cahier des Clauses', 140, 412, { size: 42, weight: 600, font: F.b, color: C.sub, t0: 1.1, tOut: 6.0, stagger: .06 });
+  K('Techniques Particulières', 140, 466, { size: 42, weight: 600, font: F.b, color: C.sub, t0: 1.3, tOut: 6.0, stagger: .06 });
+  K('Le texte qui décrit', 140, 600, { size: 58, weight: 800, color: C.ink, t0: 2.2, tOut: 6.0 });
+  K('chaque ouvrage du projet.', 140, 672, { size: 58, weight: 800, color: C.ink, t0: 2.4, tOut: 6.0, maxW: 820, marks: { 1: { t0: 3.3, color: C.amber, text: C.ink } } });
+
+  // La page du CCTP
+  const dk = E.out5(P(u, 1.0, 2.0)), dOut = 1 - E.in3(P(u, 12.4, 12.9));
+  if (dk > 0 && dOut > 0) {
+    ctx.save(); ctx.globalAlpha = dk * dOut; ctx.translate(0, (1 - dk) * 140 + (1 - dOut) * 40);
+    docPage(DOCX, DOCY, DOCW, DOCH);
+    pill(DOCX + 96, DOCY + 66, 'CCTP', 22, C.amber, C.ink, 1);
+    txt('LOT 02 · GROS ŒUVRE', DOCX + 188, DOCY + 74, `500 21px ${F.m}`, C.sub, 'left', 1, 3);
+    ctx.fillStyle = LINE; ctx.fillRect(DOCX + 40, DOCY + 112, DOCW - 80, 2);
+    txt('2.3  Murs de façade', DOCX + 48, DOCY + 176, `800 36px ${F.d}`, C.ink, 'left', 1);
+    const dim = E.out3(P(u, 6.0, 6.4));
+    ART.forEach(([num, head, lines], i) => {
+      const y0 = DOCY + 262 + i * 150, st = 2.3 + i * .9, tk = P(u, st, st + .8);
+      const bk = u >= QT[i] ? (i === 3 ? 1 : 1 - E.out3(P(u, QT[i + 1], QT[i + 1] + .35))) * E.out3(P(u, QT[i], QT[i] + .35)) : 0;
+      if (bk > 0) { ctx.fillStyle = `rgba(255,182,39,${.3 * bk})`; rr(DOCX + 24, y0 - 50, DOCW - 48, 140, 12); ctx.fill(); ctx.fillStyle = C.amber; ctx.fillRect(DOCX + 24, y0 - 44, 8 * bk, 128); }
+      const a = lerp(1, lerp(.42, 1, bk), dim);
+      typed(num, DOCX + 52, y0, `500 22px ${F.m}`, C.sub, tk * 3, a);
+      typed(head, DOCX + 148, y0 + 1, `800 33px ${F.d}`, C.ink, tk * 1.6, a);
+      lines.forEach((ln, j) => typed(ln, DOCX + 148, y0 + 42 + j * 38, `500 28px ${F.b}`, '#2B3A52', P(u, st + .25 + j * .3, st + .9 + j * .3), a));
+    });
+    ctx.restore();
+  }
+
+  // Temps 2 : ce que dit un CCTP
+  K('Pour chaque ouvrage, il dit :', 140, 250, { size: 52, weight: 800, color: C.ink, t0: 6.0, tOut: 12.55, maxW: 800 });
+  QS.forEach(([name, sub], i) => {
+    const y = 360 + i * 140, t0 = QT[i];
+    const k = E.back(P(u, t0, t0 + .45)) * (1 - E.in3(P(u, 12.55, 12.9)));
+    if (k > 0) {
+      ctx.fillStyle = C.amber; circle(166, y - 14, 25 * k); ctx.fill();
+      setFont(800, 28 * k, F.d); ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(i + 1), 166, y - 12);
+    }
+    K(name, 220, y, { size: 50, weight: 800, color: C.ink, t0, tOut: 12.55 });
+    K(sub, 220, y + 46, { size: 29, weight: 500, font: F.b, color: '#44546C', t0: t0 + .2, tOut: 12.55, stagger: .04 });
+  });
+
+  // Temps 3 : un CCTP par lot, dans le DCE
+  LOTS.forEach((nm, i) => {
+    const c = i % 4, r = (i / 4) | 0, x = 1000 + c * 200, y = 160 + r * 290;
+    const k = E.back(P(u, 12.95 + i * .08, 13.45 + i * .08));
+    if (k <= 0) return;
+    const main = i === 1, hl = main ? E.out3(P(u, 13.9, 14.4)) : 0;
+    ctx.save(); ctx.translate(x + 90, y + 120); ctx.scale(k * (1 + .06 * hl), k * (1 + .06 * hl)); ctx.translate(-90, -120);
+    ctx.shadowColor = 'rgba(14,34,64,.2)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 8;
+    ctx.fillStyle = C.sheet; rr(0, 0, 180, 240, 10); ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.save(); rr(0, 0, 180, 240, 10); ctx.clip(); ctx.fillStyle = main ? C.amber : '#E6EBF2'; ctx.fillRect(0, 0, 180, 44); ctx.restore();
+    ctx.strokeStyle = main ? C.amberD : LINE; ctx.lineWidth = main ? 4 : 2; rr(0, 0, 180, 240, 10); ctx.stroke();
+    txt('CCTP', 14, 30, `500 17px ${F.m}`, C.ink, 'left', 1, 3);
+    txt('LOT ' + String(i + 1).padStart(2, '0'), 14, 78, `500 16px ${F.m}`, C.sub, 'left', 1, 2);
+    txt(nm, 14, 114, `800 ${nm.length > 10 ? 21 : 25}px ${F.d}`, C.ink, 'left', 1);
+    ctx.fillStyle = '#D5DCE6'; [150, 172, 194, 216].forEach((yy, j) => ctx.fillRect(14, yy, j % 2 ? 110 : 150, 7));
+    ctx.restore();
+  });
+  const dceA = E.out3(P(u, 14.0, 14.5));
+  label('LE DOSSIER DE CONSULTATION (DCE)', 1000, 790, { k: dceA, color: C.sub, size: 18, ls: 3 });
+  DCE.forEach(([nm, sub], i) => {
+    const k = E.back(P(u, 14.2 + i * .15, 14.7 + i * .15)); if (k <= 0) return;
+    const x = 1000 + i * 200, y = 816, me = i === 1;
+    ctx.save(); ctx.translate(x + 90, y + 62); ctx.scale(k, k); ctx.translate(-90, -62);
+    card(0, 0, 180, 124, me ? C.amber : '#fff', me ? C.amberD : LINE, 14, me ? 4 : 2);
+    txt(nm, 90, 54, `800 34px ${F.d}`, C.ink, 'center', 1);
+    setFont(500, 19, F.b); ctx.fillStyle = me ? C.ink : '#44546C'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    const words = sub.split(' '); const half = Math.ceil(words.length / 2);
+    ctx.fillText(words.slice(0, half).join(' '), 90, 86); ctx.fillText(words.slice(half).join(' '), 90, 110);
+    ctx.restore();
+  });
+  K('Un CCTP par lot.', 140, 330, { size: 92, weight: 800, color: C.ink, t0: 13.0, tOut: 16.25, marks: { 2: { t0: 13.8, color: C.amber, text: C.ink } } });
+  K('Il est contractuel :', 140, 450, { size: 58, weight: 800, color: C.ink, t0: 13.5, tOut: 16.25 });
+  K('l’entreprise chiffre et construit', 140, 535, { size: 46, weight: 700, color: '#2B3A52', t0: 14.0, tOut: 16.3, maxW: 820, stagger: .06 });
+  K('ce qui y est écrit.', 140, 595, { size: 46, weight: 700, color: '#2B3A52', t0: 14.3, tOut: 16.3, stagger: .06 });
+}
+
+function bpGrid(a) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(255,255,255,.055)'; ctx.beginPath();
+  for (let x = 40; x < W; x += 40) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); }
+  for (let y = 40; y < H; y += 40) { ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); }
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.beginPath();
+  for (let x = 200; x < W; x += 200) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); }
+  for (let y = 200; y < H; y += 200) { ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); }
+  ctx.stroke(); ctx.restore();
+}
+
+
+/* ============ Plan 3 · La maquette numérique (29,4 → 45,6 s) ============ */
+const PROPS = [['OBJET', 'Mur · IfcWall'], ['MATÉRIAU', 'Bloc béton creux B40'], ['ÉPAISSEUR', '20 cm'], ['SURFACE', '17,3 m²'], ['LOT', '02 · Gros œuvre']];
+const OUTS = [['2D', 'Plans et coupes', 'tirés du modèle, jamais redessinés'], ['Σ', 'Quantités', 'le métré sort de la maquette'], ['4D', 'Planning', 'le chantier simulé dans le temps'], ['°C', 'Calculs thermiques', 'U, besoins, confort']];
+function s3(u) {
+  const K = (s, x, y, o) => kWords(s, x, y, { t: u, ...o });
+  eyebrow('LA MAQUETTE NUMÉRIQUE · BIM', 140, 150, C.blue, u, .3);
+  K('Une maquette qui sait', 140, 240, { size: 62, weight: 800, color: '#fff', t0: .45, tOut: 15.8, maxW: 900 });
+  K('ce qu’elle contient.', 140, 312, { size: 62, weight: 800, color: '#fff', t0: .65, tOut: 15.8, marks: { 2: { t0: 1.6, color: C.blue, text: '#fff' } } });
+  label('BIM = BUILDING INFORMATION MODELING', 140, 360, { k: E.out3(P(u, 1.8, 2.4)) * (1 - E.in3(P(u, 15.8, 16.1))), color: '#fff', alpha: .55, size: 17, ls: 3 });
+
+  // Assemblage : dalle, murs, fenêtres, toit en transparence
+  const shift = E.io3(P(u, 6.6, 7.6));
+  ISO.cx = lerp(1000, 650, shift); ISO.cy = 600; ISO.sc = 60;
+  const rk = E.out3(P(u, 4.8, 5.8));
+  const sel = E.out3(P(u, 6.9, 7.3)) * (1 - E.in3(P(u, 11.4, 11.8)));
+  house({ slab: E.out3(P(u, 1.4, 2.4)), wallB: E.out3(P(u, 2.5, 3.9)), wallA: E.out3(P(u, 2.8, 4.2)), win: E.out3(P(u, 4.2, 4.8)), roof: rk, lift: .9 + (1 - rk) * 2.6, sel, pulse: u });
+
+  // Le clic
+  const cp = E.io3(P(u, 6.0, 6.8));
+  const wallC = pj(3.4, HT, 1.35);
+  const cx0 = wallC[0] + 520 * (1 - cp), cy0 = wallC[1] + 300 * (1 - cp);
+  if (u > 6.0 && u < 8.4) {
+    const ck = P(u, 6.8, 7.3);
+    if (ck > 0 && ck < 1) { ctx.save(); ctx.strokeStyle = '#fff'; ctx.globalAlpha = 1 - ck; ctx.lineWidth = 4; circle(wallC[0], wallC[1], 14 + 50 * ck); ctx.stroke(); ctx.restore(); }
+    cursorArrow(cx0 - 0, cy0, E.out3(P(u, 6.0, 6.3)) * (1 - E.in3(P(u, 7.8, 8.3))));
+  }
+
+  // La fiche de propriétés de l'objet
+  const pk = E.out5(P(u, 7.0, 7.9)) * (1 - E.in3(P(u, 11.4, 11.9)));
+  if (pk > 0.01) {
+    ctx.save(); ctx.globalAlpha = pk; ctx.translate((1 - pk) * 90, 0);
+    const X = 1170, Y = 250, W2 = 610, H2 = 112 + PROPS.length * 64;
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 36; ctx.shadowOffsetY = 14;
+    card(X, Y, W2, H2, '#12294A', 'rgba(255,255,255,.18)', 18); ctx.shadowColor = 'transparent';
+    ctx.save(); rr(X, Y, W2, H2, 18); ctx.clip(); ctx.fillStyle = C.blueD; ctx.fillRect(X, Y, W2, 66); ctx.restore();
+    txt('OBJET SÉLECTIONNÉ', X + 28, Y + 42, `500 19px ${F.m}`, '#fff', 'left', 1, 3);
+    PROPS.forEach(([k, v], i) => {
+      const ra = E.out3(P(u, 7.4 + i * .32, 7.9 + i * .32)), y = Y + 112 + i * 64;
+      if (i) { ctx.fillStyle = 'rgba(255,255,255,.1)'; ctx.fillRect(X + 28, y - 40, W2 - 56, 1.5); }
+      txt(k, X + 28, y, `500 17px ${F.m}`, '#9BB4D8', 'left', ra, 2.5);
+      txt(v, X + 230, y + 2, `700 28px ${F.b}`, '#fff', 'left', ra);
+    });
+    ctx.restore();
+  }
+  K('Forme + informations', 1170, 810, { size: 48, weight: 800, color: '#fff', t0: 9.6, tOut: 11.4 });
+  K('= un objet BIM.', 1170, 872, { size: 48, weight: 800, color: '#fff', t0: 9.85, tOut: 11.45, marks: { 3: { t0: 10.4, color: C.blue, text: '#fff' } } });
+
+  // Ce que la maquette produit
+  OUTS.forEach(([g, nm, sub], i) => {
+    const y = 330 + i * 130, k = E.back(P(u, 11.9 + i * .3, 12.4 + i * .3)), a = 1 - E.in3(P(u, 15.8, 16.1));
+    if (k <= 0 || a <= 0) return;
+    const wc = pj(HX * .55, HT, HH * .5), ln = E.io3(P(u, 11.9 + i * .3, 12.6 + i * .3));
+    ctx.save(); ctx.globalAlpha = .45 * a; ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.setLineDash([8, 10]); ctx.lineDashOffset = -u * 24;
+    ctx.beginPath(); ctx.moveTo(wc[0] + 20, wc[1]); ctx.bezierCurveTo(wc[0] + 260, wc[1], 1000, y + 40, lerp(wc[0] + 20, 1130, ln), lerp(wc[1], y + 40, ln)); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.globalAlpha = a; ctx.translate(1170 + 300, y + 40); ctx.scale(k, k); ctx.translate(-1470, -(y + 40));
+    card(1170, y - 14, 610, 108, 'rgba(255,255,255,.06)', 'rgba(255,255,255,.2)', 16);
+    ctx.fillStyle = C.blue; circle(1236, y + 40, 38); ctx.fill();
+    setFont(800, g.length > 2 ? 26 : 30, F.d); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(g, 1236, y + 42);
+    txt(nm, 1296, y + 34, `800 32px ${F.d}`, '#fff', 'left', 1);
+    txt(sub, 1296, y + 72, `500 22px ${F.b}`, '#B9CBE6', 'left', 1);
+    ctx.restore();
+  });
+  const ia = E.back(P(u, 14.2, 14.7)) * (1 - E.in3(P(u, 15.8, 16.1)));
+  if (ia > 0) {
+    ctx.save(); ctx.translate(1170, 905); ctx.scale(ia, ia);
+    pill(60, 0, 'IFC', 30, C.amber, C.ink, 1);
+    ctx.restore();
+    K('format ouvert, lisible par', 1320, 900, { size: 30, weight: 600, font: F.b, color: '#fff', t0: 14.4, tOut: 15.8, stagger: .05 });
+    K('tous les logiciels.', 1320, 940, { size: 30, weight: 600, font: F.b, color: '#fff', t0: 14.6, tOut: 15.8, stagger: .05 });
+  }
+}
+
+/* ============ Plan 4 · Le lien aujourd'hui (45,6 → 61,8 s) ============ */
+const LC = { x: 140, y: 320, w: 700, h: 430 }, RC = { x: 1080, y: 320, w: 700, h: 430 };
+const HATCH = (x, y, w, h) => {
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.strokeStyle = C.pencil; ctx.lineWidth = 2; ctx.beginPath();
+  for (let d = -h; d < w; d += 16) { ctx.moveTo(x + d, y + h); ctx.lineTo(x + d + h, y); }
+  ctx.stroke(); ctx.restore();
+};
+function cardShell(c, hdrA, hdrB, phase, accent) {
+  card(c.x, c.y, c.w, c.h, '#fff', phase > .5 ? accent : LINE, 18, 3);
+  ctx.save(); rr(c.x, c.y, c.w, c.h, 18); ctx.clip();
+  ctx.fillStyle = C.ink; ctx.fillRect(c.x, c.y, c.w, 64);
+  ctx.globalAlpha = phase; ctx.fillStyle = accent; ctx.fillRect(c.x, c.y, c.w, 64);
+  ctx.restore();
+  txt(hdrA, c.x + 28, c.y + 41, `500 19px ${F.m}`, '#fff', 'left', 1 - phase, 3);
+  txt(hdrB, c.x + 28, c.y + 41, `500 19px ${F.m}`, hdrB.startsWith('CCTP') ? C.ink : '#fff', 'left', phase, 3);
+}
+function s4(u) {
+  const K = (s, x, y, o) => kWords(s, x, y, { t: u, ...o });
+  eyebrow('LE LIEN AUJOURD’HUI', 140, 150, C.coralD, u, .3);
+  K('Hier : deux documents séparés.', 140, 250, { size: 68, weight: 800, color: C.ink, t0: .5, tOut: 5.6, maxW: 1500 });
+  K('Aujourd’hui : un objet relié à son article.', 140, 250, { size: 68, weight: 800, color: C.ink, t0: 6.0, maxW: 1600, marks: { 3: { t0: 6.8, color: C.coral, text: C.ink } } });
+
+  const ak = E.out5(P(u, 1.0, 1.9)), phase = E.io3(P(u, 5.9, 6.6));
+  ctx.save(); ctx.globalAlpha = ak; ctx.translate(0, (1 - ak) * 80);
+
+  // — carte de gauche : le plan, puis la maquette
+  cardShell(LC, 'PLAN', 'MAQUETTE · OBJET M-12', phase, C.blueD);
+  ctx.save(); ctx.globalAlpha = ak * (1 - phase);
+  {
+    const x0 = LC.x + 110, y0 = LC.y + 150, w = 480, h = 70;
+    ctx.fillStyle = '#F2F5F9'; ctx.fillRect(x0, y0, w, h); HATCH(x0, y0, w, h);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.strokeRect(x0, y0, w, h);
+    ctx.strokeStyle = C.blueD; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x0 - 24, y0 + h + 34); ctx.lineTo(x0 + w + 24, y0 + h + 34); ctx.stroke();
+    [x0, x0 + w].forEach(x => { ctx.beginPath(); ctx.moveTo(x, y0 + h + 6); ctx.lineTo(x, y0 + h + 46); ctx.moveTo(x - 10, y0 + h + 44); ctx.lineTo(x + 10, y0 + h + 24); ctx.stroke(); });
+    txt('COUPE HORIZONTALE DU MUR', LC.x + LC.w / 2, y0 - 22, `500 17px ${F.m}`, C.sub, 'center', 1, 3);
+    txt('ép. 20 cm', LC.x + LC.w / 2, LC.y + 372, `800 66px ${F.d}`, C.blueD, 'center', 1);
+  }
+  ctx.restore();
+  ctx.save(); ctx.globalAlpha = ak * phase;
+  {
+    pill(LC.x + 96, LC.y + 112, 'M-12', 22, C.blue, '#fff', 1); pill(LC.x + 214, LC.y + 112, 'IfcWall', 22, '#E6EBF2', C.ink, 1);
+    const rows = [['ÉPAISSEUR', '20 cm'], ['SURFACE', '17,3 m²'], ['CODE D’OUVRAGE', '02.3.1']];
+    rows.forEach(([k, v], i) => {
+      const y = LC.y + 220 + i * 76, ra = E.out3(P(u, 6.4 + i * .25, 6.9 + i * .25));
+      if (i === 0) { const fl = E.out3(P(u, 8.6, 8.9)) * (1 - E.out3(P(u, 9.3, 10.2))); if (fl > 0) { ctx.fillStyle = `rgba(77,143,234,${.22 * fl})`; rr(LC.x + 20, y - 46, LC.w - 40, 68, 12); ctx.fill(); } }
+      txt(k, LC.x + 40, y, `500 19px ${F.m}`, C.sub, 'left', ra, 2.5);
+      txt(v, LC.x + 330, y + 4, `700 38px ${F.b}`, C.ink, 'left', ra);
+    });
+  }
+  ctx.restore();
+
+  // — carte de droite : le CCTP
+  cardShell(RC, 'CCTP', 'CCTP · ARTICLE 2.3.1', phase, C.amber);
+  txt('2.3.1  Nature', RC.x + 40, RC.y + 128, `800 32px ${F.d}`, C.ink, 'left', 1);
+  txt('Blocs de béton creux B40,', RC.x + 40, RC.y + 176, `500 28px ${F.b}`, '#2B3A52', 'left', 1);
+  {
+    const y = RC.y + 218; setFont(500, 28, F.b); const w0 = ctx.measureText('épaisseur ').width;
+    txt('épaisseur ', RC.x + 40, y, `500 28px ${F.b}`, '#2B3A52', 'left', 1);
+    const thick = phase < .5 ? '15 cm.' : '20 cm.', col = phase < .5 ? C.coralD : C.blueD;
+    setFont(800, 28, F.b); const w1 = ctx.measureText(thick).width;
+    txt(thick, RC.x + 40 + w0, y, `800 28px ${F.b}`, col, 'left', 1);
+    ctx.strokeStyle = phase < .5 ? C.coral : C.blue; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(RC.x + 40 + w0, y + 10); ctx.lineTo(RC.x + 40 + w0 + w1, y + 10); ctx.stroke();
+    const fl = E.out3(P(u, 8.6, 8.9)) * (1 - E.out3(P(u, 9.3, 10.2)));
+    if (fl > 0) { ctx.fillStyle = `rgba(77,143,234,${.2 * fl})`; rr(RC.x + 30, y - 34, 360, 54, 10); ctx.fill(); }
+  }
+  ctx.save(); ctx.globalAlpha = ak * phase;
+  {
+    ctx.fillStyle = LINE; ctx.fillRect(RC.x + 40, RC.y + 262, RC.w - 80, 2);
+    txt('CODE D’OUVRAGE', RC.x + 40, RC.y + 322, `500 19px ${F.m}`, C.sub, 'left', 1, 2.5);
+    txt('02.3.1', RC.x + 330, RC.y + 326, `700 38px ${F.b}`, C.ink, 'left', 1);
+    const qa = E.out3(P(u, 12.0, 12.5));
+    txt('QUANTITÉ', RC.x + 40, RC.y + 392, `500 19px ${F.m}`, C.sub, 'left', qa, 2.5);
+    txt('17,3 m²', RC.x + 330, RC.y + 396, `700 38px ${F.b}`, C.ink, 'left', qa);
+  }
+  ctx.restore();
+  ctx.restore();
+
+  // — entre les deux
+  const gx = (LC.x + LC.w + RC.x) / 2, gy = 540;
+  const ne = E.back(P(u, 3.0, 3.5)) * (1 - E.in3(P(u, 5.5, 5.9)));
+  if (ne > 0) {
+    warnTri(gx, gy - 60, 92, ne, C.coral);
+    ctx.save(); ctx.translate(gx, gy + 70); ctx.scale(ne, ne); setFont(800, 120, F.d); ctx.fillStyle = C.coralD; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('≠', 0, 0); ctx.restore();
+  }
+  const lk = E.io3(P(u, 6.6, 7.4));
+  if (lk > 0) {
+    const a = LC.x + LC.w + 10, b = RC.x - 10;
+    ctx.save(); ctx.strokeStyle = C.coral; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(a, gy); ctx.lineTo(lerp(a, b, lk), gy); ctx.stroke();
+    ctx.fillStyle = C.coral; [a, b].forEach((x, i) => { if (i === 0 || lk > .98) { circle(x, gy, 11); ctx.fill(); } });
+    if (lk > .98) for (let j = 0; j < 3; j++) { const q = ((u - 7.4) / 1.6 + j / 3) % 1; ctx.fillStyle = '#fff'; circle(lerp(a, b, q), gy, 5); ctx.fill(); ctx.strokeStyle = C.coral; ctx.lineWidth = 2; ctx.stroke(); }
+    ctx.restore();
+    pill(gx, gy - 52, 'code 02.3.1', 22, C.coral, C.ink, E.back(P(u, 7.2, 7.7)));
+  }
+  // cohérence : même valeur des deux côtés
+  const ck = P(u, 8.6, 9.2);
+  if (ck > 0) {
+    ctx.fillStyle = C.green; circle(gx, gy + 96, 46 * E.back(P(u, 8.6, 9.0))); ctx.fill();
+    checkMark(gx, gy + 96, 40, ck, '#fff', 8);
+  }
+  // quantité : la valeur voyage de la maquette vers le CCTP
+  const fq = P(u, 11.0, 12.0);
+  if (fq > 0 && fq < 1) {
+    const e = E.io3(fq), x = lerp(LC.x + 560, RC.x + 420, e), y = lerp(LC.y + 372, RC.y + 396, e) - Math.sin(e * Math.PI) * 90;
+    pill(x, y, '17,3 m²', 26, C.blue, '#fff', 1);
+  }
+
+  // Commentaires
+  K('Un seul objet, une seule valeur :', 140, 868, { size: 50, weight: 800, color: C.ink, t0: 8.5, tOut: 10.9 });
+  K('l’écart est détecté avant le chantier.', 140, 926, { size: 34, weight: 500, font: F.b, color: '#2B3A52', t0: 8.9, tOut: 10.9, stagger: .05 });
+  K('Les quantités viennent de la maquette :', 140, 868, { size: 50, weight: 800, color: C.ink, t0: 11.0, tOut: 13.3 });
+  K('le métré sans ressaisie, 17,3 m² de mur.', 140, 926, { size: 34, weight: 500, font: F.b, color: '#2B3A52', t0: 11.4, tOut: 13.3, stagger: .05 });
+  K('Les propriétés nourrissent le CCTP :', 140, 868, { size: 50, weight: 800, color: C.ink, t0: 13.4 });
+  K('matériau, épaisseur, lot… la description se complète.', 140, 926, { size: 34, weight: 500, font: F.b, color: '#2B3A52', t0: 13.8, stagger: .05 });
+  K('Si les pièces se contredisent, l’ordre de priorité est fixé par le CCAP.', 140, 1010, { size: 21, weight: 500, font: F.m, color: C.sub, t0: 14.6, stagger: .03, maxW: 1400 });
+  K('Hier, on découvrait l’écart sur le chantier.', 140, 868, { size: 50, weight: 800, color: C.ink, t0: 3.4, tOut: 5.5, maxW: 1500 });
+  K('20 cm sur le plan, 15 cm dans le texte.', 140, 926, { size: 34, weight: 500, font: F.b, color: '#2B3A52', t0: 3.7, tOut: 5.5, stagger: .05 });
+}
+
+
+/* ============ Plan 5 · Le jumeau numérique (61,8 → 78 s) ============ */
+const TH = 19;                                      // exigence fictive du CCTP : 19 °C minimum
+const CHX0 = 1160, CHX1 = 1740, CHY0 = 570, CHY1 = 745;
+const tempAt = s => 20.5 + .32 * Math.sin(s * 9) + .12 * Math.sin(s * 23) - 3.3 * Math.exp(-Math.pow((s - .7) / .11, 2));
+const tY = T => CHY1 - (T - 16) / 7 * (CHY1 - CHY0);
+const CUR = [8.6, 14.8];                            // la courbe se dessine entre ces deux instants
+const S_AL = (() => { for (let s = .3; s < 1; s += .001) if (tempAt(s) < TH) return s; return .63; })();
+const AL = CUR[0] + S_AL * (CUR[1] - CUR[0]);       // instant où le jumeau signale l'écart
+const SENS = [
+  { p: [3.8, HT + .02, 1.6], tag: 'T°' }, { p: [HT + .02, 4.0, 1.6], tag: 'CO₂' }, { p: [3.2, 2.8, .05], tag: 'kWh' },
+  { p: [HT + .02, .9, 1.5], tag: 'HR' }, { p: [5.0, 1.8, .05], tag: 'dB' }
+];
+function s5(u) {
+  const K = (s, x, y, o) => kWords(s, x, y, { t: u, ...o });
+  eyebrow('DU PROJET À L’OUVRAGE', 140, 150, C.green, u, .3);
+  K('À la réception, la maquette', 140, 240, { size: 56, weight: 800, color: '#fff', t0: .45, tOut: 6.0, maxW: 900 });
+  K('devient celle de l’ouvrage réel.', 140, 308, { size: 56, weight: 800, color: '#fff', t0: .65, tOut: 6.05, maxW: 900, marks: { 3: { t0: 1.6, color: C.green, text: C.ink } } });
+  K('Maquette + capteurs', 140, 240, { size: 62, weight: 800, color: '#fff', t0: 6.4, tOut: 15.9 });
+  K('= jumeau numérique.', 140, 312, { size: 62, weight: 800, color: '#fff', t0: 6.65, tOut: 15.9, marks: { 1: { t0: 7.3, color: C.green, text: C.ink } } });
+  const pa = E.back(P(u, 1.7, 2.2)) * (1 - E.in3(P(u, 6.0, 6.3)));
+  if (pa > 0) { ctx.save(); ctx.translate(140, 370); ctx.scale(pa, pa); pill(150, 0, 'DOE · ouvrages exécutés', 22, 'rgba(255,255,255,.12)', '#fff', 1, 'rgba(255,255,255,.4)'); ctx.restore(); }
+
+  // La maquette « telle que construite », toit en transparence
+  ISO.cx = 520; ISO.cy = 650; ISO.sc = 58;
+  const alertK = E.out3(P(u, AL, AL + .4)), calm = 1 - alertK;
+  const pulse = u;
+  house({ slab: 1, wallB: 1, wallA: 1, win: 1, roof: 1, lift: .9, ghost: true, alert: alertK * (.6 + .4 * Math.sin(u * 8) * .5 + .2), pulse });
+
+  // Capteurs : ils s'allument un par un
+  const ph = [];
+  SENS.forEach((s, i) => {
+    const k = E.back(P(u, 3.0 + i * .22, 3.45 + i * .22)); if (k <= 0) return;
+    const [x, y] = pj(...s.p), bad = i === 0 && u >= AL;
+    ph.push([x, y]);
+    ctx.save();
+    for (let r = 0; r < 2; r++) { const q = ((u * .7 + r * .5 + i * .13) % 1); ctx.strokeStyle = bad ? C.coral : C.green; ctx.globalAlpha = (1 - q) * .55 * k; ctx.lineWidth = 2.5; circle(x, y, 10 + q * (bad ? 42 : 30)); ctx.stroke(); }
+    ctx.globalAlpha = 1; ctx.fillStyle = bad ? C.coral : C.green; circle(x, y, 10 * k); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.restore();
+    pill(x + 26, y - 26, s.tag, 17, 'rgba(14,34,64,.85)', '#fff', k, bad ? C.coral : C.green);
+  });
+  // Les données remontent vers le tableau de bord
+  const dk = E.out5(P(u, 4.6, 5.6));
+  if (dk > 0.01) {
+    ph.forEach(([x, y], i) => {
+      ctx.save(); ctx.globalAlpha = .38 * dk; ctx.strokeStyle = C.green; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo((x + 1090) / 2, Math.min(y, 560) - 60, 1090, 560 + (i - 2) * 14); ctx.stroke();
+      const q = ((u * .45 + i * .21) % 1), px = (1 - q) * (1 - q) * x + 2 * (1 - q) * q * ((x + 1090) / 2) + q * q * 1090, py = (1 - q) * (1 - q) * y + 2 * (1 - q) * q * (Math.min(y, 560) - 60) + q * q * (560 + (i - 2) * 14);
+      ctx.globalAlpha = dk; ctx.fillStyle = '#fff'; circle(px, py, 4); ctx.fill(); ctx.restore();
+    });
+  }
+
+  // Le tableau de bord du jumeau
+  if (dk > 0.01) {
+    ctx.save(); ctx.globalAlpha = dk; ctx.translate((1 - dk) * 120, 0);
+    const X = 1090, Y = 300, W2 = 690, H2 = 470;
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 36; ctx.shadowOffsetY = 14;
+    card(X, Y, W2, H2, '#0F2038', 'rgba(255,255,255,.18)', 18); ctx.shadowColor = 'transparent';
+    txt('JUMEAU NUMÉRIQUE · PAVILLON A', X + 28, Y + 46, `500 19px ${F.m}`, '#fff', 'left', 1, 3);
+    const blink = .5 + .5 * Math.sin(u * 5);
+    ctx.fillStyle = C.green; ctx.globalAlpha = dk * (.55 + .45 * blink); circle(X + W2 - 150, Y + 38, 7); ctx.fill(); ctx.globalAlpha = dk;
+    txt('EN DIRECT', X + W2 - 134, Y + 46, `500 16px ${F.m}`, C.green, 'left', 1, 2);
+    const now = P(u, CUR[0], CUR[1]);
+    const tNow = u < CUR[0] ? 20.4 + .15 * Math.sin(u * 1.7) : tempAt(now);
+    const bad = u >= AL;
+    const tiles = [['TEMPÉRATURE', tNow.toFixed(1).replace('.', ',') + ' °C', bad], ['CO₂', String(Math.round(640 + 30 * Math.sin(u * 1.3))) + ' ppm', false], ['ÉNERGIE', (3.2 + .3 * Math.sin(u * 1.9)).toFixed(1).replace('.', ',') + ' kW', false]];
+    tiles.forEach(([k, v, b], i) => {
+      const x = X + 28 + i * 216, ta = E.out3(P(u, 5.0 + i * .2, 5.5 + i * .2));
+      ctx.save(); ctx.globalAlpha *= ta;
+      card(x, Y + 76, 200, 110, b ? 'rgba(255,122,89,.18)' : 'rgba(255,255,255,.06)', b ? C.coral : 'rgba(255,255,255,.18)', 14, b ? 3 : 2);
+      txt(k, x + 18, Y + 108, `500 15px ${F.m}`, '#9BB4D8', 'left', 1, 2.5);
+      txt(v, x + 18, Y + 158, `800 ${v.length > 8 ? 30 : 36}px ${F.d}`, b ? '#FFB4A0' : '#fff', 'left', 1);
+      ctx.restore();
+    });
+    // courbe de température et seuil du CCTP
+    if (u > CUR[0] - .8) {
+      const ga = E.out3(P(u, CUR[0] - .8, CUR[0] - .2));
+      ctx.save(); ctx.globalAlpha *= ga;
+      [17, 19, 21, 23].forEach(T => { ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(CHX0, tY(T)); ctx.lineTo(CHX1, tY(T)); ctx.stroke(); txt(T + ' °C', CHX0 - 14, tY(T) + 5, `500 14px ${F.m}`, '#7F96B8', 'right', 1); });
+      ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.setLineDash([12, 9]); ctx.beginPath(); ctx.moveTo(CHX0, tY(TH)); ctx.lineTo(CHX1, tY(TH)); ctx.stroke(); ctx.setLineDash([]);
+      txt('CCTP : ≥ 19 °C', CHX1, tY(TH) - 12, `700 17px ${F.m}`, C.amber, 'right', 1, 1);
+      if (now > 0) {
+        const pts = []; for (let s = 0; s <= now + 1e-6; s += .004) pts.push([lerp(CHX0, CHX1, s), tY(tempAt(s))]);
+        ctx.save(); ctx.beginPath(); ctx.rect(CHX0, tY(TH), CHX1 - CHX0, CHY1 - tY(TH) + 4); ctx.clip();
+        ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.lineTo(pts[pts.length - 1][0], tY(TH)); ctx.lineTo(pts[0][0], tY(TH)); ctx.closePath();
+        ctx.fillStyle = 'rgba(255,122,89,.4)'; ctx.fill(); ctx.restore();
+        ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+        ctx.strokeStyle = bad ? '#FFB4A0' : C.green; ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.stroke();
+        const lp = pts[pts.length - 1]; ctx.fillStyle = '#fff'; circle(lp[0], lp[1], 8); ctx.fill();
+      }
+      ctx.restore();
+    }
+    if (u >= AL) {
+      const ak = E.back(P(u, AL + .1, AL + .6));
+      ctx.save(); ctx.translate(1530, Y + 222); ctx.scale(ak, ak);
+      card(-180, -26, 360, 52, C.coral, null, 26); txt('Écart : sous la consigne', 0, 7, `800 21px ${F.b}`, C.ink, 'center', 1); ctx.restore();
+    }
+    ctx.restore();
+  }
+  // L'ouvrage concerné est localisé dans la maquette
+  if (u >= AL + .3) {
+    const [wx, wy] = pj(1.2, HT, 2.6), k = E.back(P(u, AL + .5, AL + 1.0));
+    ctx.save(); ctx.translate(wx - 30, wy - 60); ctx.scale(k, k); pill(0, 0, 'Mur M-12 · façade nord', 22, C.coral, C.ink, 1); ctx.restore();
+  }
+
+  // Commentaires, sous le tableau de bord
+  K('Maquette : ce qui a été prévu.', 1090, 850, { size: 44, weight: 800, color: '#fff', t0: 6.6, tOut: 9.7, maxW: 690 });
+  K('Jumeau : ce qui se passe, en direct.', 1090, 910, { size: 44, weight: 800, color: '#fff', t0: 7.1, tOut: 9.75, maxW: 690, marks: { 0: { t0: 7.8, color: C.green, text: C.ink } } });
+  K('Le CCTP fixe une exigence :', 1090, 850, { size: 44, weight: 800, color: '#fff', t0: 9.9, tOut: AL - .15, maxW: 690 });
+  K('19 °C minimum.', 1090, 910, { size: 44, weight: 800, color: '#fff', t0: 10.2, tOut: AL - .1, marks: { 0: { t0: 10.7, color: C.amber, text: C.ink } } });
+  K('Le jumeau compare le réel à l’écrit', 1090, 850, { size: 42, weight: 800, color: '#fff', t0: AL + .5, maxW: 690 });
+  K('et situe l’ouvrage à vérifier.', 1090, 910, { size: 42, weight: 800, color: '#fff', t0: AL + .8, maxW: 690, marks: { 2: { t0: AL + 1.4, color: C.coral, text: C.ink } } });
+}
+
+/* ============ Plan 6 · À retenir (78 → 90 s) ============ */
+const CW = 480, CX6 = i => 140 + i * 590, CY6 = 390, CH6 = 310;
+const CHAIN = [
+  ['ÉCRIRE', 'le CCTP décrit', 'nature · qualité · mise en œuvre', C.amber, 0],
+  ['MODÉLISER', 'la maquette représente', 'forme + informations', C.blue, 1],
+  ['MESURER', 'le jumeau vérifie', 'capteurs · écarts · alertes', C.green, 2]
+];
+function icoPage(x, y, s, c) { ctx.save(); ctx.strokeStyle = c; ctx.lineWidth = s * .12; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; rr(x - s * .55, y - s * .7, s * 1.1, s * 1.4, s * .1); ctx.stroke(); [-.28, 0, .28, .5].forEach((d, i) => { ctx.beginPath(); ctx.moveTo(x - s * .3, y + s * d - s * .1); ctx.lineTo(x + s * (i === 3 ? .05 : .3), y + s * d - s * .1); ctx.stroke(); }); ctx.restore(); }
+function icoCube(x, y, s, c) { ctx.save(); ctx.strokeStyle = c; ctx.lineWidth = s * .12; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; const a = s * .8, b = s * .46; ctx.beginPath(); ctx.moveTo(x, y - s * .85); ctx.lineTo(x + a, y - b); ctx.lineTo(x + a, y + b); ctx.lineTo(x, y + s * .85); ctx.lineTo(x - a, y + b); ctx.lineTo(x - a, y - b); ctx.closePath(); ctx.moveTo(x - a, y - b); ctx.lineTo(x, y); ctx.lineTo(x + a, y - b); ctx.moveTo(x, y); ctx.lineTo(x, y + s * .85); ctx.stroke(); ctx.restore(); }
+function icoWave(x, y, s, c) { ctx.save(); ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = s * .12; ctx.lineCap = 'round'; circle(x, y + s * .35, s * .12); ctx.fill(); [.45, .8, 1.15].forEach(r => { ctx.beginPath(); ctx.arc(x, y + s * .35, s * r, -Math.PI * .8, -Math.PI * .2); ctx.stroke(); }); ctx.restore(); }
+const ICO6 = [icoPage, icoCube, icoWave];
+const PLOOP = pathPrep([[CX6(2) + CW / 2, CY6 + CH6 + 12, CX6(2) + CW / 2, CY6 + CH6 + 70, CX6(0) + CW / 2, CY6 + CH6 + 70, CX6(0) + CW / 2, CY6 + CH6 + 16]]);
+function s6(u) {
+  const K = (s, x, y, o) => kWords(s, x, y, { t: u, ...o });
+  bpGrid(E.out3(P(u, 0, 1.2)));
+  eyebrow('À RETENIR', 140, 150, C.amber, u, .3);
+  K('Une même information', 140, 245, { size: 70, weight: 800, color: '#fff', t0: .45, maxW: 1500 });
+  K('du projet à l’exploitation.', 140, 322, { size: 70, weight: 800, color: '#fff', t0: .7, maxW: 1500, marks: { 3: { t0: 1.6, color: C.amber, text: C.ink } } });
+
+  CHAIN.forEach(([w, a, b, col, i]) => {
+    const t0 = 1.2 + i * 1.2, k = E.out5(P(u, t0, t0 + .8)); if (k <= 0) return;
+    ctx.save(); ctx.globalAlpha = k; ctx.translate(0, (1 - k) * 60);
+    card(CX6(i), CY6, CW, CH6, 'rgba(255,255,255,.07)', 'rgba(255,255,255,.28)', 20);
+    ctx.save(); rr(CX6(i), CY6, CW, CH6, 20); ctx.clip(); ctx.fillStyle = col; ctx.fillRect(CX6(i), CY6, CW, 10); ctx.restore();
+    ctx.fillStyle = col; circle(CX6(i) + 96, CY6 + 100, 52); ctx.fill();
+    ICO6[i](CX6(i) + 96, CY6 + 100, 32, C.ink);
+    txt(w, CX6(i) + 176, CY6 + 118, `800 50px ${F.d}`, '#fff', 'left', 1);
+    txt(a, CX6(i) + 40, CY6 + 212, `700 31px ${F.b}`, '#fff', 'left', 1);
+    txt(b, CX6(i) + 40, CY6 + 256, `500 20px ${F.m}`, '#B9CBE6', 'left', 1, 1);
+    ctx.restore();
+  });
+  [0, 1].forEach(i => {
+    const k = E.io3(P(u, 2.2 + i * 1.2, 2.8 + i * 1.2)); if (k <= 0) return;
+    const a = CX6(i) + CW + 14, b = CX6(i + 1) - 14, y = CY6 + CH6 / 2;
+    ctx.save(); ctx.strokeStyle = '#fff'; ctx.fillStyle = '#fff'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(a, y); ctx.lineTo(lerp(a, b, k), y); ctx.stroke();
+    if (k > .95) { ctx.beginPath(); ctx.moveTo(b + 4, y); ctx.lineTo(b - 18, y - 13); ctx.lineTo(b - 18, y + 13); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  });
+  // La boucle : les mesures enrichissent les prochains CCTP
+  const lk = E.io3(P(u, 4.8, 6.0));
+  if (lk > 0) {
+    ctx.save(); ctx.strokeStyle = C.coral; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const tip = drawPath(PLOOP, lk);
+    if (lk > .97) { const x = CX6(0) + CW / 2, y = CY6 + CH6 + 16; ctx.fillStyle = C.coral; ctx.beginPath(); ctx.moveTo(x, y - 4); ctx.lineTo(x - 13, y + 18); ctx.lineTo(x + 13, y + 18); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  }
+  label('les mesures enrichissent le prochain CCTP', 960, CY6 + CH6 + 116, { k: E.out3(P(u, 5.6, 6.2)), color: '#FFB4A0', size: 26, weight: 500, font: F.b, align: 'center', ls: .5 });
+
+  K('Ce qui est écrit, modélisé, mesuré', 140, 905, { size: 46, weight: 800, color: '#fff', t0: 6.6, tOut: 9.2 });
+  K('raconte la même histoire.', 140, 965, { size: 46, weight: 800, color: '#fff', t0: 6.9, tOut: 9.25, marks: { 3: { t0: 7.6, color: C.amber, text: C.ink } } });
+  K('Et toi, quel maillon veux-tu tenir ?', 140, 930, { size: 60, weight: 800, color: '#fff', t0: 9.5, maxW: 1500, marks: { 3: { t0: 10.1, color: C.amber, text: C.ink } } });
+  setFont(700, 22, F.b);
+  const ENDS = ['rédiger des CCTP', 'modéliser en BIM', 'exploiter un jumeau'];
+  let px = 140; ENDS.forEach((s, i) => { setFont(700, 22, F.b); const w = ctx.measureText(s).width + 26.4; pill(px + w / 2, 1022, s, 22, '#fff', C.ink, E.back(P(u, 10.6 + i * .15, 11.1 + i * .15))); px += w + 14; });
+}
+
+
+/* ============ Montage : plans + transitions ============ */
+const SC = [
+  { t0: TS[0], bg: C.bp, draw: t => s1(t - TS[0]) },
+  { t0: TS[1], bg: C.paper, draw: t => s2(t - TS[1]), wipe: { type: 'circle', x: 1400, y: 540, layers: [C.amber] } },
+  { t0: TS[2], bg: C.ink, draw: t => s3(t - TS[2]), wipe: { type: 'bars', layers: [C.blue, C.bp] } },
+  { t0: TS[3], bg: C.paper, draw: t => s4(t - TS[3]), wipe: { type: 'circle', x: 960, y: 540, layers: [C.coral] } },
+  { t0: TS[4], bg: C.ink, draw: t => s5(t - TS[4]), wipe: { type: 'bars', layers: [C.green, '#14513A'] } },
+  { t0: TS[5], bg: C.bp, draw: t => s6(t - TS[5]), wipe: { type: 'circle', x: 960, y: 540, layers: [C.amber, C.coral] } }
+];
+
+const wipeDur = w => w.type === 'circle' ? w.layers.length * .1 + .75 : w.layers.length * .12 + .8;
+function wipeCircle(t, T, x, y, layers, next) {
+  const maxR = Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 4;
+  const k = i => E.io3(P(t, T + i * .1, T + i * .1 + .75));
+  layers.forEach((col, i) => { const r = maxR * k(i); if (r > 0) { ctx.fillStyle = col; circle(x, y, r); ctx.fill(); } });
+  const r = maxR * k(layers.length);
+  if (r > 0) { ctx.save(); circle(x, y, r); ctx.clip(); next(); ctx.restore(); }
+}
+function wipeBars(t, T, layers, next) {
+  const n = 8, bw = W / n;
+  const k = (li, j) => E.io3(P(t, T + li * .12 + j * .035, T + li * .12 + j * .035 + .55));
+  layers.forEach((col, li) => { ctx.fillStyle = col; for (let j = 0; j < n; j++) { const h = H * k(li, j); if (h > 0) ctx.fillRect(j * bw, H - h, bw + 1, h); } });
+  ctx.save(); ctx.beginPath(); let any = false;
+  for (let j = 0; j < n; j++) { const h = H * k(layers.length, j); if (h > 0) { ctx.rect(j * bw, H - h, bw + 1, h); any = true; } }
+  if (any) { ctx.clip(); next(); }
+  ctx.restore();
+}
+const grainC = document.createElement('canvas'); grainC.width = grainC.height = 256;
+(() => { const g = grainC.getContext('2d'), id = g.createImageData(256, 256); for (let i = 0; i < 65536; i++) { const v = (rnd() * 255) | 0; id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255; } g.putImageData(id, 0, 0); })();
+const grainP = ctx.createPattern(grainC, 'repeat');
+function grain(t) {
+  const f = Math.floor(t * 24), ox = (f * 97) % 256, oy = (f * 57) % 256;
+  ctx.save(); ctx.globalAlpha = .06; ctx.globalCompositeOperation = 'overlay'; ctx.translate(-ox, -oy);
+  ctx.fillStyle = grainP; ctx.fillRect(ox, oy, W, H); ctx.restore();
+}
+const sceneAt = t => { let i = SC.length - 1; while (i > 0 && t < SC[i].t0) i--; return i; };
+function render(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([]);
+  const i = sceneAt(t), s = SC[i];
+  const full = () => { ctx.fillStyle = s.bg; ctx.fillRect(0, 0, W, H); s.draw(t); };
+  if (i > 0 && s.wipe && t < s.t0 + wipeDur(s.wipe)) {
+    const p = SC[i - 1]; ctx.fillStyle = p.bg; ctx.fillRect(0, 0, W, H); p.draw(t);
+    if (s.wipe.type === 'circle') wipeCircle(t, s.t0, s.wipe.x, s.wipe.y, s.wipe.layers, full);
+    else wipeBars(t, s.t0, s.wipe.layers, full);
+  } else full();
+  grain(t);
+}
+
+/* ============ Son (synthétisé, hors ligne) ============ */
+const AU = { ctx: null, pad: null, chord: -1, beat: -1 };
+const snd = document.getElementById('snd');
+function impulse(c, sec, decay) {
+  const len = (c.sampleRate * sec) | 0, b = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
+  return b;
+}
+function audioInit() {
+  if (AU.ctx) return AU.ctx;
+  const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
+  const c = new A(); AU.ctx = c;
+  AU.out = c.createGain(); AU.out.gain.value = snd.checked ? 1 : 0;
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -20; comp.knee.value = 12; comp.ratio.value = 3;
+  comp.connect(AU.out); AU.out.connect(c.destination);
+  if (c.createMediaStreamDestination) { AU.dest = c.createMediaStreamDestination(); AU.out.connect(AU.dest); }
+  AU.bus = c.createGain(); AU.bus.gain.value = .9; AU.bus.connect(comp);
+  const conv = c.createConvolver(); conv.buffer = impulse(c, 2.6, 2.4);
+  AU.rev = c.createGain(); AU.rev.gain.value = .3; AU.rev.connect(conv); conv.connect(comp);
+  const nb = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), d = nb.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  AU.noise = nb;
+  return c;
+}
+function env(g, t, a, peak, dec) { g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(.0001, t + a + dec); }
+function voice(type, hz, vol, dec, o = {}) {
+  const c = AU.ctx, t = c.currentTime, osc = c.createOscillator(); osc.type = type;
+  if (o.glide) { osc.frequency.setValueAtTime(hz * o.glide, t); osc.frequency.exponentialRampToValueAtTime(hz, t + .06); } else osc.frequency.value = hz;
+  const g = c.createGain(); env(g, t, .006, vol, dec); osc.connect(g); g.connect(AU.bus);
+  if (o.rev) { const s = c.createGain(); s.gain.value = o.rev; g.connect(s); s.connect(AU.rev); }
+  osc.start(t); osc.stop(t + dec + .1);
+}
+const SFX = {
+  pop: (hz = 660, vol = .07) => voice('sine', hz, vol, .22, { glide: 1.6, rev: .25 }),
+  pluck: (hz, vol = .03) => voice('triangle', hz, vol, .38, { rev: .45 }),
+  tick: (hz = 1400, vol = .022) => voice('sine', hz, vol, .06, { rev: .15 }),
+  chime: (hz = 880, vol = .06) => [1, 2, 3.01, 4.2].forEach((m, i) => voice('sine', hz * m, vol / (i + 1), 1.6 - i * .25, { rev: .6 })),
+  boom: () => {
+    const c = AU.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(38, t + 1.4);
+    const g = c.createGain(); env(g, t, .02, .3, 1.5); o.connect(g); g.connect(AU.bus); o.start(t); o.stop(t + 1.7);
+  },
+  thud: () => { // coup de tampon
+    const c = AU.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(55, t + .22);
+    const g = c.createGain(); env(g, t, .004, .34, .32); o.connect(g); g.connect(AU.bus); o.start(t); o.stop(t + .4);
+    SFX.whoosh(.14, .07);
+  },
+  whoosh: (dur = .75, vol = .16) => {
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.1;
+    f.frequency.setValueAtTime(350, t); f.frequency.exponentialRampToValueAtTime(3200, t + dur * .55); f.frequency.exponentialRampToValueAtTime(900, t + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + dur * .5); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(AU.bus); const r = c.createGain(); r.gain.value = .3; g.connect(r); r.connect(AU.rev);
+    s.start(t); s.stop(t + dur + .05);
+  },
+  scratch: (dur, vol) => { // crayon sur le papier
+    const c = AU.ctx, t = c.currentTime, s = c.createBufferSource(); s.buffer = AU.noise; s.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3600; f.Q.value = .8;
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .06);
+    g.gain.setValueAtTime(vol, t + Math.max(.07, dur - .12)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    const l = c.createOscillator(); l.frequency.value = 6.5; const lg = c.createGain(); lg.gain.value = vol * .7; l.connect(lg); lg.connect(g.gain);
+    s.connect(f); f.connect(g); g.connect(AU.bus); s.start(t); s.stop(t + dur + .05); l.start(t); l.stop(t + dur + .05);
+  }
+};
+
+// Grille d'accords (ré majeur), deux ou trois accords par plan ; le plan 5 passe par un accord tendu à l'alerte.
+const CD = { D: [146.83, 220, 293.66, 369.99], Bm: [123.47, 185, 293.66, 369.99], G: [98, 146.83, 246.94, 392], A: [110, 164.81, 277.18, 329.63], Em: [82.41, 123.47, 246.94, 329.63], Fm: [92.5, 138.59, 277.18, 369.99] };
+const CHORD_TL = [
+  [0, CD.D], [5.6, CD.Bm], [8.6, CD.G], [11.4, CD.A],
+  [12.8, CD.D], [18.6, CD.G], [24.2, CD.Bm], [27.0, CD.A],
+  [29.4, CD.G], [34.4, CD.D], [39.0, CD.Em], [42.6, CD.A],
+  [45.6, CD.Bm], [50.6, CD.G], [55.6, CD.D], [59.2, CD.A],
+  [61.8, CD.G], [67.2, CD.D], [TS[4] + AL + .1, CD.Fm], [TS[4] + AL + 2.6, CD.A], [75.4, CD.D],
+  [78.0, CD.D], [81.6, CD.Bm], [84.6, CD.G], [87.4, CD.A]
+].sort((a, b) => a[0] - b[0]);
+const chordAt = t => { let i = 0; while (i + 1 < CHORD_TL.length && t >= CHORD_TL[i + 1][0]) i++; return i; };
+
+function padStart(ch) {
+  if (AU.pad || !AU.ctx) return;
+  const c = AU.ctx, t = c.currentTime, f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 650; f.Q.value = .7;
+  const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12, t + .8);
+  f.connect(g); g.connect(AU.bus); const rs = c.createGain(); rs.gain.value = .5; g.connect(rs); rs.connect(AU.rev);
+  const oscs = [];
+  ch.forEach((hz, i) => [-6, 6].forEach(dt => {
+    const o = c.createOscillator(); o.type = i === 0 ? 'triangle' : 'sawtooth'; o.frequency.value = hz; o.detune.value = dt;
+    const og = c.createGain(); og.gain.value = i === 0 ? .35 : .09; o.connect(og); og.connect(f); o.start(t); oscs.push({ o, i });
+  }));
+  const lfo = c.createOscillator(); lfo.frequency.value = .12; const lg = c.createGain(); lg.gain.value = 180; lfo.connect(lg); lg.connect(f.frequency); lfo.start(t);
+  AU.pad = { oscs, g, lfo };
+}
+function padChord(ch) { if (!AU.pad) return; const t = AU.ctx.currentTime; AU.pad.oscs.forEach(({ o, i }) => o.frequency.setTargetAtTime(ch[i], t, .18)); }
+function padStop() {
+  const p = AU.pad; if (!p) return; AU.pad = null;
+  const t = AU.ctx.currentTime; p.g.gain.cancelScheduledValues(t); p.g.gain.setTargetAtTime(.0001, t, .12);
+  setTimeout(() => { try { p.oscs.forEach(({ o }) => o.stop()); p.lfo.stop(); } catch (e) {} }, 900);
+}
+
+const CUES = [];
+const cue = (i, u, fn) => CUES.push([TS[i] + u, fn]);
+// Plan 1
+cue(0, .05, () => SFX.boom()); cue(0, .5, () => SFX.scratch(4.1, .011));
+cue(0, 1.0, () => SFX.pop(523, .06)); cue(0, 1.4, () => SFX.pop(587, .045)); cue(0, 1.8, () => SFX.pop(659, .045));
+cue(0, 5.7, () => SFX.pop(587, .06)); cue(0, 5.9, () => SFX.scratch(1.4, .01)); cue(0, 7.4, () => SFX.chime(988, .04));
+cue(0, 8.7, () => SFX.pop(392, .05));
+[9.0, 9.5, 10.0].forEach((c, i) => cue(0, c, () => SFX.pop(440 + i * 70, .07)));
+cue(0, 11.35, () => SFX.chime(880, .06)); cue(0, 12.7, () => SFX.whoosh());
+// Plan 2
+cue(1, .4, () => SFX.pop(294, .09)); cue(1, 1.0, () => SFX.whoosh(.6, .05));
+ART.forEach((a, i) => cue(1, 2.3 + i * .9, () => SFX.scratch(.85, .009)));
+QT.forEach((q, i) => cue(1, q, () => SFX.pop(440 + i * 70, .06)));
+for (let i = 0; i < 8; i++) cue(1, 12.95 + i * .08, () => SFX.tick(1000 + i * 70));
+cue(1, 13.0, () => SFX.pop(660, .07)); cue(1, 13.9, () => SFX.chime(1175, .05));
+for (let i = 0; i < 4; i++) cue(1, 14.2 + i * .15, () => SFX.pop(500 + i * 80, .045));
+cue(1, 16.5, () => SFX.whoosh());
+// Plan 3
+cue(2, .3, () => SFX.pop(330, .07)); cue(2, 1.4, () => SFX.thud()); cue(2, 2.6, () => SFX.pop(392, .07)); cue(2, 2.9, () => SFX.pop(440, .07));
+cue(2, 4.3, () => SFX.tick(1500)); cue(2, 4.5, () => SFX.tick(1700)); cue(2, 4.8, () => SFX.whoosh(.5, .04));
+cue(2, 6.9, () => SFX.thud()); cue(2, 7.1, () => SFX.whoosh(.5, .05));
+PROPS.forEach((p, i) => cue(2, 7.4 + i * .32, () => SFX.tick(1100 + i * 110, .024)));
+cue(2, 9.6, () => SFX.chime(988, .05)); cue(2, 10.4, () => SFX.pop(587, .05));
+OUTS.forEach((o, i) => cue(2, 11.9 + i * .3, () => SFX.pop(500 + i * 70, .05)));
+cue(2, 14.2, () => SFX.chime(1175, .06)); cue(2, 16.1, () => SFX.whoosh());
+// Plan 4
+cue(3, .4, () => SFX.pop(294, .08)); cue(3, 1.0, () => SFX.whoosh(.5, .04)); cue(3, 3.0, () => SFX.thud()); cue(3, 3.4, () => SFX.pop(220, .08));
+cue(3, 5.9, () => SFX.whoosh(.7, .06)); cue(3, 6.6, () => SFX.scratch(.8, .01)); cue(3, 7.2, () => SFX.pop(660, .07));
+cue(3, 8.6, () => SFX.chime(988, .07)); cue(3, 11.0, () => SFX.pop(587, .05)); cue(3, 12.0, () => SFX.tick(1500)); cue(3, 13.4, () => SFX.pop(523, .05));
+cue(3, 16.1, () => SFX.whoosh());
+// Plan 5
+cue(4, .4, () => SFX.pop(294, .08)); cue(4, 1.7, () => SFX.pop(660, .05));
+SENS.forEach((s, i) => cue(4, 3.0 + i * .22, () => SFX.pop(660 + i * 90, .05)));
+cue(4, 4.6, () => SFX.whoosh(.7, .05)); cue(4, 6.4, () => SFX.pop(392, .06));
+for (let i = 0; i < 3; i++) cue(4, 5.0 + i * .2, () => SFX.tick(1100 + i * 100, .02));
+cue(4, CUR[0], () => SFX.scratch(CUR[1] - CUR[0], .005)); cue(4, 9.9, () => SFX.pop(587, .06));
+cue(4, AL, () => SFX.thud()); cue(4, AL + .1, () => SFX.pop(220, .09)); cue(4, AL + .6, () => SFX.chime(880, .05));
+cue(4, 16.1, () => SFX.whoosh());
+// Plan 6
+cue(5, .4, () => SFX.pop(294, .07));
+[1.2, 2.4, 3.6].forEach((c, i) => cue(5, c, () => SFX.pop(440 + i * 110, .08)));
+[2.2, 3.4].forEach(c => cue(5, c, () => SFX.tick(1300, .03)));
+cue(5, 4.8, () => SFX.scratch(1.2, .009)); cue(5, 6.1, () => SFX.chime(1175, .05)); cue(5, 6.6, () => SFX.pop(587, .05));
+cue(5, 9.5, () => SFX.pop(660, .06));
+[10.6, 10.75, 10.9].forEach((c, i) => cue(5, c, () => SFX.pop(880 + i * 110, .04)));
+cue(5, 11.1, () => SFX.chime(1175, .07)); cue(5, 10.4, () => { if (AU.pad) AU.pad.g.gain.setTargetAtTime(.0001, AU.ctx.currentTime, .6); });
+CUES.sort((a, b) => a[0] - b[0]);
+function audioTick(a, b) {
+  if (!AU.ctx || !snd.checked) return;
+  for (const [ct, fn] of CUES) if (ct > a && ct <= b) { try { fn(); } catch (e) {} }
+  const ci = chordAt(b);
+  if (ci !== AU.chord) { AU.chord = ci; padChord(CHORD_TL[ci][1]); }
+  if (b >= 5.4 && b < 86.8) {
+    const beat = Math.floor((b - 5.4) / .3);
+    if (beat !== AU.beat) {
+      AU.beat = beat;
+      const every = (sceneAt(b) === 2 || sceneAt(b) === 4) ? 2 : 1, pat = [1, 2, 3, 2, 1, 3, 2, 3];
+      if (beat % every === 0) SFX.pluck(CHORD_TL[ci][1][pat[beat % 8]] * 2, .026);
+    }
+  }
+}
+
+/* ============ Lecteur ============ */
+const $ = id => document.getElementById(id);
+const scrub = $('scrub'), tc = $('tc'), playB = $('play'), bigplay = $('bigplay'), pz = $('pz'), qcard = $('qcard'), expB = $('exp'), recB = $('rec');
+const ICON = {
+  play: '<svg width="18" height="20" viewBox="0 0 18 20" aria-hidden="true"><path d="M3 2v16l13-8z" fill="currentColor"/></svg>',
+  pause: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="4" height="14" rx="1" fill="currentColor"/><rect x="11" y="2" width="4" height="14" rx="1" fill="currentColor"/></svg>'
+};
+const CH = [
+  { t: TS[0], key: 10.8, title: 'Dire ce qu’on construit', idea: 'Un plan montre la forme et les cotes ; pour la nature, la qualité et la mise en œuvre, il faut des mots.', q: 'Sur le plan d’un mur, qu’est-ce qu’on voit ? Et qu’est-ce qu’on ne voit pas ?' },
+  { t: TS[1], key: TS[1] + 9.6, title: 'Le CCTP', idea: 'Le cahier des clauses techniques particulières décrit chaque ouvrage : nature, qualité, mise en œuvre, contrôles. Un CCTP par lot.', q: 'Citez deux informations qu’un CCTP donne et qu’un plan ne donne pas.' },
+  { t: TS[2], key: TS[2] + 9.0, title: 'La maquette numérique', idea: 'Un modèle 3D dont chaque objet porte sa forme et ses informations ; le format ouvert IFC la rend lisible par tous les logiciels.', q: 'Qu’est-ce qui distingue une maquette BIM d’une simple image 3D ?' },
+  { t: TS[3], key: TS[3] + 9.4, title: 'Le lien aujourd’hui', idea: 'Chaque objet de la maquette est relié à son article de CCTP par un code d’ouvrage : cohérence, quantités et description se répondent.', q: 'Le plan dit 20 cm, le CCTP 15 cm : que se passe-t-il sur le chantier ? Comment le lien l’évite-t-il ?' },
+  { t: TS[4], key: TS[4] + 14.4, title: 'Le jumeau numérique', idea: 'La maquette « telle que construite », reliée à des capteurs : le réel mesuré est comparé aux exigences du CCTP.', q: 'Quel capteur placeriez-vous pour vérifier « 19 °C minimum » ? Qui interviendrait en cas d’écart ?' },
+  { t: TS[5], key: TS[5] + 7.4, title: 'À retenir', idea: 'Écrire, modéliser, mesurer : une même information qui circule du projet à l’exploitation, et revient enrichir le projet suivant.', q: 'Et toi, quel maillon de la chaîne veux-tu tenir ?' }
+];
+const PAUSES = [TS[1] - .5, TS[2] - .5, TS[3] - .5, TS[4] - .5, TS[5] - .5];
+const POSTER = TS[3] + 10.5;
+let T = 0, poster = true, playing = false, from = 0, wall0 = 0, lastT = 0, nextPause = null;
+let recording = false, recorder = null;
+
+const fmt = s => { s = clamp(s, 0, DUR); return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0'); };
+const note = msg => { $('expnote').textContent = msg; };
+
+const board = $('board'), cards = [];
+CH.forEach((c, i) => {
+  const li = document.createElement('li'), b = document.createElement('button');
+  b.type = 'button'; b.className = 'card';
+  const cvs = document.createElement('canvas'); cvs.width = 480; cvs.height = 270; cvs.setAttribute('aria-hidden', 'true');
+  const meta = document.createElement('div'); meta.className = 'meta';
+  meta.innerHTML = `<span class="tm">${fmt(c.t)}</span><h3></h3>`; meta.querySelector('h3').textContent = `${i + 1}. ${c.title}`;
+  const p = document.createElement('p'); p.textContent = c.idea;
+  b.append(cvs, meta, p); b.addEventListener('click', () => goChapter(i));
+  li.append(b); board.append(li); cards.push(b);
+});
+CH.slice(1).forEach(c => { const i = document.createElement('i'); i.style.left = (c.t / DUR * 100) + '%'; $('ticks').append(i); });
+
+function ui() {
+  const shown = poster ? 0 : T;
+  scrub.value = shown; scrub.style.setProperty('--p', (shown / DUR * 100) + '%');
+  tc.textContent = fmt(shown) + ' / ' + fmt(DUR);
+  playB.innerHTML = playing ? ICON.pause : ICON.play;
+  playB.setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
+  const ci = poster ? -1 : sceneAt(T);
+  cards.forEach((c, i) => c.setAttribute('aria-current', i === ci ? 'true' : 'false'));
+}
+function hideQ() { qcard.hidden = true; }
+function showQ(i) {
+  $('qk').textContent = `Pause question · plan ${i + 1} sur 6 · ${CH[i].title}`;
+  $('qt').textContent = CH[i].q;
+  qcard.hidden = false; $('qgo').focus({ preventScroll: true });
+}
+const computeNext = () => (!pz.checked || recording) ? null : (PAUSES.find(p => p > T + .05) ?? null);
+function seek(t) {
+  poster = false; bigplay.hidden = true; hideQ();
+  T = clamp(t, 0, DUR); lastT = T; AU.beat = -1;
+  if (playing) { from = T; wall0 = performance.now(); nextPause = computeNext(); }
+  render(T); ui();
+}
+function play() {
+  if (poster) { poster = false; T = 0; }
+  if (T >= DUR - .02) T = 0;
+  hideQ(); bigplay.hidden = true;
+  playing = true; from = T; lastT = T; wall0 = performance.now(); nextPause = computeNext(); AU.beat = -1;
+  if (snd.checked) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+  ui(); requestAnimationFrame(loop);
+}
+function pause() { playing = false; padStop(); ui(); }
+const toggle = () => playing ? pause() : play();
+function step(t) {
+  audioTick(lastT, t); T = t; lastT = t; render(T); ui();
+  if (recording) recB.textContent = `Enregistrement · ${fmt(T)} sur ${fmt(DUR)} · Échap pour annuler`;
+}
+function loop(now) {
+  if (!playing) return;
+  const t = from + (now - wall0) / 1000;
+  if (nextPause != null && t >= nextPause) { const np = nextPause; step(np); pause(); showQ(PAUSES.indexOf(np)); return; }
+  if (t >= DUR) { step(DUR); pause(); ended(); return; }
+  step(t); requestAnimationFrame(loop);
+}
+function ended() {
+  if (recording) { setTimeout(() => { try { recorder.stop(); } catch (e) {} }, 300); return; }
+  $('bigtxt').textContent = 'Revoir · 1 min 30'; bigplay.hidden = false;
+}
+function goChapter(i) { if (recording) return; seek(CH[i].t + .001); if (!playing) play(); }
+function fullscreen() {
+  const el = $('screen');
+  if (document.fullscreenElement) { document.exitFullscreen && document.exitFullscreen().catch(() => {}); return; }
+  const r = el.requestFullscreen ? el.requestFullscreen() : null;
+  if (r && r.catch) r.catch(() => note('Le plein écran n’est pas disponible ici.')); else if (!r) note('Le plein écran n’est pas disponible ici.');
+}
+
+/* ============ Export vidéo ============ */
+const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+const canRec = !!(window.MediaRecorder && cv.captureStream);
+const EXPORT_HELP = '« Exporter en vidéo » enregistre l’animation en temps réel (1 min 30), avec le son si « Son » est coché. Gardez l’onglet visible pendant l’enregistrement.';
+if (framed) { expB.disabled = true; note('L’export vidéo fonctionne quand la page est ouverte depuis son fichier HTML, sur l’ordinateur : ici, le navigateur bloque le téléchargement.'); }
+else if (!canRec) { expB.disabled = true; note('Ce navigateur ne sait pas enregistrer une vidéo depuis la page. Essayez un Chrome, Edge ou Firefox récent.'); }
+else note(EXPORT_HELP);
+function pickMime() {
+  const L = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  for (const m of L) { try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) {} }
+  return '';
+}
+function setRec(on) {
+  recording = on; recB.hidden = !on;
+  expB.textContent = on ? 'Annuler l’enregistrement' : 'Exporter en vidéo';
+  [playB, $('restart'), scrub, $('fs'), pz].forEach(el => { el.disabled = on; });
+  cards.forEach(c => { c.disabled = on; });
+}
+function startExport() {
+  const mime = pickMime();
+  if (!mime) { note('Aucun format vidéo disponible dans ce navigateur.'); return; }
+  if (playing) pause(); hideQ(); bigplay.hidden = true;
+  const tracks = [...cv.captureStream(60).getVideoTracks()];
+  if (snd.checked) { const c = audioInit(); if (c && AU.dest) { c.resume(); tracks.push(...AU.dest.stream.getAudioTracks()); } }
+  const chunks = [];
+  try { recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: mime, videoBitsPerSecond: 14000000 }); }
+  catch (e) { note('L’enregistrement n’a pas pu démarrer dans ce navigateur.'); return; }
+  recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = () => {
+    const type = mime.split(';')[0], blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'CCTP, maquette numérique et jumeau en 90 secondes.' + (type === 'video/mp4' ? 'mp4' : 'webm');
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 8000);
+    setRec(false); bigplay.hidden = false;
+    note(`Vidéo enregistrée : ${(blob.size / 1048576).toFixed(1)} Mo, format ${type === 'video/mp4' ? 'MP4' : 'WebM'}. Elle est dans le dossier Téléchargements.`);
+  };
+  setRec(true); poster = false; T = 0; lastT = 0; render(0); ui();
+  recorder.start(500);
+  setTimeout(play, 150);
+}
+function cancelExport() {
+  if (!recording) return;
+  pause();
+  recorder.onstop = () => { setRec(false); note('Enregistrement annulé. ' + EXPORT_HELP); };
+  try { recorder.stop(); } catch (e) { setRec(false); }
+}
+
+/* ============ Événements ============ */
+playB.addEventListener('click', toggle);
+bigplay.addEventListener('click', () => { if (T >= DUR - .02) T = 0; play(); });
+$('restart').addEventListener('click', () => { seek(0); });
+$('qgo').addEventListener('click', () => { hideQ(); play(); });
+$('fs').addEventListener('click', fullscreen);
+expB.addEventListener('click', () => recording ? cancelExport() : startExport());
+cv.addEventListener('click', () => { if (!recording) toggle(); });
+scrub.addEventListener('input', () => { if (recording) return; if (playing) pause(); seek(+scrub.value); });
+snd.addEventListener('change', () => {
+  if (AU.ctx) AU.out.gain.setTargetAtTime(snd.checked ? 1 : 0, AU.ctx.currentTime, .05);
+  if (snd.checked && playing) { const c = audioInit(); if (c) { c.resume(); AU.chord = chordAt(T); padStart(CHORD_TL[AU.chord][1]); } }
+});
+pz.addEventListener('change', () => { if (playing) nextPause = computeNext(); });
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const tg = e.target, tag = tg.tagName;
+  if (e.key === 'Escape' && recording) { cancelExport(); return; }
+  if (recording) return;
+  if (e.key === ' ') { if (tag === 'BUTTON' || (tag === 'INPUT' && tg.type === 'checkbox')) return; e.preventDefault(); toggle(); }
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const wasPlaying = playing; seek((poster ? 0 : T) + (e.key === 'ArrowRight' ? 1 : -1)); if (wasPlaying && !playing) play(); }
+  else if (/^[1-6]$/.test(e.key)) goChapter(+e.key - 1);
+  else if (e.key === 'f' || e.key === 'F') fullscreen();
+  else if (e.key === 'm' || e.key === 'M') { snd.checked = !snd.checked; snd.dispatchEvent(new Event('change')); }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden && playing && !recording) pause(); });
+
+/* ============ Démarrage ============ */
+function thumbs() {
+  CH.forEach((c, i) => { render(c.key); cards[i].querySelector('canvas').getContext('2d').drawImage(cv, 0, 0, 480, 270); });
+  render(poster ? POSTER : T);
+}
+render(POSTER); ui(); thumbs();
+if (document.fonts && document.fonts.load) {
+  const faces = ['800 100px "Bricolage Grotesque"', '700 100px "Bricolage Grotesque"', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"', '700 20px "Instrument Sans"', 'italic 500 20px "Instrument Sans"', '500 20px "IBM Plex Mono"', '700 20px "IBM Plex Mono"'];
+  Promise.race([Promise.all(faces.map(f => document.fonts.load(f).catch(() => null))), new Promise(r => setTimeout(r, 3000))])
+    .then(() => { if (!playing) thumbs(); });
+}
+})();
+</script>
+
+</html>

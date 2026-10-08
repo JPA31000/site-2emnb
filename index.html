@@ -180,6 +180,7 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .legende span{display:inline-flex;align-items:center;gap:8px}
 .legende i{display:inline-block;width:22px;height:16px;background:var(--pj);box-shadow:0 2px 3px -1px rgba(0,0,0,.25);transform:rotate(-4deg)}
 .legende i.sup{background:var(--fiche);border:1px solid var(--gr3)}
+.legende i.td{background:var(--pv)}
 .cadenas{display:inline-grid;place-items:center;width:20px;height:20px;color:var(--rouge);vertical-align:-3px;flex:none}
 .cadenas svg{width:18px;height:18px;filter:url(#crayon)}
 
@@ -191,7 +192,7 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .chemin text{font:400 15px var(--main);fill:var(--rouge);text-anchor:middle}
 .page{--pc:var(--bleu);position:relative;display:grid;grid-template-columns:minmax(240px,330px) minmax(0,1fr);gap:clamp(22px,3vw,44px);padding:34px 34px 34px 104px;
   background-color:var(--fiche);
-  background-image:linear-gradient(90deg,transparent 78px,rgba(214,69,58,.55) 78px 80px,transparent 80px),repeating-linear-gradient(transparent 0 31px,rgba(47,111,214,.32) 31px 32px),repeating-linear-gradient(transparent 0 7px,rgba(47,111,214,.12) 7px 8px),repeating-linear-gradient(90deg,transparent 0 31px,rgba(160,120,200,.1) 31px 32px);
+  background-image:linear-gradient(90deg,transparent var(--marge,78px),rgba(214,69,58,.55) var(--marge,78px) calc(var(--marge,78px) + 2px),transparent calc(var(--marge,78px) + 2px)),repeating-linear-gradient(transparent 0 31px,rgba(47,111,214,.32) 31px 32px),repeating-linear-gradient(transparent 0 7px,rgba(47,111,214,.12) 7px 8px),repeating-linear-gradient(90deg,transparent 0 31px,rgba(160,120,200,.1) 31px 32px);
   box-shadow:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);transform:rotate(var(--r,0deg))}
 .page::before{content:"";position:absolute;left:24px;top:0;bottom:0;width:20px;background:radial-gradient(circle at 10px 50%,var(--papier) 0 7px,rgba(0,0,0,.12) 7.5px,transparent 8.5px) 0 0/20px 120px repeat-y;opacity:.9}
 .page__marge{position:absolute;left:30px;top:30px;font:400 34px/1 var(--main);color:var(--rouge);transform:rotate(-8deg)}
@@ -205,28 +206,34 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .lien{position:relative;display:inline-flex;align-items:center;gap:8px;font:400 19px var(--main);color:var(--bleu)}
 .lien svg.fl{width:16px;height:16px;transition:transform .4s var(--e-ressort)}
 .lien:hover svg.fl{transform:translate(3px,-3px)}
-.page__corps{display:grid;gap:26px;align-content:start}
+.page__corps{display:grid;gap:58px;align-content:start}   /* les séquences sont plus écartées que les activités */
 .seq__tete{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding-bottom:6px}
 .seq__code{position:relative;display:inline-block;padding:2px 8px;font:400 17px var(--main);color:var(--rouge)}
 .seq__code svg{position:absolute;inset:-6px -8px;width:calc(100% + 16px);height:calc(100% + 12px);overflow:visible}
 .seq__code path{fill:none;stroke:var(--rouge2);stroke-width:1.6;stroke-linecap:round}
-.seq__nom{font:400 clamp(1.4rem,2vw,1.75rem)/1.2 var(--main)}
+.seq__nom{font:400 clamp(1.4rem,2vw,1.75rem)/1.2 var(--main);text-wrap:balance}
 .seq__meta{margin-left:auto;font:400 15px var(--main);color:var(--gr2)}
-.acts{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:2px}
-.acts--tuiles{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 18px}
-.act{display:grid;grid-template-columns:minmax(150px,180px) minmax(0,1fr);gap:6px 16px;align-items:start;padding:5px 0}
-.acts--tuiles .act{display:block}
-.act__lien{display:inline-flex;align-items:center;gap:10px;padding:3px 0;font:400 19px/1.3 var(--main)}
-.case{flex:none;width:22px;height:22px;overflow:visible}
-.case path{fill:none;stroke:var(--gr);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.case .coche{stroke:var(--rouge2);stroke-width:2.4;stroke-dasharray:1 2;stroke-dashoffset:1.01;transition:stroke-dashoffset .35s var(--e-out)}
-.act__lien:hover .coche,.act__lien:focus-visible .coche{stroke-dashoffset:0}
-.act__lien:hover{color:var(--rouge)}
-.postits{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 12px}
+.seq__pb{position:relative;margin:10px 0 0;padding-left:38px;font:italic 400 17.5px/1.55 var(--texte);color:var(--gr)}   /* la problématique de la séquence : plus grande que celle d'une activité, au surligneur */
+.seq__pb::before{content:"?";position:absolute;left:0;top:1px;display:grid;place-items:center;width:26px;height:26px;font:400 19px/1 var(--main);font-style:normal;color:var(--rouge);border:1.8px solid var(--rouge);border-radius:50% 46% 52% 48%/55% 50% 50% 45%}
+.seq__pbt{padding:0 3px;background:linear-gradient(100deg,transparent 1%,var(--jaune) 3%,var(--jaune) 97%,transparent 99%) 0 90%/100% 48% no-repeat;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.acts{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:30px}
+.act{position:relative;padding:0}
+.act + .act{padding-top:28px;border-top:1.6px dashed rgba(42,42,42,.2)}   /* un pointillé au crayon sépare deux activités */
+.act__nom{margin:0;font:inherit}
+.act__n{display:block;font:400 17px/1.3 var(--main);letter-spacing:.03em;color:var(--rouge)}   /* « Activité 1 » : un simple repère, ce n'est pas un lien */
+.act__titre{display:block;margin-top:1px;font:400 clamp(1.3rem,2vw,1.65rem)/1.2 var(--main);color:var(--gr)}
+.act__pb{position:relative;margin:7px 0 0;padding-left:30px;font:italic 400 15.5px/1.5 var(--texte);color:var(--gr2)}
+.act__pb::before{content:"?";position:absolute;left:0;top:1px;display:grid;place-items:center;width:20px;height:20px;font:400 15px/1 var(--main);font-style:normal;color:var(--rouge);border:1.5px solid var(--rouge);border-radius:50% 46% 52% 48%/55% 50% 50% 45%}
+.act .postits{margin-top:20px}
+.postits{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:20px 12px}
 .postit{position:relative;display:block;max-width:190px;padding:8px 11px 9px;background:var(--pj);font:400 15px/1.25 var(--texte);box-shadow:0 7px 10px -7px rgba(0,0,0,.45);transform:rotate(var(--r,-1deg));transition:transform .4s var(--e-ressort),box-shadow .3s}
 .postit--sup{background:var(--fiche);border:1px solid var(--gr3)}
-.postit--sup::after{content:"";position:absolute;right:8px;top:-9px;width:9px;height:24px;border:2px solid #8b8f99;border-radius:6px;transform:rotate(14deg)}
+.postit--sup::after{content:"";position:absolute;right:8px;top:-13px;width:9px;height:21px;border:2px solid #8b8f99;border-radius:6px;transform:rotate(14deg)}   /* au bord du papier : il ne masque aucune lettre */
+.postit--td{background:var(--pv)}   /* travaux dirigés : le post-it vert clair */
 .postit:hover,.postit:focus-visible{transform:rotate(0) translateY(-4px) scale(1.05);box-shadow:0 14px 16px -10px rgba(0,0,0,.45);z-index:2}
+.postit--bientot{cursor:default}   /* l'étiquette est posée mais n'a pas encore de page : ni lien, ni soulèvement */
+.postit--bientot:hover{transform:rotate(var(--r,-1deg));box-shadow:0 7px 10px -7px rgba(0,0,0,.45);z-index:auto}
+.postit--bientot::before{content:"bientôt";position:absolute;right:3px;bottom:-11px;padding:0 5px;font:400 12.5px/1.4 var(--main);color:var(--rouge);background:var(--fiche);border:1px solid rgba(201,59,49,.4);border-radius:3px;transform:rotate(-3deg)}
 .synth{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:clamp(20px,4vw,50px);margin-top:56px;padding:28px 34px;background:var(--fiche);box-shadow:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);transform:rotate(-.6deg)}
 .synth::before{content:"";position:absolute;top:-12px;left:42%;width:110px;height:26px;background:rgba(255,222,40,.55);transform:rotate(-3deg)}
 .fiches{position:relative;width:120px;height:104px}
@@ -405,10 +412,9 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .batons{grid-template-columns:repeat(2,minmax(0,1fr))}
   .projets{padding-left:0}
   .chemin{display:none}
-  .page{padding:30px 22px 26px 64px}
+  .page{padding:30px 22px 26px 64px;--marge:50px}   /* le trait rouge de la marge passe entre les trous et le texte */
   .page::before{left:12px}
   .page__marge{left:14px;font-size:24px}
-  .act{grid-template-columns:1fr}
   .synth{grid-template-columns:minmax(0,1fr) auto}
   .fiches{display:none}
   .ligne-i{grid-template-columns:44px minmax(0,1fr) 44px;gap:4px 12px}
@@ -511,11 +517,11 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   <section class="section" id="projets" aria-labelledby="t-projets">
     <header class="entete">
       <p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>01 · projets</p>
-      <h2 class="titre" id="t-projets" data-ecrit>Quatre projets, <span class="souligne">cinq séquences.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 8C50 3 120 11 197 5"/></svg></span></h2>
-      <p class="chapo-sec rv">Chaque projet ouvre ses séquences, chaque séquence ses activités et ses World cafés. Un clic, et la page du cours s’ouvre dans un nouvel onglet.</p>
+      <h2 class="titre" id="t-projets" data-ecrit>Quatre projets, <span class="souligne">quatre séquences.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 8C50 3 120 11 197 5"/></svg></span></h2>
+      <p class="chapo-sec rv">Chaque projet ouvre sa séquence, qui pose sa problématique puis se découpe en activités, avec leur titre, leur problématique et leurs étiquettes : World cafés, supports de cours et TD. Un clic sur un post-it, et la page du cours s’ouvre ; ceux marqués « bientôt » arrivent prochainement.</p>
     </header>
     <div class="batons" id="batons"></div>
-    <div class="legende rv"><span><i></i>World café</span><span><i class="sup"></i>support de cours</span><span id="legende-cadenas"></span></div>
+    <div class="legende rv"><span><i></i>World café</span><span><i class="sup"></i>support de cours</span><span><i class="td"></i>TD</span><span id="legende-cadenas"></span></div>
     <div class="projets" id="projets-liste"></div>
     <div id="synth"></div>
   </section>
@@ -634,91 +640,125 @@ const DONNEES = {
     { nom: 'Explications', titre: 'Cours avec les 2 EMNB et les 1AA', icone: 'explications', url: 'explications.html' },   // page du carnet (ex-site Gamma)
   ],
 
-  // Projets → séquences → activités → ateliers (type 'wc' = World café, 'sup' = support de cours)
+  // Projets → séquences → activités → étiquettes. Structure d'après « Sequence.docx » de JP (07/10/2026) : une séquence par projet.
+  // Étiquette (post-it) : type 'wc' = World café (jaune), 'sup' = support de cours (blanc, trombone), 'td' = TD (vert clair).
+  // Une étiquette sans url s'affiche « bientôt » : on ajoute son url le jour où sa page existe, et elle devient un lien.
+  // Une séquence porte sa problématique (pb) et parfois un titre ; une activité, un titre court (titre) et une problématique courte (pb).
+  // Ni l'une ni l'autre n'est un lien vers une page d'activité : les liens sont dans les étiquettes.
   projets: [
     { num: '01', nom: 'Restaurant scolaire', couleur: 'cyan', modele: 'restaurant', url: WIX + 'le-projet',
       resume: 'Présentation, maquette numérique, permis de construire, urbanisme et DCE (maçonnerie, cloisons-doublages, isolation extérieure et bardage bois).',
       sequences: [
-        { code: 'SQ01', nom: 'Séquence n°1', url: WIX + 'séquence-n-1', activites: [
-          { nom: 'Activité 1', url: WIX + 'copie-de-activité-2', ateliers: [
+        { code: 'SQ01', nom: 'Séquence n°1', url: WIX + 'séquence-n-1',
+          pb: 'Comment identifier efficacement les informations manquantes ou imprécises ?',   // fiche pédagogique de la séquence n°1
+          activites: [
+          { nom: 'Activité 1', titre: 'Les acteurs de l’acte de construire', pb: 'Quel est le rôle de chaque intervenant selon la phase du projet ?', ateliers: [
             { nom: 'Les acteurs', type: 'wc', url: 'acteurs-construire.html' },   // page du carnet (ex-application « acteurs-construire-world-cafe »)
-            { nom: 'Les acteurs · diaporama', type: 'sup', url: WIX + 'copie-de-world-café-les-acteurs-2' },
-            { nom: 'Carte des acteurs', type: 'sup', url: WIX + 'copie-de-les-acteurs-diapo' },
-            { nom: 'Acte de construire · diaporama', type: 'sup', url: WIX + 'copie-de-world-café-les-acteurs-1' },
             { nom: 'Missions et phases', type: 'wc', url: 'phases-missions.html' },   // page du carnet (ex-application « acte-de-construire-world-cafe »)
             { nom: 'ARC, ÉCO, GÉOM', type: 'wc', url: 'metiers.html' },   // page du carnet (ex-application « métiers : architecte, économiste, géomètre »)
           ] },
-          { nom: 'Activité 2', url: WIX + 'copie-de-activité-3', ateliers: [
+          { nom: 'Activité 2', titre: 'Lire les plans d’un projet', pb: 'Comment interpréter les différents plans pour en extraire les informations techniques ?', ateliers: [
             { nom: 'Lecture de plans', type: 'wc', url: 'lecture-de-plans.html' },   // page du carnet (ex-application Mirales)
             { nom: 'Pièces graphiques', type: 'wc', url: WIX + 'copie-de-retour-de-pfmp' },
           ] },
-          { nom: 'Activité 3', url: WIX + 'copie-de-activité-4', ateliers: [
-            { nom: 'PFMP', type: 'wc', url: WIX + 'retour-de-pfmp' },
+          { nom: 'Activité 3', titre: 'Le CCTP et la maquette numérique', pb: 'Où trouver les informations techniques qui décrivent un ouvrage ?', ateliers: [
+            { nom: 'PFMP', type: 'sup', url: WIX + 'retour-de-pfmp' },
             { nom: 'CCTP', type: 'wc', url: 'cctp.html' },   // page du carnet (ex-application « World Café CCTP »)
             { nom: 'Maquette numérique', type: 'wc', url: 'maquette-numerique.html' },   // page du carnet (ex-application « World Café BIM »)
           ] },
-          { nom: 'Activité 4', url: WIX + 'copie-de-activité-5-1' },
-          { nom: 'Activité 5', url: WIX + 'copie-de-activité-6', ateliers: [
-            { nom: 'Avant-métré', type: 'wc', url: 'avant-metre.html' },   // page du carnet (ex-application « World Café Métré »)
+          { nom: 'Activité 4', titre: 'Rédiger des documents techniques', pb: 'Comment déterminer les ouvrages qui composent les murs de façade ?', ateliers: [
+            { nom: 'Description des ouvrages', type: 'wc' },
+            { nom: 'Les murs, les cloisons ou doublages, l’enduit, l’isolation des murs', type: 'sup' },
+          ] },
+          { nom: 'Activité 5', titre: 'Urbanisme, permis, réglementation', pb: 'Quelles règles un projet doit-il respecter pour obtenir son permis de construire ?', ateliers: [
+            { nom: 'Urbanisme', type: 'wc' },
             { nom: 'PLU', type: 'wc', url: 'plu.html' },   // page du carnet (ex-application « L’urbanisme et le PLU »)
             { nom: 'Permis de construire', type: 'wc', url: WIX + 'world-café-permis-de-construire' },
-            { nom: 'Accessibilité', type: 'wc', url: WIX + 'copie-de-world-café-permis-de-construire' },
-            { nom: 'Gros œuvre', type: 'wc', url: WIX + 'world-café-gros-oeuvre' },
+            { nom: 'Accessibilité', type: 'sup', url: WIX + 'copie-de-world-café-permis-de-construire' },
+            { nom: 'Sécurité incendie', type: 'sup' },
           ] },
-          { nom: 'Activité 6', url: WIX + 'copie-de-activité-5' },
-        ] },
-        { code: 'SQ02', nom: 'Séquence n°2', url: WIX + 'copie-de-séquence-n-1', ateliers: [
-          { nom: 'La perspective', type: 'wc', url: 'perspective.html' },   // page du carnet (ex-application « La perspective architecturale »)
-        ], activites: [
-          { nom: 'Activité 1', url: WIX + 'copie-de-activité-1' },
-          { nom: 'Activité 2', url: WIX + 'copie-de-seq2-activité-1' },
-          { nom: 'Activité 3', url: WIX + 'copie-de-seq2-activité-3' },
+          { nom: 'Activité 6', titre: 'La maquette numérique en phase PRO', pb: 'Comment la maquette donne-t-elle aux entreprises les informations pour métrer et chiffrer ?', ateliers: [
+            { nom: 'Avant-métré', type: 'wc', url: 'avant-metre.html' },   // page du carnet (ex-application « World Café Métré »)
+            { nom: 'Nomenclature', type: 'sup' },
+            { nom: 'Export vers Excel', type: 'wc' },
+          ] },
         ] },
       ] },
     { num: '02', nom: 'Maison Lisa', couleur: 'violet', modele: 'lisa', url: WIX + 'copie-de-le-projet-1',
       resume: 'L’avant-projet définitif (APD) et le descriptif d’une maison individuelle.',
-      ateliers: [
-        { nom: 'Excel', type: 'wc', url: 'excel.html' },   // page du carnet (ex-application « Exercices tableur »)
-        { nom: 'Avant-métré', type: 'wc', url: 'avant-metre.html' },   // la même page : la page Wix de Maison Lisa ouvrait déjà cette application
-      ],
       sequences: [
-        { code: 'SQ03', nom: 'Séquence n°3', url: WIX + 'copie-de-séquence-n-2', activites: [
-          { nom: 'Activité 1', url: WIX + 'copie-de-seq2-activité-4' },
-          { nom: 'Activité 2', url: WIX + 'copie-de-seq3-activité-1' },
-          { nom: 'Activité 3', url: WIX + 'copie-de-seq3-activité-2' },
-          { nom: 'Activité 4', url: WIX + 'copie-de-seq3-activité-3' },
-          { nom: 'Activité 5', url: WIX + 'copie-de-seq3-activité-4' },
-          { nom: 'Activité 6', url: WIX + 'copie-de-seq3-activité-5' },
+        { code: 'SQ02', nom: 'Séquence n°2', url: WIX + 'copie-de-séquence-n-1',
+          pb: 'Comment représenter clairement un ouvrage existant, puis produire des documents précis et conformes aux normes graphiques ?',   // fiches pédagogiques des séquences n°2 et n°3, réunies
+          activites: [
+          { nom: 'Activité 1', titre: 'Perspective à 1 point de fuite, perspective à deux points de fuite', pb: 'Quelles méthodes de dessin traduisent fidèlement les volumes d’un projet ?', ateliers: [
+            { nom: 'La perspective', type: 'wc', url: 'perspective.html' },   // page du carnet (ex-application « La perspective architecturale »)
+          ] },
+          { nom: 'Activité 2', titre: 'Le relevé architectural', pb: 'Comment passer, avec rigueur, du relevé sur place à la représentation numérique ?', ateliers: [
+            { nom: 'Le relevé', type: 'sup' },
+          ] },
+          { nom: 'Activité 3', titre: 'Exploiter un tableur', pb: 'Comment exploiter un tableur ?', ateliers: [
+            { nom: 'Excel', type: 'wc', url: 'excel.html' },   // page du carnet (ex-application « Exercices tableur »)
+            { nom: 'Avant-métré', type: 'wc', url: 'avant-metre.html' },   // la même page qu’en séquence 1 : la page Wix de Maison Lisa ouvrait déjà cette application
+          ] },
+          { nom: 'Activité 4', titre: 'Démarrer un projet sur Revit', pb: 'Comment démarre-t-on un projet d’architecture sur Revit ?', ateliers: [
+            { nom: 'Interface Revit', type: 'sup' },
+            { nom: 'Démarrer avec Revit', type: 'sup' },
+            { nom: 'TD1', type: 'td' },
+          ] },
+          { nom: 'Activité 5', titre: 'Modéliser les murs et les cloisons', pb: 'Quelles manipulations clés définissent les propriétés des murs dans Revit ?', ateliers: [
+            { nom: 'Famille mur architectural', type: 'sup' },
+            { nom: 'Type de mur', type: 'sup' },
+            { nom: 'TD2', type: 'td' },
+          ] },
+          { nom: 'Activité 6', titre: 'Modéliser les menuiseries', pb: 'Comment la modélisation paramétrique des menuiseries gère-t-elle l’évolution des exigences ?', ateliers: [
+            { nom: 'Insérer une nouvelle famille d’ouvertures', type: 'sup' },
+            { nom: 'Propriété d’occurrence et de type', type: 'sup' },
+          ] },
+          { nom: 'Activité 7', titre: 'Fondations et annotations', pb: 'Comment modéliser les fondations et annoter la maquette ?', ateliers: [
+            { nom: 'Gros œuvre', type: 'sup', url: WIX + 'world-café-gros-oeuvre' },
+            { nom: 'Murs, maçonnerie, plancher', type: 'sup' },
+          ] },
         ] },
       ] },
     { num: '03', nom: 'Maison passive', couleur: 'vert', modele: 'passive', url: WIX + 'copie-de-le-projet-2',
       resume: 'Du fichier Revit à la maquette numérique, puis la mise en scène sous Twinmotion : importer, composer la scène, exporter, présenter.',
       sequences: [
-        { code: 'SQ04', nom: 'Séquence n°4', url: WIX + 'copie-de-séquence-n-3', activites: [
-          { nom: 'Activité 1', url: WIX + 'copie-de-seq3-activité-7' },
-          { nom: 'Activité 2', url: WIX + 'copie-de-seq4-activité-1' },
-          { nom: 'Activité 3', url: WIX + 'copie-de-seq4-activité-2' },
+        { code: 'SQ03', nom: 'Séquence n°3', titre: 'Présentation du projet à la MOA', url: WIX + 'copie-de-séquence-n-3',
+          pb: 'Quelle démarche adopter pour sélectionner et présenter efficacement les matériaux ?',   // fiche pédagogique de la séquence n°4 de l'ancienne numérotation
+          activites: [
+          { nom: 'Activité 1', titre: 'Importer le projet dans Twinmotion', pb: 'Comment préparer les matériaux et l’ambiance à partir du modèle Revit ?', ateliers: [
+            { nom: 'TD1', type: 'td' },
+          ] },
+          { nom: 'Activité 2', titre: 'Préparer la scène', pb: 'Comment préparer les vues, l’ambiance et les objets de la scène ?', ateliers: [
+            { nom: 'TD2', type: 'td' },
+          ] },
+          { nom: 'Activité 3', titre: 'Élaborer le document de définition', pb: 'Comment élaborer un document complémentaire de définition du projet ?', ateliers: [
+            { nom: 'TD3', type: 'td' },
+          ] },
         ] },
       ] },
     { num: '04', nom: 'Le patio', couleur: 'orange', modele: 'patio', url: WIX + 'copie-de-le-projet',
       resume: 'Fichier Revit, maquette numérique et rendu sous Twinmotion : importer, composer la scène, exporter, présenter.',
       sequences: [
-        { code: 'SQ05', nom: 'Séquence n°5', url: WIX + 'copie-de-séquence-n-4', activites: [
-          { nom: 'Activité 1', url: WIX + 'copie-de-seq4-activité-1-1' },
-          { nom: 'Activité 2', url: WIX + 'copie-de-seq5-activité-1' },
-          { nom: 'Activité 3', url: WIX + 'copie-de-seq5-activité-2' },
+        { code: 'SQ04', nom: 'Séquence n°4', url: WIX + 'copie-de-séquence-n-4',
+          pb: 'Quelle représentation graphique choisir pour faciliter l’obtention des autorisations ?',   // fiche pédagogique de la séquence n°5 de l'ancienne numérotation
+          activites: [
+          { nom: 'Activité 1', titre: 'Le plan de situation', pb: 'Comment indiquer avec précision une implantation sur le terrain ?' },
+          { nom: 'Activité 2', titre: 'Le plan de masse', pb: 'Comment reproduire le plan cadastral pour établir le plan de masse ?' },
+          { nom: 'Activité 3', titre: 'Relevé maison AFPA', pb: 'Comment construire une maquette numérique à partir d’un relevé par scanner 3D ?' },
         ] },
       ] },
   ],
 
-  // Synthèses : une page du carnet (carnet NotebookLM + trois animations), qui remplace la page Wix « synthèses-de-cours »
+  // Synthèses : une page du carnet (carnet NotebookLM + quatre animations), qui remplace la page Wix « synthèses-de-cours »
   syntheses: { url: 'syntheses.html',
-    resume: 'Pour réviser : le carnet de synthèses sur NotebookLM et trois animations à revoir, l’acte de construire, lire un plan et l’EDD.',
+    resume: 'Pour réviser : le carnet de synthèses sur NotebookLM et quatre animations à revoir : l’acte de construire, lire un plan, l’EDD, du CCTP au jumeau numérique.',
     notebook: 'https://notebooklm.google.com/notebook/ff0a62c4-bd78-4c13-b3d5-2353d4391152?artifactId=9e7150fa-20dd-467b-8a40-3a62509abe45',
     animations: [
       { nom: 'L’acte de construire en 90 secondes', url: 'animation-acte-de-construire.html', resume: 'Les acteurs, les missions et les phases' },
       { nom: 'Lire un plan en 2 min 30', url: 'animation-lecture-de-plan.html', resume: 'Du plan de masse à la perspective' },
       { nom: 'L’EDD en 90 secondes', url: 'animation-edd.html', resume: 'De l’empreinte écologique aux 17 objectifs' },
+      { nom: 'Du CCTP au jumeau numérique en 90 secondes', url: 'animation-cctp-jumeau.html', resume: 'Le CCTP, la maquette numérique et le jumeau numérique' },
     ] },
 
   // Mon espace — taille : 'xl' (grande), 'large' (deux colonnes) ou rien
@@ -796,6 +836,8 @@ const borne = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
 const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SOURIS = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const NB = String.fromCharCode(160);   // l'espace insécable de la typographie française
+const typoFr = s => esc(s).replace(/ ([?!:;»])/g, NB + '$1').replace(/« /g, '«' + NB);   // esc() + espace insécable avant ? ! : ; » et après «
 const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const ext = url => `href="${esc(url)}" target="_blank" rel="noopener"`;
 const NO = '<span class="sr"> (nouvel onglet)</span>';
@@ -855,7 +897,6 @@ const alea = s => () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s 
 const GRIB = '<svg class="gribouille" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 7C20 3 40 10 60 6S90 4 98 7"/></svg>';
 const FL = '<svg class="fl" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15C7 11 10 8 15 3M7.5 3.2c2.6-.3 5-.2 7.5 0 .2 2.5.3 5 0 7.6"/></svg>';
 const FLECHE_RONDE = '<span class="fleche-ronde" aria-hidden="true"><svg viewBox="0 0 54 54"><path d="M27 4C12 4 4 14 5 28c1 14 12 22 24 21 13-1 21-11 20-24C48 12 38 4 25 6"/><path d="M19 35L35 19M24 18h11v11"/></svg></span>';
-const CASE = '<svg class="case" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 4.5C8 3.6 14 4.2 18.6 3.8c.4 4.6.2 9.4.6 14-5 .5-10 .1-15 .5-.6-4.6-.3-9.2-.6-13.8z"/><path class="coche" pathLength="1" d="M5 11.5l4.2 4.6L20 2.5"/></svg>';
 const CERCLE = '<svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M8 22C6 8 88 2 94 18C99 32 50 40 20 34C4 30 6 14 30 9"/></svg>';
 const ETOILE = '<svg class="ruban__sep" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M11 2.5l2.4 6 6.3.4-4.9 4 1.6 6.2L11 15.6l-5.4 3.5 1.6-6.2-4.9-4 6.3-.4z"/></svg>';
 // cadre « tracé à main levée » autour d'un élément (dépassements aux angles, comme au crayon)
@@ -1058,19 +1099,28 @@ function construirePage() {
 
   // --- Compteurs en bâtons (calculés, jamais écrits à la main)
   const P = DONNEES.projets, seqs = P.flatMap(p => p.sequences), acts = seqs.flatMap(s => s.activites);
-  const wc = [...P.flatMap(p => p.ateliers || []), ...seqs.flatMap(s => s.ateliers || []), ...acts.flatMap(a => a.ateliers || [])].filter(a => a.type === 'wc').length;
+  const wc = [...P.flatMap(p => p.ateliers || []), ...seqs.flatMap(s => s.ateliers || []), ...acts.flatMap(a => a.ateliers || [])].filter(a => a.type === 'wc' && a.url).length;   // seuls les World cafés déjà en ligne sont comptés
   $('#batons').innerHTML = [[P.length, 'projets', 'var(--bleu)'], [seqs.length, 'séquences', 'var(--rouge)'], [acts.length, 'activités', 'var(--vert)'], [wc, 'World cafés', '#b8681f']]
     .map(([v, l, c], i) => `<div class="baton rv" style="--i:${i};--c:${c};--r:${[-1.2, .8, -.6, 1.1][i]}deg"><b>${v}</b><span>${l}</span>${batons(v)}</div>`).join('');
   $('#legende-cadenas').innerHTML = cadenas(true) + 'espace réservé (mot de passe)';
 
   // --- Projets : une page de copie double par projet
   const rp = [-2, 1.5, -1, 2.2, -1.6, .8, -2.4];
-  const postits = L => `<ul class="postits">${L.map((c, i) => `<li><a class="postit${c.type === 'sup' ? ' postit--sup' : ''}" ${interne(c.url) ? `href="${esc(c.url)}"` : ext(c.url)} style="--r:${rp[i % rp.length]}deg">${esc(c.nom)}<span class="sr"> (${c.type === 'wc' ? 'World café' : 'support de cours'}${interne(c.url) ? '' : ', nouvel onglet'})</span></a></li>`).join('')}</ul>`;
+  const GENRE = { wc: ['World café', ''], sup: ['support de cours', ' postit--sup'], td: ['TD, travaux dirigés', ' postit--td'] };   // le genre d'une étiquette : ce que lit un lecteur d'écran, et sa couleur
+  const postits = L => `<ul class="postits">${L.map((c, i) => {
+    const [genre, couleur] = GENRE[c.type], st = `style="--r:${rp[i % rp.length]}deg"`;
+    if (!c.url) return `<li><span class="postit${couleur} postit--bientot" ${st}>${esc(c.nom)}<span class="sr"> (${genre}, bientôt disponible)</span></span></li>`;   // pas encore de page : posée, sans lien
+    return `<li><a class="postit${couleur}" ${interne(c.url) ? `href="${esc(c.url)}"` : ext(c.url)} ${st}>${esc(c.nom)}<span class="sr"> (${genre}${interne(c.url) ? '' : ', nouvel onglet'})</span></a></li>`;
+  }).join('')}</ul>`;
   const sequence = s => {
-    const nAt = (s.ateliers ? s.ateliers.length : 0) + s.activites.reduce((t, a) => t + (a.ateliers ? a.ateliers.length : 0), 0), tuiles = !s.activites.some(a => a.ateliers);
-    return `<div class="seq"><a class="seq__tete" ${ext(s.url)}><span class="seq__code">${esc(s.code)}${CERCLE}</span><span class="seq__nom">${esc(s.nom)}</span><span class="seq__meta">${s.activites.length} activités${nAt ? ` · ${nAt} atelier${nAt > 1 ? 's' : ''}` : ''}</span>${GRIB}${NO}</a>
+    const nAt = (s.ateliers ? s.ateliers.length : 0) + s.activites.reduce((t, a) => t + (a.ateliers ? a.ateliers.length : 0), 0);
+    return `<div class="seq"><a class="seq__tete" ${ext(s.url)}><span class="seq__code">${esc(s.code)}${CERCLE}</span><span class="seq__nom">${esc(s.nom)}${s.titre ? `${NB}: ${typoFr(s.titre)}` : ''}</span><span class="seq__meta">${s.activites.length} activités${nAt ? ` · ${nAt} étiquette${nAt > 1 ? 's' : ''}` : ''}</span>${GRIB}${NO}</a>
+      <p class="seq__pb"><span class="sr">Problématique de la séquence : </span><span class="seq__pbt">${typoFr(s.pb)}</span></p>
       ${s.ateliers ? postits(s.ateliers) : ''}
-      <ol class="acts${tuiles ? ' acts--tuiles' : ''}">${s.activites.map(a => `<li class="act"><a class="act__lien" ${ext(a.url)}>${CASE}<span>${esc(a.nom)}</span>${NO}</a>${a.ateliers ? postits(a.ateliers) : ''}</li>`).join('')}</ol></div>`;
+      <ol class="acts">${s.activites.map((a, i) => `<li class="act" id="act-${s.code.toLowerCase()}-${i + 1}">
+        <h4 class="act__nom"><span class="act__n">${esc(a.nom)}</span><span class="sr"> : </span><span class="act__titre">${typoFr(a.titre)}</span></h4>
+        <p class="act__pb"><span class="sr">Problématique : </span>${typoFr(a.pb)}</p>
+        ${a.ateliers ? postits(a.ateliers) : ''}</li>`).join('')}</ol></div>`;
   };
   $('#projets-liste').innerHTML = '<svg class="chemin" id="chemin" aria-hidden="true"></svg>' + P.map((p, i) => `
     <article class="page rv" style="--r:${[-.5, .4, -.3, .5][i % 4]}deg" aria-labelledby="pj-${i}">
@@ -1591,7 +1641,7 @@ function majDefilement(dt) {
    ===================================================================== */
 const INDEX = [];
 function indexer() {
-  const aj = (type, nom, url, chemin = '', protege = false, vedette = false) => INDEX.push({ type, nom, url, chemin, protege, vedette, cle: norm(`${nom} ${chemin} ${type}`) });
+  const aj = (type, nom, url, chemin = '', protege = false, vedette = false, extra = '') => INDEX.push({ type, nom, url, chemin, protege, vedette, cle: norm(`${nom} ${chemin} ${type} ${extra}`) });
   const D = DONNEES;
   aj('Accueil', 'La progression', D.accueil.progression, 'Bouton de l’accueil', false, true);
   aj('Accueil', 'L’acte de construire', D.accueil.acte, 'Bouton de l’accueil', false, true);
@@ -1600,15 +1650,16 @@ function indexer() {
     if (o.liens) o.liens.forEach(l => aj('Outil', l.nom, l.url, 'Accès rapide › Ressources', false, true));
     else aj('Outil', o.titre && o.titre !== o.nom ? `${o.nom} · ${o.titre}` : o.nom, o.url, 'Accès rapide', !!o.protege, true);
   }
+  const etiq = (t, chemin) => { if (t.url) aj(t.type === 'wc' ? 'World café' : t.type === 'td' ? 'TD' : 'Support', t.type === 'wc' ? `World café · ${t.nom}` : t.nom, t.url, chemin); };   // une étiquette « bientôt » n'a rien à ouvrir : on ne la cherche pas
   for (const p of D.projets) {
     aj('Projet', p.nom, p.url, `Projet ${p.num}`, false, true);
-    (p.ateliers || []).forEach(a => aj(a.type === 'wc' ? 'World café' : 'Support', a.type === 'wc' ? `World café · ${a.nom}` : a.nom, a.url, p.nom));
+    (p.ateliers || []).forEach(a => etiq(a, p.nom));
     for (const s of p.sequences) {
-      aj('Séquence', s.nom, s.url, `${p.nom} · ${s.code}`);
-      (s.ateliers || []).forEach(t => aj(t.type === 'wc' ? 'World café' : 'Support', t.type === 'wc' ? `World café · ${t.nom}` : t.nom, t.url, `${p.nom} › ${s.code}`));
-      s.activites.forEach(a => {
-        aj('Activité', `${s.nom} · ${a.nom}`, a.url, `${p.nom} › ${s.code}`);
-        (a.ateliers || []).forEach(t => aj(t.type === 'wc' ? 'World café' : 'Support', t.type === 'wc' ? `World café · ${t.nom}` : t.nom, t.url, `${p.nom} › ${s.code} › ${a.nom}`));
+      aj('Séquence', s.titre ? `${s.nom} · ${s.titre}` : s.nom, s.url, `${p.nom} · ${s.code}`, false, false, s.pb);
+      (s.ateliers || []).forEach(t => etiq(t, `${p.nom} › ${s.code}`));
+      s.activites.forEach((a, i) => {
+        aj('Activité', `${s.nom} · ${a.nom} · ${a.titre}`, `#act-${s.code.toLowerCase()}-${i + 1}`, `${p.nom} › ${s.code}`, false, false, a.pb);
+        (a.ateliers || []).forEach(t => etiq(t, `${p.nom} › ${s.code} › ${a.nom}`));
       });
     }
   }
@@ -1652,7 +1703,15 @@ function initRecherche() {
     lis[sel].scrollIntoView({ block: 'nearest' });
     champ.setAttribute('aria-activedescendant', 'pal-' + sel);
   };
-  const ouvrirLien = i => { const e = res[i]; if (!e) return; if (interne(e.url)) { location.href = e.url; return; } window.open(e.url, '_blank', 'noopener'); fermer(); };
+  const ouvrirLien = i => {
+    const e = res[i]; if (!e) return;
+    if (e.url[0] === '#') {   // une activité : on referme la recherche et on la montre dans la page
+      fermer(); const cible = document.querySelector(e.url);
+      if (cible) setTimeout(() => cible.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'center' }), 320);
+      return;
+    }
+    if (interne(e.url)) { location.href = e.url; return; } window.open(e.url, '_blank', 'noopener'); fermer();
+  };
   const ouvrir = () => {
     if (!pal.hidden) return;
     avant = document.activeElement; pal.hidden = false; champ.value = ''; afficher();
