@@ -226,6 +226,7 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .act__pb::before{content:"?";position:absolute;left:0;top:1px;display:grid;place-items:center;width:20px;height:20px;font:400 15px/1 var(--main);font-style:normal;color:var(--rouge);border:1.5px solid var(--rouge);border-radius:50% 46% 52% 48%/55% 50% 50% 45%}
 .act .postits{margin-top:20px}
 .postits{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:20px 12px}
+.act .postits + .postits{margin-top:34px}   /* après un « saut » : la seconde liste se pose plus bas, sans toucher le « bientôt » de la première */
 .postit{position:relative;display:block;max-width:190px;padding:8px 11px 9px;background:var(--pj);font:400 15px/1.25 var(--texte);box-shadow:0 7px 10px -7px rgba(0,0,0,.45);transform:rotate(var(--r,-1deg));transition:transform .4s var(--e-ressort),box-shadow .3s}
 .postit--sup{background:var(--fiche);border:1px solid var(--gr3)}
 .postit--sup::after{content:"";position:absolute;right:8px;top:-13px;width:9px;height:21px;border:2px solid #8b8f99;border-radius:6px;transform:rotate(14deg)}   /* au bord du papier : il ne masque aucune lettre */
@@ -643,6 +644,7 @@ const DONNEES = {
   // Projets → séquences → activités → étiquettes. Structure d'après « Sequence.docx » de JP (07/10/2026) : une séquence par projet.
   // Étiquette (post-it) : type 'wc' = World café (jaune), 'sup' = support de cours (blanc, trombone), 'td' = TD (vert clair).
   // Une étiquette sans url s'affiche « bientôt » : on ajoute son url le jour où sa page existe, et elle devient un lien.
+  // Une étiquette marquée saut: true commence une nouvelle ligne (pour regrouper des étiquettes de même genre).
   // Une séquence porte sa problématique (pb) et parfois un titre ; une activité, un titre court (titre) et une problématique courte (pb).
   // Ni l'une ni l'autre n'est un lien vers une page d'activité : les liens sont dans les étiquettes.
   projets: [
@@ -668,7 +670,10 @@ const DONNEES = {
           ] },
           { nom: 'Activité 4', titre: 'Rédiger des documents techniques', pb: 'Comment déterminer les ouvrages qui composent les murs de façade ?', ateliers: [
             { nom: 'Description des ouvrages', type: 'wc' },
-            { nom: 'Les murs, les cloisons ou doublages, l’enduit, l’isolation des murs', type: 'sup' },
+            { nom: 'Murs', type: 'sup', url: 'murs.html', saut: true },   // page du carnet (ex-Gamma « Les Murs ») ; saut : nouvelle ligne, sous « Description des ouvrages »
+            { nom: 'Cloisons', type: 'sup', url: 'cloisons.html' },   // page du carnet (ex-Gamma « Les Cloisons »)
+            { nom: 'Planchers', type: 'sup', url: 'planchers.html' },   // page du carnet (ex-Gamma « Les différents types de planchers »)
+            { nom: 'Toitures', type: 'sup', url: 'toitures.html' },   // page du carnet (ex-Gamma « Toitures »)
           ] },
           { nom: 'Activité 5', titre: 'Urbanisme, permis, réglementation', pb: 'Quelles règles un projet doit-il respecter pour obtenir son permis de construire ?', ateliers: [
             { nom: 'Urbanisme', type: 'wc' },
@@ -1107,11 +1112,13 @@ function construirePage() {
   // --- Projets : une page de copie double par projet
   const rp = [-2, 1.5, -1, 2.2, -1.6, .8, -2.4];
   const GENRE = { wc: ['World café', ''], sup: ['support de cours', ' postit--sup'], td: ['TD, travaux dirigés', ' postit--td'] };   // le genre d'une étiquette : ce que lit un lecteur d'écran, et sa couleur
-  const postits = L => `<ul class="postits">${L.map((c, i) => {
+  const etiquette = (c, i) => {
     const [genre, couleur] = GENRE[c.type], st = `style="--r:${rp[i % rp.length]}deg"`;
     if (!c.url) return `<li><span class="postit${couleur} postit--bientot" ${st}>${esc(c.nom)}<span class="sr"> (${genre}, bientôt disponible)</span></span></li>`;   // pas encore de page : posée, sans lien
     return `<li><a class="postit${couleur}" ${interne(c.url) ? `href="${esc(c.url)}"` : ext(c.url)} ${st}>${esc(c.nom)}<span class="sr"> (${genre}${interne(c.url) ? '' : ', nouvel onglet'})</span></a></li>`;
-  }).join('')}</ul>`;
+  };
+  // une étiquette marquée « saut: true » commence une nouvelle ligne : une nouvelle liste, posée sous la précédente
+  const postits = L => { const g = []; L.forEach((c, i) => { if (!g.length || c.saut) g.push([]); g[g.length - 1].push(etiquette(c, i)); }); return g.map(x => `<ul class="postits">${x.join('')}</ul>`).join(''); };
   const sequence = s => {
     const nAt = (s.ateliers ? s.ateliers.length : 0) + s.activites.reduce((t, a) => t + (a.ateliers ? a.ateliers.length : 0), 0);
     return `<div class="seq"><a class="seq__tete" ${ext(s.url)}><span class="seq__code">${esc(s.code)}${CERCLE}</span><span class="seq__nom">${esc(s.nom)}${s.titre ? `${NB}: ${typoFr(s.titre)}` : ''}</span><span class="seq__meta">${s.activites.length} activités${nAt ? ` · ${nAt} étiquette${nAt > 1 ? 's' : ''}` : ''}</span>${GRIB}${NO}</a>
