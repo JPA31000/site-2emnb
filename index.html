@@ -679,13 +679,15 @@ const DONNEES = {
             { nom: 'Urbanisme', type: 'wc' },
             { nom: 'PLU', type: 'wc', url: 'plu.html' },   // page du carnet (ex-application « L’urbanisme et le PLU »)
             { nom: 'Permis de construire', type: 'wc', url: WIX + 'world-café-permis-de-construire' },
-            { nom: 'Accessibilité', type: 'sup', url: WIX + 'copie-de-world-café-permis-de-construire' },
-            { nom: 'Sécurité incendie', type: 'sup' },
+            { nom: 'Accessibilité', type: 'sup', url: 'accessibilite.html' },   // page du carnet (ex-Gamma « S2.1 Accessibilité du cadre bâti ») ; remplace le lien Wix « copie-de-world-café-permis-de-construire »
+            { nom: 'Sécurité incendie', type: 'sup', url: 'incendie-seismes.html' },   // page du carnet (ex-Gamma « S2.3 Protection des personnes : sécurité incendie et règles antisismiques »)
           ] },
           { nom: 'Activité 6', titre: 'La maquette numérique en phase PRO', pb: 'Comment la maquette donne-t-elle aux entreprises les informations pour métrer et chiffrer ?', ateliers: [
             { nom: 'Avant-métré', type: 'wc', url: 'avant-metre.html' },   // page du carnet (ex-application « World Café Métré »)
             { nom: 'Nomenclature', type: 'sup' },
             { nom: 'Export vers Excel', type: 'wc' },
+            { nom: 'Métré et quantitatif', type: 'sup', url: 'metre-quantitatif.html', saut: true },   // page du carnet (ex-Gamma « S 5.1 L’art du métré et de la quantification dans le BTP ») ; saut : seconde ligne
+            { nom: 'Avant-métré et BIM', type: 'sup', url: 'avant-metre-bim.html' },   // page du carnet (ex-Gamma « S8.1 L’avant-métré en construction »)
           ] },
         ] },
       ] },
@@ -699,7 +701,8 @@ const DONNEES = {
             { nom: 'La perspective', type: 'wc', url: 'perspective.html' },   // page du carnet (ex-application « La perspective architecturale »)
           ] },
           { nom: 'Activité 2', titre: 'Le relevé architectural', pb: 'Comment passer, avec rigueur, du relevé sur place à la représentation numérique ?', ateliers: [
-            { nom: 'Le relevé', type: 'sup' },
+            { nom: 'Le relevé', type: 'sup', url: 'releve-etat-des-lieux.html' },   // page du carnet (ex-Gamma « S8.3 Le relevé et l’état des lieux en architecture »)
+            { nom: 'Méthode du relevé', type: 'sup', url: 'releve-methode.html' },   // page du carnet (ex-Gamma « S8.3 Méthodologie du relevé architectural »)
           ] },
           { nom: 'Activité 3', titre: 'Exploiter un tableur', pb: 'Comment exploiter un tableur ?', ateliers: [
             { nom: 'Excel', type: 'wc', url: 'excel.html' },   // page du carnet (ex-application « Exercices tableur »)
@@ -720,6 +723,7 @@ const DONNEES = {
             { nom: 'Propriété d’occurrence et de type', type: 'sup' },
           ] },
           { nom: 'Activité 7', titre: 'Fondations et annotations', pb: 'Comment modéliser les fondations et annoter la maquette ?', ateliers: [
+            { nom: 'Fondations', type: 'sup', url: 'fondations.html' },   // page du carnet (ex-Gamma « Fondations superficielles en génie civil »)
             { nom: 'Gros œuvre', type: 'sup', url: WIX + 'world-café-gros-oeuvre' },
             { nom: 'Murs, maçonnerie, plancher', type: 'sup' },
           ] },
