@@ -679,8 +679,9 @@ const DONNEES = {
             { nom: 'Urbanisme', type: 'wc' },
             { nom: 'PLU', type: 'wc', url: 'plu.html' },   // page du carnet (ex-application « L’urbanisme et le PLU »)
             { nom: 'Permis de construire', type: 'wc', url: WIX + 'world-café-permis-de-construire' },
-            { nom: 'Accessibilité', type: 'sup', url: 'accessibilite.html' },   // page du carnet (ex-Gamma « S2.1 Accessibilité du cadre bâti ») ; remplace le lien Wix « copie-de-world-café-permis-de-construire »
+            { nom: 'Accessibilité', type: 'sup', url: 'accessibilite.html', saut: true },   // page du carnet (ex-Gamma « S2.1 Accessibilité du cadre bâti ») ; remplace le lien Wix « copie-de-world-café-permis-de-construire »
             { nom: 'Sécurité incendie', type: 'sup', url: 'incendie-seismes.html' },   // page du carnet (ex-Gamma « S2.3 Protection des personnes : sécurité incendie et règles antisismiques »)
+            { nom: 'Escaliers', type: 'sup', url: 'escaliers.html' },   // page du carnet (ex-Gamma « Les escaliers dans le BTP : ergonomie et normes »)
           ] },
           { nom: 'Activité 6', titre: 'La maquette numérique en phase PRO', pb: 'Comment la maquette donne-t-elle aux entreprises les informations pour métrer et chiffrer ?', ateliers: [
             { nom: 'Avant-métré', type: 'wc', url: 'avant-metre.html' },   // page du carnet (ex-application « World Café Métré »)
@@ -827,6 +828,7 @@ const DONNEES = {
     { groupe: 'Citoyen numérique', items: [
       { nom: 'Le coin du numérique', icone: 'numerique', url: WIX + 'un-pc', resume: 'Installer Revit et Twinmotion, comprendre son ordinateur.' },
       { nom: 'Si on parlait IA ?', icone: 'ia', url: WIX + 'culture-ia', resume: 'Démystifier l’IA, ses outils et ses limites.' },
+      { nom: 'Cours : l’IA', icone: 'ia', url: 'ia.html', resume: 'Son histoire depuis 1950, comment fonctionne une IA générative, ce qu’elle coûte à la planète.' },   // page du carnet
       { nom: 'Alerte réseaux sociaux', icone: 'reseaux', url: 'https://gamma.app/docs/s0pfmxc7n3itqfb', resume: 'Les bons réflexes sur les réseaux.' },
     ] },
   ],
