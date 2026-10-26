@@ -492,7 +492,8 @@ dialog.dlg-accueil .note-dlg{text-align:center}
   <div id="attente-voile"></div>
   <div id="attente-bas">
     <p id="attente-titre">Atelier Maquette Numérique</p>
-    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.65</span></p>
+    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.66</span></p>
+    <p id="attente-licence">Sur une idée de : Jean-Philippe Amat | Créateur : Claude | Licence CC BY-NC-SA 4.0</p>
     <div id="attente-jauge"><i id="attente-barre"></i></div>
     <button id="attente-entrer" type="button" hidden>Entrer</button>
   </div>
@@ -515,6 +516,7 @@ dialog.dlg-accueil .note-dlg{text-align:center}
 #attente-txt{margin:0; font-size:10.5px; opacity:.62; letter-spacing:.06em;
   text-transform:uppercase}
 #attente-pct{font-weight:700; opacity:.95; font-variant-numeric:tabular-nums}
+#attente-licence{margin:9px 0 0; font-size:10px; opacity:.55; letter-spacing:.03em}
 #attente-jauge{margin:11px auto 0; width:180px; height:2px; background:#2a2723;
   border-radius:2px; overflow:hidden}
 #attente-barre{display:block; width:0; height:100%; background:#c9ab72;
@@ -104929,6 +104931,314 @@ if(typeof AUTOTESTS !== "undefined"){
       var p = ddPoteauBA(0.20, 0.20, 2.5, 300, 25);
       if(Math.abs(p.lam - 30.31) > 0.05 || Math.abs(p.NRd - 583.6) > 2 || !p.ok) r.push("poteau 20 × 20 : λ " + ddNb(p.lam, 2) + " · N_Rd " + ddNb(p.NRd, 1));
       if(Math.abs(ddELU(10, 2) - 16.5) > 1e-9 || ddELS(10, 2) !== 12) r.push("combinaisons");
+      return r.length ? r.join(" · ") : null;
+    }});
+}
+
+/* =====================================================================
+   MODULE 94 (v9.66) — LICENCE ET CRÉDITS : LA CC BY-NC-SA 4.0 DANS L'APPLICATION
+
+   Demande de JP : indiquer la licence CC BY-NC-SA 4.0 et son explication dans
+   l'application — l'Atelier Maquette Numérique, BIM Éducation et TwinQuest —,
+   avec la ligne de crédit du site :
+       Sur une idée de : Jean-Philippe Amat | Créateur : Claude | Licence CC BY-NC-SA 4.0
+
+   La licence dit ce que n'importe qui peut faire de l'application : l'utiliser
+   pour enseigner et apprendre, la copier, l'adapter, à trois conditions —
+   citer l'auteur, ne pas la vendre, partager ses adaptations à l'identique.
+   Elle ne change rien à l'usage : aucune clé, aucune connexion.
+
+     94.1  les textes
+     94.2  la fenêtre « Licence et crédits »
+     94.3  les accès : menu Fichier, Ctrl+K, barre d'état
+     94.4  TwinQuest : la bande du hub
+     94.5  autotests
+   L'écran d'ouverture porte la même ligne (HTML de la page, posé par la greffe).
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   94.1 · LES TEXTES
+   --------------------------------------------------------------------- */
+var LIC = {
+  idee:"Jean-Philippe Amat", createur:"Claude", sigle:"CC BY-NC-SA 4.0",
+  deed:"https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr",
+  legal:"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.fr"
+};
+/* la ligne de crédit, telle que JP l'a demandée */
+function licLigne(){
+  return "Sur une idée de : " + LIC.idee + " | Créateur : " + LIC.createur + " | Licence " + LIC.sigle;
+}
+/* la phrase à placer près d'une réutilisation (même forme que celle du carnet) */
+function licMention(){
+  return "« Atelier Maquette Numérique — BIM Éducation et TwinQuest », sur une idée de " + LIC.idee +
+         ", Lycée Urbain Vitry (Toulouse) ; créateur : " + LIC.createur + " — licence " + LIC.sigle + " (" + LIC.deed + ").";
+}
+function licVersion(){
+  try {
+    var e = document.getElementById("attente-ver");
+    var m = e ? /([0-9]+\.[0-9]+)/.exec(e.textContent) : null;
+    return m ? m[1] : "";
+  } catch(_e){ return ""; }
+}
+
+/* ---------------------------------------------------------------------
+   94.2 · LA FENÊTRE « LICENCE ET CRÉDITS »
+   Une boîte à elle (<dialog id="dlg-licence">) : la boîte commune de
+   l'application sert à tant d'autres choses qu'on ne la partage pas.
+   Les pictogrammes sont dessinés ici : ils ne copient pas les logos officiels.
+   --------------------------------------------------------------------- */
+document.head.insertAdjacentHTML("beforeend", '<style>' +
+  '#dlg-licence{padding:0; border:1px solid var(--bord, #cfc8b8); border-radius:6px; background:var(--chrome2, #fbf8f1);' +
+    'color:var(--texte, #2a2620); width:min(780px, 94vw); max-height:90vh; box-shadow:0 14px 44px rgba(0,0,0,.34);' +
+    'font:13px/1.5 "Segoe UI", system-ui, sans-serif; box-sizing:border-box}' +
+  '#dlg-licence[open]{display:flex; flex-direction:column}' +
+  '#dlg-licence::backdrop{background:rgba(24,18,10,.5)}' +
+  '#dlg-licence *{box-sizing:border-box}' +
+  '#dlg-licence .lic-tete{display:flex; align-items:flex-start; gap:12px; padding:14px 18px 10px; border-bottom:1px solid var(--bord, #d9d2c3); flex:none}' +
+  '#dlg-licence .lic-tete h2{margin:0; font-size:19px; line-height:1.2}' +
+  '#dlg-licence .lic-tete small{display:block; margin-top:3px; color:var(--texte-doux, #6b6358); font-size:12px}' +
+  '#dlg-licence .lic-x{margin-left:auto; border:0; background:none; font-size:18px; line-height:1; cursor:pointer; color:inherit; padding:2px 6px}' +
+  '#dlg-licence .lic-corps{overflow:auto; padding:12px 18px 8px; flex:1 1 auto; min-height:0}' +
+  '#dlg-licence h3{margin:14px 0 5px; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; color:#8a4316}' +
+  '#dlg-licence p{margin:6px 0}' +
+  '#dlg-licence .lic-credit{background:#fff7e0; border:1px solid #e3cf93; border-radius:5px; padding:9px 12px; font-weight:600; margin:0 0 10px}' +
+  '#dlg-licence ul.lic-liste{margin:4px 0 4px; padding-left:20px}' +
+  '#dlg-licence ul.lic-liste li{margin:3px 0}' +
+  '#dlg-licence .lic-grille{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin:6px 0 4px}' +
+  '#dlg-licence .lic-carte{border:1px solid var(--bord, #d9d2c3); border-radius:6px; padding:9px 11px; background:#fff}' +
+  '#dlg-licence .lic-carte svg{width:36px; height:36px; display:block; margin-bottom:3px}' +
+  '#dlg-licence .lic-carte b.sg{display:block; font-size:15px; letter-spacing:.04em}' +
+  '#dlg-licence .lic-carte span.nm{display:block; font-weight:600; margin-bottom:3px}' +
+  '#dlg-licence .lic-by{color:#b23b1e} #dlg-licence .lic-nc{color:#b9680f} #dlg-licence .lic-sa{color:#1d7a4c}' +
+  '#dlg-licence .lic-carte p{color:var(--texte, #2a2620); margin:0; font-size:12.5px}' +
+  '#dlg-licence blockquote.lic-citation{margin:6px 0; padding:9px 12px; background:#fff; border-left:4px solid #c9ab72; border-radius:0 4px 4px 0; font-size:12.5px; user-select:all}' +
+  '#dlg-licence .lic-note{color:var(--texte-doux, #6b6358); font-size:12px}' +
+  '#dlg-licence a{color:var(--bleu, #1f5fa8)}' +
+  '#dlg-licence .lic-pied{display:flex; align-items:center; gap:8px; padding:10px 18px; border-top:1px solid var(--bord, #d9d2c3); flex:none; justify-content:flex-end}' +
+  '#dlg-licence .lic-etat{margin-right:auto; color:#1d6b43; font-size:12px}' +
+  '@media (max-width:640px){ #dlg-licence .lic-grille{grid-template-columns:1fr} }' +
+  /* la puce de la barre d'état */
+  '#st-licence{flex:none; padding:1px 8px; border:1px solid var(--bord, #cfc8b8); border-radius:3px; background:#fff; font-size:11px; color:#333; cursor:pointer}' +
+  '#st-licence:hover{background:var(--bleu-survol, #e6f0fb)}' +
+  /* la bande du hub TwinQuest */
+  '#tq-ile .lic-bande-tq{position:absolute; left:50%; bottom:6px; transform:translateX(-50%); z-index:6; max-width:94vw;' +
+    'padding:3px 12px; border:0; border-radius:12px; background:rgba(20,34,18,.6); color:#f4f0df; cursor:pointer;' +
+    'font:600 11px/1.35 "Segoe UI", system-ui, sans-serif; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}' +
+  '#tq-ile .lic-bande-tq:hover{background:rgba(20,34,18,.85)}' +
+  '</style>');
+
+function licPicto(id){
+  var t = {
+    by:'<circle cx="12" cy="7" r="3.2"/><path d="M5.5 21v-5.2A3.8 3.8 0 0 1 9.3 12h5.4a3.8 3.8 0 0 1 3.8 3.8V21"/>',
+    nc:'<circle cx="12" cy="12" r="9"/><path d="M15.4 9.2a4.4 4.4 0 0 0-7 1.3M7.6 12.6h5.6M7.6 14.4h5.6M15.4 14.8a4.4 4.4 0 0 1-7-1.3"/><path d="M5.6 5.6l12.8 12.8"/>',
+    sa:'<path d="M20 12a8 8 0 0 1-13.6 5.7M4 12a8 8 0 0 1 13.6-5.7"/><path d="M17.8 2.8v3.7h-3.7M6.2 21.2v-3.7h3.7"/>'
+  };
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + t[id] + '</svg>';
+}
+function licCarte(id, sigle, nom, texte){
+  return '<div class="lic-carte lic-' + id + '">' + licPicto(id) + '<b class="sg">' + sigle + '</b><span class="nm">' + nom + '</span><p>' + texte + '</p></div>';
+}
+function licCorpsHtml(){
+  return [
+    '<p class="lic-credit">' + echap(licLigne()) + '</p>',
+    '<p><b>Puis-je réutiliser cette application ?</b> Oui, pour enseigner et apprendre, à trois conditions : citer l’auteur, ne pas en faire un usage commercial ' +
+      'et partager vos adaptations dans les mêmes conditions. C’est la licence Creative Commons <i>Attribution – Pas d’Utilisation Commerciale – ' +
+      'Partage dans les Mêmes Conditions 4.0 International</i>, ou <b>' + LIC.sigle + '</b>.</p>',
+    '<h3>Ce que vous pouvez faire</h3>',
+    '<ul class="lic-liste">' +
+      '<li><b>Copier et partager</b> — l’atelier, ses cours et ses documents, sur tous supports : copier, imprimer, projeter, redistribuer.</li>' +
+      '<li><b>Adapter</b> — remixer, transformer et créer à partir de ce contenu, pour vos propres cours.</li>' +
+      '<li><b>Enseigner et apprendre</b> — en classe, en formation ou à la maison, sans demander d’autorisation.</li></ul>',
+    '<h3>À trois conditions</h3>',
+    '<div class="lic-grille">' +
+      licCarte("by", "BY", "Citer l’auteur", '<b>Attribution.</b> Citez l’auteur, donnez le lien vers la licence et signalez vos modifications.') +
+      licCarte("nc", "NC", "Pas de commerce", '<b>Pas d’utilisation commerciale.</b> Réutilisez pour enseigner et apprendre, pas pour vendre.') +
+      licCarte("sa", "SA", "Même licence", '<b>Partage dans les mêmes conditions.</b> Votre adaptation reste sous la même licence.') +
+    '</div>',
+    '<h3>En une phrase</h3>',
+    '<p>Vous pouvez <b>copier, partager et adapter</b> cette application pour <b>enseigner et apprendre</b>, à condition de <b>citer l’auteur</b>, ' +
+      'de <b>ne pas la vendre</b> et de <b>partager vos adaptations</b> sous la même licence.</p>',
+    '<h3>Comment citer</h3>',
+    '<p>Une phrase à placer près de ce que vous réutilisez :</p>',
+    '<blockquote class="lic-citation" id="lic-citation">' + echap(licMention()) + '</blockquote>',
+    '<p>Si vous modifiez l’application, dites-le (« adapté de… ») : votre version reste sous la <b>même licence</b>. ' +
+      'N’écrivez rien qui laisse penser que l’auteur approuve votre usage ou votre version.</p>',
+    '<h3>Ce que la licence ne couvre pas</h3>',
+    '<ul class="lic-liste">' +
+      '<li><b>Les contenus de tiers</b> — photographies et documents d’archives, logos, extraits de textes réglementaires ou de normes, contenus des sites cités : ils gardent leurs propres conditions d’utilisation.</li>' +
+      '<li><b>Les marques</b> — Revit, ArchiCAD, Twinmotion, BIMvision, Genially et les autres noms de logiciels cités appartiennent à leurs détenteurs.</li>' +
+      '<li><b>Les polices et les bibliothèques</b> — celles que l’application embarque gardent leurs propres licences.</li>' +
+      '<li><b>Les mentions particulières</b> — quand un document ou un écran indique une autre licence ou d’autres droits, c’est cette mention qui s’applique à lui.</li></ul>',
+    '<h3>Les textes officiels</h3>',
+    '<ul class="lic-liste">' +
+      '<li><a href="' + LIC.deed + '" target="_blank" rel="noopener">Résumé de la licence ' + LIC.sigle + ' (en français) ↗</a></li>' +
+      '<li><a href="' + LIC.legal + '" target="_blank" rel="noopener">Texte juridique complet de la licence ↗</a></li></ul>',
+    '<p class="lic-note">Cette fenêtre est un résumé pratique : seul le texte de la licence fait foi. L’application fonctionne sans connexion ; ' +
+      'ces deux liens s’ouvrent dans votre navigateur.</p>'
+  ].join("");
+}
+function licDialogue(){
+  var d = document.getElementById("dlg-licence");
+  if(!d){
+    d = document.createElement("dialog");
+    d.id = "dlg-licence";
+    d.setAttribute("aria-label", "Licence et crédits");
+    d.innerHTML =
+      '<div class="lic-tete"><div><h2>Licence et crédits</h2><small id="lic-sous"></small></div>' +
+        '<button type="button" class="lic-x" aria-label="Fermer">✕</button></div>' +
+      '<div class="lic-corps">' + licCorpsHtml() + '</div>' +
+      '<div class="lic-pied"><span class="lic-etat" id="lic-etat" role="status"></span>' +
+        '<button type="button" id="lic-copier">Copier la phrase à citer</button>' +
+        '<button type="button" class="btn-plein lic-fermer" style="width:auto">Fermer</button></div>';
+    document.body.appendChild(d);
+    var fermer = function(){ try { d.close(); } catch(_e){} };
+    d.querySelector(".lic-x").addEventListener("click", fermer);
+    d.querySelector(".lic-fermer").addEventListener("click", fermer);
+    /* un clic sur le fond ferme ; Échap ferme la fenêtre et rien d'autre (le hub TwinQuest écoute aussi Échap) */
+    d.addEventListener("mousedown", function(e){ if(e.target === d) fermer(); });
+    d.addEventListener("keydown", function(e){ e.stopPropagation(); });
+    d.querySelector("#lic-copier").addEventListener("click", function(){
+      var etat = d.querySelector("#lic-etat"), txt = licMention(), citation = d.querySelector("#lic-citation");
+      var copiee = function(){ etat.textContent = "Phrase copiée : elle est prête à coller."; };
+      /* le presse-papiers moderne est parfois refusé (page ouverte depuis un fichier, pas de clic direct) :
+         on sélectionne alors la phrase et on tente la copie classique ; à défaut, elle reste sélectionnée */
+      var repli = function(){
+        var ok = false;
+        try {
+          var r = document.createRange(); r.selectNodeContents(citation);
+          var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+          ok = document.execCommand("copy");
+        } catch(_e){ ok = false; }
+        etat.textContent = ok ? "Phrase copiée : elle est prête à coller." : "Phrase sélectionnée : copiez-la avec Ctrl+C.";
+      };
+      try {
+        if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(copiee, repli);
+        else repli();
+      } catch(_e){ repli(); }
+    });
+  }
+  var v = licVersion();
+  d.querySelector("#lic-sous").textContent = "Atelier Maquette Numérique · BIM Éducation · TwinQuest" + (v ? " · version " + v : "");
+  d.querySelector("#lic-etat").textContent = "";
+  return d;
+}
+function licOuvrir(){
+  var d = licDialogue();
+  if(!d.open){ try { d.showModal(); } catch(_e){} }
+  return d;
+}
+
+/* ---------------------------------------------------------------------
+   94.3 · LES ACCÈS
+   Le menu Fichier (près de « À propos »), la palette Ctrl+K (qui lit ce menu)
+   et une puce dans la barre d'état. Le menu a déjà branché ses boutons au
+   chargement : celui-ci branche donc son propre clic.
+   --------------------------------------------------------------------- */
+try {
+  var licAp = document.querySelector('[data-action="apropos"]');
+  if(licAp && licAp.parentNode && !document.querySelector('[data-action="licence"]')){
+    var licB = document.createElement("button");
+    licB.dataset.action = "licence";
+    licB.title = "Ce que vous pouvez faire de l’application, comment la citer — licence " + LIC.sigle;
+    licB.textContent = "Licence et crédits (" + LIC.sigle + ")…";
+    licAp.parentNode.insertBefore(licB, licAp.nextSibling);
+    licB.addEventListener("click", function(){ licOuvrir(); });
+  }
+} catch(_e94a){}
+try {
+  if(typeof executer === "function"){
+    var _executerAvantLicence = executer;
+    executer = function(action){
+      if(action === "licence"){ licOuvrir(); return; }
+      return _executerAvantLicence.apply(this, arguments);
+    };
+  }
+} catch(_e94b){}
+try {
+  var licSt = document.getElementById("statut"), licAide = document.getElementById("st-aide");
+  if(licSt && !document.getElementById("st-licence")){
+    var licP = document.createElement("button");
+    licP.type = "button"; licP.id = "st-licence";
+    licP.title = licLigne() + " — cliquer pour l’explication";
+    licP.textContent = LIC.sigle;
+    if(licAide && licAide.parentNode === licSt) licSt.insertBefore(licP, licAide); else licSt.appendChild(licP);
+    licP.addEventListener("click", function(){ licOuvrir(); });
+  }
+} catch(_e94c){}
+
+/* ---------------------------------------------------------------------
+   94.4 · TWINQUEST : LA BANDE DU HUB
+   Le hub de TwinQuest (#tq-ile) est construit à la première ouverture, par
+   un module qui n'est pas touché : on le surveille et on lui pose la ligne
+   de crédit, qui ouvre l'explication.
+   --------------------------------------------------------------------- */
+function licBandeTQ(racine){
+  if(!racine || (racine.querySelector && racine.querySelector(".lic-bande-tq"))) return null;
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "lic-bande-tq";
+  b.title = "Licence et crédits : ce que vous pouvez faire de TwinQuest et de l’atelier";
+  b.textContent = licLigne() + "  ⓘ";
+  b.addEventListener("click", function(e){ e.stopPropagation(); licOuvrir(); });
+  racine.appendChild(b);
+  return b;
+}
+try {
+  var licHub = document.getElementById("tq-ile");
+  if(licHub) licBandeTQ(licHub);
+  new MutationObserver(function(muts){
+    for(var i = 0; i < muts.length; i++){
+      var ajoutes = muts[i].addedNodes;
+      for(var k = 0; k < ajoutes.length; k++) if(ajoutes[k].id === "tq-ile") licBandeTQ(ajoutes[k]);
+    }
+  }).observe(document.body, {childList:true});
+} catch(_e94d){}
+
+/* ---------------------------------------------------------------------
+   94.5 · AUTOTESTS
+   --------------------------------------------------------------------- */
+if(typeof AUTOTESTS !== "undefined"){
+  AUTOTESTS.push({
+    nom:"Licence et crédits : la ligne de crédit, les trois conditions CC BY-NC-SA, la phrase à citer, les textes officiels et l’ouverture par le menu",
+    f:function(){
+      var r = [];
+      var ligne = "Sur une idée de : Jean-Philippe Amat | Créateur : Claude | Licence CC BY-NC-SA 4.0";
+      if(licLigne() !== ligne) r.push("ligne de crédit : « " + licLigne() + " »");
+      var d = licDialogue(), h = d.innerHTML;
+      ["Citer l’auteur", "Pas de commerce", "Même licence", "Ce que la licence ne couvre pas", "Les textes officiels", "enseigner et apprendre"].forEach(function(t){
+        if(h.indexOf(t) < 0) r.push("la fenêtre ne dit pas « " + t + " »");
+      });
+      if(h.indexOf(LIC.deed) < 0 || h.indexOf(LIC.legal) < 0) r.push("les liens vers les textes officiels manquent");
+      var m = licMention();
+      if(m.indexOf("Jean-Philippe Amat") < 0 || m.indexOf("Claude") < 0 || m.indexOf("CC BY-NC-SA 4.0") < 0 || m.indexOf(LIC.deed) < 0) r.push("la phrase à citer est incomplète");
+      if(!document.querySelector('.deroulant [data-action="licence"]')) r.push("l’entrée du menu Fichier est absente");
+      if(!document.getElementById("st-licence")) r.push("la puce de la barre d’état est absente");
+      var ouverte = false;
+      try {
+        executer("licence");                         // le chemin de la palette Ctrl+K
+        ouverte = !!document.getElementById("dlg-licence").open;
+        if(ouverte) document.getElementById("dlg-licence").close();
+      } catch(e){ r.push("ouverture : " + e.message); }
+      if(!ouverte) r.push("la fenêtre ne s’ouvre pas par executer(« licence »)");
+      return r.length ? r.join(" · ") : null;
+    }});
+  AUTOTESTS.push({
+    nom:"Licence et crédits : la bande de TwinQuest se pose une fois sur le hub et ouvre l’explication",
+    f:function(){
+      var r = [], hub = document.createElement("div");
+      hub.id = "tq-ile-essai";
+      document.body.appendChild(hub);
+      try {
+        var b = licBandeTQ(hub);
+        if(!b) r.push("la bande n’est pas posée");
+        else {
+          if(b.textContent.indexOf("Sur une idée de : Jean-Philippe Amat | Créateur : Claude | Licence CC BY-NC-SA 4.0") < 0) r.push("texte de la bande : « " + b.textContent + " »");
+          if(licBandeTQ(hub) !== null) r.push("la bande est posée deux fois");
+          b.click();
+          var d = document.getElementById("dlg-licence");
+          if(!d || !d.open) r.push("un clic sur la bande n’ouvre pas la fenêtre");
+          else d.close();
+        }
+      } finally { hub.remove(); }
       return r.length ? r.join(" · ") : null;
     }});
 }

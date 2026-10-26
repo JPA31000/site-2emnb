@@ -74,6 +74,15 @@ a:hover>.gribouille path,a:focus-visible>.gribouille path,a.actif>.gribouille pa
 .nav__chercher{position:relative;display:flex;align-items:center;gap:8px;padding:8px 14px;font:400 18px/1 var(--main);isolation:isolate}
 .nav__chercher svg.loupe{width:20px;height:20px}
 .nav__chercher kbd{font:400 13px var(--texte);color:var(--gr2)}
+.nav__droite{position:relative;z-index:1;display:flex;align-items:center}
+.nav__credit{position:absolute;right:-4px;top:calc(100% + 2px);margin:0;padding:0 4px;white-space:nowrap;font:400 12px/1.2 var(--texte);color:var(--gr2)}
+.nav.solide .nav__credit{background:rgba(247,244,236,.94);border-radius:2px}
+.nav__credit b,.mmenu__credit b{font-weight:700;color:var(--gr)}
+.nav__credit i,.mmenu__credit i{font-style:normal;opacity:.55;margin:0 .1em}
+.nav__credit a,.mmenu__credit a{text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.nav__credit a:hover,.mmenu__credit a:hover{color:var(--rouge)}
+.mmenu__credit{margin:22px 0 0;font:400 14px/1.6 var(--texte);color:var(--gr2)}
+.mmenu p.mmenu__credit a{font:inherit;opacity:1;translate:none;transition:none}
 .cadre{position:absolute;left:-5px;top:-5px;width:calc(100% + 10px);height:calc(100% + 10px);overflow:visible;z-index:-1;filter:url(#crayon);pointer-events:none}
 .cadre path{fill:none;stroke:var(--gr);stroke-width:1.6;stroke-linecap:round}
 .nav__burger{display:none;width:46px;height:46px;place-items:center}
@@ -409,6 +418,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .nav__liens{display:none}
   .nav__burger{display:grid}
   .nav__chercher span,.nav__chercher kbd{display:none}
+  .nav__credit{display:none}
   .hero{grid-template-columns:minmax(0,1fr);min-height:0}
   .etiquettes{overflow-x:auto;justify-content:flex-start;gap:16px;padding:0 4px 14px;scrollbar-width:none;scroll-snap-type:x proximity}
   .etiquettes::-webkit-scrollbar{display:none}
@@ -467,10 +477,13 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     <a href="#projets">Projets</a><a href="#espace">Mon espace</a><a href="#ateliers">Ateliers</a><a href="#decouvrir">Découvrir</a>
     <a id="nav-synth" href="syntheses.html">Synthèses</a>
   </nav>
+  <div class="nav__droite">
   <button class="nav__chercher" type="button" data-chercher aria-label="Chercher dans le site (Ctrl K)">
     <svg class="loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20.5 20.5l-5.2-5.2"/></svg>
     <span>Chercher</span><kbd id="kbd-raccourci">Ctrl K</kbd>
   </button>
+  <p class="nav__credit">Sur une idée de&nbsp;: <b>Jean-Philippe Amat</b> <i>|</i> Créateur&nbsp;: <b>Claude</b> <i>|</i> <a href="licence.html">Licence CC BY-NC-SA 4.0</a></p>
+  </div>
   <button class="nav__burger" type="button" aria-expanded="false" aria-controls="mmenu" aria-label="Ouvrir le menu">
     <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8c6-1 13 1 20-.5M4 14.2c7 .8 13-.6 20 .3M4 20.5c6-.8 14 .9 20-.3"/></svg>
   </button>
@@ -481,6 +494,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   <a href="#ateliers" style="--i:2"><span>03</span>Ateliers</a>
   <a href="#decouvrir" style="--i:3"><span>04</span>Découvrir</a>
   <a href="syntheses.html" style="--i:4"><span>→</span>Synthèses</a>
+  <p class="mmenu__credit">Sur une idée de&nbsp;: <b>Jean-Philippe Amat</b> <i>|</i> Créateur&nbsp;: <b>Claude</b> <i>|</i> <a href="licence.html">Licence CC BY-NC-SA 4.0</a></p>
 </div>
 
 <main>
