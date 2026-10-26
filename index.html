@@ -59,7 +59,7 @@ main,.pied{position:relative;z-index:1}
 .nav::after{content:"";position:absolute;left:var(--gut);right:var(--gut);bottom:6px;height:8px;opacity:0;transition:opacity .4s;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5C80 2 160 7 240 4S360 3 399 5' fill='none' stroke='%232a2a2a' stroke-opacity='.45' stroke-width='1.4'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
 .nav.solide{background:rgba(247,244,236,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .nav.solide::after{opacity:1}
-.nav.cachee{transform:translateY(-104%)}
+.nav.cachee{transform:translateY(-112%)}   /* 112 % : la ligne de crédit dépasse le bas de la barre, elle doit disparaître aussi */
 .logo{display:flex;align-items:center;gap:10px;margin-right:auto;line-height:1}
 .logo b{font:400 30px/1 var(--main)}
 .logo small{display:block;margin-top:3px;font:400 13px var(--texte);color:var(--gr2)}
@@ -75,7 +75,7 @@ a:hover>.gribouille path,a:focus-visible>.gribouille path,a.actif>.gribouille pa
 .nav__chercher svg.loupe{width:20px;height:20px}
 .nav__chercher kbd{font:400 13px var(--texte);color:var(--gr2)}
 .nav__droite{position:relative;z-index:1;display:flex;align-items:center}
-.nav__credit{position:absolute;right:-4px;top:calc(100% + 2px);margin:0;padding:0 4px;white-space:nowrap;font:400 12px/1.2 var(--texte);color:var(--gr2)}
+.nav__credit{position:absolute;right:-4px;top:calc(100% + 7px);margin:0;padding:0 4px;white-space:nowrap;font:400 12px/1.2 var(--texte);color:var(--gr2)}
 .nav.solide .nav__credit{background:rgba(247,244,236,.94);border-radius:2px}
 .nav__credit b,.mmenu__credit b{font-weight:700;color:var(--gr)}
 .nav__credit i,.mmenu__credit i{font-style:normal;opacity:.55;margin:0 .1em}
@@ -363,7 +363,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .apercu{position:fixed;left:0;top:0;z-index:60;width:170px;margin:-90px 0 0 -85px;padding:16px 14px 12px;background:var(--pj);box-shadow:0 18px 26px -14px rgba(0,0,0,.45);pointer-events:none;display:grid;justify-items:center;gap:8px;opacity:0;transition:opacity .3s;will-change:transform}
 .apercu.visible{opacity:1}
 .apercu svg{width:58px;height:58px;color:var(--gr);filter:url(#crayon)}
-.apercu span{font:400 16px var(--main);color:var(--gr2)}
+.apercu span{font:400 16px/1.15 var(--main);color:var(--gr2);text-align:center}
 
 /* ---------- Pied de page ---------- */
 .pied{max-width:var(--maxw);margin:0 auto;padding:clamp(70px,9vw,110px) var(--gut) 40px}
@@ -831,20 +831,22 @@ const DONNEES = {
     { groupe: 'Apprendre autrement', items: [
       { nom: 'Les tutos vidéo', icone: 'tuto', url: WIX + 'tuto-et-podcast', resume: 'Revit et Twinmotion, pas à pas.' },
       { nom: 'Les podcasts', icone: 'podcast', url: WIX + 'tuto-et-podcast', resume: 'Bâtir l’invisible, décoder les plans, le chantier en coulisses…' },
-      { nom: 'L’EDD en 90 secondes', icone: 'edd', url: 'animation-edd.html', resume: 'Animation : de l’empreinte écologique aux 17 objectifs de développement durable.' },   // page du carnet
       { nom: 'Atelier Structure', icone: 'poutre', url: 'atelier-structure.html', resume: 'Banc d’essai : poser des charges, lire les efforts sur des cadrans, faire rompre une poutre… puis la réparer.' },   // page du carnet
       { nom: 'Découvrir les structures', icone: 'mesure', url: 'sequence-structure.html', resume: 'Sept séances guidées : mesurer sur l’Atelier Structure et retrouver soi-même les règles de la mécanique.' },   // page du carnet
       { nom: 'Le Grand Palais en 3D', icone: 'palais', url: 'maquette-grand-palais.html', resume: 'Maquette de 1900 : pieux, charpente métallique, verrière, chantier et descente de charges.' },   // page du carnet
       { nom: 'Maisons groupées d’Albi', icone: 'albi', url: 'maquette-albi.html', resume: 'Maquette de six maisons relevées sur plans : fondations, murs, charpente, lots du CCTP et thermique.' },   // page du carnet
       { nom: 'Notre-Dame en 3D', icone: 'ndame', url: 'maquette-notre-dame.html', resume: 'Maquette de la cathédrale : structure, arcs-boutants, chantier de 1163 à 2024 et incendie de 2019.' },   // page du carnet
-      { nom: 'Atelier Photo', icone: 'photo', url: 'atelier-photo.html', resume: 'Un simulateur de Sony Alpha 6000 : ouverture, vitesse, ISO, mise au point… et 9 défis.' },   // page du carnet
       { nom: 'Les styles architecturaux', icone: 'styles', url: 'styles-architecturaux.html', resume: 'Douze styles, du temple grec à l’architecture bas carbone : une frise et un quiz.' },   // page du carnet
       { nom: 'Le relevé par drone', icone: 'drone', url: 'releve-drone.html', resume: 'Cours : règles de vol, capteurs, photogrammétrie, prises de vues, logiciels et passage à Revit.' },   // page du carnet
       { nom: 'Scanner 3D et nuage de points', icone: 'scanner3d', url: 'nuage-de-points.html', resume: 'Cours : le scanner X7, la tablette, RealWorks, le nuage dans Revit, les panoramas à 360° où l’on mesure.' },   // page du carnet
-      { nom: 'Atelier Électrique', icone: 'electrique', url: 'atelier-electrique.html', resume: 'Une table de manipulations : monter un circuit, mesurer tension et intensité, comparer série et parallèle… 9 défis.' },   // page du carnet
       { nom: 'Les bots', icone: 'bot', url: WIX + 'les-bots', resume: 'Un prof à la maison : posez vos questions à Knowledge’BOT.' },
-      { nom: 'Jeux pédagogiques', icone: 'jeux', url: 'https://profgcce1.wixsite.com/my-site-2', resume: 'BTP’s Game : pendu, puzzle, mots mêlés, memory.' },
       { nom: 'Auto-évaluation', icone: 'autoeval', url: WIX + 'general-5', resume: 'Des quiz et des jeux pour faire le point.' },
+    ] },
+    { groupe: 'S’enrichir de nouvelles connaissances', items: [
+      { nom: 'Atelier Électrique', icone: 'electrique', url: 'atelier-electrique.html', resume: 'Une table de manipulations : monter un circuit, mesurer tension et intensité, comparer série et parallèle… 9 défis.' },   // page du carnet
+      { nom: 'L’EDD en 90 secondes', icone: 'edd', url: 'animation-edd.html', resume: 'Animation : de l’empreinte écologique aux 17 objectifs de développement durable.' },   // page du carnet
+      { nom: 'Atelier Photo', icone: 'photo', url: 'atelier-photo.html', resume: 'Un simulateur de Sony Alpha 6000 : ouverture, vitesse, ISO, mise au point… et 9 défis.' },   // page du carnet
+      { nom: 'Jeux pédagogiques', icone: 'jeux', url: 'https://claude.ai/artifact/HPanpCqJuHiasg3sfhZ7md', resume: 'Le Sentier des Bâtisseurs : cinq jeux de trois minutes pour réviser le lexique du chantier, les métiers et les outils.' },
     ] },
     { groupe: 'Citoyen numérique', items: [
       { nom: 'Le coin du numérique', icone: 'numerique', url: WIX + 'un-pc', resume: 'Installer Revit et Twinmotion, comprendre son ordinateur.' },
