@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Métré et quantitatif · 2EMNB</title>
+<link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <meta name="description" content="World café « Métré et quantitatif » : dimensions HO et DO, fouilles et foisonnement, semelles et soubassement, feuille d’avant-métré et sous-détail de prix, avec des schémas à manipuler, des flashcards, des missions, un exercice sur le plan BA01 et un quiz final.">
 <meta name="theme-color" content="#f7f4ec">
 <meta property="og:type" content="website">
@@ -995,7 +996,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     <div><h4>Le carnet</h4><ul><li><a id="pied-carnet">Accueil du carnet</a></li><li><a href="lecture-de-plans.html">Lecture de plans</a></li><li><a href="acteurs-construire.html">Les acteurs</a></li><li><a href="phases-missions.html">Missions et phases</a></li></ul></div>
     <div><h4>Présenter</h4><ul><li><button type="button" data-presenter>Une partie par écran</button></li><li><a id="pied-origine" target="_blank" rel="noopener">Version d’origine<span class="sr"> (nouvel onglet)</span></a></li></ul></div>
   </div>
-  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main</span><a href="#accueil">Haut de page ↑</a></div>
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · <a href="licence.html">CC BY-NC-SA 4.0</a></span><a href="#accueil">Haut de page ↑</a></div>
 </footer>
 
 <!-- ===================== BARRE DE PRÉSENTATION ===================== -->
@@ -1510,7 +1511,7 @@ function sceneProj(el, o) {
 const titreSouligne = t => { const m = t.replace(/ ([?!:;»])/g, NB + '$1').split(' '), fin = m.pop(); return `${esc(m.join(' '))} <span class="souligne">${esc(fin)}<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 7C60 3 140 10 197 5"/></svg></span>`; };
 const LISTES = {};   // les listes affichées en carte
 const hint = b => (b.hint ? `<p class="consigne">${esc(b.hint)}</p>` : '');
-const htmlEtapes = items => `<ol class="etapes">${items.map((e, k) => `<li class="etape rv" style="--i:${k % 3}${e.couleur ? `;--ca:${e.couleur}` : ''}"><span class="etape__n" aria-hidden="true">${k + 1}</span><div class="fiche${e.details ? '' : ' simple'}"><h4>${e.picto ? picto(e.picto) : ''}<span>${esc(e.titre)}</span>${e.qui ? `<span class="qui"><span class="sr">acteur : </span>${esc(e.qui)}</span>` : ''}</h4><p>${fmt(e.texte)}</p>${e.details ? `<ul>${e.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul>` : ''}</div></li>`).join('')}</ol>`;
+const htmlEtapes = items => `<ol class="etapes">${items.map((e, k) => `<li class="etape rv" style="--i:${k % 3}${e.couleur ? `;--ca:${e.couleur}` : ''}"><span class="etape__n" aria-hidden="true">${k + 1}</span><div class="fiche${e.details ? '' : ' simple'}"><h4>${e.picto ? picto(e.picto) : ''}<span>${esc(e.titre)}</span>${e.qui ? `<span class="qui"><span class="sr">acteur : </span>${esc(e.qui)}</span>` : ''}</h4><p>${fmt(e.texte)}</p>${e.details ? `<ul>${e.details.map(d => `<li>${fmt(d)}</li>`).join('')}</ul>` : ''}</div></li>`).join('')}</ol>`;
 function htmlCarte(cle, centre, pictoCentre, liste, couleur) {   // les acteurs en cercle autour d'un centre ; la fiche de l'acteur choisi à côté
   LISTES[cle] = { liste, couleur };
   const n = liste.length;
@@ -1531,7 +1532,7 @@ const htmlMissions = (liste, cle) => `<div class="rv"><h3 class="bloc-titre">Mis
     <div class="mission__tete">${picto(m.picto || 'dossier')}<div><small>${esc(m.etape.toUpperCase())}</small><h4>${esc(m.titre)}</h4></div></div>
     <div class="mission__avance"><div class="avance__barre" id="barre-${m.id}" role="progressbar" aria-label="Avancement de la mission" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><b id="pc-${m.id}">0${NB}%</b></div>
     <ul class="taches">${m.taches.map((t, i) => `<li><button class="tache" type="button" role="checkbox" aria-checked="false" data-cle="${m.id}-${i}">${CASE}<span>${esc(t)}</span></button></li>`).join('')}</ul>
-    ${m.tuto ? `<button class="tuto-btn" type="button" aria-expanded="false" aria-controls="tuto-${m.id}">Voir le tutoriel ↓</button>
+    ${m.tuto ? `<div class="mission__actions"><button class="tuto-btn" type="button" aria-expanded="false" aria-controls="tuto-${m.id}">Voir le tutoriel ↓</button>${m.lien ? `<a class="tuto-lien" href="${esc(m.lien.url)}" target="_blank" rel="noopener">${esc(m.lien.texte)} ↗<span class="sr"> (nouvel onglet)</span></a>` : ''}</div>
     <div class="tuto" id="tuto-${m.id}" hidden><h5>${esc(m.tuto.titre)}</h5><ol>${m.tuto.etapes.map(e => `<li>${typeof e === 'string' ? fmt(e) : `<b>${esc(e.titre)}</b> ${fmt(e.texte)}${e.astuce ? ` <span class="astuce">${esc(e.astuce)}</span>` : ''}`}</li>`).join('')}</ol></div>` : ''}
   </article>`).join('')}</div></div>`;
 const MARQUES = { '+': ['plus', PLUS, ''], '!': ['moins', ATTN, 'Limite : '], '•': ['point', LOSANGE, ''] };
@@ -1898,6 +1899,7 @@ function htmlAtelier(a) {
       ${(DONNEES.contenus[a.id] || []).map(b => BLOCS[b.type](b, a)).join('')}
       ${(DONNEES.memo?.[a.id] || []).length ? htmlMemo(DONNEES.memo[a.id], a.id) : ''}
       ${(DONNEES.missions?.[a.id] || []).length ? htmlMissions(DONNEES.missions[a.id], a.id) : ''}
+      ${(DONNEES.apres?.[a.id] || []).map(b => BLOCS[b.type](b, a)).join('')}
       ${piedAtelier(prec, suiv, a.id)}
     </div>
   </section>`;
@@ -1921,7 +1923,7 @@ function construirePage() {
       <span class="tampon-fait" data-fait="${a.id}" aria-hidden="true">terminé ✓</span>
       <span class="etq">${esc(D.mot || 'atelier')} ${a.id} · ${esc(a.court.toLowerCase())}</span><h3>${esc(a.titre)}</h3><p>${esc(a.sousTitre)}</p><span class="duree">${a.duree ? `durée${NB}: ${a.duree} min` : 'à votre rythme'}${a.niveau ? ` · <span class="etoiles" title="niveau ${a.niveau} sur 3">${'★'.repeat(a.niveau)}${'☆'.repeat(3 - a.niveau)}</span>` : ''}</span></a>`).join('');
   const total = AT.reduce((t, a) => t + (a.duree || 0), 0);
-  $('#tables-total').innerHTML = D.total || `<b>${total} minutes</b> en tout : ${N} ${esc(D.mot || 'atelier')}s${new Set(AT.map(a => a.duree)).size === 1 ? ` de ${AT[0].duree} min` : ''}${D.quiz ? `, puis le quiz final (${D.quiz.length} questions), ouvert avec le code du professeur` : ''}.`;
+  $('#tables-total').innerHTML = D.total || `<b>${total} minutes</b> en tout${NB}: ${N} ${esc(D.mot || 'atelier')}s${new Set(AT.map(a => a.duree)).size === 1 ? ` de ${AT[0].duree} min` : ''}${D.quiz ? `, puis le quiz final (${D.quiz.length} questions), ouvert avec le code du professeur` : ''}.`;
   // --- les ateliers (avant le quiz, ou avant le pied de page)
   $('#fin-ateliers').insertAdjacentHTML('beforebegin', AT.map(htmlAtelier).join(''));
   // --- chronomètres : l'arc rouge couvre la durée prévue sur un cadran d'une heure

@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atelier Électrique — table de manipulations</title>
+<link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<meta name="description" content="Atelier Électrique : une table de manipulations pour monter un circuit, mesurer tension et intensité, comparer série et parallèle, et réussir 9 défis. Fonctionne hors ligne.">
+<style>
+  :root{
+    --bg:#0e0e10; --panel:#161618; --panel-2:#1d1d20; --line:#2a2a2e;
+    --ink:#ecebe6; --ink-dim:#9a988f; --ink-faint:#65645e;
+    --accent:#e6a049; --accent-soft:#3a2c16;
+    --cyan:#5fb9c4; --danger:#d06b5a; --ok:#7fb069; --led:#7fdc8a;
+    --radius:12px;
+    --mono:ui-monospace,'Cascadia Mono','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:'Sora','Segoe UI',system-ui,-apple-system,sans-serif;
+    --display:'Fraunces',Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(900px 520px at 82% -12%, #1b1a17 0%, transparent 60%),
+      radial-gradient(700px 420px at -8% 110%, #14161a 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--sans); font-weight:300;
+    -webkit-font-smoothing:antialiased; padding:18px 20px 34px;
+  }
+  ::-webkit-scrollbar{width:10px}
+  ::-webkit-scrollbar-thumb{background:#2c2c30;border-radius:8px}
+
+  header{max-width:1280px;margin:0 auto 16px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  header h1{font-family:var(--display);font-weight:600;font-size:28px;letter-spacing:.2px}
+  header h1 .spark{color:var(--accent)}
+  header .sub{color:var(--ink-dim);font-size:13.5px}
+  header .badge{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--accent);
+    border:1px solid var(--accent-soft);background:rgba(230,160,73,.06);padding:4px 10px;border-radius:999px}
+
+  .wrap{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(340px,1fr);gap:16px}
+  @media (max-width:1000px){.wrap{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .card h2{font-family:var(--display);font-weight:500;font-size:16.5px;margin-bottom:4px}
+  .card .hint{color:var(--ink-faint);font-size:12px;margin-bottom:10px}
+  .stack{display:flex;flex-direction:column;gap:16px}
+
+  /* ---------- Alertes ---------- */
+  #alerts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  .alert{font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .alert.warn{border-color:rgba(230,160,73,.5);color:var(--accent)}
+  .alert.danger{border-color:rgba(208,107,90,.6);color:var(--danger);background:rgba(208,107,90,.07)}
+  .alert button{margin-left:auto;background:var(--danger);color:#1a0e0b;border:none;border-radius:7px;
+    padding:6px 12px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer}
+  .alert.warn button{background:var(--accent)}
+
+  /* ---------- Schéma ---------- */
+  #schema{width:100%;height:auto;display:block;user-select:none}
+  .wire{stroke:#7d7c74;stroke-width:2.4;fill:none;stroke-linecap:round}
+  .flow{stroke:var(--accent);stroke-width:2.6;fill:none;stroke-linecap:round;
+        stroke-dasharray:4 11;opacity:0;transition:opacity .35s}
+  .flow.on{opacity:.95}
+  .comp{stroke:var(--ink);stroke-width:2.2;fill:none;stroke-linecap:round}
+  .comp-fill{fill:var(--panel)}
+  .lbl{fill:var(--ink-dim);font-family:var(--mono);font-size:11px;text-anchor:middle}
+  .lbl-strong{fill:var(--ink);font-family:var(--sans);font-weight:500;font-size:12.5px;text-anchor:middle}
+  .node{fill:var(--ink)}
+  .lever{stroke:var(--ink);stroke-width:3;stroke-linecap:round;transition:transform .25s cubic-bezier(.3,1.4,.5,1);pointer-events:none}
+  .hit{cursor:pointer;fill:transparent}
+  .clickable{cursor:pointer}
+  .probe{cursor:pointer}
+  .probe circle,.probe rect{fill:var(--panel-2);stroke:var(--ink-faint);stroke-width:1.6;transition:all .2s}
+  .probe text{font-family:var(--mono);font-size:11px;font-weight:600;fill:var(--ink-dim);text-anchor:middle;pointer-events:none;transition:fill .2s}
+  .probe:hover circle,.probe:hover rect{stroke:var(--ink-dim)}
+  .probe.sel-v circle{fill:var(--accent);stroke:var(--accent)}
+  .probe.sel-v text{fill:#1a1208}
+  .probe.sel-a rect{fill:var(--cyan);stroke:var(--cyan)}
+  .probe.sel-a text{fill:#0b1c1f}
+  .probe.red rect{stroke:var(--danger)}
+  .probe.red text{fill:var(--danger)}
+  .probe.red.sel-a rect{fill:var(--danger);stroke:var(--danger)}
+  .probe.red.sel-a text{fill:#1a0e0b}
+  .clamp{stroke:var(--danger);stroke-width:2;stroke-dasharray:4 5;fill:none}
+  .blown-x{stroke:var(--danger);stroke-width:2.6;stroke-linecap:round;opacity:.9}
+  .lbl-danger{fill:var(--danger);font-family:var(--mono);font-size:10px;text-anchor:middle}
+  .wave{stroke:var(--cyan);stroke-width:2;fill:none;opacity:0}
+  .buzzing .wave{animation:buzzPulse .55s infinite}
+  @keyframes buzzPulse{0%{opacity:.08}50%{opacity:.85}100%{opacity:.08}}
+
+  /* ---------- Contrôles ---------- */
+  .controls{display:grid;grid-template-columns:auto 1fr;gap:14px 22px;align-items:center}
+  @media (max-width:560px){.controls{grid-template-columns:1fr}}
+  .ctl-label{font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.08em}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .chip{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    border-radius:999px;padding:7px 13px;font-family:var(--sans);font-size:13px;cursor:pointer;transition:all .18s}
+  .chip:hover:not(:disabled){color:var(--ink);border-color:var(--ink-faint)}
+  .chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .chip:disabled{opacity:.35;cursor:not-allowed}
+  .chip.big{font-size:14px;padding:9px 20px}
+  .chip.danger-on.on{background:rgba(208,107,90,.12);border-color:var(--danger);color:var(--danger)}
+
+  .gen-row{display:flex;align-items:center;gap:14px}
+  input[type=range]{flex:1;accent-color:var(--accent);height:4px;cursor:pointer;max-width:240px}
+  .gen-val{font-family:var(--mono);font-size:20px;color:var(--accent);min-width:64px}
+  .gen-val small{font-size:11px;color:var(--ink-faint)}
+
+  .knob-row{display:flex;align-items:center;gap:18px}
+  #knob{cursor:grab;touch-action:none}
+  #knob:active{cursor:grabbing}
+  .knob-val{font-family:var(--mono);font-size:20px;color:var(--accent)}
+  .knob-val small{font-size:11px;color:var(--ink-faint);display:block}
+
+  /* ---------- Cadrans ---------- */
+  .gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .gauge{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:6px 4px 2px;text-align:center}
+  .gauge svg{width:100%;height:auto;display:block}
+  .g-arc{stroke:#3c3b37;stroke-width:2;fill:none}
+  .g-red{stroke:var(--danger);stroke-width:3.4;fill:none;opacity:.8}
+  .g-tick{stroke:var(--ink-dim);stroke-width:1.4}
+  .g-tick-min{stroke:var(--ink-faint);stroke-width:1}
+  .g-num{fill:var(--ink-dim);font-family:var(--mono);font-size:9px;text-anchor:middle}
+  .g-needle{stroke:var(--danger);stroke-width:2;stroke-linecap:round}
+  .g-pivot{fill:#3c3b37;stroke:var(--ink-faint);stroke-width:1}
+  .g-name{fill:var(--ink);font-family:var(--display);font-size:12px;text-anchor:middle}
+  .g-read{font-family:var(--mono);font-size:14px;color:var(--ink);padding:2px 0 4px}
+  .g-read small{color:var(--ink-faint)}
+  .mode-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .mode-row .ctl-label{min-width:108px}
+
+  /* ---------- Confort lumineux ---------- */
+  .lux-bar{position:relative;height:42px;margin:14px 2px 6px}
+  .lux-track{position:absolute;inset:14px 0;height:12px;border-radius:6px;background:linear-gradient(90deg,#131313,#5a4a23 60%,#e6a049)}
+  .lux-zone{position:absolute;top:10px;height:20px;border:1.6px solid var(--ok);border-radius:6px;background:rgba(127,176,105,.12);transition:left .3s,width .3s}
+  .lux-marker{position:absolute;top:0;width:2px;height:40px;background:var(--ink);transition:left .4s cubic-bezier(.3,1.2,.5,1)}
+  .lux-marker::after{content:"";position:absolute;top:-1px;left:-4px;border:5px solid transparent;border-top-color:var(--ink)}
+  .lux-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-faint)}
+  .lux-status{margin-top:10px;font-size:13.5px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2)}
+  .lux-status b{font-weight:600}
+  .lux-status.ok{border-color:rgba(127,176,105,.5);color:var(--ok)}
+  .lux-status.low{color:var(--ink-dim)}
+  .lux-status.high{border-color:rgba(208,107,90,.4);color:var(--danger)}
+
+  /* ---------- Calculs & défis ---------- */
+  .calc{font-family:var(--mono);font-size:12.5px;line-height:2;color:var(--ink-dim);white-space:pre-line}
+  .calc b{color:var(--accent);font-weight:600}
+  .calc .res{color:var(--ink)}
+  .defis{list-style:none;display:flex;flex-direction:column;gap:7px}
+  .defis li{font-size:13px;color:var(--ink-dim);display:flex;gap:10px;align-items:baseline;
+    padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);transition:all .3s}
+  .defis li::before{content:"○";color:var(--ink-faint);font-size:13px}
+  .defis li.done{color:var(--ok);border-color:rgba(127,176,105,.45)}
+  .defis li.done::before{content:"✓";color:var(--ok)}
+
+  footer{max-width:1280px;margin:22px auto 0;color:var(--ink-faint);font-size:11.5px;display:flex;gap:10px;flex-wrap:wrap}
+  footer .dot{color:var(--accent)}
+
+  @media (prefers-reduced-motion: reduce){
+    .lever,.lux-marker,.lux-zone{transition:none}
+    .buzzing .wave{animation:none;opacity:.7}
+  }
+.retour-carnet{flex:0 0 100%;margin:0 0 2px;font-family:var(--mono);font-size:12px}.retour-carnet a{color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}.retour-carnet a:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="retour-carnet"><a href="index.html" onclick="try{if(document.referrer&&new window.URL(document.referrer).origin===window.location.origin){window.history.back();return false}}catch(e){}">← Retour au carnet 2EMNB</a> <span aria-hidden="true">·</span> <a href="licence.html">CC BY-NC-SA 4.0</a></p>
+  <h1><span class="spark">⚡</span> Atelier Électrique</h1>
+  <div class="sub">Table de manipulations — Bac Pro · générateur 0–24 V · fusible 2 A</div>
+  <div class="badge">100 % hors-ligne</div>
+</header>
+
+<div class="wrap">
+
+  <!-- Colonne gauche -->
+  <div class="stack">
+    <div class="card">
+      <h2>Schéma du montage</h2>
+      <div class="hint">Clique sur l'interrupteur K et sur la diode (pour l'inverser). Déplace les pastilles <b style="color:var(--accent)">V</b> et <b style="color:var(--cyan)">A</b> pour choisir où mesurer.</div>
+      <div id="alerts"></div>
+      <svg id="schema" viewBox="0 0 760 420" role="img" aria-label="Schéma électrique normalisé"></svg>
+    </div>
+
+    <div class="card">
+      <h2>Commandes</h2>
+      <div class="controls">
+        <div class="ctl-label">Générateur</div>
+        <div class="gen-row">
+          <input type="range" id="genSlider" min="0" max="24" step="1" value="12">
+          <div class="gen-val"><span id="genVal">12</span> V <small>tension</small></div>
+        </div>
+
+        <div class="ctl-label">Interrupteur</div>
+        <div class="chips"><button class="chip big danger-on" id="btnSwitch"></button></div>
+
+        <div class="ctl-label">Sur la ligne</div>
+        <div class="chips">
+          <button class="chip" id="btnRheo">Rhéostat</button>
+          <button class="chip" id="btnDiode">Diode</button>
+          <button class="chip" id="btnDiodeFlip">↻ Inverser la diode</button>
+        </div>
+
+        <div class="ctl-label" id="lblKnob">Rhéostat</div>
+        <div class="knob-row" id="knobRow">
+          <svg id="knob" width="92" height="92" viewBox="0 0 120 120" aria-label="Rhéostat rotatif"></svg>
+          <div class="knob-val"><span id="knobPct">100</span> %<small>curseur</small></div>
+        </div>
+
+        <div class="ctl-label">Récepteur 1</div>
+        <div class="chips" id="chipsRec1">
+          <button class="chip" data-t="lampe">💡 Lampe</button>
+          <button class="chip" data-t="moteur">⚙ Moteur</button>
+          <button class="chip" data-t="resistance">▭ Résistance</button>
+          <button class="chip" data-t="del">◢ DEL</button>
+          <button class="chip" data-t="buzzer">🔔 Buzzer</button>
+        </div>
+
+        <div class="ctl-label">Récepteur 2</div>
+        <div class="chips" id="chipsRec2">
+          <button class="chip" data-t="">Aucun</button>
+          <button class="chip" data-t="lampe">💡 Lampe</button>
+          <button class="chip" data-t="moteur">⚙ Moteur</button>
+          <button class="chip" data-t="resistance">▭ Résistance</button>
+          <button class="chip" data-t="del">◢ DEL</button>
+          <button class="chip" data-t="buzzer">🔔 Buzzer</button>
+        </div>
+
+        <div class="ctl-label">Montage</div>
+        <div class="chips" id="chipsMontage">
+          <button class="chip" data-m="serie">Série</button>
+          <button class="chip" data-m="parallele">Parallèle</button>
+        </div>
+
+        <div class="ctl-label">Pièce</div>
+        <div class="chips" id="chipsRoom">
+          <button class="chip" data-r="chambre">Chambre</button>
+          <button class="chip" data-r="salon">Salon</button>
+          <button class="chip" data-r="cuisine">Cuisine</button>
+          <button class="chip" data-r="atelier">Atelier</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne droite -->
+  <div class="stack">
+    <div class="card">
+      <h2>Appareils de mesure</h2>
+      <div class="hint">Choisis aussi le <b>branchement</b> de chaque appareil… et observe ce qui se passe s'il est mal branché.</div>
+      <div class="gauges">
+        <div class="gauge"><svg id="gV" viewBox="0 0 200 132"></svg><div class="g-read"><span id="rV">—</span> <small>V</small></div></div>
+        <div class="gauge"><svg id="gA" viewBox="0 0 200 132"></svg><div class="g-read"><span id="rA">—</span> <small>A</small></div></div>
+        <div class="gauge"><svg id="gW" viewBox="0 0 200 132"></svg><div class="g-read"><span id="rW">—</span> <small>W</small></div></div>
+      </div>
+      <div class="mode-row">
+        <span class="ctl-label">Voltmètre</span>
+        <div class="chips" id="chipsVMode">
+          <button class="chip" data-vm="derivation">En dérivation</button>
+          <button class="chip" data-vm="serie">En série</button>
+        </div>
+      </div>
+      <div class="mode-row">
+        <span class="ctl-label">Ampèremètre</span>
+        <div class="chips" id="chipsAMode">
+          <button class="chip" data-am="serie">En série</button>
+          <button class="chip" data-am="derivation">En dérivation</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Confort lumineux</h2>
+      <div class="lux-bar">
+        <div class="lux-track"></div>
+        <div class="lux-zone" id="luxZone"></div>
+        <div class="lux-marker" id="luxMarker"></div>
+      </div>
+      <div class="lux-scale"><span>0</span><span>100</span><span>200</span><span>300</span><span>400</span><span>500 lux</span></div>
+      <div class="lux-status" id="luxStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>Calculs en direct</h2>
+      <div class="calc" id="calc"></div>
+    </div>
+
+    <div class="card">
+      <h2>Défis — manips à réaliser</h2>
+      <div class="hint">Les défis se cochent tout seuls quand tu réussis la manipulation.</div>
+      <ul class="defis" id="defis">
+        <li data-d="confort">Atteindre la zone de confort lumineux d'une pièce</li>
+        <li data-d="serie2">Comparer série et parallèle avec 2 récepteurs (voltmètre sur le n°1)</li>
+        <li data-d="moteur">Faire tourner le moteur</li>
+        <li data-d="delok">Allumer la DEL sans la griller (limite le courant !)</li>
+        <li data-d="diode">Bloquer le courant avec la diode en sens inverse</li>
+        <li data-d="vserie">Brancher le voltmètre en série et observer les récepteurs</li>
+        <li data-d="short">Provoquer un court-circuit avec l'ampèremètre en dérivation</li>
+        <li data-d="grille">Griller un récepteur (surtension ou surintensité)</li>
+        <li data-d="repare">Remplacer un fusible ou un récepteur grillé</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Atelier Électrique</span><span class="dot">·</span>
+  <span>Lampe 12 V–6 W (24 Ω) · Moteur 18 Ω · Résistance 36 Ω · DEL (seuil 2 V, max 0,3 A) · Buzzer 48 Ω</span><span class="dot">·</span>
+  <span>Fusible 2 A · Éclairement ≈ 41,7 lux/W</span>
+</footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   ATELIER ÉLECTRIQUE v3 — table de manipulations Bac Pro
+   Récepteurs au choix dans chaque emplacement :
+     lampe 24 Ω (grille > 15 V) · moteur 18 Ω (grille > 16 V)
+     résistance 36 Ω (robuste) · DEL seuil 2 V + 10 Ω (grille > 0,3 A)
+     buzzer 48 Ω (grille > 18 V)
+   Ligne : diode (0,7 V, réversible) · rhéostat 0–48 Ω · fusible 2 A
+   Appareils : voltmètre 1 MΩ (dérivation OU série),
+               ampèremètre ≈ 0 Ω (série OU dérivation = court-circuit).
+   ===================================================================== */
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const R_RH_MAX = 48, R_VOLT = 1e6, R_MIN = 0.08;
+const I_FUSE = 2, V_DIODE = 0.7, LUX_PER_W = 41.7;
+
+const DEVICES = {
+  lampe:      { nom:"Lampe",      code:"L",   R:24, seuil:0, uMax:15,       iMax:Infinity, lux:true  },
+  moteur:     { nom:"Moteur",     code:"M",   R:18, seuil:0, uMax:16,       iMax:Infinity, lux:false },
+  resistance: { nom:"Résistance", code:"Rs",  R:36, seuil:0, uMax:Infinity, iMax:Infinity, lux:false },
+  del:        { nom:"DEL",        code:"DEL", R:10, seuil:2, uMax:Infinity, iMax:0.3,      lux:false },
+  buzzer:     { nom:"Buzzer",     code:"Bz",  R:48, seuil:0, uMax:18,       iMax:Infinity, lux:false }
+};
+const PANNES = {
+  lampe:  "plus de 15 V à ses bornes : le filament a fondu.",
+  moteur: "plus de 16 V à ses bornes : le bobinage a brûlé.",
+  del:    "plus de 0,3 A l'a traversée : il fallait limiter le courant (rhéostat ou résistance en série).",
+  buzzer: "plus de 18 V à ses bornes : la membrane a claqué."
+};
+
+const ROOMS = {
+  chambre: { nom:"Chambre", min:100, max:150 },
+  salon:   { nom:"Salon",   min:150, max:250 },
+  cuisine: { nom:"Cuisine", min:250, max:350 },
+  atelier: { nom:"Atelier", min:350, max:500 }
+};
+
+const state = {
+  uGen: 12, closed: false,
+  hasRheo: true, rhPct: 100,
+  hasDiode: false, diodePassante: true,
+  rec1: "lampe", rec2: "lampe", montage: "serie",
+  vMode: "derivation", vProbe: "r1",
+  aMode: "serie", aProbe: "main",
+  fuseBlown: false,
+  blown: { r1: false, r2: false },
+  room: "salon",
+  ach: {}
+};
+
+/* ---------------------------------------------------------------------
+   PHYSIQUE
+--------------------------------------------------------------------- */
+const slotType = slot => slot === "r1" ? state.rec1 : state.rec2;
+const slotInfo = slot => DEVICES[slotType(slot)];
+const slotLabel = slot => slotInfo(slot).code + (slot === "r1" ? "1" : "2");
+function slotExists(slot){ return slot === "r1" || !!state.rec2; }
+function slotShorted(slot){
+  return state.aMode === "derivation" && state.aProbe === slot && slotExists(slot);
+}
+function slotR(slot){
+  if (slotShorted(slot)) return 0;
+  if (state.blown[slot]) return Infinity;
+  return slotInfo(slot).R;
+}
+function slotS(slot){
+  if (slotShorted(slot) || state.blown[slot]) return 0;
+  return slotInfo(slot).seuil;
+}
+
+function compute(s){
+  const out = { rRh:0, rLine:0, rRec:0, req:0, iMain:0, i1:0, i2:0,
+                uRh:0, uDiode:0, u1:0, u2:0, uVserie:0,
+                p1:0, p2:0, pTot:0, pLux:0, lux:0,
+                open:false, openCause:"", diodeBloque:false, seuilNonAtteint:false };
+
+  out.rRh = s.hasRheo ? (100 - s.rhPct) / 100 * R_RH_MAX : 0;
+  const rVs = s.vMode === "serie" ? R_VOLT : 0;
+  out.rLine = out.rRh + rVs;
+  const two = !!s.rec2;
+  const parallel = (two && s.montage === "parallele");
+  const r1 = slotR("r1"), r2 = two ? slotR("r2") : null;
+  const s1 = slotS("r1"), s2 = two ? slotS("r2") : 0;
+
+  out.diodeBloque = s.hasDiode && (!s.diodePassante || s.uGen <= V_DIODE);
+  const vd = (s.hasDiode && !out.diodeBloque) ? V_DIODE : 0;
+
+  /* circuit ouvert ? */
+  if (!s.closed)            { out.open = true; out.openCause = "switch"; }
+  else if (s.fuseBlown)     { out.open = true; out.openCause = "fuse"; }
+  else if (out.diodeBloque) { out.open = true; out.openCause = "diode"; }
+  else if (!parallel && (r1 === Infinity || (two && r2 === Infinity))) { out.open = true; out.openCause = "rec"; }
+  else if (parallel && r1 === Infinity && r2 === Infinity) { out.open = true; out.openCause = "rec"; }
+
+  if (out.open) {
+    if (out.openCause === "diode") out.uDiode = s.uGen;
+    if (out.openCause === "rec") {
+      if (s.blown.r1 && r1 === Infinity) out.u1 = s.uGen;
+      if (two && s.blown.r2 && r2 === Infinity) out.u2 = s.uGen;
+    }
+    return out;
+  }
+
+  if (!parallel) {
+    /* ---- série (ou récepteur unique) ---- */
+    out.rRec = r1 + (two ? r2 : 0);
+    out.req = Math.max(R_MIN, out.rLine + out.rRec);
+    const uDispo = s.uGen - vd - s1 - s2;
+    out.iMain = Math.max(0, uDispo) / out.req;
+    if (uDispo <= 0) out.seuilNonAtteint = (s1 + s2 > 0);
+    out.i1 = out.iMain; out.i2 = two ? out.iMain : 0;
+    out.u1 = (r1 === 0) ? 0 : s1 + r1 * out.iMain;
+    out.u2 = two ? ((r2 === 0) ? 0 : s2 + r2 * out.iMain) : 0;
+    if (out.iMain === 0) { out.u1 = 0; out.u2 = 0; }
+  } else {
+    /* ---- parallèle ---- */
+    if (r1 === 0 || r2 === 0) {
+      out.rRec = 0;
+      out.req = Math.max(R_MIN, out.rLine);
+      out.iMain = (s.uGen - vd) / out.req;
+      out.i1 = (r1 === 0) ? out.iMain : 0;
+      out.i2 = (r2 === 0) ? out.iMain : 0;
+      out.u1 = 0; out.u2 = 0;
+    } else {
+      /* tension commune uL trouvée par dichotomie :
+         uGen = vd + rLine × (i1(uL) + i2(uL)) + uL  (fonction croissante de uL) */
+      const iBr = (uL, r, sl) => (r === Infinity) ? 0 : Math.max(0, uL - sl) / r;
+      let uL;
+      if (out.rLine < 1e-9) uL = Math.max(0, s.uGen - vd);
+      else {
+        let lo = 0, hi = Math.max(0, s.uGen - vd);
+        for (let k = 0; k < 60; k++) {
+          const mid = (lo + hi) / 2;
+          const g = vd + out.rLine * (iBr(mid, r1, s1) + iBr(mid, r2, s2)) + mid;
+          if (g > s.uGen) hi = mid; else lo = mid;
+        }
+        uL = (lo + hi) / 2;
+      }
+      out.i1 = iBr(uL, r1, s1);
+      out.i2 = iBr(uL, r2, s2);
+      out.iMain = out.i1 + out.i2;
+      out.u1 = uL; out.u2 = uL;
+      out.rRec = out.iMain > 1e-9 ? uL / out.iMain : Infinity;
+      out.seuilNonAtteint = (out.iMain < 1e-9 && (s1 > 0 || s2 > 0));
+      if (out.rRec === Infinity) out.rRec = 0;
+    }
+    out.req = out.rLine + out.rRec;
+  }
+
+  out.uRh = out.rRh * out.iMain;
+  out.uDiode = vd;
+  out.uVserie = rVs * out.iMain;
+  out.p1 = (state.blown.r1 || slotShorted("r1")) ? 0 : out.u1 * out.i1;
+  out.p2 = (two && !state.blown.r2 && !slotShorted("r2")) ? out.u2 * out.i2 : 0;
+  out.pTot = out.p1 + out.p2;
+  out.pLux = (slotType("r1") === "lampe" ? out.p1 : 0)
+           + (two && slotType("r2") === "lampe" ? out.p2 : 0);
+  out.lux = out.pLux * LUX_PER_W;
+  return out;
+}
+
+/* incidents : fusible (surintensité) puis récepteurs (surtension / surintensité) */
+function simulate(){
+  let c, guard = 0;
+  while (guard++ < 8) {
+    c = compute(state);
+    if (!c.open && c.iMain > I_FUSE + 1e-6) {
+      state.fuseBlown = true;
+      if (state.aMode === "derivation") win("short");
+      continue;
+    }
+    let blew = false;
+    for (const slot of ["r1", "r2"]) {
+      if (!slotExists(slot) || state.blown[slot] || slotShorted(slot)) continue;
+      const info = slotInfo(slot);
+      const u = slot === "r1" ? c.u1 : c.u2;
+      const i = slot === "r1" ? c.i1 : c.i2;
+      if (!c.open && (u > info.uMax + 1e-6 || i > info.iMax + 1e-6)) {
+        state.blown[slot] = true; win("grille"); blew = true;
+      }
+    }
+    if (blew) continue;
+    break;
+  }
+  return c;
+}
+
+/* ---------------------------------------------------------------------
+   OUTILS
+--------------------------------------------------------------------- */
+function el(tag, attrs, parent){
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function txt(x, y, str, cls, parent){
+  const t = el("text", { x, y, class: cls }, parent);
+  t.textContent = str;
+  return t;
+}
+function fr(n, dec){
+  return n.toLocaleString("fr-FR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+function win(id){ state.ach[id] = true; }
+
+/* ---------------------------------------------------------------------
+   SYMBOLES DES RÉCEPTEURS
+   Chaque fabrique renvoie { set(u, i, p, blown) } pour la mise à jour.
+--------------------------------------------------------------------- */
+const refs = { flows: [], recs: {}, probesV: {}, probesA: {}, spinners: [] };
+
+function addBlownX(cx, cy, g){
+  const x1 = el("line", { x1: cx-15, y1: cy-15, x2: cx+15, y2: cy+15, class: "blown-x", display: "none" }, g);
+  const x2 = el("line", { x1: cx-15, y1: cy+15, x2: cx+15, y2: cy-15, class: "blown-x", display: "none" }, g);
+  const lbl = txt(cx, cy + 46, "grillé", "lbl-danger", g);
+  lbl.setAttribute("display", "none");
+  return show => { const v = show ? "" : "none"; x1.setAttribute("display", v); x2.setAttribute("display", v); lbl.setAttribute("display", v); };
+}
+
+function makeLampe(cx, cy, label, g){
+  const glow = el("circle", { cx, cy, r: 34, fill: "#ffd27a", opacity: 0 }, g);
+  glow.style.filter = "blur(10px)";
+  el("circle", { cx, cy, r: 21, class: "comp comp-fill" }, g);
+  const d = 21 * Math.SQRT1_2;
+  el("line", { x1: cx-d, y1: cy-d, x2: cx+d, y2: cy+d, class: "comp" }, g);
+  el("line", { x1: cx-d, y1: cy+d, x2: cx+d, y2: cy-d, class: "comp" }, g);
+  txt(cx, cy - 32, label, "lbl-strong", g);
+  const bx = addBlownX(cx, cy, g);
+  return { set(u, i, p, blown){ glow.setAttribute("opacity", blown ? 0 : Math.min(1, p / 6).toFixed(3)); bx(blown); } };
+}
+function makeMoteur(cx, cy, label, g){
+  el("circle", { cx, cy, r: 21, class: "comp comp-fill" }, g);
+  const t = txt(cx, cy + 6, "M", "lbl-strong", g);
+  t.setAttribute("font-size", "17");
+  const rotor = el("line", { x1: 0, y1: 0, x2: 0, y2: -15, stroke: "var(--cyan)", "stroke-width": 2.4, "stroke-linecap": "round" }, g);
+  const gR = el("g", { transform: `translate(${cx},${cy})` }, g);
+  gR.appendChild(rotor);
+  const spin = { g: gR, cx, cy, angle: 0, speed: 0 };
+  refs.spinners.push(spin);
+  txt(cx, cy - 32, label, "lbl-strong", g);
+  const bx = addBlownX(cx, cy, g);
+  return { set(u, i, p, blown){ spin.speed = blown ? 0 : p * 90; bx(blown); } };
+}
+function makeResistance(cx, cy, label, g){
+  el("rect", { x: cx-28, y: cy-10, width: 56, height: 20, class: "comp comp-fill" }, g);
+  const heat = el("rect", { x: cx-26, y: cy-8, width: 52, height: 16, fill: "var(--danger)", opacity: 0 }, g);
+  heat.style.transition = "opacity .4s";
+  txt(cx, cy - 24, label, "lbl-strong", g);
+  const bx = addBlownX(cx, cy, g);
+  return { set(u, i, p, blown){ heat.setAttribute("opacity", blown ? 0 : Math.min(0.85, p / 8).toFixed(3)); bx(blown); } };
+}
+function makeDel(cx, cy, label, g){
+  const glow = el("circle", { cx, cy, r: 28, fill: "var(--led)", opacity: 0 }, g);
+  glow.style.filter = "blur(9px)";
+  el("path", { d: `M${cx-12},${cy-13} L${cx-12},${cy+13} L${cx+11},${cy} Z`, class: "comp comp-fill" }, g);
+  el("line", { x1: cx+11, y1: cy-13, x2: cx+11, y2: cy+13, class: "comp" }, g);
+  /* flèches de lumière */
+  el("path", { d: `M${cx+2},${cy-16} l8,-9 m0,5 l0,-5 l-5,0`, class: "comp", "stroke-width": 1.6 }, g);
+  el("path", { d: `M${cx+12},${cy-13} l8,-9 m0,5 l0,-5 l-5,0`, class: "comp", "stroke-width": 1.6 }, g);
+  txt(cx, cy - 32, label, "lbl-strong", g);
+  const bx = addBlownX(cx, cy, g);
+  return { set(u, i, p, blown){ glow.setAttribute("opacity", blown ? 0 : Math.min(1, i / 0.25).toFixed(3)); bx(blown); } };
+}
+function makeBuzzer(cx, cy, label, g){
+  const gb = el("g", {}, g);
+  el("path", { d: `M${cx-18},${cy+9} A18,18 0 0 1 ${cx+18},${cy+9} Z`, class: "comp comp-fill" }, gb);
+  el("line", { x1: cx-21, y1: cy+9, x2: cx+21, y2: cy+9, class: "comp" }, gb);
+  el("path", { d: `M${cx+22},${cy-8} a12,12 0 0 1 0,16`, class: "wave" }, gb);
+  el("path", { d: `M${cx+28},${cy-13} a19,19 0 0 1 0,26`, class: "wave" }, gb);
+  txt(cx, cy - 26, label, "lbl-strong", g);
+  const bx = addBlownX(cx, cy, g);
+  return { set(u, i, p, blown){ gb.classList.toggle("buzzing", !blown && p > 0.3); bx(blown); } };
+}
+const MAKERS = { lampe: makeLampe, moteur: makeMoteur, resistance: makeResistance, del: makeDel, buzzer: makeBuzzer };
+
+/* ---------------------------------------------------------------------
+   SCHÉMA
+--------------------------------------------------------------------- */
+const schema = document.getElementById("schema");
+
+function probeV(x, y, id, parent){
+  const g = el("g", { class: "probe", "data-v": id }, parent);
+  el("circle", { cx: x, cy: y, r: 11.5 }, g);
+  txt(x, y + 4, "V", "", g);
+  g.addEventListener("click", () => { state.vProbe = id; update(); });
+  refs.probesV[id] = g;
+}
+function probeA(x, y, id, red, parent){
+  const g = el("g", { class: "probe" + (red ? " red" : ""), "data-a": id }, parent);
+  el("rect", { x: x-10, y: y-10, width: 20, height: 20, rx: 4 }, g);
+  txt(x, y + 4, "A", "", g);
+  g.addEventListener("click", () => {
+    state.aProbe = id;
+    if (state.aMode === "derivation") rebuild(); else update();
+  });
+  refs.probesA[id] = g;
+}
+function flowPath(d, parent){
+  const p = el("path", { d, class: "flow" }, parent);
+  refs.flows.push({ path: p, current: 0, offset: 0 });
+}
+
+function buildSchema(){
+  schema.innerHTML = "";
+  refs.flows = []; refs.recs = {}; refs.probesV = {}; refs.probesA = {}; refs.spinners = [];
+  const two = !!state.rec2;
+  const parallel = (two && state.montage === "parallele");
+
+  const gWires = el("g", {}, schema);
+  const gFlow  = el("g", {}, schema);
+  const gComp  = el("g", {}, schema);
+  const gProbe = el("g", {}, schema);
+
+  el("path", { d: "M70,185 L70,90 L150,90", class: "wire" }, gWires);
+  el("path", { d: "M215,90 L690,90 L690,330 L70,330 L70,200", class: "wire" }, gWires);
+
+  if (!parallel) {
+    flowPath("M70,185 L70,90 L690,90 L690,330 L70,330 L70,200", gFlow);
+  } else {
+    el("path", { d: "M250,330 L250,250 L530,250 L530,330", class: "wire" }, gWires);
+    flowPath("M70,185 L70,90 L690,90 L690,330 L530,330", gFlow);
+    flowPath("M530,330 L250,330", gFlow);
+    flowPath("M530,330 L530,250 L250,250 L250,330", gFlow);
+    flowPath("M250,330 L70,330 L70,200", gFlow);
+  }
+
+  /* générateur */
+  el("line", { x1: 44, y1: 185, x2: 96, y2: 185, class: "comp", "stroke-width": 2.4 }, gComp);
+  el("line", { x1: 58, y1: 200, x2: 82, y2: 200, class: "comp", "stroke-width": 5 }, gComp);
+  txt(34, 182, "+", "lbl-strong", gComp);
+  txt(34, 208, "−", "lbl-strong", gComp);
+  refs.genLbl = txt(70, 232, state.uGen + " V", "lbl", gComp);
+
+  /* interrupteur K */
+  el("circle", { cx: 150, cy: 90, r: 3.4, class: "node" }, gComp);
+  el("circle", { cx: 215, cy: 90, r: 3.4, class: "node" }, gComp);
+  refs.lever = el("line", { x1: 150, y1: 90, x2: 211, y2: 90, class: "lever" }, gComp);
+  refs.lever.style.transformOrigin = "150px 90px";
+  txt(182, 62, "K", "lbl-strong", gComp);
+  el("rect", { x: 138, y: 40, width: 90, height: 64, class: "hit" }, gComp)
+    .addEventListener("click", () => { state.closed = !state.closed; update(); });
+
+  /* fusible 2 A */
+  el("rect", { x: 258, y: 81, width: 56, height: 18, class: "comp comp-fill" }, gComp);
+  refs.fuseLine = el("line", { x1: 258, y1: 90, x2: 314, y2: 90, class: "comp" }, gComp);
+  refs.fuseLbl = txt(286, 120, "fusible 2 A", "lbl", gComp);
+
+  /* diode */
+  if (state.hasDiode) {
+    const g = el("g", { class: "clickable" }, gComp);
+    const dx = 388;
+    if (state.diodePassante) {
+      el("path", { d: `M${dx-16},74 L${dx-16},106 L${dx+14},90 Z`, class: "comp comp-fill" }, g);
+      el("line", { x1: dx+14, y1: 74, x2: dx+14, y2: 106, class: "comp" }, g);
+    } else {
+      el("path", { d: `M${dx+16},74 L${dx+16},106 L${dx-14},90 Z`, class: "comp comp-fill" }, g);
+      el("line", { x1: dx-14, y1: 74, x2: dx-14, y2: 106, class: "comp" }, g);
+    }
+    txt(dx, 126, "diode", "lbl", g);
+    el("rect", { x: dx-26, y: 64, width: 52, height: 70, class: "hit" }, g);
+    g.addEventListener("click", () => { state.diodePassante = !state.diodePassante; rebuild(); });
+  }
+
+  /* rhéostat */
+  if (state.hasRheo) {
+    el("rect", { x: 460, y: 76, width: 120, height: 28, class: "comp comp-fill" }, gComp);
+    el("line", { x1: 448, y1: 116, x2: 592, y2: 64, class: "comp" }, gComp);
+    el("path", { d: "M592,64 l-11,1.5 l5,9 z", fill: "#ecebe6" }, gComp);
+    txt(520, 132, "rhéostat", "lbl", gComp);
+  }
+
+  /* voltmètre EN SÉRIE */
+  if (state.vMode === "serie") {
+    el("circle", { cx: 690, cy: 195, r: 18, class: "comp comp-fill", stroke: "var(--accent)" }, gComp);
+    const t = txt(690, 200, "V", "lbl-strong", gComp);
+    t.setAttribute("fill", "var(--accent)");
+    txt(733, 199, "1 MΩ", "lbl", gComp);
+  }
+
+  /* récepteurs */
+  const pos = !two ? { r1: [390, 330] }
+    : !parallel ? { r1: [480, 330], r2: [260, 330] }
+    : { r1: [390, 330], r2: [390, 250] };
+  for (const slot in pos) {
+    const [cx, cy] = pos[slot];
+    const g = el("g", {}, gComp);
+    refs.recs[slot] = Object.assign(
+      MAKERS[slotType(slot)](cx, cy, slotLabel(slot), g),
+      { cx, cy }
+    );
+  }
+  if (parallel) {
+    el("circle", { cx: 530, cy: 330, r: 4, class: "node" }, gComp);
+    el("circle", { cx: 250, cy: 330, r: 4, class: "node" }, gComp);
+  }
+
+  /* ampèremètre EN DÉRIVATION : pince rouge autour du récepteur choisi */
+  if (state.aMode === "derivation") {
+    if (!refs.recs[state.aProbe]) state.aProbe = "r1";
+    const R = refs.recs[state.aProbe];
+    const below = !(parallel && state.aProbe === "r2");
+    const ay = below ? R.cy + 52 : R.cy - 52;
+    el("path", { d: `M${R.cx-21},${R.cy} L${R.cx-21},${ay} L${R.cx-12},${ay}`, class: "clamp" }, gComp);
+    el("path", { d: `M${R.cx+21},${R.cy} L${R.cx+21},${ay} L${R.cx+12},${ay}`, class: "clamp" }, gComp);
+  }
+
+  /* sondes voltmètre */
+  if (state.vMode === "derivation") {
+    probeV(26, 160, "gen", gProbe);
+    if (state.hasDiode) probeV(388, 38, "diode", gProbe);
+    if (state.hasRheo)  probeV(520, 36, "rheo", gProbe);
+    if (!two) probeV(390, 382, "r1", gProbe);
+    else if (!parallel) { probeV(480, 382, "r1", gProbe); probeV(260, 382, "r2", gProbe); }
+    else { probeV(390, 382, "r1", gProbe); probeV(316, 218, "r2", gProbe); }
+  }
+
+  /* sondes ampèremètre */
+  if (state.aMode === "serie") {
+    probeA(690, 280, "main", false, gProbe);
+    if (!two) probeA(220, 330, "b1", false, gProbe);
+    else if (!parallel) { probeA(580, 330, "b1", false, gProbe); probeA(155, 330, "b2", false, gProbe); }
+    else { probeA(465, 330, "b1", false, gProbe); probeA(465, 250, "b2", false, gProbe); }
+  } else {
+    const apos = !two ? { r1: [390, 384] }
+      : !parallel ? { r1: [480, 384], r2: [260, 384] }
+      : { r1: [390, 384], r2: [390, 196] };
+    for (const slot in apos) probeA(apos[slot][0], apos[slot][1], slot, true, gProbe);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   CADRANS
+--------------------------------------------------------------------- */
+function buildGauge(id, name, unit, max, majors, redFrom){
+  const svg = document.getElementById(id);
+  svg.innerHTML = "";
+  const cx = 100, cy = 116, r = 84, a0 = -50, a1 = 50;
+  const rad = a => (a - 90) * Math.PI / 180;
+  const pt = (a, rr) => [cx + rr * Math.cos(rad(a)), cy + rr * Math.sin(rad(a))];
+  const arc = (aa, ab, rr, cls) => {
+    const [x0, y0] = pt(aa, rr), [x1, y1] = pt(ab, rr);
+    el("path", { d: `M${x0},${y0} A${rr},${rr} 0 0 1 ${x1},${y1}`, class: cls }, svg);
+  };
+  arc(a0, a1, r, "g-arc");
+  if (redFrom != null) arc(a0 + (a1-a0) * redFrom / max, a1, r, "g-red");
+  const nTicks = majors * 5;
+  for (let i = 0; i <= nTicks; i++) {
+    const a = a0 + (a1 - a0) * i / nTicks;
+    const major = i % 5 === 0;
+    const [tx0, ty0] = pt(a, r), [tx1, ty1] = pt(a, r - (major ? 10 : 5));
+    el("line", { x1: tx0, y1: ty0, x2: tx1, y2: ty1, class: major ? "g-tick" : "g-tick-min" }, svg);
+    if (major) {
+      const [nx, ny] = pt(a, r - 20);
+      txt(nx, ny + 3, fr(max * i / nTicks, max < 4 ? 1 : 0), "g-num", svg);
+    }
+  }
+  txt(cx, cy - 34, name + " (" + unit + ")", "g-name", svg);
+  const gN = el("g", {}, svg);
+  el("line", { x1: 0, y1: 4, x2: 0, y2: -(r - 8), class: "g-needle" }, gN);
+  el("circle", { cx, cy, r: 5, class: "g-pivot" }, svg);
+  return { gN, cx, cy, a0, a1, max, angle: a0, vel: 0, target: a0 };
+}
+const gauges = {
+  V: buildGauge("gV", "Tension", "V", 24, 6, null),
+  A: buildGauge("gA", "Intensité", "A", 2.5, 5, 2),
+  W: buildGauge("gW", "Puissance", "W", 24, 6, null)
+};
+function setGauge(g, value){
+  const f = Math.max(0, Math.min(1, value / g.max));
+  g.target = g.a0 + (g.a1 - g.a0) * f;
+}
+
+/* ---------------------------------------------------------------------
+   BOUTON ROTATIF
+--------------------------------------------------------------------- */
+const knob = document.getElementById("knob");
+let knobInd;
+(function buildKnob(){
+  const cx = 60, cy = 60;
+  el("circle", { cx, cy, r: 52, fill: "var(--panel-2)", stroke: "var(--line)", "stroke-width": 2 }, knob);
+  for (let i = 0; i < 36; i++) {
+    const a = i * 10 * Math.PI / 180;
+    el("line", {
+      x1: cx + 46 * Math.cos(a), y1: cy + 46 * Math.sin(a),
+      x2: cx + 52 * Math.cos(a), y2: cy + 52 * Math.sin(a),
+      stroke: "#34333a", "stroke-width": 2.4
+    }, knob);
+  }
+  el("circle", { cx, cy, r: 40, fill: "#222127", stroke: "#3a3940", "stroke-width": 1.5 }, knob);
+  txt(20, 112, "0", "g-num", knob);
+  txt(100, 112, "100", "g-num", knob);
+  const g = el("g", {}, knob);
+  knobInd = el("line", { x1: 0, y1: -16, x2: 0, y2: -38, stroke: "var(--accent)", "stroke-width": 4, "stroke-linecap": "round" }, g);
+  g.setAttribute("transform", `translate(${cx},${cy})`);
+  knobInd._g = g;
+})();
+function knobPctFromEvent(ev){
+  const rect = knob.getBoundingClientRect();
+  const x = ev.clientX - (rect.left + rect.width / 2);
+  const y = ev.clientY - (rect.top + rect.height / 2);
+  let rel = ((Math.atan2(y, x) * 180 / Math.PI - 90) + 360) % 360;
+  rel = Math.max(45, Math.min(315, rel));
+  return Math.round((rel - 45) / 270 * 100 / 5) * 5;
+}
+let knobDrag = false;
+knob.addEventListener("pointerdown", ev => { knobDrag = true; knob.setPointerCapture(ev.pointerId); state.rhPct = knobPctFromEvent(ev); update(); });
+knob.addEventListener("pointermove", ev => { if (knobDrag) { state.rhPct = knobPctFromEvent(ev); update(); } });
+knob.addEventListener("pointerup", () => { knobDrag = false; });
+knob.setAttribute("tabindex", "0");
+knob.addEventListener("keydown", ev => {
+  if (ev.key === "ArrowRight" || ev.key === "ArrowUp")   { state.rhPct = Math.min(100, state.rhPct + 5); update(); }
+  if (ev.key === "ArrowLeft"  || ev.key === "ArrowDown") { state.rhPct = Math.max(0,   state.rhPct - 5); update(); }
+});
+
+/* ---------------------------------------------------------------------
+   CONTRÔLES
+--------------------------------------------------------------------- */
+const $ = id => document.getElementById(id);
+$("btnSwitch").addEventListener("click", () => { state.closed = !state.closed; update(); });
+$("genSlider").addEventListener("input", ev => { state.uGen = +ev.target.value; update(); });
+$("btnRheo").addEventListener("click", () => {
+  state.hasRheo = !state.hasRheo;
+  if (!state.hasRheo && state.vProbe === "rheo") state.vProbe = "r1";
+  rebuild();
+});
+$("btnDiode").addEventListener("click", () => {
+  state.hasDiode = !state.hasDiode;
+  if (!state.hasDiode && state.vProbe === "diode") state.vProbe = "r1";
+  rebuild();
+});
+$("btnDiodeFlip").addEventListener("click", () => { if (state.hasDiode) { state.diodePassante = !state.diodePassante; rebuild(); } });
+
+document.querySelectorAll("#chipsRec1 .chip").forEach(b =>
+  b.addEventListener("click", () => { state.rec1 = b.dataset.t; state.blown.r1 = false; rebuild(); }));
+document.querySelectorAll("#chipsRec2 .chip").forEach(b =>
+  b.addEventListener("click", () => { state.rec2 = b.dataset.t || null; state.blown.r2 = false; rebuild(); }));
+document.querySelectorAll("#chipsMontage .chip").forEach(b =>
+  b.addEventListener("click", () => { if (state.rec2) { state.montage = b.dataset.m; rebuild(); } }));
+document.querySelectorAll("#chipsRoom .chip").forEach(b =>
+  b.addEventListener("click", () => { state.room = b.dataset.r; update(); }));
+document.querySelectorAll("#chipsVMode .chip").forEach(b =>
+  b.addEventListener("click", () => { state.vMode = b.dataset.vm; rebuild(); }));
+document.querySelectorAll("#chipsAMode .chip").forEach(b =>
+  b.addEventListener("click", () => {
+    state.aMode = b.dataset.am;
+    state.aProbe = state.aMode === "serie" ? "main" : "r1";
+    rebuild();
+  }));
+
+function replaceFuse(){ state.fuseBlown = false; win("repare"); update(); }
+function replaceRec(slot){ state.blown[slot] = false; win("repare"); update(); }
+
+/* ---------------------------------------------------------------------
+   MISE À JOUR
+--------------------------------------------------------------------- */
+function rebuild(){
+  if (!state.rec2) {
+    if (state.vProbe === "r2") state.vProbe = "r1";
+    if (state.aProbe === "b2") state.aProbe = "b1";
+    if (state.aMode === "derivation" && state.aProbe === "r2") state.aProbe = "r1";
+  }
+  buildSchema();
+  update();
+}
+
+function update(){
+  const c = simulate();
+  const two = !!state.rec2;
+  const parallel = (two && state.montage === "parallele");
+
+  refs.lever.style.transform = state.closed ? "rotate(0deg)" : "rotate(-32deg)";
+  $("btnSwitch").textContent = state.closed ? "Fermé — courant possible" : "Ouvert — pas de courant";
+  $("btnSwitch").classList.toggle("on", !state.closed);
+  $("genVal").textContent = state.uGen;
+  refs.genLbl.textContent = state.uGen + " V";
+  $("knobPct").textContent = state.rhPct;
+  knobInd._g.setAttribute("transform", `translate(60,60) rotate(${-135 + 2.7 * state.rhPct})`);
+  $("knobRow").style.display = state.hasRheo ? "" : "none";
+  $("lblKnob").style.display = state.hasRheo ? "" : "none";
+  $("btnRheo").classList.toggle("on", state.hasRheo);
+  $("btnDiode").classList.toggle("on", state.hasDiode);
+  $("btnDiodeFlip").disabled = !state.hasDiode;
+
+  document.querySelectorAll("#chipsRec1 .chip").forEach(b => b.classList.toggle("on", b.dataset.t === state.rec1));
+  document.querySelectorAll("#chipsRec2 .chip").forEach(b => b.classList.toggle("on", (b.dataset.t || null) === state.rec2));
+  document.querySelectorAll("#chipsMontage .chip").forEach(b => {
+    b.classList.toggle("on", two && b.dataset.m === state.montage);
+    b.disabled = !two;
+  });
+  document.querySelectorAll("#chipsRoom .chip").forEach(b => b.classList.toggle("on", b.dataset.r === state.room));
+  document.querySelectorAll("#chipsVMode .chip").forEach(b => b.classList.toggle("on", b.dataset.vm === state.vMode));
+  document.querySelectorAll("#chipsAMode .chip").forEach(b => b.classList.toggle("on", b.dataset.am === state.aMode));
+
+  refs.fuseLine.style.strokeDasharray = state.fuseBlown ? "3 5" : "";
+  refs.fuseLine.style.stroke = state.fuseBlown ? "var(--ink-faint)" : "";
+  refs.fuseLbl.textContent = state.fuseBlown ? "fusible grillé !" : "fusible 2 A";
+  refs.fuseLbl.setAttribute("class", state.fuseBlown ? "lbl-danger" : "lbl");
+
+  const flowing = !c.open && c.iMain > 0.001 && state.vMode !== "serie";
+  const currents = parallel ? [c.iMain, c.i1, c.i2, c.iMain] : [c.iMain];
+  refs.flows.forEach((f, i) => {
+    f.current = currents[i] || 0;
+    f.path.classList.toggle("on", flowing && f.current > 0.001);
+  });
+
+  for (const slot of ["r1", "r2"]) {
+    const R = refs.recs[slot]; if (!R) continue;
+    const u = slot === "r1" ? c.u1 : c.u2;
+    const i = slot === "r1" ? c.i1 : c.i2;
+    const p = slot === "r1" ? c.p1 : c.p2;
+    R.set(u, i, p, state.blown[slot]);
+  }
+
+  for (const id in refs.probesV) refs.probesV[id].classList.toggle("sel-v", id === state.vProbe);
+  for (const id in refs.probesA) refs.probesA[id].classList.toggle("sel-a", id === state.aProbe);
+
+  let vVal;
+  if (state.vMode === "serie") vVal = c.uVserie;
+  else vVal = { gen: state.uGen, rheo: c.uRh, diode: c.uDiode, r1: c.u1, r2: c.u2 }[state.vProbe] || 0;
+  let aVal;
+  if (state.aMode === "serie") aVal = { main: c.iMain, b1: c.i1, b2: c.i2 }[state.aProbe] || 0;
+  else aVal = c.open ? 0 : c.iMain;
+  setGauge(gauges.V, vVal); setGauge(gauges.A, aVal); setGauge(gauges.W, c.pTot);
+  $("rV").textContent = fr(vVal, 1);
+  $("rA").textContent = fr(aVal, 2);
+  $("rW").textContent = fr(c.pTot, 1);
+
+  /* défis */
+  if (state.vMode === "serie" && state.closed && !state.fuseBlown && !c.open) win("vserie");
+  if (c.diodeBloque && state.closed && state.hasDiode && !state.fuseBlown) win("diode");
+  if (two && state.montage === "parallele" && state.vProbe === "r1"
+      && state.vMode === "derivation" && !c.open && c.iMain > 0.01) state._sawPar = true;
+  if (two && state.montage === "serie" && state.vProbe === "r1"
+      && state.vMode === "derivation" && !c.open && c.iMain > 0.01 && state._sawPar) win("serie2");
+  for (const slot of ["r1", "r2"]) {
+    if (!slotExists(slot) || state.blown[slot] || slotShorted(slot) || c.open) continue;
+    const t = slotType(slot), i = slot === "r1" ? c.i1 : c.i2, p = slot === "r1" ? c.p1 : c.p2;
+    if (t === "moteur" && p > 1) win("moteur");
+    if (t === "del" && i > 0.02 && i <= DEVICES.del.iMax) win("delok");
+  }
+
+  /* confort lumineux */
+  const room = ROOMS[state.room], LMAX = 550;
+  $("luxZone").style.left = (room.min / LMAX * 100) + "%";
+  $("luxZone").style.width = ((room.max - room.min) / LMAX * 100) + "%";
+  $("luxMarker").style.left = (Math.min(LMAX, c.lux) / LMAX * 100) + "%";
+  const st = $("luxStatus");
+  const luxR = Math.round(c.lux);
+  const hasLamp = slotType("r1") === "lampe" || (two && slotType("r2") === "lampe");
+  if (!hasLamp) {
+    st.className = "lux-status low";
+    st.innerHTML = `<b>${room.nom}</b> : aucune lampe dans le circuit — pas d'éclairage.`;
+  } else if (c.open || c.lux < 1) {
+    st.className = "lux-status low";
+    st.innerHTML = `<b>${room.nom}</b> : 0 lux — les lampes sont éteintes.`;
+  } else if (luxR < room.min) {
+    st.className = "lux-status low";
+    st.innerHTML = `<b>${room.nom}</b> : ${fr(luxR,0)} lux — trop sombre (cible ${room.min}–${room.max} lux).`;
+  } else if (luxR > room.max) {
+    st.className = "lux-status high";
+    st.innerHTML = `<b>${room.nom}</b> : ${fr(luxR,0)} lux — trop éclairé (cible ${room.min}–${room.max} lux).`;
+  } else {
+    st.className = "lux-status ok";
+    st.innerHTML = `<b>${room.nom}</b> : ${fr(luxR,0)} lux — confort atteint ✓ (cible ${room.min}–${room.max} lux).`;
+    win("confort");
+  }
+
+  document.querySelectorAll("#defis li").forEach(li => li.classList.toggle("done", !!state.ach[li.dataset.d]));
+
+  renderAlerts(c);
+  renderCalc(c, two, parallel);
+}
+
+/* ---------------------------------------------------------------------
+   ALERTES
+--------------------------------------------------------------------- */
+function renderAlerts(c){
+  const box = $("alerts");
+  box.innerHTML = "";
+  const add = (cls, html, btnLabel, btnFn) => {
+    const d = document.createElement("div");
+    d.className = "alert " + cls;
+    d.innerHTML = html;
+    if (btnLabel) {
+      const b = document.createElement("button");
+      b.textContent = btnLabel;
+      b.addEventListener("click", btnFn);
+      d.appendChild(b);
+    }
+    box.appendChild(d);
+  };
+  if (state.fuseBlown)
+    add("danger", "⚠ <b>Fusible grillé</b> — l'intensité a dépassé 2 A (court-circuit ou surcharge).", "Remplacer le fusible", replaceFuse);
+  for (const slot of ["r1", "r2"]) {
+    if (slotExists(slot) && state.blown[slot]) {
+      const t = slotType(slot);
+      add("danger", `💥 <b>${DEVICES[t].nom} n°${slot === "r1" ? 1 : 2} grillé(e)</b> — ${PANNES[t] || "panne."}`,
+          "Remplacer " + slotLabel(slot), () => replaceRec(slot));
+    }
+  }
+  if (state.aMode === "derivation" && !state.fuseBlown)
+    add("danger", "⚠ <b>Ampèremètre en dérivation</b> : sa résistance quasi nulle court-circuite le récepteur. C'est l'erreur interdite !");
+  if (state.vMode === "serie" && state.closed && !c.open)
+    add("warn", "ℹ <b>Voltmètre en série</b> : sa très grande résistance (1 MΩ) bloque presque tout le courant → les récepteurs restent à l'arrêt. Il se branche en dérivation.");
+  if (c.diodeBloque && state.closed)
+    add("warn", "ℹ <b>Diode en sens bloquant</b> : le courant ne passe pas. Clique sur la diode pour l'inverser.");
+  if (c.seuilNonAtteint && state.closed)
+    add("warn", "ℹ <b>Seuil non atteint</b> : la DEL a besoin d'au moins 2 V à ses bornes pour conduire. Augmente la tension.");
+}
+
+/* ---------------------------------------------------------------------
+   CALCULS EN DIRECT
+--------------------------------------------------------------------- */
+function renderCalc(c, two, parallel){
+  const calc = $("calc");
+  if (!state.closed) {
+    calc.innerHTML = `Circuit <b>ouvert</b> (interrupteur K) : <span class="res">I = 0 A</span>.
+Le générateur garde U = ${fr(state.uGen,0)} V à ses bornes.`;
+    return;
+  }
+  if (state.fuseBlown) {
+    calc.innerHTML = `<b>Fusible grillé</b> : circuit coupé, <span class="res">I = 0 A</span>.
+Le fusible protège l'installation dès que I > 2 A.`;
+    return;
+  }
+  if (c.diodeBloque) {
+    calc.innerHTML = `<b>Diode bloquante</b> : elle ne laisse passer le courant que dans un sens.
+<span class="res">I = 0 A</span> — toute la tension (${fr(state.uGen,0)} V) est à ses bornes.`;
+    return;
+  }
+  if (c.open && c.openCause === "rec") {
+    calc.innerHTML = `Un récepteur grillé = un <b>circuit ouvert</b> : <span class="res">I = 0 A</span>.
+La tension du générateur se retrouve aux bornes de la coupure.`;
+    return;
+  }
+  if (state.vMode === "serie") {
+    calc.innerHTML = `Voltmètre <b>en série</b> : Réq ≈ 1 000 000 Ω !
+I = ${fr(state.uGen,0)} / 1 000 000 ≈ <span class="res">0 A</span> → tout est à l'arrêt.
+Le voltmètre se branche <b>en dérivation</b>, aux bornes d'un dipôle.`;
+    return;
+  }
+  const vd = c.uDiode > 0 && !c.diodeBloque ? V_DIODE : 0;
+  const dTxt = vd ? ` − 0,7 (diode)` : "";
+  const rhTxt = state.hasRheo ? `${fr(c.rRh,1)} (rhéostat) + ` : "";
+  const n1 = slotLabel("r1"), n2 = two ? slotLabel("r2") : "";
+  const i1 = slotInfo("r1"), i2 = two ? slotInfo("r2") : null;
+  const sTot = (slotS("r1") + (two ? slotS("r2") : 0));
+  const sTxt = sTot ? ` − ${fr(sTot,0)} (seuil DEL)` : "";
+
+  if (state.aMode === "derivation") {
+    calc.innerHTML = `Ampèremètre <b>en dérivation</b> sur ${slotLabel(state.aProbe)} : R ≈ 0 Ω (court-circuit).
+Réq = ${rhTxt}${fr(c.rRec,1)} = <span class="res">${fr(c.rRh + c.rRec,2)} Ω</span>
+I = (U${dTxt}${sTxt}) / Réq = <span class="res">${fr(c.iMain,2)} A</span> ${c.iMain > 1.5 ? "→ proche du fusible !" : ""}`;
+    return;
+  }
+  if (!two) {
+    calc.innerHTML = `Réq = ${rhTxt}R(${n1})=${fr(i1.R,0)} = <span class="res">${fr(c.req,1)} Ω</span>
+<b>I = (U${dTxt}${sTxt}) / Réq</b> = <span class="res">${fr(c.iMain,2)} A</span>
+U(${n1}) = <span class="res">${fr(c.u1,1)} V</span> · P(${n1}) = <span class="res">${fr(c.p1,1)} W</span>`;
+  } else if (!parallel) {
+    calc.innerHTML = `Montage <b>série</b> : même courant partout.
+Réq = ${rhTxt}R(${n1})=${fr(i1.R,0)} + R(${n2})=${fr(i2.R,0)} = <span class="res">${fr(c.req,1)} Ω</span>
+<b>I = (U${dTxt}${sTxt}) / Réq</b> = <span class="res">${fr(c.iMain,2)} A</span>
+U(${n1}) = <span class="res">${fr(c.u1,1)} V</span> · U(${n2}) = <span class="res">${fr(c.u2,1)} V</span> (la tension se partage)
+P tot = <span class="res">${fr(c.pTot,1)} W</span>`;
+  } else {
+    calc.innerHTML = `Montage <b>parallèle</b> : même tension sur chaque branche.
+U(branches) = <span class="res">${fr(c.u1,1)} V</span>
+I(${n1}) = <span class="res">${fr(c.i1,2)} A</span> · I(${n2}) = <span class="res">${fr(c.i2,2)} A</span>
+Loi des nœuds : ${fr(c.i1,2)} + ${fr(c.i2,2)} = <span class="res">${fr(c.iMain,2)} A</span> · P tot = <span class="res">${fr(c.pTot,1)} W</span>`;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   ANIMATION
+--------------------------------------------------------------------- */
+const reduceMotion = typeof window.matchMedia === "function"
+  && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let lastT = performance.now();
+function tick(t){
+  const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t;
+  for (const k in gauges) {
+    const g = gauges[k];
+    if (reduceMotion) { g.angle = g.target; }
+    else {
+      g.vel += (g.target - g.angle) * 28 * dt;
+      g.vel *= Math.pow(0.012, dt);
+      g.angle += g.vel * 60 * dt * 0.16 + (g.target - g.angle) * 3 * dt;
+    }
+    g.gN.setAttribute("transform", `translate(${g.cx},${g.cy}) rotate(${g.angle})`);
+  }
+  if (!reduceMotion) {
+    refs.flows.forEach(f => {
+      if (f.current > 0.001 && f.path.classList.contains("on")) {
+        f.offset = (f.offset - Math.min(f.current, 2.5) * 130 * dt) % 15;
+        f.path.setAttribute("stroke-dashoffset", f.offset);
+      }
+    });
+    refs.spinners.forEach(sp => {
+      if (sp.speed > 0) {
+        sp.angle = (sp.angle + sp.speed * dt) % 360;
+        sp.g.setAttribute("transform", `translate(${sp.cx},${sp.cy}) rotate(${sp.angle})`);
+      }
+    });
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------------------------------------------------------------------
+   DÉMARRAGE
+--------------------------------------------------------------------- */
+buildSchema();
+update();
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

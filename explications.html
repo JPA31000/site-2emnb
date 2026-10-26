@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Explications · 2EMNB</title>
+<link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <meta name="description" content="Cours avec les 2 EMNB et les 1AA : une démarche de pédagogie de projet adaptée à la formation de techniciens d’études du bâtiment (lycée Urbain Vitry, Toulouse).">
 <meta name="theme-color" content="#f7f4ec">
 <meta property="og:type" content="website">
@@ -158,6 +159,12 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 /* ---------- Accueil ---------- */
 .hero{position:relative;max-width:1400px;margin:0 auto;padding:calc(var(--nav) + 18px) var(--gut) 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(20px,4vw,60px);align-items:center;min-height:min(100svh,960px)}
 .lycee{margin:0 0 14px;font:400 17px var(--main);color:var(--gr2);transform:rotate(-1.5deg);transform-origin:0 50%}
+.retour{margin:0 0 14px;font:400 19px var(--main)}
+.retour a{display:inline-flex;align-items:center;gap:8px;padding:2px 0;color:var(--bleu);transition:color .3s}
+.retour a span{display:inline-block;transition:transform .4s var(--e-ressort)}
+.retour a:hover,.retour a:focus-visible{color:var(--rouge)}
+.retour a:hover span,.retour a:focus-visible span{transform:translateX(-4px)}
+.presente .retour{display:none}   /* en présentation, une partie par écran : pas de lien de sortie */
 .hero h1{margin:0 0 14px;font:400 clamp(2.5rem,min(5.6vw,9vh),5.4rem)/1.04 var(--main);letter-spacing:.005em}
 .entoure{position:relative;display:inline-block;color:var(--rouge)}
 .entoure svg{position:absolute;left:-7%;top:-14%;width:114%;height:128%;overflow:visible;pointer-events:none}
@@ -522,6 +529,7 @@ a.mini:hover,a.mini:focus-visible{animation:balance 1.3s var(--e-out)}
   <!-- ===================== ACCUEIL ===================== -->
   <section class="hero" id="accueil" data-diapo="Cours avec les 2 EMNB" aria-labelledby="t-accueil">
     <div class="hero__texte">
+      <p class="retour"><a href="index.html"><span aria-hidden="true">←</span>Accueil du carnet</a></p>
       <p class="lycee">Explications · Lycée Urbain Vitry, Toulouse</p>
       <h1 id="t-accueil">Cours avec les <span class="entoure">2 EMNB<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 160 0 188 26C212 50 140 80 60 72C10 66 2 40 34 18C56 6 96 6 124 9"/></svg></span> et les 1AA</h1>
       <p class="chapo">Une démarche de <mark>pédagogie de projet</mark> adaptée à la formation de techniciens d’études du bâtiment.</p>
@@ -800,7 +808,7 @@ a.mini:hover,a.mini:focus-visible{animation:balance 1.3s var(--e-out)}
     <div><h4>Le carnet</h4><ul><li><a id="pied-carnet">Accueil du carnet</a></li><li><a href="bienvenue.html">Bienvenue en seconde</a></li></ul></div>
     <div><h4>Présenter</h4><ul><li><button type="button" data-presenter>Une partie par écran</button></li><li><a id="pied-gamma" target="_blank" rel="noopener">Version Gamma d’origine<span class="sr"> (nouvel onglet)</span></a></li></ul></div>
   </div>
-  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main</span><a href="#accueil">Haut de page ↑</a></div>
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · <a href="licence.html">CC BY-NC-SA 4.0</a></span><a href="#accueil">Haut de page ↑</a></div>
 </footer>
 
 <!-- ===================== BARRE DE PRÉSENTATION ===================== -->

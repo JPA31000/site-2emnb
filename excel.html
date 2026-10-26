@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Exercices tableur · 2EMNB</title>
+<link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <meta name="description" content="Six exercices progressifs sur Excel et Google Sheets, sur le thème du bâtiment : métré de peinture, devis, comparaison de fournisseurs, planning de chantier, graphique et fiche de synthèse, avec barre de formule, indices et corrections.">
 <meta name="theme-color" content="#f7f4ec">
 <meta property="og:type" content="website">
@@ -860,7 +861,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     <div><h4>Le carnet</h4><ul><li><a id="pied-carnet">Accueil du carnet</a></li><li><a href="lecture-de-plans.html">Lecture de plans</a></li><li><a href="acteurs-construire.html">Les acteurs</a></li><li><a href="phases-missions.html">Missions et phases</a></li></ul></div>
     <div><h4>Présenter</h4><ul><li><button type="button" data-presenter>Une partie par écran</button></li><li><a id="pied-origine" target="_blank" rel="noopener">Version d’origine<span class="sr"> (nouvel onglet)</span></a></li></ul></div>
   </div>
-  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main</span><a href="#accueil">Haut de page ↑</a></div>
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · <a href="licence.html">CC BY-NC-SA 4.0</a></span><a href="#accueil">Haut de page ↑</a></div>
 </footer>
 
 <!-- ===================== BARRE DE PRÉSENTATION ===================== -->
@@ -1382,6 +1383,48 @@ function vitrine(o) {   // l'accueil : un dessin de base, puis des vues que l'on
   };
 }
 
+/* ---------- la géométrie du dessin ---------- */
+const RAD = Math.PI / 180, cosd = a => Math.cos(a * RAD), sind = a => Math.sin(a * RAD);
+const f1 = n => (+n).toFixed(1);
+const seg = (x1, y1, x2, y2) => `M${f1(x1)} ${f1(y1)}L${f1(x2)} ${f1(y2)}`;
+const ligne = pts => 'M' + pts.map(([x, y]) => `${f1(x)} ${f1(y)}`).join('L');   // une ligne brisée
+const poly = pts => ligne(pts) + 'Z';                                               // un polygone fermé
+const fleche = (x1, y1, x2, y2, t = 9) => {                                          // un trait terminé par une pointe
+  const a = Math.atan2(y2 - y1, x2 - x1), u = a + Math.PI * .85, v = a - Math.PI * .85;
+  return `M${f1(x1)} ${f1(y1)}L${f1(x2)} ${f1(y2)}M${f1(x2 + t * Math.cos(u))} ${f1(y2 + t * Math.sin(u))}L${f1(x2)} ${f1(y2)}L${f1(x2 + t * Math.cos(v))} ${f1(y2 + t * Math.sin(v))}`;
+};
+const arc = (cx, cy, r, a0, a1) => {   // un arc de cercle ; angles en degrés, 0° vers la droite, positifs vers le bas (sens des aiguilles d'une montre)
+  const x0 = cx + r * cosd(a0), y0 = cy + r * sind(a0), x1 = cx + r * cosd(a1), y1 = cy + r * sind(a1);
+  return `M${f1(x0)} ${f1(y0)}A${r} ${r} 0 ${Math.abs(a1 - a0) > 180 ? 1 : 0} ${a1 > a0 ? 1 : 0} ${f1(x1)} ${f1(y1)}`;
+};
+const lerp = (x, x1, y1, x2, y2) => (x2 === x1 ? y1 : y1 + (x - x1) / (x2 - x1) * (y2 - y1));   // y de la droite (x1, y1)-(x2, y2) en x
+
+
+/* ---------- un schéma à manipuler : boutons marche / arrêt, curseurs, dessin recalculé à chaque geste ---------- */
+function sceneProj(el, o) {
+  const puces = o.puces.map(p => `<button class="scene__puce" type="button" aria-pressed="${p.on}" data-id="${p.id}">${esc(p.nom)}</button>`).join('');
+  const curs = o.curseurs.map(c => `<label class="scene__curseur"><span>${esc(c.nom)}</span><input type="range" min="${c.min}" max="${c.max}" step="${c.pas || 1}" value="${c.val}" data-id="${c.id}"${c.aria ? ` aria-label="${esc(c.aria)}"` : ''}>${c.fmt ? `<output>${c.fmt(c.val)}</output>` : ''}</label>`).join('');
+  const { svg, ctrl, legende } = coque(el, '0 0 560 420', `${puces ? `<div class="scene__puces" role="group" aria-label="${esc(o.aria)}">${puces}</div>` : ''}${curs}`);
+  const E = {}; o.puces.forEach(p => (E[p.id] = p.on)); o.curseurs.forEach(c => (E[c.id] = c.val));
+  let vu = false;
+  const rendre = () => { svg.innerHTML = `<g class="seg ${vu ? 'vieux' : 'neuf'}">${o.dessin(E, 0)}</g>`; legende.innerHTML = typo(o.texte(E)); };
+  ctrl.addEventListener('click', e => {
+    const b = e.target.closest('.scene__puce'); if (!b) return;
+    E[b.dataset.id] = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(E[b.dataset.id]));
+    vu = true; legende.setAttribute('aria-live', 'polite'); rendre();
+  });
+  ctrl.addEventListener('input', e => {
+    const i = e.target.closest('input[type="range"]'); if (!i) return;
+    const c = o.curseurs.find(x => x.id === i.dataset.id); E[c.id] = +i.value;
+    const sortie = $('output', i.parentElement); if (sortie) sortie.textContent = c.fmt(+i.value);
+    i.setAttribute('aria-valuetext', c.fmt ? c.fmt(+i.value) : i.value);
+    vu = true; legende.setAttribute('aria-live', 'polite'); rendre();
+  });
+  rendre();
+  surEcran(el, v => { if (v && !vu) { vu = true; void svg.getBoundingClientRect(); $('.seg', svg).classList.add('go'); } });   // le dessin se trace la première fois qu'il est vu
+  return { E, rendre };
+}
+
 
 /* =====================================================================
    4. CONSTRUCTION DE LA PAGE (tout vient de DONNEES)
@@ -1389,7 +1432,7 @@ function vitrine(o) {   // l'accueil : un dessin de base, puis des vues que l'on
 const titreSouligne = t => { const m = t.replace(/ ([?!:;»])/g, NB + '$1').split(' '), fin = m.pop(); return `${esc(m.join(' '))} <span class="souligne">${esc(fin)}<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 7C60 3 140 10 197 5"/></svg></span>`; };
 const LISTES = {};   // les listes affichées en carte
 const hint = b => (b.hint ? `<p class="consigne">${esc(b.hint)}</p>` : '');
-const htmlEtapes = items => `<ol class="etapes">${items.map((e, k) => `<li class="etape rv" style="--i:${k % 3}${e.couleur ? `;--ca:${e.couleur}` : ''}"><span class="etape__n" aria-hidden="true">${k + 1}</span><div class="fiche${e.details ? '' : ' simple'}"><h4>${e.picto ? picto(e.picto) : ''}<span>${esc(e.titre)}</span>${e.qui ? `<span class="qui"><span class="sr">acteur : </span>${esc(e.qui)}</span>` : ''}</h4><p>${fmt(e.texte)}</p>${e.details ? `<ul>${e.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul>` : ''}</div></li>`).join('')}</ol>`;
+const htmlEtapes = items => `<ol class="etapes">${items.map((e, k) => `<li class="etape rv" style="--i:${k % 3}${e.couleur ? `;--ca:${e.couleur}` : ''}"><span class="etape__n" aria-hidden="true">${k + 1}</span><div class="fiche${e.details ? '' : ' simple'}"><h4>${e.picto ? picto(e.picto) : ''}<span>${esc(e.titre)}</span>${e.qui ? `<span class="qui"><span class="sr">acteur : </span>${esc(e.qui)}</span>` : ''}</h4><p>${fmt(e.texte)}</p>${e.details ? `<ul>${e.details.map(d => `<li>${fmt(d)}</li>`).join('')}</ul>` : ''}</div></li>`).join('')}</ol>`;
 function htmlCarte(cle, centre, pictoCentre, liste, couleur) {   // les acteurs en cercle autour d'un centre ; la fiche de l'acteur choisi à côté
   LISTES[cle] = { liste, couleur };
   const n = liste.length;
@@ -1410,8 +1453,8 @@ const htmlMissions = (liste, cle) => `<div class="rv"><h3 class="bloc-titre">Mis
     <div class="mission__tete">${picto(m.picto || 'dossier')}<div><small>${esc(m.etape.toUpperCase())}</small><h4>${esc(m.titre)}</h4></div></div>
     <div class="mission__avance"><div class="avance__barre" id="barre-${m.id}" role="progressbar" aria-label="Avancement de la mission" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><b id="pc-${m.id}">0${NB}%</b></div>
     <ul class="taches">${m.taches.map((t, i) => `<li><button class="tache" type="button" role="checkbox" aria-checked="false" data-cle="${m.id}-${i}">${CASE}<span>${esc(t)}</span></button></li>`).join('')}</ul>
-    ${m.tuto ? `<button class="tuto-btn" type="button" aria-expanded="false" aria-controls="tuto-${m.id}">Voir le tutoriel ↓</button>
-    <div class="tuto" id="tuto-${m.id}" hidden><h5>${esc(m.tuto.titre)}</h5><ol>${m.tuto.etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol></div>` : ''}
+    ${m.tuto ? `<div class="mission__actions"><button class="tuto-btn" type="button" aria-expanded="false" aria-controls="tuto-${m.id}">Voir le tutoriel ↓</button>${m.lien ? `<a class="tuto-lien" href="${esc(m.lien.url)}" target="_blank" rel="noopener">${esc(m.lien.texte)} ↗<span class="sr"> (nouvel onglet)</span></a>` : ''}</div>
+    <div class="tuto" id="tuto-${m.id}" hidden><h5>${esc(m.tuto.titre)}</h5><ol>${m.tuto.etapes.map(e => `<li>${typeof e === 'string' ? fmt(e) : `<b>${esc(e.titre)}</b> ${fmt(e.texte)}${e.astuce ? ` <span class="astuce">${esc(e.astuce)}</span>` : ''}`}</li>`).join('')}</ol></div>` : ''}
   </article>`).join('')}</div></div>`;
 const MARQUES = { '+': ['plus', PLUS, ''], '!': ['moins', ATTN, 'Limite : '], '•': ['point', LOSANGE, ''] };
 const BLOCS = {   // un rendu par type de bloc
@@ -1570,7 +1613,7 @@ function initHero() {
   };
 }
 
-function htmlProbleme(texte, etiquette = 'PROBLÉMATIQUE') { return `<p class="postit probleme rv"><svg viewBox="0 0 34 34" aria-hidden="true">${etiquette === 'PROBLÉMATIQUE' ? '<circle cx="17" cy="17" r="14"/><path d="M12.5 13a4.5 4.5 0 1 1 6.6 4c-1.4.8-2.1 1.8-2.1 3.2M17 25v.5"/>' : '<path d="M9 4h12l6 6v20H9z"/><path d="M21 4v6h6M13 16h10M13 21h10M13 26h6"/>'}</svg><span><small>${esc(etiquette)}</small>${esc(texte)}</span></p>`; }
+function htmlProbleme(texte, etiquette = 'PROBLÉMATIQUE') { return `<p class="postit probleme rv"><svg viewBox="0 0 34 34" aria-hidden="true">${etiquette.startsWith('PROBLÉMATIQUE') ? '<circle cx="17" cy="17" r="14"/><path d="M12.5 13a4.5 4.5 0 1 1 6.6 4c-1.4.8-2.1 1.8-2.1 3.2M17 25v.5"/>' : '<path d="M9 4h12l6 6v20H9z"/><path d="M21 4v6h6M13 16h10M13 21h10M13 26h6"/>'}</svg><span><small>${esc(etiquette)}</small>${esc(texte)}</span></p>`; }
 const piedAtelier = (prec, suiv, id) => `<div class="atelier__pied rv"><nav aria-label="Circuler entre les parties"><a class="lien" href="#accueil">↑ Haut de page</a><a class="lien" href="${prec}">← Précédent</a><a class="lien" href="${suiv}">Suivant →</a></nav><button class="btn btn-fait" type="button" id="fait-${id}" data-atelier="${id}" aria-pressed="false">${CASE}<span>Marquer comme terminé</span></button></div>`;
 function htmlAtelier(a) {
   const prec = a.id > 1 ? `#atelier-${a.id - 1}` : '#tables', suiv = a.id < AT.length ? `#atelier-${a.id + 1}` : (DONNEES.quiz ? '#quiz' : '#accueil');
@@ -1586,6 +1629,7 @@ function htmlAtelier(a) {
       ${(DONNEES.contenus[a.id] || []).map(b => BLOCS[b.type](b, a)).join('')}
       ${(DONNEES.memo?.[a.id] || []).length ? htmlMemo(DONNEES.memo[a.id], a.id) : ''}
       ${(DONNEES.missions?.[a.id] || []).length ? htmlMissions(DONNEES.missions[a.id], a.id) : ''}
+      ${(DONNEES.apres?.[a.id] || []).map(b => BLOCS[b.type](b, a)).join('')}
       ${piedAtelier(prec, suiv, a.id)}
     </div>
   </section>`;
@@ -1607,9 +1651,9 @@ function construirePage() {
   tables.innerHTML = AT.map((a, i) => `<a class="table-wc rv" href="#atelier-${a.id}" style="--i:${i};--r:${ROT[i % 6]}deg;--ca:${a.couleur};--c:${a.papier}">
       <svg viewBox="0 0 120 84" aria-hidden="true"><path d="M14 32c-8 4-8 16 0 20M106 32c8 4 8 16 0 20M42 14c4-8 32-8 36 0M42 70c4 8 32 8 36 0"/><ellipse class="plateau" cx="60" cy="42" rx="38" ry="20"/><text x="60" y="50">${a.id}</text></svg>
       <span class="tampon-fait" data-fait="${a.id}" aria-hidden="true">terminé ✓</span>
-      <span class="etq">${esc(D.mot || 'atelier')} ${a.id} · ${esc(a.court.toLowerCase())}</span><h3>${esc(a.titre)}</h3><p>${esc(a.sousTitre)}</p><span class="duree">durée${NB}: ${a.duree} min${a.niveau ? ` · <span class="etoiles" title="niveau ${a.niveau} sur 3">${'★'.repeat(a.niveau)}${'☆'.repeat(3 - a.niveau)}</span>` : ''}</span></a>`).join('');
-  const total = AT.reduce((t, a) => t + a.duree, 0);
-  $('#tables-total').innerHTML = `<b>${total} minutes</b> en tout : ${N} ${esc(D.mot || 'atelier')}s${new Set(AT.map(a => a.duree)).size === 1 ? ` de ${AT[0].duree} min` : ''}${D.quiz ? `, puis le quiz final (${D.quiz.length} questions), ouvert avec le code du professeur` : ''}.`;
+      <span class="etq">${esc(D.mot || 'atelier')} ${a.id} · ${esc(a.court.toLowerCase())}</span><h3>${esc(a.titre)}</h3><p>${esc(a.sousTitre)}</p><span class="duree">${a.duree ? `durée${NB}: ${a.duree} min` : 'à votre rythme'}${a.niveau ? ` · <span class="etoiles" title="niveau ${a.niveau} sur 3">${'★'.repeat(a.niveau)}${'☆'.repeat(3 - a.niveau)}</span>` : ''}</span></a>`).join('');
+  const total = AT.reduce((t, a) => t + (a.duree || 0), 0);
+  $('#tables-total').innerHTML = D.total || `<b>${total} minutes</b> en tout${NB}: ${N} ${esc(D.mot || 'atelier')}s${new Set(AT.map(a => a.duree)).size === 1 ? ` de ${AT[0].duree} min` : ''}${D.quiz ? `, puis le quiz final (${D.quiz.length} questions), ouvert avec le code du professeur` : ''}.`;
   // --- les ateliers (avant le quiz, ou avant le pied de page)
   $('#fin-ateliers').insertAdjacentHTML('beforebegin', AT.map(htmlAtelier).join(''));
   // --- chronomètres : l'arc rouge couvre la durée prévue sur un cadran d'une heure
@@ -1657,8 +1701,9 @@ function initCartes() {
       const a = liste.find(x => x.id === id);
       fiche.style.setProperty('--c', a.couleur || couleur);
       fiche.innerHTML = `<div class="fiche-acteur__tete">${picto(a.picto)}<div><h4>${esc(a.label)}</h4>${a.abbr ? `<span class="sigle">${esc(a.abbr)}</span>` : ''}</div></div>
-        <p class="role">${esc(a.role)}</p><p>${esc(a.description)}</p>
-        ${a.exemples ? `<h5>MOTS-CLÉS</h5><div class="outils">${a.exemples.map(o => `<span>${esc(o)}</span>`).join('')}</div>` : ''}`;
+        <p class="role">${esc(a.role)}</p>${a.description ? `<p>${esc(a.description)}</p>` : ''}
+        ${a.exemples ? `<h5>MOTS-CLÉS</h5><div class="outils">${a.exemples.map(o => `<span>${esc(o)}</span>`).join('')}</div>` : ''}
+        ${(a.listes || []).map(l => `<h5>${esc(l.titre)}</h5>${l.puces ? `<div class="outils${l.mono ? ' outils--mono' : ''}">${l.puces.map(o => `<span>${esc(o)}</span>`).join('')}</div>` : `<ul class="fiche-liste">${l.lignes.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`}`).join('')}`;
     };
     noeuds.forEach(b => b.addEventListener('click', () => {
       choisir(b.dataset.id);

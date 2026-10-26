@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les styles architecturaux — cours interactif</title>
+<link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<meta name="description" content="Cours interactif : douze styles architecturaux, du temple grec à l’architecture bas carbone, lus par leur structure, leur matériau, leurs percements et leur décor. Frise et quiz.">
+<style>
+:root{
+  --nuit:#16110d; --nuit2:#1e1712; --encre:#0f0b08;
+  --creme:#f2e7d5; --creme2:#cdbda6;
+  --ambre:#e0a458; --ambre-vif:#ffc477; --brique:#a8553a;
+  --trait:#e8dcc6;
+  --serif:"Fraunces","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:"Syne","Avenir Next","Futura","Trebuchet MS",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1200px 700px at 78% -10%, rgba(224,164,88,.16), transparent 60%),
+    radial-gradient(900px 600px at 5% 105%, rgba(168,85,58,.16), transparent 62%),
+    var(--nuit);
+  color:var(--creme); font-family:var(--sans);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+body::after{ /* grain */
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:99;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='.6'/></svg>");
+}
+
+/* ---------- barre haute ---------- */
+header{
+  display:flex; align-items:center; gap:18px; padding:14px 26px 10px;
+  border-bottom:1px solid rgba(224,164,88,.22); position:relative; z-index:5;
+}
+.marque{font-family:var(--serif); font-size:17px; letter-spacing:.02em; white-space:nowrap}
+.marque b{color:var(--ambre)}
+.frise{display:flex; gap:5px; flex:1; overflow-x:auto; padding-bottom:2px; scrollbar-width:none}
+.frise::-webkit-scrollbar{display:none}
+.puce{
+  border:1px solid rgba(242,231,213,.22); background:transparent; color:var(--creme2);
+  font-family:var(--sans); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+  padding:5px 9px; border-radius:2px; cursor:pointer; white-space:nowrap; transition:.22s;
+}
+.puce:hover{color:var(--creme); border-color:var(--ambre)}
+.puce.on{background:var(--ambre); border-color:var(--ambre); color:var(--encre); font-weight:700}
+.compteur{font-family:var(--serif); font-size:15px; color:var(--creme2); white-space:nowrap}
+.compteur b{color:var(--ambre); font-size:22px}
+#jauge{position:absolute; left:0; bottom:-1px; height:2px; background:var(--ambre); width:0; transition:width .4s cubic-bezier(.2,.8,.2,1)}
+
+/* ---------- scène ---------- */
+main{flex:1; overflow-y:auto; overflow-x:hidden; padding:26px 30px 96px}
+.slide{max-width:1180px; margin:0 auto; animation:entree .5s ease both}
+@keyframes entree{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+.periode{
+  font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ambre);
+  border-left:2px solid var(--ambre); padding-left:10px; margin-bottom:10px;
+}
+h1{font-family:var(--serif); font-size:clamp(28px,4.4vw,50px); font-weight:600; line-height:1.03; letter-spacing:-.015em}
+h1 em{color:var(--ambre); font-style:italic}
+.chapo{color:var(--creme2); font-size:15.5px; line-height:1.55; max-width:62ch; margin-top:12px}
+
+.grille{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:34px; margin-top:22px; align-items:start}
+@media (max-width:900px){.grille{grid-template-columns:1fr}}
+
+.cadre{
+  background:linear-gradient(160deg,#211a14,#171109); border:1px solid rgba(224,164,88,.28);
+  border-radius:3px; padding:10px; position:relative;
+  box-shadow:0 26px 60px rgba(0,0,0,.5), inset 0 0 70px rgba(224,164,88,.05);
+}
+.cadre::before{content:""; position:absolute; inset:5px; border:1px solid rgba(242,231,213,.09); border-radius:2px; pointer-events:none}
+.cadre svg{display:block; width:100%; height:auto}
+.legende-croquis{font-family:var(--serif); font-style:italic; font-size:12.5px; color:var(--creme2); text-align:center; padding:6px 4px 2px}
+
+/* croquis : traits */
+.cq{fill:none; stroke:var(--trait); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; transition:stroke .25s, stroke-width .25s}
+.cq.fin{stroke-width:1; stroke:rgba(232,220,198,.55)}
+.cq.plein{fill:rgba(224,164,88,.07)}
+.sol{stroke:var(--brique); stroke-width:2}
+.hl .cq, .cq.hl{stroke:var(--ambre-vif) !important; stroke-width:3 !important; filter:drop-shadow(0 0 7px rgba(255,196,119,.75))}
+g.hl .cq.plein{fill:rgba(255,196,119,.16)}
+
+/* ---------- références / photos ---------- */
+.refs{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
+@media (max-width:520px){.refs{grid-template-columns:1fr}}
+.ref{
+  background:rgba(242,231,213,.035); border:1px solid rgba(242,231,213,.1);
+  border-radius:2px; padding:8px; display:flex; flex-direction:column; gap:7px; position:relative; transition:.2s;
+}
+.ref.survol{border-color:var(--ambre); background:rgba(224,164,88,.12)}
+.vig{
+  aspect-ratio:16/10; border:1px dashed rgba(224,164,88,.35); border-radius:2px; overflow:hidden;
+  display:grid; place-items:center; background:rgba(15,11,8,.5); position:relative; cursor:pointer;
+}
+.vig svg{width:118%; opacity:.34; filter:grayscale(1)}
+.vig img{width:100%; height:100%; object-fit:cover; display:block; opacity:1; filter:none}
+.vig::after{
+  content:"＋ déposer une photo"; position:absolute; bottom:5px; left:0; right:0; text-align:center;
+  font-size:10px; letter-spacing:.08em; color:var(--creme2); opacity:.65; pointer-events:none;
+}
+.vig.pleine::after{content:""}
+.ref figcaption strong{display:block; font-size:13.5px; line-height:1.25}
+.ref figcaption span{display:block; font-size:11.5px; color:var(--ambre); margin-top:2px}
+.ref figcaption em{display:block; font-size:11.5px; color:var(--creme2); font-style:normal; opacity:.8}
+.ref .credit{
+  width:100%; margin-top:4px; background:transparent; border:0; border-bottom:1px solid rgba(242,231,213,.14);
+  color:var(--creme2); font-family:var(--sans); font-size:10.5px; padding:2px 0; outline:none;
+}
+.ref .credit:focus{border-bottom-color:var(--ambre)}
+.ref .credit::placeholder{color:rgba(205,189,166,.45)}
+
+/* ---------- clés de lecture ---------- */
+.titre-bloc{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--creme2); margin:2px 0 12px}
+.cles{list-style:none; display:flex; flex-direction:column; gap:8px}
+.cle{
+  display:flex; gap:12px; align-items:flex-start; padding:11px 13px; cursor:pointer;
+  background:rgba(242,231,213,.035); border:1px solid rgba(242,231,213,.09);
+  border-left:2px solid rgba(224,164,88,.4); border-radius:2px; transition:.2s;
+}
+.cle:hover{background:rgba(224,164,88,.1); border-left-color:var(--ambre); transform:translateX(4px)}
+.cle.actif{background:rgba(224,164,88,.16); border-left-color:var(--ambre-vif)}
+.num{
+  font-family:var(--serif); font-size:13px; color:var(--ambre); border:1px solid var(--ambre);
+  width:24px; height:24px; flex:none; display:grid; place-items:center; border-radius:50%;
+}
+.cle strong{display:block; font-size:14.5px; letter-spacing:.01em; margin-bottom:2px}
+.cle span{font-size:13px; color:var(--creme2); line-height:1.45}
+.astuce{font-size:11.5px; color:var(--creme2); opacity:.7; margin-top:10px; font-style:italic}
+
+.reperes{margin-top:20px; padding-top:16px; border-top:1px dashed rgba(224,164,88,.3)}
+.tags{display:flex; flex-wrap:wrap; gap:7px}
+.tag{font-size:11.5px; padding:4px 9px; border:1px solid rgba(224,164,88,.35); border-radius:999px; color:var(--creme2)}
+.tag b{color:var(--ambre); font-weight:600}
+
+/* ---------- frise récap ---------- */
+.frise-slide{margin-top:20px}
+.ligne{display:grid; grid-template-columns:118px 1fr; gap:14px; align-items:center; padding:9px 0; border-bottom:1px solid rgba(242,231,213,.08)}
+.ligne .an{font-family:var(--serif); color:var(--ambre); font-size:14px; text-align:right}
+.barre{height:16px; border-radius:2px; background:linear-gradient(90deg,rgba(224,164,88,.85),rgba(168,85,58,.5)); position:relative}
+.barre span{position:absolute; left:10px; top:-2px; font-size:11px; color:var(--encre); font-weight:700; letter-spacing:.05em; line-height:19px; white-space:nowrap}
+
+/* ---------- quiz ---------- */
+.quiz{display:flex; flex-direction:column; gap:16px; margin-top:20px; max-width:820px}
+.q{background:rgba(242,231,213,.04); border:1px solid rgba(242,231,213,.1); border-radius:3px; padding:16px 18px}
+.q p{font-family:var(--serif); font-size:16.5px; margin-bottom:11px}
+.q p b{color:var(--ambre)}
+.opts{display:flex; flex-wrap:wrap; gap:8px}
+.opt{
+  background:transparent; border:1px solid rgba(242,231,213,.22); color:var(--creme);
+  font-family:var(--sans); font-size:13.5px; padding:8px 13px; border-radius:2px; cursor:pointer; transition:.18s;
+}
+.opt:hover:not(:disabled){border-color:var(--ambre); background:rgba(224,164,88,.12)}
+.opt:disabled{cursor:default; opacity:.75}
+.opt.juste{background:rgba(120,180,110,.22); border-color:#8fd18a; color:#dff5db; opacity:1}
+.opt.faux{background:rgba(190,70,60,.2); border-color:#d78a80; color:#fbdcd8}
+.retour{margin-top:10px; font-size:13px; color:var(--creme2); line-height:1.5; display:none}
+.retour.vu{display:block; animation:entree .3s ease both}
+.score{font-family:var(--serif); font-size:20px; color:var(--ambre); margin-top:6px}
+
+/* ---------- pied ---------- */
+footer{
+  position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; align-items:center; gap:12px;
+  padding:12px; background:linear-gradient(to top,var(--encre) 55%,transparent); z-index:6;
+}
+.nav{
+  background:transparent; border:1px solid rgba(224,164,88,.5); color:var(--creme);
+  font-family:var(--sans); font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+  padding:10px 20px; border-radius:2px; cursor:pointer; transition:.2s;
+}
+.nav:hover:not(:disabled){background:var(--ambre); color:var(--encre); border-color:var(--ambre)}
+.nav:disabled{opacity:.28; cursor:default}
+.clavier{font-size:11px; color:var(--creme2); opacity:.6; letter-spacing:.06em}
+@media (max-width:640px){.clavier{display:none} main{padding:18px 16px 92px}}
+.retour-carnet{flex:none;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ambre);text-decoration:none;border-bottom:1px solid currentColor;white-space:nowrap}.retour-carnet:hover{color:var(--creme)}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="retour-carnet" href="index.html" onclick="try{if(document.referrer&&new window.URL(document.referrer).origin===window.location.origin){window.history.back();return false}}catch(e){}" aria-label="Retour au carnet 2EMNB">← Carnet</a>
+  <div class="marque">Les styles <b>architecturaux</b></div>
+  <nav class="frise" id="frise"></nav>
+  <div class="compteur"><b id="num">1</b>/<span id="tot">15</span></div>
+  <div id="jauge"></div>
+</header>
+
+<main id="scene"></main>
+
+<footer>
+  <button class="nav" id="prec">← Précédent</button>
+  <span class="clavier">flèches ← → · clique un croquis-clé pour le repérer sur le dessin</span>
+  <button class="nav" id="suiv">Suivant →</button>
+</footer>
+
+<script>
+/* ============ filtre « croquis » commun ============ */
+const DEFS = `<defs><filter id="ru" x="-6%" y="-6%" width="112%" height="112%">
+<feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="t"/>
+<feDisplacementMap in="SourceGraphic" in2="t" scale="2.1" xChannelSelector="R" yChannelSelector="G"/>
+</filter></defs>`;
+
+const svg = (inner) => `<svg viewBox="0 0 420 285" xmlns="http://www.w3.org/2000/svg">${DEFS}<g filter="url(#ru)">${inner}
+<path class="cq sol" d="M14 262 H406"/></g></svg>`;
+
+/* ============ croquis ============ */
+const C = {};
+
+C.grec = svg(`
+<g id="k4"><path class="cq" d="M40 254h340M48 244h324M56 234h308"/></g>
+${[68,120,172,224,276,328].map(x=>`<g id="c${x}"><path class="cq" d="M${x} 234V128M${x+20} 234V128"/><path class="cq fin" d="M${x+6} 230V132M${x+13} 230V132"/><path class="cq" d="M${x-4} 128h28v-9h-28z"/></g>`).join('')}
+<g id="k3"><path class="cq" d="M62 119h296M62 119v-16h296v16"/><path class="cq fin" d="M100 103v-16M140 103v-16M180 103v-16M220 103v-16M260 103v-16M300 103v-16"/><path class="cq" d="M56 87h308v-11H56z"/></g>
+<g id="k1"><path class="cq plein" d="M50 76 210 26 370 76Z"/><path class="cq fin" d="M74 70 210 40 346 70"/></g>
+<g id="k2"><path class="cq" d="M68 128h20M328 128h20"/></g>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">temple périptère · ordre dorique</text>`);
+
+C.romain = svg(`
+${[40,146,252,358].map(x=>`<path class="cq" d="M${x} 254V120h24v134"/>`).join('')}
+<g id="k1"><path class="cq plein" d="M64 254v-64a41 41 0 0 1 82 0v64"/><path class="cq plein" d="M170 254v-64a41 41 0 0 1 82 0v64"/><path class="cq plein" d="M276 254v-64a41 41 0 0 1 82 0v64"/></g>
+<g id="k2"><path class="cq" d="M203 143l-9 8 4 10h10l4-10z"/></g>
+<g id="k4"><path class="cq fin" d="M64 190a41 41 0 0 1 82 0M170 190a41 41 0 0 1 82 0M276 190a41 41 0 0 1 82 0"/></g>
+<g id="k3"><path class="cq" d="M30 120h362v-18H30z"/><path class="cq" d="M40 102V76h342v26"/>
+<path class="cq fin" d="M76 102V80M112 102V80M148 102V80M184 102V80M220 102V80M256 102V80M292 102V80M328 102V80"/>
+<path class="cq" d="M24 76h374v-12H24z"/></g>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">arcades superposées · pont-aqueduc</text>`);
+
+C.roman = svg(`
+<g id="k2"><path class="cq plein" d="M92 254V118h196v136"/></g>
+<path class="cq" d="M84 118 190 52l106 66"/>
+<g id="k4"><path class="cq" d="M78 254V150h16M294 254V150h-16"/><path class="cq fin" d="M78 150l8-14 8 14M294 150l-8-14-8 14"/></g>
+<g id="k1"><path class="cq plein" d="M158 254v-56a32 32 0 0 1 64 0v56"/><path class="cq fin" d="M162 190 148 178M172 176l-8-18M190 170v-20M208 176l8-18M218 190l14-12"/></g>
+<g id="k3"><path class="cq" d="M118 176v-18a10 10 0 0 1 20 0v18zM242 176v-18a10 10 0 0 1 20 0v18z"/><path class="cq" d="M180 108v-12a10 10 0 0 1 20 0v12z"/></g>
+<path class="cq" d="M300 254V96h62v158"/><path class="cq" d="M296 96l35-34 35 34"/>
+<path class="cq fin" d="M316 190v-24a15 15 0 0 1 30 0v24zM316 146v-16a15 15 0 0 1 30 0v16z"/>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">façade d'église romane · clocher-porche</text>`);
+
+C.gothique = svg(`
+<path class="cq" d="M36 254V96h72v158M226 254V96h72v158"/>
+<g id="k4"><path class="cq" d="M34 96 72 20l38 76M224 96l38-76 38 76"/><path class="cq fin" d="M60 60h24M250 60h24"/></g>
+<path class="cq plein" d="M108 254V90h118v164"/>
+<path class="cq" d="M104 90 167 44l63 46"/>
+<g id="k2"><circle class="cq plein" cx="167" cy="128" r="30"/><circle class="cq fin" cx="167" cy="128" r="15"/>
+<path class="cq fin" d="M167 98v60M137 128h60M146 107l42 42M188 107l-42 42"/></g>
+<g id="k1"><path class="cq plein" d="M140 254v-48c0-24 12-38 27-46 15 8 27 22 27 46v48z"/>
+<path class="cq fin" d="M56 200v-30c0-14 6-22 16-26 10 4 16 12 16 26v30zM244 200v-30c0-14 6-22 16-26 10 4 16 12 16 26v30z"/></g>
+<g id="k3"><path class="cq" d="M298 148c26-6 44 6 56 30"/><path class="cq" d="M300 168c22-4 36 6 46 26"/><path class="cq" d="M348 254v-72h26v72"/>
+<path class="cq" d="M346 182l15-30 15 30"/></g>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">cathédrale gothique · façade et culée</text>`);
+
+C.renaissance = svg(`
+<g id="k4"><path class="cq" d="M186 96a44 44 0 0 1 88 0"/><path class="cq fin" d="M208 98a22 44 0 0 1 44 0M230 54v-14M222 40h16"/><path class="cq" d="M180 96h100"/></g>
+<g id="k1"><path class="cq plein" d="M46 254V104h330v150"/><path class="cq fin" d="M211 104v150" stroke-dasharray="6 6"/></g>
+<g id="k3"><path class="cq" d="M40 104h342M42 156h334M42 208h334"/></g>
+<g id="k2">
+${[64,126,188,250,312].map(x=>`<path class="cq" d="M${x} 254v-32a22 22 0 0 1 44 0v32"/>`).join('')}
+${[64,126,188,250,312].map(x=>`<path class="cq" d="M${x+8} 200v-32h28v32z"/><path class="cq" d="M${x+4} 168l18-14 18 14"/>`).join('')}
+${[64,126,188,250,312].map(x=>`<path class="cq" d="M${x+8} 148v-30h28v30z"/><path class="cq fin" d="M${x+4} 118a20 12 0 0 1 36 0"/>`).join('')}
+</g>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">palais Renaissance · travées régulières</text>`);
+
+C.classique = svg(`
+<g id="k3"><path class="cq plein" d="M28 254V150h108v104M284 254V150h108v104"/><path class="cq" d="M24 150l30-34h78l30 34M280 150l30-34h78l30 34"/>
+<path class="cq fin" d="M54 150v-34M104 150v-34M316 150v-34M366 150v-34"/></g>
+<g id="k1"><path class="cq plein" d="M136 254V102h148v152"/></g>
+<g id="k2"><path class="cq plein" d="M128 102 210 52l82 50Z"/><path class="cq fin" d="M156 96 210 64l54 32"/>
+${[148,186,224,262].map(x=>`<path class="cq" d="M${x} 254V110h14v144"/>`).join('')}</g>
+<g id="k4"><path class="cq fin" d="M210 40v222" stroke-dasharray="7 7" stroke="rgba(224,164,88,.7)"/></g>
+<path class="cq fin" d="M56 224v-28h24v28zM106 224v-28h24v28zM306 224v-28h24v28zM356 224v-28h24v28z"/>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">corps central et ailes · axe de symétrie</text>`);
+
+C.haussmann = svg(`
+<g id="k1"><path class="cq plein" d="M66 254V84h288v170"/></g>
+<g id="k4"><path class="cq" d="M62 84 92 34h236l30 50"/><path class="cq fin" d="M120 84V56h26v28zM196 84V56h26v28zM272 84V56h26v28z"/></g>
+<g id="k2"><path class="cq" d="M62 148h296M62 100h296"/><path class="cq fin" d="M70 148v-6h280v6M70 100v-6h280v6"/>
+${[70,90,110,130,150,170,190,210,230,250,270,290,310,330,350].map(x=>`<path class="cq fin" d="M${x} 148v-6M${x} 100v-6"/>`).join('')}</g>
+<g id="k3">
+${[86,142,198,254,310].map(x=>`<path class="cq" d="M${x} 142v-34h26v34zM${x} 190v-34h26v34zM${x} 236v-34h26v34zM${x} 94v-30h26v30z"/>`).join('')}</g>
+<path class="cq" d="M66 254v-18h288v18"/>
+<path class="cq fin" d="M100 254v-18M160 254v-18M220 254v-18M280 254v-18"/>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">immeuble de rapport · gabarit haussmannien</text>`);
+
+C.artnouveau = svg(`
+<g id="k4"><path class="cq plein" d="M84 254V96c0-22 20-30 42-30h168c22 0 42 8 42 30v158"/>
+<path class="cq" d="M80 96c14-26 46-40 130-40s116 14 130 40"/></g>
+<g id="k1"><path class="cq plein" d="M148 254v-58c0-34 20-52 62-52s62 18 62 52v58"/>
+<path class="cq fin" d="M170 254v-52c0-22 14-34 40-34s40 12 40 34v52"/></g>
+<g id="k2"><path class="cq" d="M108 186c18-16 20-40 6-56M108 186c22 4 40-8 46-28M108 186c-14 12-16 32-6 46"/>
+<path class="cq" d="M312 186c-18-16-20-40-6-56M312 186c-22 4-40-8-46-28M312 186c14 12 16 32 6 46"/>
+<path class="cq fin" d="M96 208h56M268 208h56"/></g>
+<g id="k3"><path class="cq" d="M124 130c0-20 12-30 26-30s26 10 26 30v22h-52zM244 130c0-20 12-30 26-30s26 10 26 30v22h-52z"/>
+<path class="cq fin" d="M150 152v-52M270 152v-52"/></g>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">façade Art nouveau · ferronnerie en coup de fouet</text>`);
+
+C.artdeco = svg(`
+<g id="k1"><path class="cq plein" d="M96 254V128h228v126"/><path class="cq plein" d="M132 128V80h156v48"/><path class="cq plein" d="M166 80V44h88v36"/></g>
+<g id="k2">${[110,140,170,200,230,260,290].map(x=>`<path class="cq fin" d="M${x} 246V136"/>`).join('')}
+<path class="cq fin" d="M148 74V88M180 40V74M240 40V74M272 74V88"/></g>
+<g id="k3"><path class="cq" d="M96 136h228M132 88h156M166 52h88"/>
+<path class="cq fin" d="M100 128l12-10 12 10 12-10 12 10 12-10 12 10 12-10 12 10 12-10 12 10 12-10 12 10 12-10 12 10 12-10 12 10 12-10 12 10"/></g>
+<g id="k4"><path class="cq" d="M182 254v-44h56v44"/><path class="cq fin" d="M192 254v-34h36v34M210 254v-34"/>
+<path class="cq fin" d="M176 210l34-18 34 18"/></g>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">volumes en retrait · décor géométrique</text>`);
+
+C.moderne = svg(`
+<g id="k1">${[80,148,216,284,340].map(x=>`<path class="cq" d="M${x} 254v-58M${x+12} 254v-58"/><path class="cq fin" d="M${x} 250h12"/>`).join('')}</g>
+<g id="k4"><path class="cq plein" d="M64 196V104h296v92"/></g>
+<g id="k2"><path class="cq plein" d="M84 168v-32h256v32z"/><path class="cq fin" d="M148 168v-32M212 168v-32M276 168v-32"/></g>
+<g id="k3"><path class="cq" d="M56 104h312"/><path class="cq" d="M64 104V88h296v16"/>
+<path class="cq" d="M240 88V60c0-16 14-26 34-26s34 10 34 26v28"/><path class="cq fin" d="M96 88V68h60v20z"/></g>
+<path class="cq fin" d="M300 196v-92" stroke-dasharray="5 5"/>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">volume sur pilotis · toit-terrasse</text>`);
+
+C.brutalisme = svg(`
+<g id="k3"><path class="cq" d="M120 254v-52h34v52M266 254v-52h34v52"/></g>
+<g id="k1"><path class="cq plein" d="M74 202V152h272v50z"/><path class="cq plein" d="M44 152V102h332v50z"/><path class="cq plein" d="M104 102V56h212v46z"/></g>
+<g id="k2">${[52,66,80,94,108,122,136,150,164,178,192,206,220,234,248,262,276,290,304,318,332,346,360].map(x=>`<path class="cq fin" d="M${x} 148V106"/>`).join('')}</g>
+<g id="k4"><path class="cq" d="M92 194v-30h44v30zM168 194v-30h44v30zM244 194v-30h44v30z"/>
+<path class="cq fin" d="M92 164l8 8h28M168 164l8 8h28M244 164l8 8h28"/>
+<path class="cq" d="M122 96V66h40v30zM238 96V66h40v30z"/></g>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">volumes en porte-à-faux · béton brut de décoffrage</text>`);
+
+C.contemporain = svg(`
+<g id="k1"><path class="cq plein" d="M74 254V96h180v158"/><path class="cq fin" d="M74 200h180M74 148h180M134 254V96M194 254V96"/></g>
+<g id="k2">${[112,140,168,196,224].map(y=>`<path class="cq" d="M66 ${y}h196"/>`).join('')}
+<path class="cq fin" d="M66 112l8-8M262 112l-8-8"/></g>
+<g id="k4"><path class="cq plein" d="M262 254V140h84v114"/>
+<path class="cq fin" d="M270 254V140M286 254V140M302 254V140M318 254V140M334 254V140"/></g>
+<g id="k3"><path class="cq" d="M70 96h188"/><path class="cq" d="M92 96c0-14 8-22 18-22s18 8 18 22M156 96c0-18 10-28 22-28s22 10 22 28"/>
+<path class="cq fin" d="M110 74V62M178 68V54"/>
+<path class="cq" d="M262 140h88M276 140l14-24h56l-14 24"/><path class="cq fin" d="M290 128h44M298 122h40"/></g>
+<path class="cq fin" d="M354 254v-40c0-18 10-28 24-28"/>
+<text x="210" y="279" fill="rgba(232,220,198,.45)" font-size="10" font-family="serif" text-anchor="middle">enveloppe vitrée protégée · bardage bois et toiture végétalisée</text>`);
+
+C.intro = svg(`
+<path class="cq fin" d="M20 254h380"/>
+<g><path class="cq" d="M34 254V196h44v58"/><path class="cq" d="M30 196 56 168l26 28"/>
+<path class="cq" d="M100 254v-38a20 20 0 0 1 40 0v38"/>
+<path class="cq" d="M160 254V182h48v72"/><path class="cq fin" d="M160 182l24-26 24 26"/>
+<path class="cq" d="M226 254V166h40v88"/><path class="cq fin" d="M226 210h40M226 188h40"/>
+<path class="cq" d="M286 254V150h50v104"/><path class="cq fin" d="M286 150h50M292 254V150M312 254V150"/>
+<path class="cq" d="M352 254v-84c0-10 8-16 18-16s18 6 18 16v84"/></g>
+<path class="cq fin" d="M20 128q100-70 200-40t180-40" stroke="rgba(224,164,88,.6)" stroke-dasharray="6 6"/>
+<text x="30" y="118" fill="rgba(224,164,88,.8)" font-size="11" font-family="serif">− 500</text>
+<text x="360" y="42" fill="rgba(224,164,88,.8)" font-size="11" font-family="serif">2026</text>`);
+
+/* ============ contenu ============ */
+const S = [
+{onglet:"Intro", periode:"Méthode", titre:"Lire un <em>style</em>, pas le réciter",
+ chapo:"Un style architectural n'est pas une mode : c'est la rencontre d'une technique constructive, d'un matériau disponible, d'une commande et d'une culture. Quatre questions suffisent à identifier presque n'importe quel bâtiment.",
+ croquis:C.intro, sousCroquis:"Douze silhouettes, vingt-cinq siècles.",
+ blocTitre:"La grille de lecture",
+ cles:[
+  {t:"Comment ça tient ?", d:"Poteau-poutre, arc, voûte, ossature métal, béton armé : la structure impose la forme."},
+  {t:"En quoi c'est fait ?", d:"Pierre, brique, bois, fonte, verre, béton, bois lamellé : le matériau signe l'époque."},
+  {t:"Comment on perce ?", d:"Baie étroite ou mur-rideau : le rapport plein/vide raconte la portée possible."},
+  {t:"Qu'est-ce qu'on montre ?", d:"Ornement, symétrie, hiérarchie des étages : le décor exprime la commande."}],
+ tags:["Repère : <b>structure → percement → décor</b>","À chaque style, un problème technique résolu"]},
+
+{onglet:"Grec", periode:"Antiquité · VIIᵉ – Iᵉʳ s. av. J.-C.", titre:"Architecture <em>grecque</em>",
+ chapo:"Le système poteau-poutre porté à sa perfection. La pierre travaille en compression, les portées restent courtes, et toute l'énergie passe dans la proportion : le module (diamètre de la colonne) commande l'ensemble de l'édifice.",
+ croquis:C.grec, sousCroquis:"Élévation d'un temple : stylobate, colonnade, entablement, fronton.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"Le fronton", d:"Triangle du pignon, encadré par les rampants ; il abrite le décor sculpté.", k:"k1"},
+  {t:"La colonne et son chapiteau", d:"Fût cannelé + chapiteau. Trois ordres : dorique (sobre), ionique (volutes), corinthien (feuilles d'acanthe).", k:"k2"},
+  {t:"L'entablement", d:"Architrave, frise (triglyphes/métopes), corniche : la poutre devient composition.", k:"k3"},
+  {t:"Le stylobate", d:"Soubassement à degrés qui isole le temple du sol et corrige l'optique.", k:"k4"}],
+ tags:["Matériau : <b>pierre / marbre</b>","Portée limitée : <b>~4 à 6 m</b>","Parthénon, Ségeste, Paestum"]},
+
+{onglet:"Romain", periode:"Antiquité · Iᵉʳ s. av. – Vᵉ s. ap. J.-C.", titre:"Architecture <em>romaine</em>",
+ chapo:"Rome hérite du vocabulaire grec mais invente l'essentiel : l'arc, la voûte et le béton de chaux (opus caementicium). On ne franchit plus, on couvre — et l'échelle change complètement.",
+ croquis:C.romain, sousCroquis:"L'arc en plein cintre répété : le module devient infrastructure.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"L'arc en plein cintre", d:"Demi-cercle exact. Les voussoirs travaillent en compression et reportent la poussée sur les piles.", k:"k1"},
+  {t:"La clé de voûte", d:"Voussoir central posé en dernier : il bloque l'ensemble et ferme l'arc.", k:"k2"},
+  {t:"La superposition", d:"Niveaux d'arcades empilés : aqueducs, amphithéâtres, thermes.", k:"k3"},
+  {t:"Le cintre", d:"Coffrage en bois provisoire sur lequel l'arc est monté, puis décintré.", k:"k4"}],
+ tags:["Innovation : <b>béton de chaux</b>","Poussée oblique → <b>piles épaisses</b>","Pont du Gard, Colisée, Panthéon"]},
+
+{onglet:"Roman", periode:"Moyen Âge · Xᵉ – XIIᵉ s.", titre:"Art <em>roman</em>",
+ chapo:"On voûte les églises en pierre pour échapper aux incendies de charpente. La voûte en berceau pousse latéralement : la réponse est massive — murs épais, contreforts, ouvertures réduites. D'où la pénombre caractéristique.",
+ croquis:C.roman, sousCroquis:"Façade romane : plein cintre, contreforts plats, baies étroites.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"Le portail en plein cintre", d:"Voussures concentriques et tympan sculpté : la porte est le grand récit du bâtiment.", k:"k1"},
+  {t:"Le mur épais", d:"Le mur est la structure ; il reprend la poussée de la voûte en berceau.", k:"k2"},
+  {t:"Les baies étroites", d:"Percer affaiblit : petites ouvertures, intérieur sombre et recueilli.", k:"k3"},
+  {t:"Le contrefort plat", d:"Renfort vertical collé au mur, encore rudimentaire.", k:"k4"}],
+ tags:["Voûte en <b>berceau</b> puis d'<b>arêtes</b>","Horizontalité, plan en croix latine","Sainte-Foy de Conques, Saint-Sernin de Toulouse"]},
+
+{onglet:"Gothique", periode:"Moyen Âge · XIIᵉ – XVᵉ s.", titre:"Art <em>gothique</em>",
+ chapo:"Trois inventions couplées — arc brisé, croisée d'ogives, arc-boutant — canalisent les charges en points précis. Le mur cesse de porter : il peut disparaître au profit du verre. C'est la première architecture de squelette.",
+ croquis:C.gothique, sousCroquis:"Façade gothique et report des charges vers la culée.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"L'arc brisé (ogive)", d:"Deux arcs de cercle sécants : poussée plus verticale, hauteur libre au choix.", k:"k1"},
+  {t:"La rosace", d:"Grande baie circulaire à remplage : le vitrail devient paroi lumineuse.", k:"k2"},
+  {t:"L'arc-boutant et la culée", d:"Arc extérieur qui transporte la poussée jusqu'à un contrefort massif, lesté d'un pinacle.", k:"k3"},
+  {t:"La verticalité", d:"Flèches, pinacles, faisceaux de colonnettes : tout le dessin monte.", k:"k4"}],
+ tags:["Structure <b>ponctuelle</b>, remplissage vitré","Voûte sur <b>croisée d'ogives</b>","Notre-Dame, Chartres, Amiens, Albi (gothique méridional en brique)"]},
+
+{onglet:"Renaissance", periode:"XVᵉ – XVIᵉ s.", titre:"<em>Renaissance</em>",
+ chapo:"Retour aux modèles antiques, mais avec un outil nouveau : la perspective. L'architecte devient un intellectuel qui dessine avant de bâtir. Règles, tracés régulateurs, traités imprimés (Alberti, Serlio, Palladio) fixent la discipline.",
+ croquis:C.renaissance, sousCroquis:"Palais Renaissance : travées régulières et étages hiérarchisés.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"La symétrie et la travée", d:"Composition régulière autour d'un axe, baies alignées horizontalement et verticalement.", k:"k1"},
+  {t:"La hiérarchie des étages", d:"Rez-de-chaussée en bossage, étage noble, attique : chaque niveau a son traitement.", k:"k2"},
+  {t:"Les corniches filantes", d:"Bandeaux horizontaux qui découpent la façade et rappellent l'ordre antique.", k:"k3"},
+  {t:"La coupole", d:"Prouesse structurelle et signal urbain (Brunelleschi à Florence).", k:"k4"}],
+ tags:["<b>Proportion</b> et tracés régulateurs","Traités et dessin d'architecte","Chambord, Azay-le-Rideau, Villa Rotonda"]},
+
+{onglet:"Classique", periode:"XVIIᵉ – XVIIIᵉ s.", titre:"Classicisme et <em>baroque</em>",
+ chapo:"Deux réponses opposées à la même culture antique : le classicisme français cherche l'ordre, la mesure et l'axe ; le baroque cherche le mouvement, la courbe et l'effet. Dans les deux cas, l'architecture met en scène le pouvoir.",
+ croquis:C.classique, sousCroquis:"Composition classique : corps central, ailes, axe majeur.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"Le corps central", d:"Volume dominant, en avant-corps, qui marque l'entrée et commande la composition.", k:"k1"},
+  {t:"L'ordre colossal", d:"Pilastres traversant plusieurs niveaux, couronnés d'un fronton.", k:"k2"},
+  {t:"Le toit à la française", d:"Combles hauts, brisés (mansart), couverts d'ardoise ou de zinc.", k:"k3"},
+  {t:"L'axe de composition", d:"Bâtiment, cour et jardin alignés sur une même ligne de fuite.", k:"k4"}],
+ tags:["Classicisme : <b>ordre, axe, mesure</b>","Baroque : <b>courbe, contre-courbe, illusion</b>","Versailles, Val-de-Grâce, Capitole de Toulouse"]},
+
+{onglet:"Haussmann", periode:"XIXᵉ s.", titre:"Le siècle de l'<em>ingénieur</em> et d'Haussmann",
+ chapo:"Deux révolutions parallèles : l'éclectisme des façades (on emprunte tous les styles passés) et la révolution des matériaux — fonte, fer puis acier, verre en grand format. Paris se dote d'un règlement d'alignement et de gabarit qui produit une ville d'une homogénéité inédite.",
+ croquis:C.haussmann, sousCroquis:"Immeuble haussmannien : gabarit, balcons filants, comble mansardé.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"Le gabarit réglementé", d:"Hauteur liée à la largeur de la rue, alignement obligatoire sur voirie.", k:"k1"},
+  {t:"Les balcons filants", d:"Aux 2ᵉ et 5ᵉ étages : la façade se lit comme un ordre horizontal.", k:"k2"},
+  {t:"La hiérarchie sociale verticale", d:"Étage noble bas, chambres de service sous les combles ; l'ascenseur inversera l'ordre.", k:"k3"},
+  {t:"Le comble mansardé à lucarnes", d:"Zinc sur charpente brisée : surface habitable gagnée sous le gabarit.", k:"k4"}],
+ tags:["Pierre de taille en façade, <b>fer</b> dans les planchers","Gares, halles, verrières : <b>fonte + verre</b>","Opéra Garnier, Tour Eiffel, halles Baltard"]},
+
+{onglet:"Art nouveau", periode:"1890 – 1910", titre:"<em>Art nouveau</em>",
+ chapo:"Réaction contre le pastiche académique et la production industrielle sans qualité. La nature devient le répertoire de formes : tiges, fleurs, insectes. La fonte et le fer, souples à mouler, permettent enfin la ligne courbe continue.",
+ croquis:C.artnouveau, sousCroquis:"Façade Art nouveau : courbe généralisée, ferronnerie ouvragée.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"La courbe continue", d:"Plus d'angle droit dominant : la façade, le bow-window et l'ouverture ondulent.", k:"k1"},
+  {t:"Le coup de fouet", d:"Ligne asymétrique en S, motif signature des ferronneries et des garde-corps.", k:"k2"},
+  {t:"La baie organique", d:"Menuiseries dessinées sur mesure, vitraux, arcs surbaissés déformés.", k:"k3"},
+  {t:"L'œuvre d'art totale", d:"Façade, escalier, mobilier, poignées : tout est dessiné par l'architecte.", k:"k4"}],
+ tags:["Matériaux : <b>fer forgé, grès, verre</b>","Variantes : Modern Style, Jugendstil, Sezession, Modernisme catalan","Horta, Guimard, Gaudí, Nancy"]},
+
+{onglet:"Art déco", periode:"1920 – 1939", titre:"<em>Art déco</em>",
+ chapo:"L'inverse exact de l'Art nouveau : la courbe cède à la géométrie, l'artisanat à la série. Béton armé, façades en retrait, décor de losanges, chevrons et cannelures. Un luxe rationnel, taillé pour la ville verticale.",
+ croquis:C.artdeco, sousCroquis:"Gradins successifs et registre décoratif géométrique.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"Le volume en gradins", d:"Retraits successifs (setbacks) imposés par l'ensoleillement des rues.", k:"k1"},
+  {t:"La verticalité cannelée", d:"Nervures et pilastres continus qui étirent le bâtiment vers le haut.", k:"k2"},
+  {t:"Le décor géométrique", d:"Chevrons, zigzags, soleils stylisés en bas-relief ou en mosaïque.", k:"k3"},
+  {t:"L'entrée monumentale", d:"Porche encadré, ferronnerie géométrique, marbre et laiton.", k:"k4"}],
+ tags:["Structure : <b>béton armé</b>, façade porteuse allégée","Exposition des Arts décoratifs, Paris <b>1925</b>","Palais de Tokyo, Chrysler Building, cinémas de quartier"]},
+
+{onglet:"Moderne", periode:"1920 – 1970", titre:"Le <em>Mouvement moderne</em>",
+ chapo:"Le béton armé et l'acier séparent enfin structure et enveloppe : les poteaux portent, les murs sont libres. Le Corbusier en tire ses cinq points ; le Bauhaus y ajoute la logique industrielle. La forme suit la fonction, l'ornement disparaît.",
+ croquis:C.moderne, sousCroquis:"Les cinq points : pilotis, plan libre, façade libre, fenêtre en bandeau, toit-terrasse.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"Les pilotis", d:"Le volume est décollé du sol ; le rez-de-chaussée redevient un espace libre.", k:"k1"},
+  {t:"La fenêtre en bandeau", d:"Baie horizontale continue, possible parce que la façade ne porte plus.", k:"k2"},
+  {t:"Le toit-terrasse", d:"La toiture devient jardin ou solarium ; la couverture est plate et étanchée.", k:"k3"},
+  {t:"Le plan et la façade libres", d:"Cloisons et façade indépendantes de la trame de poteaux.", k:"k4"}],
+ tags:["Ossature <b>poteaux-dalles</b> en béton armé","CIAM, Charte d'Athènes, préfabrication","Villa Savoye, Unité d'habitation, Bauhaus de Dessau"]},
+
+{onglet:"Brutalisme", periode:"1950 – 1980", titre:"<em>Brutalisme</em> et grands ensembles",
+ chapo:"Le béton n'est plus caché : il s'expose brut de décoffrage, avec l'empreinte du bois de banche. Volumes massifs, porte-à-faux spectaculaires, façades sculptées par l'ombre. Reconstruction, universités, logement social — puis la contestation postmoderne.",
+ croquis:C.brutalisme, sousCroquis:"Volumes empilés, porte-à-faux, béton brut texturé.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"Le volume monolithe", d:"Masses géométriques franches, lues comme un seul bloc sculpté.", k:"k1"},
+  {t:"Le béton brut de décoffrage", d:"Texture du coffrage laissée apparente, sans enduit ni parement.", k:"k2"},
+  {t:"Le porte-à-faux", d:"Débord permis par le béton armé : la structure se met en scène.", k:"k3"},
+  {t:"Les percements profonds", d:"Baies très encaissées, brise-soleil intégrés, jeux d'ombre puissants.", k:"k4"}],
+ tags:["Vocabulaire : <b>banche, décoffrage, préfa lourde</b>","Postmodernisme (années 1980) : retour de la citation et de la couleur","Le Corbusier tardif, Kahn, Niemeyer"]},
+
+{onglet:"Contemporain", periode:"1990 → aujourd'hui", titre:"<em>Contemporain</em> et bas carbone",
+ chapo:"Plus de style unique mais des contraintes communes : réglementation thermique puis environnementale (RE2020), confort d'été, réemploi, réhabilitation. Le dessin de façade devient un dispositif de performance autant qu'une écriture.",
+ croquis:C.contemporain, sousCroquis:"Enveloppe vitrée protégée, bardage bois, toiture végétalisée.",
+ blocTitre:"Croquis-clés",
+ cles:[
+  {t:"L'enveloppe performante", d:"Isolation par l'extérieur, étanchéité à l'air, ponts thermiques traités.", k:"k1"},
+  {t:"Les brise-soleil", d:"Casquettes et lames orientées : confort d'été sans climatisation.", k:"k2"},
+  {t:"Le végétal et le solaire", d:"Toiture végétalisée, panneaux photovoltaïques, gestion des eaux pluviales.", k:"k3"},
+  {t:"Le bois et le réemploi", d:"CLT, lamellé-collé, matériaux biosourcés, structures démontables.", k:"k4"}],
+ tags:["Cadre : <b>RE2020</b>, ACV, carbone","Outils : <b>BIM</b>, simulation thermique et lumineuse","Réhabilitation > démolition"]},
+
+{type:"frise", onglet:"Frise", periode:"Synthèse", titre:"Vingt-cinq siècles en <em>une page</em>",
+ chapo:"Chaque style résout un problème que le précédent ne savait pas traiter. Retenez la chaîne technique plutôt que les dates exactes.",
+ lignes:[
+  ["VIIᵉ–Iᵉʳ av. J.-C.","Grec — poteau-poutre, ordres",6],
+  ["Iᵉʳ av.–Vᵉ ap.","Romain — arc, voûte, béton de chaux",14],
+  ["Xᵉ–XIIᵉ s.","Roman — berceau, mur épais",10],
+  ["XIIᵉ–XVᵉ s.","Gothique — ogive, arc-boutant, vitrail",18],
+  ["XVᵉ–XVIᵉ s.","Renaissance — proportion, symétrie",12],
+  ["XVIIᵉ–XVIIIᵉ","Classique / baroque — axe ou mouvement",14],
+  ["XIXᵉ s.","Éclectisme, Haussmann, fer et verre",11],
+  ["1890–1910","Art nouveau — la courbe",5],
+  ["1920–1939","Art déco — la géométrie",6],
+  ["1920–1970","Mouvement moderne — les 5 points",16],
+  ["1950–1980","Brutalisme — béton brut",11],
+  ["1990→","Contemporain — bas carbone, réemploi",13]],
+ tags:["Fil rouge : <b>franchir plus grand, percer plus large, peser moins lourd</b>"]},
+
+{type:"quiz", onglet:"Quiz", periode:"Évaluation", titre:"Vérifiez votre <em>œil</em>",
+ chapo:"Huit questions de reconnaissance et de vocabulaire. Une seule réponse par question.",
+ q:[
+  {q:"Un arc parfaitement demi-circulaire s'appelle un arc…",o:["brisé","en plein cintre","surbaissé","outrepassé"],r:1,e:"Le plein cintre est romain puis roman ; l'arc brisé est gothique."},
+  {q:"À quoi sert l'arc-boutant ?",o:["Soutenir la charpente","Décorer le chevet","Reporter la poussée des voûtes vers une culée","Évacuer les eaux de toiture"],r:2,e:"Il transfère la poussée à l'extérieur, ce qui libère le mur pour le vitrail. Les gargouilles, elles, évacuent l'eau."},
+  {q:"Murs très épais, baies étroites, portail en plein cintre : quel style ?",o:["Gothique","Roman","Renaissance","Art déco"],r:1,e:"La voûte en berceau pousse latéralement : il faut de la masse et peu de percements."},
+  {q:"La fenêtre en bandeau est rendue possible par…",o:["Le mur porteur en pierre","La séparation structure / façade","Le double vitrage","Le toit à la Mansart"],r:1,e:"Poteaux-dalles en béton armé : la façade ne porte plus, elle peut s'ouvrir horizontalement."},
+  {q:"Le « coup de fouet » caractérise…",o:["L'Art déco","Le brutalisme","L'Art nouveau","Le classicisme"],r:2,e:"Ligne courbe asymétrique en S, typique des ferronneries Art nouveau."},
+  {q:"Sur un immeuble haussmannien, les balcons filants se situent aux…",o:["1ᵉʳ et 3ᵉ étages","2ᵉ et 5ᵉ étages","4ᵉ et 6ᵉ étages","Tous les étages"],r:1,e:"Règle de composition qui donne à la rue parisienne son unité horizontale."},
+  {q:"Chevrons, gradins, cannelures verticales, béton armé : on est en…",o:["Art déco","Art nouveau","Néo-gothique","Renaissance"],r:0,e:"L'Art déco géométrise le décor et empile les volumes en retrait."},
+  {q:"Le béton laissé brut de décoffrage est la signature du…",o:["Style international","Brutalisme","Postmodernisme","Éclectisme"],r:1,e:"Du « béton brut » vient le nom même du mouvement."}],
+ tags:["Bonus : refaites la <b>frise</b> de mémoire, croquis à l'appui"]}
+];
+
+/* ============ références par style ============ */
+const REF = {
+"Grec":[
+ {n:"Le Parthénon",l:"Acropole d'Athènes",d:"447 – 432 av. J.-C.",a:"Ictinos et Callicratès"},
+ {n:"Temple d'Héra II",l:"Paestum, Campanie",d:"vers 460 av. J.-C.",a:"architecte inconnu · dorique archaïque"}],
+"Romain":[
+ {n:"Pont du Gard",l:"Vers-Pont-du-Gard, Gard",d:"Iᵉʳ s. ap. J.-C.",a:"aqueduc de Nîmes · 3 niveaux d'arcades"},
+ {n:"Le Colisée",l:"Rome",d:"70 – 80 ap. J.-C.",a:"ordres superposés, béton de chaux"}],
+"Roman":[
+ {n:"Basilique Saint-Sernin",l:"Toulouse",d:"1080 – 1120",a:"brique et pierre · déambulatoire à chapelles"},
+ {n:"Abbatiale Sainte-Foy",l:"Conques, Aveyron",d:"1041 – 1130",a:"tympan du Jugement dernier"}],
+"Gothique":[
+ {n:"Cathédrale Notre-Dame",l:"Chartres",d:"1194 – 1220",a:"arcs-boutants et vitraux d'origine"},
+ {n:"Cathédrale Sainte-Cécile",l:"Albi",d:"1282 – 1480",a:"gothique méridional · brique, contreforts semi-cylindriques"}],
+"Renaissance":[
+ {n:"Château de Chambord",l:"Loir-et-Cher",d:"1519 – 1547",a:"plan centré, escalier à double révolution"},
+ {n:"Villa La Rotonda",l:"Vicence, Vénétie",d:"1567 – 1592",a:"Andrea Palladio"}],
+"Classique":[
+ {n:"Château de Versailles",l:"Yvelines",d:"1661 – 1710",a:"Le Vau, Hardouin-Mansart, Le Nôtre"},
+ {n:"Le Capitole",l:"Toulouse",d:"1750 – 1760",a:"Guillaume Cammas · façade brique et pierre"}],
+"Haussmann":[
+ {n:"Opéra Garnier",l:"Paris IXᵉ",d:"1861 – 1875",a:"Charles Garnier · éclectisme Second Empire"},
+ {n:"Immeubles des grands boulevards",l:"Paris",d:"1853 – 1870",a:"préfet Haussmann · gabarit et alignement réglementés"}],
+"Art nouveau":[
+ {n:"Hôtel Tassel",l:"Bruxelles",d:"1893 – 1894",a:"Victor Horta · structure métallique apparente"},
+ {n:"Castel Béranger",l:"Paris XVIᵉ",d:"1895 – 1898",a:"Hector Guimard"}],
+"Art déco":[
+ {n:"Palais de Tokyo",l:"Paris XVIᵉ",d:"1937",a:"Dondel, Aubert, Viard, Dastugue"},
+ {n:"Chrysler Building",l:"New York",d:"1928 – 1930",a:"William Van Alen · gradins et couronnement"}],
+"Moderne":[
+ {n:"Villa Savoye",l:"Poissy, Yvelines",d:"1928 – 1931",a:"Le Corbusier · les cinq points"},
+ {n:"Bauhaus",l:"Dessau, Allemagne",d:"1925 – 1926",a:"Walter Gropius · mur-rideau"}],
+"Brutalisme":[
+ {n:"Unité d'habitation",l:"Marseille",d:"1947 – 1952",a:"Le Corbusier · béton brut, Modulor"},
+ {n:"MASP",l:"São Paulo, Brésil",d:"1957 – 1968",a:"Lina Bo Bardi · portique de 74 m de portée"}],
+"Contemporain":[
+ {n:"Tour Hypérion",l:"Bordeaux",d:"2021",a:"Jean-Paul Viguier · 18 niveaux, structure bois"},
+ {n:"Fondation Louis Vuitton",l:"Paris XVIᵉ",d:"2008 – 2014",a:"Frank Gehry · verrières et conception paramétrique"}]
+};
+
+/* ============ rendu ============ */
+const scene=document.getElementById('scene'), frise=document.getElementById('frise');
+let i=0, score=0, repondu=0;
+
+S.forEach((s,n)=>{const b=document.createElement('button');b.className='puce';b.textContent=s.onglet;b.onclick=()=>aller(n);frise.appendChild(b);});
+document.getElementById('tot').textContent=S.length;
+
+function entete(s){return `<div class="periode">${s.periode}</div><h1>${s.titre}</h1><p class="chapo">${s.chapo}</p>`;}
+function tags(s){return s.tags?`<div class="reperes"><div class="titre-bloc">Repères</div><div class="tags">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`:'';}
+
+function rendu(s){
+  if(s.type==='frise'){
+    return `<div class="slide">${entete(s)}<div class="frise-slide">${
+      s.lignes.map(([a,t,w],n)=>`<div class="ligne"><div class="an">${a}</div><div class="barre" style="width:${w*6.2}%;animation:entree .5s ${n*0.05}s both"><span>${t}</span></div></div>`).join('')
+    }</div>${tags(s)}</div>`;
+  }
+  if(s.type==='quiz'){
+    return `<div class="slide">${entete(s)}<div class="quiz" id="quiz">${
+      s.q.map((q,n)=>`<div class="q"><p><b>${n+1}.</b> ${q.q}</p><div class="opts">${
+        q.o.map((o,j)=>`<button class="opt" data-q="${n}" data-j="${j}">${o}</button>`).join('')
+      }</div><div class="retour" id="r${n}">${q.e}</div></div>`).join('')
+    }<div class="score" id="score">Score : 0 / ${s.q.length}</div></div>${tags(s)}</div>`;
+  }
+  const vign=s.croquis.replace(/ id="k\d"/g,'').replace(/id="ru"/g,'id="ruv"').replace(/url\(#ru\)/g,'url(#ruv)');
+  const R=REF[s.onglet]||[];
+  const blocRef=R.length?`<div class="titre-bloc" style="margin:16px 0 8px">Deux références · dépose ta photo</div><div class="refs">${
+    R.map((r,n)=>`<figure class="ref"><div class="vig" data-slot="${n}">${vign}</div>
+      <figcaption><strong>${r.n}</strong><span>${r.l} · ${r.d}</span><em>${r.a}</em></figcaption>
+      <input class="credit" type="text" placeholder="crédit photo / source…"></figure>`).join('')}</div>`:'';
+  return `<div class="slide">${entete(s)}<div class="grille">
+    <div><div class="cadre">${s.croquis}</div><div class="legende-croquis">${s.sousCroquis}</div>${blocRef}</div>
+    <div><div class="titre-bloc">${s.blocTitre}</div><ul class="cles">${
+      s.cles.map((c,n)=>`<li class="cle" data-k="${c.k||''}"><span class="num">${n+1}</span><div><strong>${c.t}</strong><span>${c.d}</span></div></li>`).join('')
+    }</ul>${s.cles[0].k?'<div class="astuce">Clique une entrée pour la repérer sur le croquis.</div>':''}${tags(s)}</div>
+  </div></div>`;
+}
+
+function aller(n){
+  i=Math.max(0,Math.min(S.length-1,n));
+  scene.innerHTML=rendu(S[i]); scene.scrollTop=0;
+  document.getElementById('num').textContent=i+1;
+  document.getElementById('jauge').style.width=((i+1)/S.length*100)+'%';
+  [...frise.children].forEach((b,n2)=>b.classList.toggle('on',n2===i));
+  if(frise.children[i].scrollIntoView) frise.children[i].scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+  document.getElementById('prec').disabled=(i===0);
+  document.getElementById('suiv').disabled=(i===S.length-1);
+  brancher();
+}
+
+const PHOTOS={}, CREDITS={};
+const pick=document.createElement('input'); pick.type='file'; pick.accept='image/*'; pick.style.display='none';
+document.body.appendChild(pick);
+let cible=null;
+
+function poser(slot,src){
+  slot.innerHTML=`<img alt="">`; slot.querySelector('img').src=src; slot.classList.add('pleine');
+  PHOTOS[i+'-'+slot.dataset.slot]=src;
+}
+function lire(f,slot){
+  if(!f||!/^image\//.test(f.type)) return;
+  const fr=new FileReader(); fr.onload=()=>poser(slot,fr.result); fr.readAsDataURL(f);
+}
+pick.onchange=()=>{ if(cible) lire(pick.files[0],cible); pick.value=''; };
+
+function brancherPhotos(){
+  scene.querySelectorAll('.vig').forEach(slot=>{
+    const mem=PHOTOS[i+'-'+slot.dataset.slot]; if(mem) poser(slot,mem);
+    slot.onclick=()=>{cible=slot; pick.click();};
+    slot.ondragover=e=>{e.preventDefault(); slot.closest('.ref').classList.add('survol');};
+    slot.ondragleave=()=>slot.closest('.ref').classList.remove('survol');
+    slot.ondrop=e=>{e.preventDefault(); slot.closest('.ref').classList.remove('survol'); lire(e.dataTransfer.files[0],slot);};
+  });
+  scene.querySelectorAll('.ref .credit').forEach((c,n)=>{
+    c.value=CREDITS[i+'-'+n]||'';
+    c.oninput=()=>CREDITS[i+'-'+n]=c.value;
+  });
+}
+
+function brancher(){
+  brancherPhotos();
+  scene.querySelectorAll('.cle').forEach(el=>{
+    el.onclick=()=>{
+      const k=el.dataset.k; if(!k) return;
+      const on=el.classList.contains('actif');
+      scene.querySelectorAll('.cle').forEach(e=>e.classList.remove('actif'));
+      scene.querySelectorAll('svg g').forEach(g=>g.classList.remove('hl'));
+      if(!on){ el.classList.add('actif'); const g=scene.querySelector('#'+k); if(g) g.classList.add('hl'); }
+    };
+  });
+  const quiz=document.getElementById('quiz'); if(!quiz) return;
+  score=0; repondu=0;
+  quiz.querySelectorAll('.opt').forEach(b=>{
+    b.onclick=()=>{
+      const qn=+b.dataset.q, j=+b.dataset.j, bonne=S[i].q[qn].r;
+      const grp=quiz.querySelectorAll(`.opt[data-q="${qn}"]`);
+      if([...grp].some(x=>x.disabled)) return;
+      grp.forEach((x,idx)=>{x.disabled=true; if(idx===bonne)x.classList.add('juste');});
+      if(j!==bonne) b.classList.add('faux'); else score++;
+      repondu++;
+      document.getElementById('r'+qn).classList.add('vu');
+      document.getElementById('score').textContent=`Score : ${score} / ${S[i].q.length}`+(repondu===S[i].q.length?(score>=7?' — œil affûté.':score>=5?' — bonne base, revoyez la frise.':' — reprenez les croquis-clés.'):'');
+    };
+  });
+}
+
+document.getElementById('prec').onclick=()=>aller(i-1);
+document.getElementById('suiv').onclick=()=>aller(i+1);
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown'){aller(i+1);e.preventDefault();}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){aller(i-1);e.preventDefault();}
+  if(e.key==='Home')aller(0); if(e.key==='End')aller(S.length-1);
+});
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(x0===null)return;const d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>70)aller(i+(d<0?1:-1));x0=null;},{passive:true});
+
+aller(0);
+</script>
+</body>
+</html>
