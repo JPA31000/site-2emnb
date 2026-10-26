@@ -24,7 +24,7 @@
   --papier:#f7f4ec;--fiche:#fffdf7;--kraft:#e6d3b0;--kraft2:#c9ad7d;
   --gr:#2a2a2a;--gr2:rgba(42,42,42,.66);--gr3:rgba(42,42,42,.2);
   --rouge:#c93b31;--rouge2:#d6453a;--bleu:#2f6fd6;--vert:#3d9a5f;--jaune:rgba(255,222,40,.72);
-  --pj:#fff1a8;--pr:#ffd8cf;--pb:#d8e7ff;--pv:#d5f0da;
+  --pj:#fff1a8;--pr:#ffd8cf;--pb:#d8e7ff;--pv:#d5f0da;--et-wc:#677634;--et-sup:#365162;--et-td:#c4708e;
   --main:"Architects Daughter","Segoe Print","Comic Sans MS",cursive;
   --texte:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
   --gut:clamp(16px,4vw,56px);--maxw:1240px;--nav:70px;
@@ -188,9 +188,9 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .baton.vu svg path{stroke-dashoffset:0}
 .legende{display:flex;flex-wrap:wrap;align-items:center;gap:10px 26px;margin-top:28px;font:400 17px var(--main);color:var(--gr2)}
 .legende span{display:inline-flex;align-items:center;gap:8px}
-.legende i{display:inline-block;width:22px;height:16px;background:var(--pj);box-shadow:0 2px 3px -1px rgba(0,0,0,.25);transform:rotate(-4deg)}
-.legende i.sup{background:var(--fiche);border:1px solid var(--gr3)}
-.legende i.td{background:var(--pv)}
+.legende i{display:inline-block;width:22px;height:16px;background:var(--et-wc);box-shadow:0 2px 3px -1px rgba(0,0,0,.25);transform:rotate(-4deg)}
+.legende i.sup{background:var(--et-sup)}
+.legende i.td{background:var(--et-td)}
 .cadenas{display:inline-grid;place-items:center;width:20px;height:20px;color:var(--rouge);vertical-align:-3px;flex:none}
 .cadenas svg{width:18px;height:18px;filter:url(#crayon)}
 
@@ -237,10 +237,10 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .act .postits{margin-top:20px}
 .postits{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:20px 12px}
 .act .postits + .postits{margin-top:34px}   /* après un « saut » : la seconde liste se pose plus bas, sans toucher le « bientôt » de la première */
-.postit{position:relative;display:block;max-width:190px;padding:8px 11px 9px;background:var(--pj);font:400 15px/1.25 var(--texte);box-shadow:0 7px 10px -7px rgba(0,0,0,.45);transform:rotate(var(--r,-1deg));transition:transform .4s var(--e-ressort),box-shadow .3s}
-.postit--sup{background:var(--fiche);border:1px solid var(--gr3)}
+.postit{position:relative;display:block;max-width:190px;padding:8px 11px 9px;background:var(--et-wc);color:#fffdf7;font:400 15px/1.25 var(--texte);box-shadow:0 7px 10px -7px rgba(0,0,0,.45);transform:rotate(var(--r,-1deg));transition:transform .4s var(--e-ressort),box-shadow .3s}
+.postit--sup{background:var(--et-sup)}
 .postit--sup::after{content:"";position:absolute;right:8px;top:-13px;width:9px;height:21px;border:2px solid #8b8f99;border-radius:6px;transform:rotate(14deg)}   /* au bord du papier : il ne masque aucune lettre */
-.postit--td{background:var(--pv)}   /* travaux dirigés : le post-it vert clair */
+.postit--td{background:var(--et-td);color:#161616}   /* travaux dirigés : le post-it rose, à l'encre foncée (le blanc n'y est pas assez lisible) */
 .postit:hover,.postit:focus-visible{transform:rotate(0) translateY(-4px) scale(1.05);box-shadow:0 14px 16px -10px rgba(0,0,0,.45);z-index:2}
 .postit--bientot{cursor:default}   /* l'étiquette est posée mais n'a pas encore de page : ni lien, ni soulèvement */
 .postit--bientot:hover{transform:rotate(var(--r,-1deg));box-shadow:0 7px 10px -7px rgba(0,0,0,.45);z-index:auto}
@@ -657,7 +657,7 @@ const DONNEES = {
   ],
 
   // Projets → séquences → activités → étiquettes. Structure d'après « Sequence.docx » de JP (07/10/2026) : une séquence par projet.
-  // Étiquette (post-it) : type 'wc' = World café (jaune), 'sup' = support de cours (blanc, trombone), 'td' = TD (vert clair).
+  // Étiquette (post-it) : type 'wc' = World café (olive), 'sup' = support de cours (bleu ardoise, trombone), 'td' = TD (rose).
   // Une étiquette sans url s'affiche « bientôt » : on ajoute son url le jour où sa page existe, et elle devient un lien.
   // Une étiquette marquée saut: true commence une nouvelle ligne (pour regrouper des étiquettes de même genre).
   // Une séquence porte sa problématique (pb) et parfois un titre ; une activité, un titre court (titre) et une problématique courte (pb).
