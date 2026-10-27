@@ -839,6 +839,7 @@ const DONNEES = {
       { nom: 'Les styles architecturaux', icone: 'styles', url: 'styles-architecturaux.html', resume: 'Douze styles, du temple grec à l’architecture bas carbone : une frise et un quiz.' },   // page du carnet
       { nom: 'Le relevé par drone', icone: 'drone', url: 'releve-drone.html', resume: 'Cours : règles de vol, capteurs, photogrammétrie, prises de vues, logiciels et passage à Revit.' },   // page du carnet
       { nom: 'Scanner 3D et nuage de points', icone: 'scanner3d', url: 'nuage-de-points.html', resume: 'Cours : le scanner X7, la tablette, RealWorks, le nuage dans Revit, les panoramas à 360° où l’on mesure.' },   // page du carnet
+      { nom: 'La capture de la réalité', icone: 'capture', url: 'https://jpa31000.github.io/capture-de-la-realite/', resume: 'Cours : pourquoi capturer la réalité, drone et photogrammétrie, scanner 3D, nuage de points dans Revit, avec huit vidéos.' },   // cours hébergé dans son propre dépôt (nouvel onglet)
       { nom: 'Les bots', icone: 'bot', url: WIX + 'les-bots', resume: 'Un prof à la maison : posez vos questions à Knowledge’BOT.' },
       { nom: 'Auto-évaluation', icone: 'autoeval', url: WIX + 'general-5', resume: 'Des quiz et des jeux pour faire le point.' },
     ] },
@@ -924,6 +925,7 @@ const ICONES = {
   drone: '<path d="M9 12h6M12 9.5v5"/><circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M6.7 7.5L10 11M17.3 7.5L14 11M6.7 16.5L10 13M17.3 16.5L14 13"/>',
   electrique: '<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/>',
   scanner3d: '<rect x="8" y="3" width="8" height="6" rx="1.2"/><path d="M12 9v3M6 21l6-9 6 9M12 12v9M9 17.5h6"/><path d="M3 5h.01M3 9h.01M21 5h.01M21 9h.01M4.5 13h.01M19.5 13h.01"/>',
+  capture: '<path d="M5 20v-8l7-5.5 7 5.5v8z"/><path d="M9.5 20v-4.5h5V20M2.5 20h19"/><path d="M3 4.5h.01M7 2.8h.01M12 2.2h.01M17 2.8h.01M21 4.5h.01M2.5 9h.01M21.5 9h.01"/>',
   planeur: '<path d="M12 2.6c1.3 1.5 1.7 4.2 1.7 7.4l-.6 9.6h-2.2l-.6-9.6c0-3.2.4-5.9 1.7-7.4z"/><path d="M1.8 9.6L12 7.9l10.2 1.7v2.7L12 11.4l-10.2.9z"/><path d="M7.6 19.6l4.4-.8 4.4.8v1.9l-4.4-.5-4.4.5z"/>',
 };
 const icone = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[n] || ''}</svg>`;
