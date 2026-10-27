@@ -2290,5 +2290,38 @@ let tRes;
 addEventListener('resize', () => { clearTimeout(tRes); tRes = setTimeout(toutMesurer, 150); });
 })();
 </script>
+<!-- retour-cours:début — bouton « Retour au cours » : visible seulement si l’élève a ouvert le cours « La capture de la réalité » sur cet ordinateur -->
+<style>
+.retour-cours{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:stretch;max-width:calc(100vw - 32px);background:#fffdf7;color:#2a2a2a;border:1.8px solid #2a2a2a;border-radius:12px 14px 11px 13px;box-shadow:0 6px 18px rgba(0,0,0,.2);font:400 17px/1.2 "Architects Daughter",cursive;transform:rotate(-.6deg)}
+.retour-cours a{display:block;padding:9px 6px 10px 14px;color:inherit;text-decoration:none;border-radius:11px 0 0 11px}
+.retour-cours a b{font-weight:400;color:#c93b31}
+.retour-cours a:hover,.retour-cours a:focus-visible{background:#fff1a8;outline:none}
+.retour-cours button{padding:0 12px;border:0;border-left:1.4px dashed rgba(42,42,42,.35);background:transparent;color:#2a2a2a;font:400 20px/1 "Architects Daughter",cursive;cursor:pointer}
+.retour-cours button:hover,.retour-cours button:focus-visible{color:#c93b31;outline:none}
+html.presente .retour-cours{display:none}
+@media (max-width:700px){.retour-cours{left:8px;bottom:8px;max-width:calc(100vw - 16px);font-size:15.5px}}
+@media print{.retour-cours{display:none}}
+</style>
+<script>
+(() => {
+  try {
+    if (!/^https?:$/.test(location.protocol) || sessionStorage.getItem('retour-cours-masque')) return;
+    const d = JSON.parse(localStorage.getItem('carnet-capture-de-la-realite-dernier') || 'null');
+    if (!d || !/^(atelier-[0-9]{1,2}|quiz)$/.test(d.id)) return;   // rien à reprendre : le bouton n’apparaît pas
+    const boite = document.createElement('div');
+    boite.className = 'retour-cours'; boite.setAttribute('role', 'complementary'); boite.setAttribute('aria-label', 'Retour au cours');
+    const lien = document.createElement('a');
+    lien.href = location.origin + '/capture-de-la-realite/#' + d.id;   // le cours est dans le même domaine que le carnet
+    const gras = document.createElement('b'); gras.textContent = '« La capture de la réalité »';
+    const partie = d.id === 'quiz' ? 'Je vérifie' : 'partie ' + (parseInt(d.n, 10) || d.id.slice(8)) + (d.court ? ' · ' + String(d.court).slice(0, 40).toLowerCase() : '');
+    lien.append('← Retour au cours ', gras, ' · ' + partie);
+    const x = document.createElement('button');
+    x.type = 'button'; x.setAttribute('aria-label', 'Masquer ce bouton'); x.textContent = '×';
+    x.addEventListener('click', () => { boite.remove(); try { sessionStorage.setItem('retour-cours-masque', '1'); } catch (e) { /* tant pis */ } });
+    boite.append(lien, x); document.body.append(boite);
+  } catch (e) { /* navigation privée ou stockage bloqué : pas de bouton */ }
+})();
+</script>
+<!-- retour-cours:fin -->
 </body>
 </html>
