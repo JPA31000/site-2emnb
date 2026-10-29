@@ -36,6 +36,11 @@ a{color:var(--bleu)}
 .barre__logo b{display:block;font:400 21px/1 var(--main);letter-spacing:.02em}
 .barre__logo small{display:block;font:400 13px/1.1 var(--texte);color:var(--gr2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .barre__vide{flex:1}
+.tds{display:flex;gap:6px;margin-left:8px;min-width:0}
+.tdbtn{padding:4px 12px;font:400 17px/1.2 var(--main);border:1.6px solid var(--gr);border-radius:4px 9px 5px 8px;background:var(--fiche);white-space:nowrap}
+.tdbtn b{font-weight:400;color:var(--rouge)}
+.tdbtn:hover{background:#fff7d0}
+.tdbtn[aria-pressed="true"]{background:var(--jaune)}
 .btn{position:relative;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;font:400 17px/1.1 var(--main);border:1.6px solid var(--gr);border-radius:4px 9px 5px 8px;background:var(--fiche)}
 .btn:hover{background:#fff7d0}
 .btn[aria-pressed="true"]{background:var(--jaune)}
@@ -75,6 +80,10 @@ a{color:var(--bleu)}
 @media (max-width:860px){
   :root{--barre:48px}
   .barre__logo small,.btn--dossier{display:none}
+  .barre{gap:8px;padding:0 10px}
+  .tds{margin-left:0;overflow-x:auto}
+  .tdbtn{padding:3px 8px;font-size:15px}
+  .tdbtn{font-size:0}.tdbtn b{font-size:16px}
   .split{padding:8px 8px 0}
   .doc,.td{width:100%;flex:1}
   .poignee{display:none}
@@ -94,6 +103,7 @@ a{color:var(--bleu)}
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l2.6-8.4L21.5 4.7l5.8 5.8L13.4 24.4z" fill="#f2c14e" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l2.6-8.4 5.8 5.8z" fill="#f1dfc0" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l1.2-3.9 2.7 2.7z" fill="#2a2a2a"/><path d="M18.6 7.6l5.8 5.8" stroke="#2a2a2a" stroke-width="1.4"/></svg>
       <span><b>2EMNB</b><small>td revit · la maison Bose</small></span>
     </a>
+    <nav class="tds" id="tds" aria-label="Choisir le TD"></nav>
     <span class="barre__vide"></span>
     <button class="btn btn--dossier" id="masquer" type="button" aria-pressed="false">
       <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v12H3zM9 4v12"/></svg><span>Masquer le dossier</span>
@@ -210,9 +220,20 @@ poignee.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') { pc = largeur(pc + pas); ecrire('revit-bose-largeur', pc); e.preventDefault(); }
 });
 
-/* le tutoriel s'ouvre à l'étape demandée dans l'adresse : revit-bose.html#atelier-3 */
-const ancre = location.hash.match(/^#(atelier-[1-7]|tables|quiz)$/);
-tdFrame.src = 'revit-bose-td.html' + (ancre ? ancre[0] : '');
+/* les quatre TD : l'adresse dit lequel ouvrir (revit-bose.html#td2), et même l'étape (#td2-atelier-3) */
+const TDS = [[1, 'Démarrer', 'Activité 4'], [2, 'Murs', 'Activité 5'], [3, 'Menuiseries', 'Activité 6'], [4, 'Fondations', 'Activité 7']];
+const barreTds = $('#tds');
+barreTds.innerHTML = TDS.map(([n, t, a]) => `<button class="tdbtn" type="button" data-td="${n}" title="${a}"><b>TD${n}</b> ${t}</button>`).join('');
+function ouvrirTd(n, ancre) {
+  $$('.tdbtn', barreTds).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.td === n)));
+  tdFrame.title = `TD${n} Revit : maison Bose`;
+  tdFrame.src = `revit-bose-td${n}.html` + (ancre ? '#' + ancre : '');
+  try { history.replaceState(null, '', '#td' + n + (ancre ? '-' + ancre : '')); } catch { /* fichier local */ }
+}
+barreTds.addEventListener('click', e => { const b = e.target.closest('.tdbtn'); if (b && +b.dataset.td !== courantTd) { courantTd = +b.dataset.td; ouvrirTd(courantTd); if (matchMedia('(max-width: 860px)').matches) vue('td'); } });
+const dem = location.hash.match(/^#td([1-4])(?:-(atelier-[1-9]|tables|quiz))?$/);
+let courantTd = dem ? +dem[1] : 1;
+ouvrirTd(courantTd, dem && dem[2]);
 
 montrer('plans');
 if (matchMedia('(max-width: 860px)').matches) vue('td');
