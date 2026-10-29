@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TD2 : les murs de la maison Bose · 2EMNB</title>
-<meta name="description" content="TD Revit pour la seconde Bac Pro EMNB, activité 5 : types de murs d’après le CCTP, premiers murs du RDC, étage et cloisons de la maison Bose.">
+<meta name="description" content="TD Revit pour la seconde Bac Pro EMNB, activité 5 : types de murs d’après le CCTP, murs du RDC, étage, planchers et toiture de la maison Bose.">
 <meta name="theme-color" content="#f7f4ec">
 <meta property="og:type" content="website">
 <meta property="og:title" content="TD2 : les murs de la maison Bose · 2EMNB">
-<meta property="og:description" content="TD Revit pour la seconde Bac Pro EMNB, activité 5 : types de murs d’après le CCTP, premiers murs du RDC, étage et cloisons de la maison Bose.">
+<meta property="og:description" content="TD Revit pour la seconde Bac Pro EMNB, activité 5 : types de murs d’après le CCTP, murs du RDC, étage, planchers et toiture de la maison Bose.">
 <link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M6 25l2-7 5 5z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -999,34 +999,454 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
    Dans les textes : **gras** et *italique*.
    Le contenu ci-dessous est un EXEMPLE (une maison en coupe) : à remplacer en entier.
    ===================================================================== */
-const DONNEES = {
-  cle: 'revit-bose-td2',
-  carnet: 'index.html',
-  genre: 'TD2 · Activité 5',
-  public: 'Seconde Bac Pro EMNB',
-  auteur: 'Jean-Philippe Amat',
-  mot: 'étape',
-  quizNom: 'Je vérifie',
-  fait: { marquer: 'Marquer comme faite', fait: 'Faite', tampon: 'faite ✓' },
+/* =====================================================================
+   BANQUE COMMUNE DES CINQ TD : missions (MS), questions (QB), flashcards (MM), blocs réutilisés (BK).
+   Chaque page en prend ce dont elle a besoin : missions('lire', 'creer'), un('gabarit', 1), memo('gabarit', …).
+   ===================================================================== */
+const missions = (...cles) => cles.map(c => MS[c]);
+const un = (cle, atelier) => Object.assign({}, QB[cle], { atelier });
+const memo = (...cles) => cles.map(c => MM[c]);
+const PUBLIC = { public: 'Seconde Bac Pro EMNB', auteur: 'Jean-Philippe Amat', mot: 'étape', quizNom: 'Je vérifie', carnet: 'index.html', fait: { marquer: 'Marquer comme faite', fait: 'Faite', tampon: 'faite ✓' } };
+const SUITE = [['TD1 · démarrer', 'revit-bose.html#td1'], ['TD2 · les murs', 'revit-bose.html#td2'], ['TD3 · cloisons, menuiseries, fondations', 'revit-bose.html#td3'], ['TD4 · escalier, annotations, feuilles', 'revit-bose.html#td4'], ['TD5 · PDF, nomenclature, IFC', 'revit-bose.html#td5']];
+const autres = n => SUITE.filter((_, i) => i !== n - 1);
 
+const METHODES = [   // TD1 · étape 1 : quatre façons de démarrer (scène « gabarit »)
+  { id: 'archi', nom: 'Gabarit architectural', picto: 'ouvrage', couleur: 'var(--vert)',
+    texte: '**Le choix du TD.** Livré avec Revit : des niveaux et des vues sont déjà là, avec quelques types de murs, de planchers et de portes. Il faut tout de même **vérifier** les unités et **renommer** ce qui s’y trouve.' },
+  { id: 'perso', nom: 'Gabarit du professeur', picto: 'dossier', couleur: 'var(--bleu)',
+    texte: 'Un fichier **.rte** préparé à l’avance : unités, niveaux et types du CCTP sont déjà réglés. C’est le plus rapide, à condition de savoir **ce qu’il contient**.' },
+  { id: 'aucun', nom: 'Aucun gabarit', picto: 'boite', couleur: 'var(--rouge)',
+    texte: 'Un projet **vide** : pas de vue, pas de niveau, presque pas de types. Tout est à créer. À réserver aux utilisateurs avertis.' },
+  { id: 'ancien', nom: 'Ancien projet', picto: 'fichier', couleur: '#c77a1e',
+    texte: 'On rouvre un ancien **.rvt** et on l’enregistre sous un autre nom. Pratique, mais il **traîne** des niveaux, des vues et des types dont on n’a pas besoin.' },
+];
+const NIVEAUX = [   // TD1 · étape 2 : les niveaux lus dans le dossier (scène « niveaux »)
+  { id: 'faitage', nom: 'Faîtage', alt: 6.70, picto: 'toit', couleur: 'var(--vert)', cree: false,
+    texte: '**+6,70 m** · sommet du toit, lu sur les façades. **Repère à contrôler**, pas un niveau : c’est la pente qui le donne.' },
+  { id: 'egout', nom: 'ÉGOUT', alt: 5.62, picto: 'charpente', couleur: 'var(--vert)', cree: true,
+    texte: '**+5,62 m** · bas du toit, lu sur les façades et la coupe BB. **À créer** : haut des murs de l’étage et base du toit.' },
+  { id: 'r1', nom: 'R+1', alt: 2.75, picto: 'dalle', couleur: 'var(--bleu)', cree: true,
+    texte: '**+2,75 m** · coupe AA : 2,50 m sous plafond + 0,25 m de plancher. Le CCTP place le chaînage à +2,75 (2.1.5.2). **À créer.**' },
+  { id: 'rdc', nom: 'RDC', alt: 0, picto: 'ouvrage', couleur: 'var(--rouge)', cree: true,
+    texte: '**0,00 m** · « le niveau fini sera le niveau 0.00 » (CCTP 6.1.5.1). On renomme le premier niveau du gabarit.' },
+  { id: 'dalle', nom: 'DALLE BRUTE', alt: -0.17, picto: 'beton', couleur: '#c77a1e', cree: true,
+    texte: '**−0,17 m** · calculé : 17 cm réservés au revêtement et à l’isolant sous le niveau fini (2.1.3.1). **À créer**, sans vue en plan.' },
+  { id: 'semelle', nom: 'SEMELLE', alt: -1.00, picto: 'bloc', couleur: '#c77a1e', cree: true,
+    texte: '**−1,00 m** · calculé : −1,25 + 0,05 de béton de propreté + 0,20 de semelle. **À créer** : pied des murs de soubassement.' },
+  { id: 'ff', nom: 'Fond de fouille', alt: -1.25, picto: 'etai', couleur: '#c77a1e', cree: false,
+    texte: '**−1,25 m** · CCTP 1.1.1 : « f.f. à −1.25 m ». **Repère à contrôler** en coupe.' },
+];
+
+/* ---------- blocs de contenu réutilisés d'un TD à l'autre ---------- */
+const BK = {
+  fto: { type: 'grille', titre: 'Famille, type, occurrence', hint: 'Trois mots à ne jamais confondre.', items: [
+    { titre: 'Famille', picto: 'boite', texte: 'Le **modèle** d’un objet : « mur de base », « fenêtre à deux vantaux ».' },
+    { titre: 'Type', picto: 'regle', texte: 'Une **taille ou une composition** de la famille : « MUR-EXT… », « 1,20 × 1,35 ». On le crée avec **Dupliquer**.' },
+    { titre: 'Occurrence', picto: 'puzzle', texte: 'Un **exemplaire posé** dans la maquette : ce mur-ci, cette fenêtre-là, à cette hauteur.' },
+  ] },
+  planOuCctp: { type: 'alerte', titre: 'Plan ou CCTP : qui a raison ?', textes: ['Ici, le **plan** cote un mur de 0,38 m et une cloison de 0,10 m ; le **CCTP** décrit les matériaux mais pas l’épaisseur totale du doublage, et annonce une cloison de 70 mm. Son extrait cite aussi un vestiaire, une douche, une salle de jeux : ces pièces n’existent pas sur les plans.', 'Règle des TD : **le plan fixe les cotes, le CCTP fixe les matériaux**. Une différence se signale au maître d’œuvre, elle ne se tranche pas en silence.'] },
+  noteDoublage: { type: 'note', texte: 'Ajout de l’auteur : les noms de types suivent la convention CATÉGORIE-ouvrage-matériau-épaisseur, sans espace ni accent. L’épaisseur de 160 mm du doublage est déduite de la cote 38 du plan (380 − 20 − 200) : à valider avec le professeur.' },
+  valeursControle: { type: 'tableau', titre: 'Les valeurs de contrôle du dossier', entetes: ['Contrôle', 'Valeur du dossier', 'Où la lire'], lignes: [
+    ['Salon', '26,24 m²', 'Plan RDC, p. 4'], ['Cuisine', '9,17 m²', 'Plan RDC, p. 4'], ['Chambre 1', '10,55 m²', 'Plan RDC, p. 4'],
+    ['Chambre 2 · chambre 3', '10,37 m² · 10,31 m²', 'Plan de l’étage, p. 5'], ['Hauteurs sous plafond', '2,50 m (RDC) · 2,65 m (étage)', 'Coupe AA, p. 8'], ['Faîtage', '+6,70 m', 'Façades, p. 6'] ] },
+  pdfImage: { type: 'texte', titre: 'Le PDF du dossier est une image', textes: ['Les neuf pages du dossier sont des **images** : aucun trait, aucun texte à sélectionner. Revit les affiche comme un fond que l’on **regarde** pour lire les cotes ; on ne peut pas **accrocher** ses traits.', 'Les murs se tracent donc sur le **quadrillage**, d’après les **cotes lues** sur le plan, ou bien **à vue** sur le fond de plan, avec la précision de l’image.'] },
+};
+const lien = (doc, page, texte) => ({ doc, page, texte });
+
+/* ---------- les missions (id sans tiret : le moteur découpe au tiret) ---------- */
+const MS = {
+  lire: { id: 'mlire', etape: 'Sur papier', titre: 'Lire le dossier avant d’ouvrir Revit', picto: 'plans',
+    taches: ['Je relève sur le plan RDC la largeur et la longueur de la maison', 'Je relève sur les coupes les cotes 0,00, +5,62 et +6,70', 'Je trouve dans le CCTP le fond de fouille et la section des semelles', 'Je repère une différence entre le plan et le CCTP'],
+    tuto: { titre: 'Relever sans Revit', etapes: [
+      '{{plans:4|Plan RDC · p. 4}} : repérez les cotes **12,00** (à gauche) et **7,00** (sous la maison). Cette emprise est mesurée **à l’extérieur** des murs.',
+      '{{plans:8|Coupes · p. 8}} : sur la coupe AA, lisez **2,50** (hauteur sous plafond du RDC), **25** (épaisseur du plancher haut) et **2,65** (hauteur sous plafond de l’étage).',
+      '{{plans:6|Façades · p. 6}} : lisez **+5,62 m** et **+6,70 m**, ainsi que la légende « enduit lissé, blanc cassé ».',
+      '{{cctp:1|CCTP · p. 1}} et {{cctp:2|p. 2}} : relevez le fond de fouille (**−1,25 m**) et la semelle (**50 × 20**).',
+      { titre: 'Comparez.', texte: 'Le CCTP parle d’un enduit « gratté » et de menuiseries en bois exotique ; les façades indiquent un enduit « lissé » et des menuiseries « PVC ». Notez l’écart.', astuce: 'Le plan donne les cotes, le CCTP donne les matériaux.' },
+    ] } },
+  creer: { id: 'mcreer', etape: 'Dans Revit', titre: 'Créer mon projet', picto: 'ouvrage',
+    taches: ['Je crée un nouveau projet à partir du gabarit architectural', 'Je règle les unités : m, m², m³, degrés, pente en %', 'Je renseigne l’emplacement du projet : Toulouse', 'J’enregistre sous un nom clair : BOSE_maquette_NOM.rvt'],
+    tuto: { titre: 'Créer et enregistrer le projet', etapes: [
+      'Sur la page d’accueil de Revit, cliquez sur **Nouveau** (projet) et choisissez le **gabarit architectural**, ou celui de votre professeur (fichier **.rte**).',
+      { titre: 'Unités.', texte: 'Onglet **Gérer**, **Unités du projet** : longueur en mètres avec 3 décimales (le CCTP descend à 0,010 m), surface en m², volume en m³, angle en degrés, **pente en %**.', astuce: 'En mètres, 20 cm se saisit 0,200.' },
+      { titre: 'Emplacement.', texte: 'Onglet **Gérer**, **Emplacement** : la page de garde du dossier ({{plans:1|p. 1}}) indique la ville de Toulouse.' },
+      { titre: 'Enregistrer.', texte: '**Fichier**, **Enregistrer sous**, format projet **.rvt**. Pensez à **Ctrl + S** régulièrement.' },
+      'Repérez l’écran : le **ruban** (en haut), la **palette des propriétés** et l’**arborescence du projet** (à gauche), la **barre des options** (sous le ruban) et la **zone de dessin**.',
+    ] } },
+  niveaux: { id: 'mniveaux', etape: 'Niveaux', titre: 'Niveaux et noms des plans', picto: 'niveau',
+    taches: ['Je renomme Niveau 1 en RDC et règle son altitude à 0,000', 'Je règle le deuxième niveau : R+1 à +2,750', 'Je crée ÉGOUT à +5,620, DALLE BRUTE à −0,170 et SEMELLE à −1,000', 'Seuls SEMELLE, RDC, R+1 et ÉGOUT ont un plan : pas DALLE BRUTE'],
+    tuto: { titre: 'Créer les niveaux', etapes: [
+      'Dans l’arborescence du projet, ouvrez une **élévation** (par exemple Est) : les niveaux sont des lignes horizontales.',
+      'Cliquez sur le **nom** d’un niveau pour le renommer, sur son **altitude** pour la modifier. Revit propose de **renommer les vues correspondantes** : répondez Oui.',
+      'Pour créer un niveau : onglet **Architecture**, **Niveau**, puis tracez une ligne horizontale. La barre des options propose **Créer une vue en plan** : décochez-la pour DALLE BRUTE.',
+      { titre: 'Autre méthode.', texte: 'Copier un niveau en déplaçant sa ligne avec **Ctrl** enfoncé ne crée pas de vue en plan.' },
+      { titre: 'Contrôlez.', texte: 'Entre RDC et R+1 la distance doit être **2,750 m**. Le cadenas d’un niveau évite de le déplacer par erreur.' },
+    ] } },
+  arbo: { id: 'marbo', etape: 'Arborescence', titre: 'Nettoyer l’arborescence', picto: 'dossier',
+    taches: ['Je supprime le plan de site et les plans de plafond inutiles', 'Je renomme la vue 3D : « 3D maison »', 'Je garde les quatre élévations pour le TD4', 'Je ne purge rien avant d’avoir posé mes premiers éléments'],
+    tuto: { titre: 'Ranger l’arborescence', etapes: [
+      'Développez **Vues** dans l’arborescence du projet : plans d’étage, plans de plafond, vues 3D, élévations (selon votre gabarit).',
+      'Clic droit sur une vue inutile, puis **Supprimer** : Revit demande une confirmation.',
+      'Clic droit sur une vue, puis **Renommer** : donnez un nom qui se retrouve sur le dossier (RDC, R+1…).',
+      { titre: 'Attention à la purge.', texte: 'La commande de purge (onglet **Gérer**) supprime tout ce qui est **non utilisé** : y compris les types du CCTP que vous venez de créer, tant qu’ils ne sont pas posés. Ne purgez qu’en fin de projet.', astuce: 'Un type non posé est un type « inutilisé ».' },
+    ] } },
+  quadrillage: { id: 'mquadrillage', etape: 'Quadrillage', titre: 'Poser le quadrillage', picto: 'grille',
+    taches: ['J’ouvre le plan RDC', 'Je trace deux axes verticaux espacés de 7,00 m', 'Je trace deux axes horizontaux espacés de 12,00 m', 'Je renomme les axes : 1, 2, A et B', 'J’épingle le quadrillage'],
+    tuto: { titre: 'Tracer les axes', etapes: [
+      'Ouvrez le plan **RDC**. Onglet **Architecture**, outil **Quadrillage** (à côté de l’outil Niveau).',
+      'Tracez un premier axe vertical, puis un second. Cliquez sur la **cote temporaire** qui les sépare et tapez **7,00** : l’écart devient exact.',
+      'Tracez les deux axes horizontaux, séparés de **12,00**, de façon à former un rectangle (les axes se croisent aux quatre coins de la maison).',
+      'Revit les numérote à la suite (1, 2, 3…). Cliquez sur le **nom** d’un axe pour le renommer : **1** et **2** pour les verticaux, **A** et **B** pour les horizontaux.',
+      'Ouvrez le plan **R+1** : les axes y sont déjà. Un quadrillage apparaît dans les vues en plan, en coupe et en élévation.',
+      'Sélectionnez les quatre axes, puis **Épingler** (onglet **Modifier**) : ils ne bougeront plus par accident.',
+      { titre: 'Pourquoi 7,00 et 12,00 ?', texte: 'Ce sont les cotes d’emprise du plan RDC ({{plans:4|p. 4}}), mesurées à l’extérieur des murs. Les axes sont donc posés sur les faces extérieures.', astuce: 'Il existe aussi le plan de référence : même idée, sans bulle ni numéro.' },
+    ] } },
+
+  types_murs: { id: 'mtypesmurs', etape: 'Types', titre: 'Créer les types de murs', picto: 'couches',
+    taches: ['MUR-INFRA-BBP20-E10 : bloc plein 200 mm + enduit 10 mm', 'MUR-EXT-BBC20-E20-DBL : enduit 20 + bloc creux 200 + doublage 160 = 380 mm'],
+    tuto: { titre: 'Créer un type de mur', etapes: [
+      'Onglet **Architecture**, outil **Mur**. Dans la **palette des propriétés**, choisissez un type de mur de base (par exemple Générique).',
+      '**Modifier le type**, puis **Dupliquer** : donnez le nom du type (MUR-EXT-BBC20-E20-DBL).',
+      'Cliquez sur **Modifier** à côté de la structure : la liste des couches va de l’**extérieur** (en haut) à l’**intérieur** (en bas). Insérez chaque couche avec sa **fonction**, son **matériau** et son **épaisseur**.',
+      { titre: 'Fonctions.', texte: 'Le bloc est en **Structure** ; les enduits et la plaque sont des **Finitions** ; la laine est une **couche thermique**. Les fonctions règlent les jonctions entre murs.' },
+      { titre: 'Matériaux.', texte: 'Associez un matériau à chaque couche : il donne la hachure en coupe et la couleur en 3D.' },
+      'Faites de même pour **MUR-INFRA-BBP20-E10** : enduit 10 mm, bloc plein 200 mm.',
+    ] } },
+  murs_rdc: { id: 'mmursrdc', etape: 'Murs du RDC', titre: 'Tracer le contour du RDC', picto: 'murs',
+    taches: ['Je choisis le type MUR-EXT-BBC20-E20-DBL', 'Je règle la ligne de justification sur « Nu fini extérieur »', 'Je trace le rectangle 7,00 × 12,00 dans le sens horaire, sur les axes 1, 2, A et B', 'Contrainte de base : DALLE BRUTE ; contrainte supérieure : R+1', 'Je contrôle l’intérieur libre : 6,24 × 11,24'],
+    tuto: { titre: 'Tracer le contour du RDC', etapes: [
+      'Ouvrez le plan **RDC** (arborescence du projet). Onglet **Architecture**, outil **Mur**.',
+      'Palette des propriétés : type **MUR-EXT-BBC20-E20-DBL**. Barre des options : **ligne de justification : Nu fini extérieur**.',
+      'Dans le groupe **Dessiner**, choisissez **Rectangle**, puis tracez dans le sens des aiguilles d’une montre en accrochant les **intersections du quadrillage** (axes 1/A, 2/A, 2/B, 1/B). Sans quadrillage, corrigez les **cotes temporaires** pour obtenir **7,00** et **12,00** ({{plans:4|plan RDC · p. 4}}).',
+      'Sélectionnez les quatre murs. Propriétés : **contrainte de base** DALLE BRUTE, **contrainte supérieure** (jusqu’au niveau) R+1.',
+      'Onglet **Annoter**, **Cote alignée** : cotez l’intérieur. Calcul attendu : 7,00 − 2 × 0,38 = **6,24**, la même valeur que sur {{plans:5|le plan de l’étage · p. 5}}.',
+      { titre: 'Retournement.', texte: 'Si la face extérieure est du mauvais côté, annulez et retracez en sens horaire.', astuce: 'Barre d’espace pendant le tracé = inverser l’intérieur et l’extérieur.' },
+    ] } },
+  etage_murs: { id: 'metagemurs', etape: 'Étage', titre: 'Monter les murs de l’étage', picto: 'murs',
+    taches: ['Je copie les murs du RDC (Ctrl + C)', 'Coller, Aligné sur les niveaux sélectionnés : R+1', 'J’ajuste le contour : 7,00 × environ 6,63', 'Contrainte de base R+1, contrainte supérieure ÉGOUT'],
+    tuto: { titre: 'Copier et ajuster', etapes: [
+      'Dans le plan **RDC**, sélectionnez les murs extérieurs avec une fenêtre de sélection, puis **Ctrl + C**.',
+      'Onglet **Modifier**, liste **Coller** : **Aligné sur les niveaux sélectionnés**, puis choisissez **R+1**.',
+      'Ouvrez le plan **R+1** : les murs font encore 12,00 m de long. Déplacez leurs extrémités pour obtenir 7,00 × environ 6,63 ({{plans:5|plan de l’étage · p. 5}}).',
+      'Propriétés des murs de l’étage : **contrainte de base** R+1, **contrainte supérieure** ÉGOUT.',
+      { titre: 'Joints.', texte: 'Si deux éléments se chevauchent mal, utilisez **Attacher la géométrie** (onglet **Modifier**, groupe **Géométrie**) : Revit crée des joints nets.' },
+    ] } },
+  dallage: { id: 'mdallage', etape: 'Dallage', titre: 'Mon premier plancher : le dallage', picto: 'dalle',
+    taches: ['Je crée le type DALLAGE-BA20 : finition 170 + dalle 200 + sable 50 + tout-venant 200', 'Je suis dans le plan du niveau RDC', 'Je dessine le contour avec « Choisir des murs »', 'Hauteur de décalage : 0, puis je termine avec la coche verte', 'En coupe : dessus du plancher à 0,00, dalle brute à −0,17'],
+    tuto: { titre: 'Poser le dallage', etapes: [
+      'Créez le type : **Architecture**, **Sol**, **Plancher**, **Modifier le type**, **Dupliquer**, puis les couches **du dessus vers le dessous** : revêtement et isolant, dalle, sable, tout-venant. Le dallage doit totaliser **0,620 m** : 170 + 200 + 50 + 200 mm.',
+      'Revenez au plan **RDC**. Dans le ruban, **Choisir des murs** est actif par défaut (sinon, cliquez dessus). Sélectionnez les quatre murs : un contour fermé apparaît à l’intérieur.',
+      'Palette des propriétés : type **DALLAGE-BA20**, **hauteur de décalage à partir du niveau : 0**.',
+      'Cliquez sur **Terminer le mode de modification** (coche verte). Si Revit propose d’**attacher** les murs au plancher, refusez : les murs doivent descendre jusqu’à la dalle brute.',
+      { titre: 'Contrôle en coupe.', texte: 'Onglet **Vue**, **Coupe** : le dessus du plancher est à 0,00, le dessus de la dalle brute à −0,17.' },
+    ] } },
+  plancher_r1: { id: 'mplancherr1', etape: 'Plancher R+1', titre: 'Le plancher de l’étage', picto: 'dalle',
+    taches: ['Je crée le type PLANCHER-BA25 (250 mm)', 'Plan R+1 : Plancher, Choisir des murs, décalage 0', 'Je termine avec la coche verte', 'L’ouverture de l’escalier sera percée au TD4'],
+    tuto: { titre: 'Poser le plancher haut', etapes: [
+      'Créez le type **PLANCHER-BA25** comme le dallage, avec une seule couche de béton de **0,250 m** (cote « 25 » de la coupe AA, {{plans:8|p. 8}}).',
+      'Ouvrez le plan **R+1**. Outil **Plancher**, **Choisir des murs**, type PLANCHER-BA25, décalage **0** : le dessus du plancher est à +2,75 m.',
+      'Coche verte. Si Revit propose d’attacher les murs, **acceptez** : les murs du RDC se raccourcissent sous le plancher.',
+      { titre: 'Joints.', texte: 'Si deux éléments se chevauchent mal, utilisez **Attacher la géométrie** (onglet **Modifier**, groupe **Géométrie**).' },
+    ] } },
+  toit: { id: 'mtoit', etape: 'Toit', titre: 'La toiture à quatre pans', picto: 'toit',
+    taches: ['Je crée le type TOIT-TUILE-CANAL (chevrons, voligeage, liteaux, tuiles)', 'Plan ÉGOUT : Architecture, Toit, Toit par tracé', 'Je dessine le contour de l’étage avec un débord', 'Les quatre côtés définissent la pente : environ 31 %', 'Je contrôle le faîtage à +6,70 sur une façade'],
+    tuto: { titre: 'Tracer le toit', etapes: [
+      'Ouvrez le plan **ÉGOUT**. Onglet **Architecture**, outil **Toit**, puis **Toit par tracé**.',
+      'Propriétés de type : **Dupliquer** TOIT-TUILE-CANAL. Couches de l’extérieur vers l’intérieur : tuiles canal, liteaux 30 mm, voligeage 19 mm, chevrons 75 mm (CCTP 4.1.4 et 4.2.1). L’épaisseur de la tuile dépend du produit choisi.',
+      'Dessinez le contour avec **Choisir des murs** et un **débord** (barre des options) ; vérifiez que chaque côté **définit la pente**.',
+      'Réglez la **pente** à environ **31 %** (unité réglée en % au TD1), puis la coche verte.',
+      'Ouvrez une **façade** : le faîtage doit être proche de **+6,70 m** ({{plans:6|façades · p. 6}}).',
+      { titre: 'Une pente déduite.', texte: 'Le dossier ne donne pas la pente : 31 % vient du calcul du schéma. Contrôlez-la sur la façade.' },
+    ] } },
+
+  cloisons: { id: 'mcloisons', etape: 'Cloisons', titre: 'Les cloisons de distribution', picto: 'cloison',
+    taches: ['Je crée le type CLOISON-PLACO-100 (0,100 m)', 'Je trace les cloisons du RDC et de l’étage d’après les plans', 'RDC : de RDC à R+1 avec un décalage supérieur de −0,250', 'Je libère les jonctions qui se collent au mur voisin'],
+    tuto: { titre: 'Créer et tracer les cloisons', etapes: [
+      'Outil **Mur**, **Modifier le type**, **Dupliquer** : **CLOISON-PLACO-100**, une seule couche de 0,100 m suffit pour ce TD.',
+      'Ligne de justification **Axe du mur**. Tracez d’après {{plans:4|le plan RDC · p. 4}}.',
+      'Corrigez avec les cotes temporaires pour retrouver les largeurs de pièces du plan (par exemple Ch3 | 0,10 | Ch2 : 3,07 + 0,10 + 3,07 sur {{plans:5|l’étage · p. 5}}).',
+      'Hauteurs : au RDC, **contrainte supérieure** R+1 avec **décalage supérieur** −0,250 (épaisseur du plancher). À l’étage, hauteur de 2,650 m (coupe AA).',
+      'Si une cloison se « colle » au mur voisin : clic droit sur son extrémité, **Interdire le joint**, puis déplacez l’extrémité.',
+      { titre: 'Épaisseur.', texte: 'Le CCTP annonce 70 mm (6.1.1), le plan cote 0,10 m. On modélise **0,100 m** pour retrouver les surfaces des pièces ; l’écart est à signaler.' },
+    ] } },
+  fam_ouv: { id: 'mfamouv', etape: 'Familles', titre: 'Charger la famille et créer les types', picto: 'fenetre',
+    taches: ['Je charge une famille de fenêtre à 2 vantaux', 'Je crée le type 1,20 × 1,35 (fenêtre) et le type 0,60 × 0,95 (châssis)', 'Je charge une famille de porte et je crée 1,80 × 2,15 et 0,83 × 2,04'],
+    tuto: { titre: 'Charger et dupliquer', etapes: [
+      'Onglet **Architecture**, outil **Fenêtre**. Si le choix ne convient pas : **Modifier le type**, **Charger**, puis cherchez une fenêtre à **2 vantaux**.',
+      '**Dupliquer** le type et réglez la **largeur** et la **hauteur** (1,200 × 1,350 ; puis 0,600 × 0,950 pour le châssis).',
+      'Même méthode avec l’outil **Porte** : porte d’entrée 1,80 × 2,15 (CCTP 5.1.1), blocs-portes intérieurs 0,83 × 2,04 (7.1.1.1).',
+      { titre: 'Pas de porte-fenêtre ?', texte: 'La bibliothèque livrée avec Revit n’en contient pas toujours : cherchez une famille de porte vitrée à deux vantaux ou demandez celle du professeur.' },
+    ] } },
+  fenetres: { id: 'mfenetres', etape: 'Fenêtres', titre: 'Poser les fenêtres', picto: 'fenetre',
+    taches: ['Je pose les fenêtres d’après le plan RDC en corrigeant les cotes temporaires', 'Je règle la hauteur d’allège de chaque fenêtre', 'Je vérifie qu’il reste au moins 0,20 m sous le plancher haut', 'Je pose les fenêtres de l’étage'],
+    tuto: { titre: 'Poser une fenêtre', etapes: [
+      'Outil **Fenêtre**, type 1,20 × 1,35. Cliquez sur le mur pour poser la fenêtre.',
+      'Des **cotes temporaires** apparaissent : cliquez la cote, tapez la valeur lue sur {{plans:4|le plan RDC · p. 4}}, Entrée. La fenêtre se met à sa place.',
+      'Palette des propriétés : réglez la **hauteur d’allège** (voir le schéma). C’est une propriété de **cette** fenêtre.',
+      'Contrôlez en coupe : la tête de la baie doit laisser **0,20 m** au moins sous le plancher haut.',
+      { titre: 'Les linteaux.', texte: 'Le CCTP prévoit un **bloc en U de 20 cm** au-dessus de chaque baie : il lui faut la place.' },
+    ] } },
+  portes: { id: 'mportes', etape: 'Portes', titre: 'Poser les portes', picto: 'porte',
+    taches: ['Je pose la porte d’entrée 1,80 × 2,15', 'Je pose les portes intérieures 0,83 × 2,04', 'Une porte se pose avec une allège nulle'],
+    tuto: { titre: 'Poser les portes', etapes: [
+      'Outil **Porte**, type 1,80 × 2,15 : cliquez sur le mur de façade, puis corrigez la position avec les cotes temporaires ({{plans:4|plan RDC · p. 4}}).',
+      'Portes intérieures 0,83 × 2,04 : dans les cloisons du WC et de la douche. Le sens d’ouverture se règle avec les **flèches** qui apparaissent à la sélection.',
+      'Vérifiez dans la vue 3D qu’aucune porte ne s’ouvre contre un mur.',
+    ] } },
+  controle_ouv: { id: 'mcontroleouv', etape: 'Contrôle', titre: 'Contrôler les ouvertures', picto: 'loupe',
+    taches: ['Je compte les ouvertures du plan RDC et de l’étage', 'Je compare la vue 3D aux façades des pages 6 et 7', 'Je note une ouverture dont la position est à discuter'],
+    tuto: { titre: 'Comparer la maquette et le dossier', etapes: [
+      'Ouvrez {{plans:6|les façades · p. 6}} et {{plans:7|p. 7}} : comptez les fenêtres et les portes de chaque façade.',
+      'Dans Revit, ouvrez la **vue 3D** (arborescence du projet) et tournez autour de la maison : chaque façade doit retrouver les mêmes ouvertures.',
+      'Notez les écarts (nombre, position, hauteur) : ils seront repris au TD4, pendant les annotations.',
+    ] } },
+  soubassement: { id: 'msoubassement', etape: 'Soubassement', titre: 'Le mur de soubassement', picto: 'bloc',
+    taches: ['Je choisis le type MUR-INFRA-BBP20-E10', 'Contrainte de base : SEMELLE ; contrainte supérieure : DALLE BRUTE', 'Même contour qu’au RDC, avec un décalage de 0,010 m', 'En coupe, les blocs du soubassement et du RDC sont alignés'],
+    tuto: { titre: 'Poser les murs enterrés', etapes: [
+      'Ouvrez le plan **SEMELLE** (le seul où l’on voit les murs enterrés).',
+      'Outil **Mur**, type **MUR-INFRA-BBP20-E10**, ligne de justification **Nu fini extérieur**. Tracez le même rectangle qu’au RDC, en accrochant le quadrillage.',
+      'Dans la barre des options, réglez le **décalage** à 0,010 m ; si le mur part vers l’extérieur, mettez −0,010 m.',
+      'Palette des propriétés : **contrainte de base** SEMELLE, **contrainte supérieure** DALLE BRUTE.',
+      { titre: 'Pourquoi 0,010 m ?', texte: 'Enduit du RDC 20 mm moins enduit du soubassement 10 mm : les **blocs** restent alignés, seules les faces enduites diffèrent.' },
+    ] } },
+  semelles: { id: 'msemelles', etape: 'Semelles', titre: 'Les semelles filantes', picto: 'beton',
+    taches: ['Je crée le type SEMELLE-50x20 (largeur 0,500 ; épaisseur 0,200)', 'Onglet Structure, Fondation, Mur : je clique chaque mur de soubassement', 'En coupe : dessus de semelle −1,00, dessous −1,20', 'Je compare à la coupe AA : une semelle sous chaque mur extérieur'],
+    tuto: { titre: 'Poser les semelles', etapes: [
+      'Onglet **Structure**, groupe **Fondation**, outil **Mur** (semelle filante).',
+      'Dans les propriétés de type : **Dupliquer** (SEMELLE-50x20), puis réglez la **largeur** (0,500 m) et l’**épaisseur** (0,200 m).',
+      'Cliquez sur un mur de soubassement : la semelle se place **sous le pied du mur**, centrée sur lui (« axées », dit le CCTP). Répétez sur les autres murs.',
+      'Ouvrez une coupe ({{plans:8|coupes · p. 8}}) et comparez : les semelles du dossier sont sous les murs extérieurs.',
+      { titre: 'Défi.', texte: 'Les 5 cm de béton de propreté (CCTP 2.1.1.1) ne sont pas modélisés ici. À vous de trouver comment les ajouter sous la semelle.' },
+    ] } },
+
+  escalier: { id: 'mescalier', etape: 'Escalier', titre: 'L’escalier', picto: 'escalier',
+    taches: ['Je lis les plans : l’escalier tourne dans l’angle du séjour', 'Hauteur à franchir : 2,750 m, soit 16 contremarches d’environ 0,172 m', 'Je trace l’escalier du RDC au R+1', 'Je perce la trémie dans le plancher R+1'],
+    lien: { texte: 'Revoir le cours Escaliers', url: 'escaliers.html' },
+    tuto: { titre: 'Poser l’escalier', etapes: [
+      '{{plans:4|Plan RDC · p. 4}} et {{plans:5|étage · p. 5}} : repérez l’escalier **à quart tournant** et comptez ses marches.',
+      'Onglet **Architecture**, groupe **Circulation**, outil **Escalier**. Indiquez le niveau de départ (RDC) et d’arrivée (R+1).',
+      { titre: 'Blondel.', texte: 'La règle 2h + g doit donner entre 0,60 et 0,64 m. Avec h = 0,172 m, le giron g vaut entre 0,256 et 0,296 m.' },
+      'Terminez avec la coche verte. Sélectionnez ensuite le **plancher R+1**, cliquez **Modifier la limite**, dessinez l’ouverture de la trémie, puis la coche verte.',
+    ] } },
+  pieces: { id: 'mpieces', etape: 'Pièces', titre: 'Pièces et surfaces', picto: 'regle',
+    taches: ['Architecture, Pièce et surface, Pièce : je clique dans chaque pièce', 'Je renomme les pièces comme sur le plan', 'Je compare trois surfaces : salon 26,24 · cuisine 9,17 · chambre 2 10,37', 'J’explique chaque écart'],
+    tuto: { titre: 'Créer et contrôler les pièces', etapes: [
+      'Revenez sur le plan **RDC**. Onglet **Architecture**, groupe **Pièce et surface**, outil **Pièce**.',
+      'Cliquez dans la zone de dessin : Revit délimite la pièce et affiche son numéro et sa **surface**. Double-cliquez sur le nom pour la renommer.',
+      'Comparez avec {{plans:4|le plan RDC · p. 4}} et {{plans:5|l’étage · p. 5}} (tableau du cours).',
+      { titre: 'Pas de pièce ?', texte: 'S’il n’y a pas d’élément de délimitation, ajoutez une **ligne de séparation de pièce** (même groupe du ruban).' },
+    ] } },
+  cotes: { id: 'mcotes', etape: 'Cotes', titre: 'Coter le plan', picto: 'regle',
+    taches: ['Annoter, Cote alignée : je cote l’emprise 7,00 et 12,00', 'Je cote les baies et les entre-axes d’après le plan', 'Je cote l’intérieur : 6,24', 'Je compare mes cotes à celles du plan'],
+    tuto: { titre: 'Poser des cotes', etapes: [
+      'Onglet **Annoter**, outil **Cote alignée**. Dans la barre des options, choisissez ce que Revit cote : **murs entiers** (avec leurs ouvertures, largeurs ou centres) ou **références individuelles**.',
+      'Cote totale : choisissez les **références individuelles** (les faces extérieures des murs) ; vous devez lire **7,00** puis **12,00**.',
+      'Cote des baies et des trumeaux : **murs entiers**, option **ouvertures**, **largeurs**. Entre-axes de baies : option **centres**.',
+      'Cotes intérieures : **murs entiers**, option **intersection des murs** ; la largeur libre attendue est **6,24**.',
+      'Un clic sur une cote permet d’en modifier le texte ; comparez avec {{plans:4|le plan RDC · p. 4}} et {{plans:5|l’étage · p. 5}}.',
+    ] } },
+  coupes_facades: { id: 'mcoupesfacades', etape: 'Vues', titre: 'Coupes et façades', picto: 'plans',
+    taches: ['Je crée la coupe AA et la coupe BB comme sur la page 8 du dossier', 'J’ouvre la coupe et je règle la zone cadrée', 'Je renomme les élévations : Façade Nord-Est, Sud-Est, Sud-Ouest, Nord-Ouest', 'Je règle la visibilité des catégories avec VV'],
+    tuto: { titre: 'Créer les vues du dossier', etapes: [
+      'Onglet **Vue**, outil **Coupe** : cliquez deux points pour tracer la coupe AA, puis BB ({{plans:4|traits de coupe · p. 4}}).',
+      'Double-cliquez sur l’en-tête de la coupe pour l’ouvrir. Redimensionnez la **zone cadrée** en faisant glisser les contrôles bleus.',
+      'Clic droit sur une élévation de l’arborescence, **Renommer** : reprenez les noms des façades du dossier ({{plans:6|p. 6}} et {{plans:7|p. 7}}).',
+      'Tapez **VV** au clavier : cochez ou décochez les catégories (terrain, murs, planchers…), comme dans le schéma.',
+    ] } },
+  feuilles: { id: 'mfeuilles', etape: 'Feuilles', titre: 'Préparer les feuilles', picto: 'fichier',
+    taches: ['Vue, Composition de feuille, Feuille : je crée la feuille du plan RDC', 'Je choisis un cartouche (ou « Aucun »)', 'Je glisse la vue dans la feuille, à l’échelle 1:100', 'Je renseigne le cartouche, le nom et le numéro de la feuille', 'Je prépare de même le plan de l’étage, les façades et les coupes'],
+    tuto: { titre: 'Créer une feuille', etapes: [
+      'Onglet **Vue**, groupe **Composition de feuille**, outil **Feuille**. Dans la boîte **Nouvelle feuille**, choisissez un **cartouche** ; s’il n’est pas dans la liste, **Charger**. **Aucun** crée une feuille sans cartouche.',
+      'Saisissez les informations du cartouche (maître d’ouvrage, projet, échelle, dessiné par) en reprenant celles du cartouche du dossier ({{plans:4|p. 4}}).',
+      'Ajoutez les vues : faites un **glisser-déposer** depuis l’arborescence du projet vers la feuille.',
+      'Modifiez le **nom** et le **numéro** que Revit a attribués à la feuille : par exemple « PLAN RDC » d’après {{plans:4|la page 4}}.',
+      { titre: 'Une feuille par page du dossier.', texte: 'Plan RDC, plan de l’étage, deux feuilles de façades (deux par feuille), une feuille de coupes. Toutes au **1:100**.' },
+    ] } },
+
+  pdf_insere: { id: 'mpdfinsere', etape: 'Fond de plan', titre: 'Insérer le plan PDF', picto: 'plans',
+    taches: ['Je règle l’échelle de la vue RDC sur 1:100', 'J’importe la page 4 du PDF, en 150 DPI', 'Je pose le PDF dans la vue', 'Je le mets à l’échelle avec le mode graphique', 'J’aligne le coin de la maison sur l’intersection des axes 1 et A', 'Je contrôle la cote 12,00 puis j’épingle le PDF'],
+    tuto: { titre: 'Insérer et caler le plan', etapes: [
+      'Ouvrez le plan **RDC** et réglez son **échelle** sur **1:100** (barre de contrôle d’affichage, en bas de la zone de dessin) : c’est l’échelle d’impression du plan de la page 4.',
+      'Onglet **Insérer**, panneau **Importer**, commande **PDF**. Dans la boîte d’import, choisissez la **page 4** (par sa vignette) et la résolution **150 DPI** ; augmentez-la si les cotes sont illisibles.',
+      'Cliquez dans la vue : le PDF se pose. Il n’apparaît que dans cette vue 2D. La page 5 ira de la même façon dans le plan **R+1**.',
+      'Sélectionnez le PDF, puis dans le panneau **Modifier**, l’outil **Échelle**. Dans la barre des options, choisissez le mode **graphique**.',
+      'Zoomez fort sur les deux extrémités de la cote **7,00** du plan : cliquez la première, puis la seconde. Cliquez ensuite l’intersection **1/A** puis **2/A** du quadrillage : le PDF s’agrandit ou se réduit pour que 7,00 m du papier valent 7,00 m du modèle.',
+      'Déplacez le PDF pour que le coin nord-ouest de la maison tombe sur l’intersection **1/A**. Contrôlez le coin opposé (**2/B**) : la cote **12,00** doit se retrouver entre les axes A et B.',
+      'Sélectionnez le PDF puis **Épingler** : il ne bougera plus.',
+      { titre: 'Changer de page.', texte: 'Onglet **Insérer**, **Gérer les liens**, onglet **PDF** : l’option **Recharger depuis** permet de changer la page ou la résolution.', astuce: 'Ces libellés viennent de l’aide Autodesk en anglais (Manage Links, Reload From).' },
+    ] } },
+  pdf_trace: { id: 'mpdftrace', etape: 'Tracé', titre: 'Tracer le plan RDC sur le fond de plan', picto: 'murs',
+    taches: ['J’enregistre une copie du projet : BOSE_methode_PDF.rvt', 'Dans cette copie, je supprime les murs du RDC', 'Je retrace les murs extérieurs en suivant le PDF (même type, même ligne de justification)', 'Je cote 7,00 et 12,00 et je note l’écart', 'Je compare avec la maquette faite sur le quadrillage'],
+    tuto: { titre: 'Comparer deux méthodes', etapes: [
+      '**Fichier**, **Enregistrer sous** : gardez votre projet du TD2 intact et travaillez sur la **copie**.',
+      'Dans la copie, plan **RDC** : sélectionnez les murs du RDC et supprimez-les. Gardez le quadrillage et le PDF épinglé.',
+      'Outil **Mur**, type **MUR-EXT-BBC20-E20-DBL**, ligne de justification **Nu fini extérieur**. Tracez en suivant la **face extérieure** de la maison sur le PDF : zoomez fortement, car la précision est celle de l’image.',
+      'Cotez l’emprise avec **Cote alignée** : la méthode par les cotes donne exactement 7,00 et 12,00 ; que donne celle-ci ?',
+      { titre: 'Conclusion à rédiger.', texte: 'Notez l’écart maximal en centimètres et dites laquelle des deux méthodes vous paraît la plus sûre pour des cotes de chantier, et pourquoi.', astuce: 'Un pixel de l’image représente de l’ordre de 1 cm sur le chantier au 1/100.' },
+    ] } },
+  nomenclature: { id: 'mnomenclature', etape: 'Nomenclature', titre: 'La nomenclature des murs', picto: 'graphique',
+    taches: ['Vue, Nomenclature, Nomenclature/Quantité : catégorie Murs', 'Champs : Famille et type, Longueur, Surface, Volume', 'Tri/Regroupement : par Famille et type, avec un total', 'Mise en forme : totaux de surface et de volume, titres clairs', 'Je nomme la nomenclature NOM-MURS-PAR-TYPE'],
+    lien: { texte: 'Revoir l’avant-métré et le BIM', url: 'avant-metre-bim.html' },
+    tuto: { titre: 'Créer une nomenclature bien rangée', etapes: [
+      'Onglet **Vue**, outil **Nomenclature**, puis **Nomenclature/Quantité**. Choisissez la catégorie **Murs** et donnez un nom clair (NOM-MURS-PAR-TYPE).',
+      'Onglet **Champs** : sélectionnez **Famille et type**, **Longueur**, **Surface**, **Volume**, puis **Ajouter**. Classez-les avec **Faire monter** et **Faire descendre** : le champ le plus haut est la première colonne.',
+      'Onglet **Filtre** : laissez vide pour compter tous les murs. Vérifiez la **phase** de la nomenclature : elle ne liste que les occurrences de sa phase.',
+      'Onglet **Tri/Regroupement** : **Trier par** Famille et type ; cochez **Total** ; décochez **Détailler chaque occurrence** pour obtenir une ligne par type.',
+      'Onglet **Mise en forme** : pour Surface et Volume, activez **Calculer les totaux** ; renommez les en-têtes (Famille et type devient Type de mur).',
+      { titre: 'Bien rangée.', texte: 'Un nom clair, un tri par type, des totaux : la nomenclature se lit sans explication. Elle se range dans l’arborescence du projet, avec les autres nomenclatures.', astuce: 'Comparez avec votre avant-métré : un écart révèle un mur oublié ou un mauvais niveau.' },
+    ] } },
+  ifc: { id: 'mifc', etape: 'IFC', titre: 'Exporter la maquette en IFC', picto: 'echange',
+    taches: ['Je vérifie les noms : niveaux, types, vues', 'Je crée une vue 3D dédiée à l’export', 'Fichier, Exporter, IFC : j’exporte en IFC 2x3 Coordination View 2.0', 'Je nomme le fichier BOSE_NOM.ifc', 'Je contrôle le résultat dans un visualiseur ou en le liant dans un projet vide'],
+    tuto: { titre: 'Exporter en IFC', etapes: [
+      'Rangez avant d’exporter : niveaux nommés (RDC, R+1…), types nommés (MUR-EXT…), et contrôlez la **phase** et le **filtre de phase** de la vue : ils décident de ce qui sort.',
+      'Dupliquez la vue 3D en une **vue 3D dédiée à l’export** (par exemple « 3D IFC ») : masquez avec **VV** ce qui ne doit pas sortir (terrain, éléments de travail).',
+      'Onglet **Fichier**, **Exporter**, **IFC**. Choisissez la configuration **IFC 2x3 Coordination View 2.0** : c’est, d’après l’aide Autodesk, la version certifiée la plus largement acceptée ; l’IFC4 se choisit si l’échange l’exige.',
+      'Dans la configuration, activez l’export des **seuls éléments visibles dans la vue active**, puis lancez l’export et nommez le fichier **BOSE_NOM.ifc**.',
+      'Contrôlez : ouvrez l’IFC dans un visualiseur, ou liez-le dans un projet vide (onglet **Insérer**, **Lier IFC**). Les murs doivent rester des murs, les niveaux des niveaux.',
+      { titre: 'Libellés.', texte: 'Les noms des options viennent de l’aide Autodesk en anglais (IFC Export Setup Options) : cherchez les mots voisins dans votre version.', astuce: 'Un IFC se lit dans n’importe quel logiciel BIM : c’est l’échange « ouvert ».' },
+    ] } },
+};
+
+/* ---------- les flashcards ---------- */
+const MM = {
+  gabarit: ['Quelle est l’extension d’un gabarit Revit ? Et celle d’un projet ?', 'Gabarit : **.rte**. Projet : **.rvt**. Une famille chargeable : **.rfa**.'],
+  arbo: ['Où voit-on la liste des vues, des feuilles et des familles ?', 'Dans l’**arborescence du projet**.'],
+  rdc: ['Quelle altitude pour le RDC de la maison Bose ? Et la dalle brute ?', 'RDC : **0,00 m** (niveau fini). Dalle brute : **−0,17 m**, soit 17 cm plus bas.'],
+  sans_vue: ['Quel niveau se crée sans vue en plan ?', 'La **dalle brute** : on n’y dessine rien, elle sert de contrainte aux murs.'],
+  purge: ['Pourquoi ne pas purger le projet au début ?', 'La purge supprime les types **non utilisés**, donc les types du CCTP pas encore posés.'],
+  quadrillage: ['À quoi sert le quadrillage ?', 'À poser des **axes de repère** (1, 2, A, B) visibles dans toutes les vues : on y trace et on y cote.'],
+  epingler: ['Pourquoi épingler le quadrillage et le fond de plan ?', 'Pour qu’ils **ne bougent pas** par accident : tout ce qui est tracé dessus en dépend.'],
+  fto: ['Quelle est la différence entre famille, type et occurrence ?', 'La **famille** est le modèle, le **type** une taille ou une composition, l’**occurrence** un exemplaire posé.'],
+  couches: ['Dans quel ordre la liste des couches d’un mur est-elle écrite ?', 'De l’**extérieur** (en haut) vers l’**intérieur** (en bas).'],
+  plan_cctp: ['Que donne le plan, que donne le CCTP ?', 'Le **plan** : cotes et géométrie. Le **CCTP** : matériaux et mise en œuvre.'],
+  justification: ['Quelle ligne de justification pour respecter une emprise cotée à l’extérieur ?', '**Nu fini extérieur** : le trait suit la face extérieure du mur.'],
+  sens: ['Dans quel sens trace-t-on les murs d’un bâtiment ?', 'Dans le **sens horaire**, pour que la face extérieure soit à l’extérieur.'],
+  attacher: ['Que fait « Attacher la géométrie » ?', 'Elle crée des **joints nets** entre murs et planchers qui se chevauchent.'],
+  copier: ['Comment copier les murs du RDC sur l’étage ?', '**Copier**, puis **Coller aligné sur les niveaux sélectionnés**, R+1.'],
+  plancher: ['Où est le dessus d’un plancher posé sur le niveau RDC avec un décalage de 0 ?', 'À l’**altitude du niveau** : le plancher est sous le niveau.'],
+  pente: ['Comment calcule-t-on la pente du toit sans qu’elle soit donnée ?', 'Hauteur de la toiture ÷ demi-largeur : (6,70 − 5,62) ÷ 3,50 ≈ **31 %**.'],
+  cloison: ['Quelle épaisseur modélise-t-on pour les cloisons, et pourquoi ?', '**0,10 m**, la cote du plan, pour retrouver les surfaces des pièces ; l’écart avec les 70 mm du CCTP se signale.'],
+  rfa: ['Quelle extension a une famille de porte ou de fenêtre chargeable ?', '**.rfa** : on la charge dans le projet avec **Charger**.'],
+  dupliquer: ['Comment crée-t-on un type à la bonne dimension ?', '**Modifier le type**, **Dupliquer**, puis régler la largeur et la hauteur.'],
+  occurrence: ['Quelle différence entre propriété de type et d’occurrence ?', 'Le **type** vaut pour toutes les ouvertures de ce type ; l’**occurrence** pour une seule (l’allège, par exemple).'],
+  linteau: ['Quelle hauteur minimale garder entre la tête d’une baie et le plancher haut ?', '**0,20 m**, pour le linteau en bloc U de 20 × 20 (CCTP 2.1.5.1).'],
+  fond_fouille: ['Quelle cote de fond de fouille pour la maison Bose, et pourquoi ?', '**−1,25 m**, pour être encastrée dans le banc calcaire (qui commence vers −1,00 m).'],
+  ordre: ['Dans quel ordre construit-on le bas d’une maison ?', 'Fouille, béton de propreté et semelle, soubassement, dallage, murs.'],
+  blondel: ['Quelle est la règle de Blondel ?', '**2h + g** (deux hauteurs de marche plus le giron) doit valoir entre **0,60 et 0,64 m**.'],
+  tremie: ['Comment perce-t-on la trémie d’un escalier dans un plancher ?', 'Sélectionner le plancher, **Modifier la limite**, dessiner l’ouverture, puis la coche verte.'],
+  vv: ['À quoi sert la commande VV ?', 'À régler la **visibilité des catégories** (terrain, murs, planchers, annotations…) dans la vue active.'],
+  ecart: ['Que faire si une surface de pièce diffère du plan ?', '**Chercher l’origine** de l’écart (murs, doublage, contour) avant de corriger.'],
+  feuille: ['Comment place-t-on une vue sur une feuille ?', 'Par **glisser-déposer** depuis l’arborescence du projet vers la feuille.'],
+  pdf_image: ['Pourquoi ne peut-on pas accrocher les traits du PDF du dossier ?', 'Ses pages sont des **images** : Revit ne peut pas accrocher des traits qui n’existent pas.'],
+  pdf_echelle: ['Comment caler un PDF sur une cote connue ?', 'Outil **Échelle**, mode graphique : deux points sur le PDF, puis deux repères du modèle. Ensuite on **épingle**.'],
+  nomenclature: ['Que faut-il cocher pour avoir une ligne par type dans une nomenclature ?', 'Trier par **Famille et type** et **décocher** « Détailler chaque occurrence ».'],
+  totaux: ['Comment afficher les totaux d’une nomenclature ?', 'Cocher **Total** dans Tri/Regroupement et **Calculer les totaux** pour les champs de surface et de volume.'],
+  ifc: ['Qu’est-ce que l’IFC ?', 'Un format **ouvert** d’échange de maquettes BIM : un mur y devient un **IfcWall**, un niveau un **IfcBuildingStorey**.'],
+  vue_ifc: ['Que faire avant d’exporter en IFC ?', 'Ranger les noms, vérifier la **phase**, créer une **vue 3D dédiée** et masquer ce qui ne doit pas sortir.'],
+};
+
+/* ---------- les questions du quiz ---------- */
+const QB = {
+  gabarit: { question: 'Quel fichier sert de point de départ à un nouveau projet Revit ?', options: ['Un gabarit (.rte)', 'Une famille (.rfa)', 'Un plan au format PDF', 'Un projet fini (.rvt) quelconque'], bonne: 0,
+    explication: 'Le gabarit (.rte) contient les réglages, les vues et les types de départ. Le projet créé est un .rvt.' },
+  rdc: { question: 'Quelle altitude donne-t-on au niveau RDC de la maison Bose ?', options: ['−0,17 m', '+2,75 m', '0,00 m', '−1,25 m'], bonne: 2,
+    explication: 'Le CCTP dit que le niveau fini est le niveau 0.00. La dalle brute est 17 cm plus bas.' },
+  sans_vue: { question: 'Quel niveau de la maison Bose se crée sans vue en plan ?', options: ['DALLE BRUTE', 'ÉGOUT', 'R+1', 'RDC'], bonne: 0,
+    explication: 'La dalle brute ne sert que de contrainte aux murs ; les plans utiles sont SEMELLE, RDC, R+1 et ÉGOUT.' },
+  purge: { question: 'Pourquoi ne faut-il pas purger le projet au début ?', options: ['Elle efface les niveaux', 'Elle supprime les types non utilisés, donc ceux du CCTP pas encore posés', 'Elle est interdite avant l’enregistrement', 'Elle ralentit le dessin'], bonne: 1,
+    explication: 'La purge retire tout ce qui n’est pas posé dans le projet : les types du CCTP créés à l’avance disparaîtraient.' },
+  quadrillage: { question: 'À quoi sert le quadrillage dans un projet Revit ?', options: ['À colorer les murs', 'À calculer les surfaces des pièces', 'À poser des axes de repère visibles dans toutes les vues', 'À remplacer les niveaux'], bonne: 2,
+    explication: 'Le quadrillage donne des axes nommés (1, 2, A, B…) sur lesquels on trace et on cote, dans toutes les vues.' },
+  axes: { question: 'Pour repérer l’emprise 7,00 × 12,00 de la maison, combien d’axes pose-t-on ?', options: ['Un seul, au centre', 'Deux, un vertical et un horizontal', 'Quatre : deux verticaux et deux horizontaux', 'Douze, un par mètre'], bonne: 2,
+    explication: 'Deux axes verticaux espacés de 7,00 m et deux horizontaux espacés de 12,00 m dessinent un rectangle : 1, 2, A et B.' },
+  epingler: { question: 'Pourquoi épingle-t-on le quadrillage ?', options: ['Pour qu’il s’imprime en rouge', 'Pour qu’il ne bouge pas par accident', 'Pour le copier sur l’étage', 'Pour le supprimer plus vite'], bonne: 1,
+    explication: 'Épinglé, un élément ne peut plus être déplacé par erreur : tout ce qui est tracé sur les axes en dépend.' },
+  composition: { question: 'Quelle est la composition du mur extérieur, de l’extérieur vers l’intérieur ?', options: ['Bloc, enduit, plaque, laine', 'Plaque, laine, bloc, enduit', 'Enduit, bloc, doublage (laine et plaque)', 'Enduit, laine, bloc, plaque'], bonne: 2,
+    explication: 'Enduit monocouche 20 mm, bloc creux 200 mm, puis le doublage côté intérieur : 0,38 m au total.' },
+  famille_type: { question: 'Dans Revit, « MUR-EXT-BBC20-E20-DBL » est…', options: ['Une occurrence : un mur posé', 'Un type de la famille « mur de base »', 'Une famille chargeable (.rfa)', 'Un niveau'], bonne: 1,
+    explication: 'Le type se crée avec Dupliquer ; chaque mur posé avec ce type est une occurrence.' },
+  justification: { question: 'Quelle ligne de justification donne une emprise extérieure de 7,00 m × 12,00 m ?', options: ['Axe du mur', 'Nu fini intérieur', 'Axe porteur', 'Nu fini extérieur'], bonne: 3,
+    explication: 'Avec « nu fini extérieur », le trait suit la face extérieure : l’épaisseur du mur grossit vers l’intérieur.' },
+  largeur_libre: { question: 'Avec des murs de 0,38 m et une emprise de 7,00 m, quelle est la largeur libre à l’intérieur ?', options: ['6,24 m', '6,62 m', '7,38 m', '5,87 m'], bonne: 0,
+    explication: '7,00 − 2 × 0,38 = 6,24 m : c’est la valeur du plan de l’étage (3,07 + 0,10 + 3,07).' },
+  sens: { question: 'Dans quel sens trace-t-on les murs pour que la face extérieure soit du bon côté ?', options: ['Dans le sens inverse des aiguilles d’une montre', 'Dans n’importe quel sens', 'Dans le sens des aiguilles d’une montre', 'De bas en haut'], bonne: 2,
+    explication: 'En sens horaire, la face extérieure du mur se retrouve à l’extérieur ; la barre d’espace inverse les faces au besoin.' },
+  copier_coller: { question: 'Comment obtenir rapidement les murs de l’étage à partir de ceux du RDC ?', options: ['Les retracer à la main', 'Copier puis coller aligné sur les niveaux sélectionnés', 'Changer l’altitude du niveau R+1', 'Dupliquer le fichier du projet'], bonne: 1,
+    explication: 'Coller aligné sur les niveaux sélectionnés place la copie sur R+1 ; on ajuste ensuite le contour.' },
+  plancher_dessus: { question: 'Où se trouve le dessus d’un plancher créé sur le niveau RDC avec un décalage de 0 ?', options: ['À l’altitude du niveau RDC', 'À 0,17 m sous le niveau', 'Au milieu de son épaisseur', 'À l’altitude du niveau R+1'], bonne: 0,
+    explication: 'Revit pose le plancher sous le niveau : son dessus est à l’altitude du niveau, plus le décalage.' },
+  pente: { question: 'L’égout est à +5,62 m, le faîtage à +6,70 m, la demi-largeur est de 3,50 m. Quelle est la pente du toit ?', options: ['11 %', '21 %', '41 %', '31 %'], bonne: 3,
+    explication: '(6,70 − 5,62) ÷ 3,50 = 1,08 ÷ 3,50 ≈ 0,31, soit 31 %.' },
+  cloison: { question: 'Le plan cote une cloison de 0,10 m, le CCTP annonce 70 mm. Que faites-vous ?', options: ['Je choisis la valeur du CCTP sans rien dire', 'Je modélise 0,10 m comme le plan et je signale l’écart', 'Je prends la moyenne des deux', 'Je supprime la cloison'], bonne: 1,
+    explication: 'Le plan fixe les cotes, le CCTP fixe les matériaux : une différence se signale au maître d’œuvre.' },
+  rfa: { question: 'Quelle extension a une famille de fenêtre que l’on charge dans Revit ?', options: ['.rvt', '.rte', '.rfa', '.pdf'], bonne: 2,
+    explication: 'Les familles chargeables sont des fichiers .rfa ; .rvt est le projet et .rte le gabarit.' },
+  dupliquer: { question: 'Comment obtient-on une fenêtre de 0,60 × 0,95 à partir d’une fenêtre de 1,20 × 1,35 ?', options: ['En créant une nouvelle famille', 'En dupliquant le type puis en réglant largeur et hauteur', 'En étirant l’occurrence à la souris', 'En changeant le niveau'], bonne: 1,
+    explication: 'On duplique le type et on règle ses dimensions : toutes les occurrences de ce type suivront.' },
+  occurrence: { question: 'Quelle propriété règle-t-on pour déplacer en hauteur une seule fenêtre ?', options: ['Une propriété de type', 'Une propriété d’occurrence : l’allège', 'Le niveau du projet', 'Le matériau du dormant'], bonne: 1,
+    explication: 'L’allège est propre à la fenêtre sélectionnée ; une propriété de type modifierait toutes les fenêtres du type.' },
+  linteau: { question: 'Une fenêtre de 1,35 m de haut est posée avec une allège de 1,00 m, sous un plancher haut à 2,50 m. Que reste-t-il pour le linteau ?', options: ['0,35 m : largement assez', '0,65 m : c’est confortable', '0,15 m : trop juste pour un bloc en U de 20 cm', '1,15 m : la fenêtre ne dépasse pas'], bonne: 2,
+    explication: 'La tête est à 1,00 + 1,35 = 2,35 m : il reste 0,15 m, moins que les 0,20 m du bloc en U.' },
+  porte_allege: { question: 'Quelle est l’allège de la porte d’entrée ?', options: ['0,90 m', '0,20 m', 'Elle n’a pas de sol', '0 : elle se pose au sol'], bonne: 3,
+    explication: 'Une porte se pose au niveau du sol fini : son allège est nulle, sa tête est à 2,15 m.' },
+  fond_fouille: { question: 'Pourquoi le CCTP place-t-il le fond de fouille à −1,25 m ?', options: ['Pour rester dans la terre végétale', 'Pour être encastré dans le banc calcaire', 'Pour atteindre la nappe phréatique', 'Pour caler le niveau du trottoir'], bonne: 1,
+    explication: 'Le calcaire en bancs commence vers −1,00 m : les semelles y sont encastrées, 25 cm plus bas.' },
+  ordre: { question: 'Dans quel ordre construit-on le bas de la maison ?', options: ['Dallage, semelle, soubassement, fouille', 'Soubassement, fouille, dallage, semelle', 'Semelle, dallage, fouille, soubassement', 'Fouille, semelle, soubassement, dallage'], bonne: 3,
+    explication: 'On creuse, on coule la semelle, on monte le soubassement, puis on réalise le dallage.' },
+  escalier_h: { question: 'Pour franchir 2,75 m en 16 contremarches, quelle est la hauteur d’une contremarche ?', options: ['11,0 cm', '17,2 cm', '22,0 cm', '27,5 cm'], bonne: 1,
+    explication: '2,75 m ÷ 16 = 0,1719 m, soit environ 17,2 cm : une hauteur de marche confortable.' },
+  tremie: { question: 'Comment perce-t-on l’ouverture de l’escalier dans le plancher de l’étage ?', options: ['On supprime le plancher', 'On sélectionne le plancher, on modifie sa limite et on dessine l’ouverture', 'On déplace le niveau R+1', 'On attache les murs au plancher'], bonne: 1,
+    explication: 'Modifier la limite du plancher permet d’ajouter une boucle fermée : l’ouverture de la trémie.' },
+  vv: { question: 'À quoi sert la commande VV dans Revit ?', options: ['À créer une vue en coupe', 'À valider le projet', 'À régler la visibilité des catégories dans la vue', 'À verrouiller les vues'], bonne: 2,
+    explication: 'VV ouvre la visibilité des catégories : on affiche ou on masque terrain, murs, planchers, annotations…' },
+  piece_ecart: { question: 'Votre salon mesure 25,10 m² dans Revit, 26,24 m² sur le plan. Que faites-vous ?', options: ['Je corrige la surface à la main', 'Je cherche l’origine de l’écart (murs, doublage, contour)', 'Je supprime la pièce', 'Je ne dis rien : c’est proche'], bonne: 1,
+    explication: 'Un écart se comprend avant de se corriger : une erreur de tracé ou d’épaisseur est la cause la plus fréquente.' },
+  feuille_vue: { question: 'Comment place-t-on une vue (plan, coupe, façade) sur une feuille ?', options: ['En l’exportant en PDF', 'En la copiant avec Ctrl + C', 'Par glisser-déposer depuis l’arborescence du projet', 'En la renommant comme la feuille'], bonne: 2,
+    explication: 'On crée la feuille avec son cartouche, puis on glisse les vues depuis l’arborescence du projet.' },
+  feuille_echelle: { question: 'À quelle échelle sont les plans, façades et coupes du dossier de la maison Bose ?', options: ['1/50', '1/100', '1/200', '1/500'], bonne: 1,
+    explication: 'Les cartouches des pages 4 à 8 indiquent 1:100 ; seul le plan de masse est au 1:300.' },
+  zone_cadree: { question: 'Comment règle-t-on ce que l’on voit dans une coupe ?', options: ['Avec la zone cadrée, en glissant les contrôles bleus', 'En changeant l’unité du projet', 'En supprimant les murs', 'En renommant la coupe'], bonne: 0,
+    explication: 'La zone cadrée de la coupe se redimensionne avec les poignées bleues : la vue s’adapte.' },
+  pdf_image: { question: 'Pourquoi ne peut-on pas accrocher les traits du PDF du dossier ?', options: ['Revit interdit de tracer sur un PDF', 'Ses pages sont des images, sans traits à accrocher', 'Il est protégé par un mot de passe', 'Les murs ne s’accrochent jamais'], bonne: 1,
+    explication: 'Le dossier est fait d’images : on lit les cotes dessus, mais on trace sur le quadrillage ou à vue.' },
+  pdf_echelle: { question: 'Après insertion du PDF, la cote 7,00 m du plan se mesure 5,83 m dans Revit. Que faites-vous ?', options: ['Je déplace les murs jusqu’à 5,83 m', 'Je change l’unité du projet', 'Je redessine la maison à l’œil', 'Je mets le PDF à l’échelle avec l’outil Échelle en mode graphique'], bonne: 3,
+    explication: 'On calibre le PDF sur une cote connue : deux points du PDF, puis deux repères du modèle (les axes du quadrillage).' },
+  pdf_precision: { question: 'Quand on trace à vue sur le fond de plan PDF, la précision est limitée par…', options: ['La résolution de l’image et le zoom', 'La couleur du PDF', 'Le nombre de pages', 'Le nom du fichier'], bonne: 0,
+    explication: 'Un pixel de l’image représente de l’ordre du centimètre sur le chantier au 1/100 : on contrôle toujours par les cotes.' },
+  methodes: { question: 'Pour obtenir une emprise exacte de 7,00 × 12,00, quelle méthode est la plus sûre ?', options: ['Suivre le PDF à vue', 'Tracer sur le quadrillage posé aux cotes du plan', 'Copier le PDF dans le mur', 'Tracer puis arrondir'], bonne: 1,
+    explication: 'Le quadrillage porte les cotes exactes ; le PDF sert à lire et à contrôler.' },
+  nomenclature: { question: 'Pour avoir une ligne par type de mur dans la nomenclature, il faut…', options: ['Cocher « Détailler chaque occurrence »', 'Trier par Famille et type et décocher « Détailler chaque occurrence »', 'Supprimer le champ Surface', 'Filtrer sur le nom de la vue'], bonne: 1,
+    explication: 'Le tri regroupe les murs de même type ; sans le détail des occurrences, chaque type tient sur une ligne.' },
+  ifc_wall: { question: 'Dans l’IFC, un mur de Revit devient un…', options: ['IfcSlab', 'IfcRoof', 'IfcWall', 'IfcDoor'], bonne: 2,
+    explication: 'IfcWall est la classe IFC des murs ; IfcSlab les planchers, IfcRoof les toits, IfcDoor les portes.' },
+  ifc_storey: { question: 'Dans l’IFC, un niveau de Revit devient un…', options: ['IfcBuildingStorey', 'IfcSpace', 'IfcFooting', 'IfcStair'], bonne: 0,
+    explication: 'IfcBuildingStorey est l’étage auquel les objets sont rattachés ; IfcSpace est une pièce.' },
+};
+
+const DONNEES = {
+  ...PUBLIC,
+  cle: 'revit-bose-td2',
+  genre: 'TD2 · Activité 5',
   titre: 'TD2 : les murs de la maison Bose',
   motEntoure: 'murs',
-  chapo: '**Comment traduit-on le CCTP en murs et cloisons Revit ?** Vous créez les types de murs, vous tracez l’emprise du RDC au bon endroit, puis vous montez l’étage et vous cloisonnez. Le dossier est à gauche, le TD à droite (sur téléphone : les deux boutons en bas de l’écran).',
-  parcoursTitre: 'Trois étapes, des murs',
-  vitrine: { titre: 'un mur de 0,38 m, du RDC à l’égout', aria: 'Une coupe de la maison Bose qui montre les murs, leur composition et l’étage', note: '↔ Choisissez une vue : la coupe s’anime. Sans clic, elles se relaient.' },
+  chapo: '**Comment traduit-on le CCTP en murs, en planchers et en toiture ?** Vous créez les types de murs, vous tracez l’emprise du RDC au bon endroit, vous montez l’étage, vous posez les planchers, puis vous couvrez la maison. Le dossier est à gauche, le TD à droite (sur téléphone : les deux boutons en bas de l’écran).',
+  parcoursTitre: 'Cinq étapes, une enveloppe',
+  vitrine: { titre: 'un mur de 0,38 m, du RDC à la toiture', aria: 'Une coupe de la maison Bose qui montre les murs, leur composition, l’étage, les planchers et la toiture', note: '↔ Choisissez une vue : la coupe s’anime. Sans clic, elles se relaient.' },
   quizObjet: 'les murs',
-  pied: 'TD2 Revit pour la seconde Bac Pro EMNB (activité 5) : types de murs d’après le CCTP, premiers murs du RDC, étage et cloisons de la maison Bose.',
-  total: '<b>3 étapes</b> à votre rythme, puis les flashcards «&nbsp;Je retiens&nbsp;» et le quiz «&nbsp;Je vérifie&nbsp;» (7 questions, sans code).',
-  quizChapo: '7 questions sur ce TD. Une seule bonne réponse par question, et une explication après la validation.',
-  liensCarnet: [['TD1 · démarrer', 'revit-bose.html#td1'], ['TD3 · les menuiseries', 'revit-bose.html#td3'], ['TD4 · fondations et annotations', 'revit-bose.html#td4'], ['Les murs', 'murs.html'], ['Les cloisons', 'cloisons.html']],
+  pied: 'TD2 Revit pour la seconde Bac Pro EMNB (activité 5) : types de murs d’après le CCTP, murs du RDC, étage, planchers et toiture de la maison Bose.',
+  total: '<b>5 étapes</b> à votre rythme, puis les flashcards «&nbsp;Je retiens&nbsp;» et le quiz «&nbsp;Je vérifie&nbsp;» (8 questions, sans code).',
+  quizChapo: '8 questions sur ce TD. Une seule bonne réponse par question, et une explication après la validation.',
+  liensCarnet: [...autres(2), ['Les murs', 'murs.html'], ['Les planchers', 'planchers.html'], ['Les toitures', 'toitures.html']],
   objectifs: { titre: 'Ce que vous saurez faire',
-    intro: 'À la fin du TD2, les murs et les cloisons de la maison Bose sont posés, aux cotes du plan.',
-    liste: ['**Distinguer** famille, type et occurrence.', '**Composer** un type de mur d’après le CCTP, couche par couche.', '**Tracer** l’emprise du RDC avec la bonne ligne de justification.', '**Monter** l’étage par copier-coller, puis **cloisonner**.'] },
+    intro: 'À la fin du TD2, l’enveloppe de la maison Bose est modélisée : murs, planchers et toiture, aux cotes du dossier.',
+    liste: ['**Composer** les types de murs d’après le CCTP, couche par couche.', '**Tracer** l’emprise du RDC avec la bonne ligne de justification.', '**Monter** l’étage par copier-coller.', '**Poser** le dallage, le plancher de l’étage et la toiture à quatre pans.'] },
 
   vues: [
     { id: 'murs', nom: 'Murs', couleur: 'var(--rouge)', phrase: '**Murs.** Blocs de béton de 20 cm, enduit à l’extérieur, doublage à l’intérieur : 0,38 m au total.' },
     { id: 'composition', nom: 'Composition', couleur: 'var(--bleu)', phrase: '**Composition.** Enduit 20 mm, bloc 200 mm, doublage 160 mm : les couches du mur dans l’ordre, de l’extérieur vers l’intérieur.' },
     { id: 'etage', nom: 'Étage', couleur: 'var(--vert)', phrase: '**Étage.** Les murs du RDC se copient sur le niveau R+1, puis on ajuste le contour.' },
+    { id: 'planchers', nom: 'Planchers', couleur: '#7b55c7', phrase: '**Planchers.** Un dallage sur terre-plein au RDC, un plancher béton de 25 cm entre le RDC et l’étage.' },
+    { id: 'toit', nom: 'Toiture', couleur: '#c77a1e', phrase: '**Toiture.** Toit à quatre pans en tuiles canal, de l’égout (+5,62 m) au faîtage (+6,70 m).' },
   ],
 
   ateliers: [
@@ -1034,27 +1454,25 @@ const DONNEES = {
       problematique: 'Comment traduire les murs du CCTP en types Revit, couche par couche ?' },
     { id: 2, court: 'Murs RDC', titre: 'Mes premiers murs', sousTitre: 'Tracer l’emprise du RDC', couleur: 'var(--bleu)', papier: 'var(--pb)',
       problematique: 'Où placer la ligne de dessin pour que la maison mesure bien 7,00 m × 12,00 m ?' },
-    { id: 3, court: 'Étage', titre: 'L’étage et les cloisons', sousTitre: 'Copier les murs, cloisonner', couleur: 'var(--vert)', papier: 'var(--pv)',
-      problematique: 'Comment monter l’étage sans tout redessiner, et quelle épaisseur donner aux cloisons ?' },
+    { id: 3, court: 'Étage', titre: 'Monter l’étage', sousTitre: 'Copier les murs du RDC sur R+1', couleur: 'var(--vert)', papier: 'var(--pv)',
+      problematique: 'Comment monter l’étage sans tout redessiner ?' },
+    { id: 4, court: 'Planchers', titre: 'Les planchers', sousTitre: 'Dallage du RDC, plancher de l’étage', couleur: '#7b55c7', papier: '#e6ddf7',
+      problematique: 'À quelle hauteur poser le dallage, et le plancher de l’étage ?' },
+    { id: 5, court: 'Toiture', titre: 'La toiture à quatre pans', sousTitre: 'Pente, couches, tracé du toit', couleur: '#c77a1e', papier: 'var(--po)',
+      problematique: 'Quelle pente donner au toit pour retrouver le faîtage du dossier ?' },
   ],
 
   contenus: {
     1: [
-      { type: 'grille', titre: 'Famille, type, occurrence', hint: 'Trois mots à ne jamais confondre. Un mur est une famille « système » : elle est livrée avec Revit.', items: [
-        { titre: 'Famille', picto: 'boite', texte: 'Le **modèle** d’un objet : « mur de base », « fenêtre à deux vantaux ».' },
-        { titre: 'Type', picto: 'regle', texte: 'Une **taille ou une composition** de la famille : « MUR-EXT… ». On le crée avec **Dupliquer**.' },
-        { titre: 'Occurrence', picto: 'puzzle', texte: 'Un **exemplaire posé** dans la maquette : ce mur-ci, entre ces deux axes.' },
-      ] },
+      BK.fto,
       { type: 'scene', id: 'mur', titre: 'Composer le mur extérieur du CCTP', hint: 'Activez les couches une à une : l’épaisseur totale se recalcule et se compare au plan.' },
       { type: 'tableau', titre: 'Du CCTP aux types de murs', entetes: ['Ouvrage', 'Ce que dit le CCTP', 'Type à créer'], lignes: [
         ['Mur de soubassement', 'Blocs pleins 20 × 20 × 50 ; enduit 10 mm ; bitume (2.1.2.1, 3.1.1.1)', 'MUR-INFRA-BBP20-E10'],
         ['Mur extérieur', 'Blocs creux 20 ; monocouche 20 mm ; doublage (2.1.4.1, 3.1.1.2, 6.1.2)', 'MUR-EXT-BBC20-E20-DBL'],
-        ['Cloison', 'Placostil 70 mm au CCTP (6.1.1), 0,10 m sur le plan', 'CLOISON-PLACO-100'],
       ] },
-      { type: 'dossier', titre: 'Dans le dossier', liens: [
-        { doc: 'cctp', page: 2, texte: 'CCTP p. 2 : murs en infrastructure' }, { doc: 'cctp', page: 3, texte: 'CCTP p. 3 : murs, enduits' }, { doc: 'cctp', page: 6, texte: 'CCTP p. 6 : doublage' }, { doc: 'plans', page: 5, texte: 'Plan de l’étage : cote 38' } ] },
-      { type: 'alerte', titre: 'Plan ou CCTP : qui a raison ?', textes: ['Ici, le **plan** cote un mur de 0,38 m et une cloison de 0,10 m ; le **CCTP** décrit les matériaux mais pas l’épaisseur totale du doublage, et annonce une cloison de 70 mm. Son extrait cite aussi un vestiaire, une douche, une salle de jeux : ces pièces n’existent pas sur les plans.', 'Règle du TD : **le plan fixe les cotes, le CCTP fixe les matériaux**. Une différence se signale au maître d’œuvre, elle ne se tranche pas en silence.'] },
-      { type: 'note', texte: 'Ajout de l’auteur : les noms de types suivent la convention CATÉGORIE-ouvrage-matériau-épaisseur, sans espace ni accent. L’épaisseur de 160 mm du doublage est déduite de la cote 38 du plan (380 − 20 − 200) : à valider avec le professeur.' },
+      { type: 'dossier', titre: 'Dans le dossier', liens: [lien('cctp', 2, 'CCTP p. 2 : murs en infrastructure'), lien('cctp', 3, 'CCTP p. 3 : murs, enduits'), lien('cctp', 6, 'CCTP p. 6 : doublage'), lien('plans', 5, 'Plan de l’étage : cote 38')] },
+      BK.planOuCctp,
+      BK.noteDoublage,
     ],
     2: [
       { type: 'stats', titre: 'Trois valeurs à retrouver sur le plan', items: [
@@ -1063,102 +1481,44 @@ const DONNEES = {
         { valeur: '6,24 m', titre: 'largeur libre', texte: '7,00 − 2 × 0,38 : 3,07 + 0,10 + 3,07 sur le plan de l’étage.' },
       ] },
       { type: 'scene', id: 'justification', titre: 'Où placer la ligne de dessin ?', hint: 'Choisissez une ligne de justification : le trait rouge se déplace dans l’épaisseur du mur, et les dimensions changent.' },
-      { type: 'dossier', titre: 'Dans le dossier', liens: [
-        { doc: 'plans', page: 4, texte: 'Plan RDC : cotes 12,00 et 7,00' }, { doc: 'plans', page: 5, texte: 'Plan de l’étage : cotes 38 et 3,07' } ] },
+      { type: 'dossier', titre: 'Dans le dossier', liens: [lien('plans', 4, 'Plan RDC : cotes 12,00 et 7,00'), lien('plans', 5, 'Plan de l’étage : cotes 38 et 3,07')] },
       { type: 'alerte', titre: 'Le sens du tracé compte', textes: ['Tracez les murs **dans le sens des aiguilles d’une montre** : la face extérieure du mur se retrouve alors du bon côté. Si elle est à l’envers, **espace** pendant le tracé inverse l’intérieur et l’extérieur.'] },
     ],
     3: [
       { type: 'phrase', titre: 'En une phrase', texte: 'Copier les murs du RDC sur le niveau R+1 avec **Coller aligné sur les niveaux sélectionnés** évite de les retracer ; on ajuste ensuite le contour.' },
-      { type: 'compare', titre: 'Cloison ou doublage ?', hint: 'Deux « murs » de plaques de plâtre, deux rôles.', items: [
-        { titre: 'Cloison de distribution', picto: 'cloison', texte: 'Sépare deux pièces **à l’intérieur** de la maison.', points: ['+Se trace comme un mur dans Revit', '+Épaisseur cotée sur le plan : 0,10 m', '!Le CCTP annonce 70 mm : à signaler'] },
-        { titre: 'Doublage', picto: 'doublage', texte: 'Habille le mur extérieur **côté intérieur** (laine + plaque).', points: ['+Se modélise dans les couches du mur', '+Déjà compté dans les 0,38 m', '!Pas de mur supplémentaire à tracer'] },
+      { type: 'stats', titre: 'Trois valeurs de l’étage', items: [
+        { valeur: '7,00 × 6,63', titre: 'emprise de l’étage', texte: 'Cotes de la page 5 : 7,00 m de large, environ 6,63 m de profondeur.' },
+        { valeur: '2,65 m', titre: 'sous plafond', texte: 'Hauteur libre de l’étage, lue sur la coupe AA.' },
+        { valeur: '+5,62 m', titre: 'égout', texte: 'Haut des murs de l’étage, lu sur les façades.' },
       ] },
-      { type: 'dossier', titre: 'Dans le dossier', liens: [
-        { doc: 'plans', page: 5, texte: 'Plan de l’étage : 7,00 × 6,63' }, { doc: 'plans', page: 4, texte: 'Plan RDC : cloisons' }, { doc: 'cctp', page: 5, texte: 'CCTP p. 5 : cloisons de distribution' } ] },
+      { type: 'dossier', titre: 'Dans le dossier', liens: [lien('plans', 5, 'Plan de l’étage : 7,00 × 6,63'), lien('plans', 8, 'Coupe AA : 2,65 m'), lien('plans', 6, 'Façades : +5,62')] },
+    ],
+    4: [
+      { type: 'scene', id: 'dalle', titre: 'À quelle hauteur poser le dallage ?', hint: 'Faites glisser le curseur : le plancher monte ou descend par rapport au niveau RDC.' },
+      { type: 'phrase', titre: 'En une phrase', texte: 'Dans Revit, un plancher se pose **sous** son niveau : le **dessus** du plancher est à l’altitude du niveau, plus le décalage.' },
+      { type: 'tableau', titre: 'Les types de planchers à créer', entetes: ['Ouvrage', 'Ce que dit le CCTP', 'Type à créer'], lignes: [
+        ['Dallage du RDC', 'Dalle BA 20 cm, sable 5, tout-venant 20, réservation 17 cm (2.1.3.1)', 'DALLAGE-BA20'],
+        ['Plancher R+1', '25 cm d’épaisseur (coupe AA du dossier)', 'PLANCHER-BA25'],
+      ] },
+      { type: 'dossier', titre: 'Dans le dossier', liens: [lien('cctp', 2, 'CCTP p. 2 : dallage'), lien('plans', 8, 'Coupe AA : plancher de 25')] },
+    ],
+    5: [
+      { type: 'scene', id: 'toit', titre: 'Quelle pente pour le toit ?', hint: 'Faites glisser la pente : le faîtage monte. Peut-on retrouver la cote du dossier ?' },
+      { type: 'scene', id: 'toiture', titre: 'Les couches de la toiture', hint: 'Choisissez un temps : du chevron à la tuile, la couverture se pose couche après couche.' },
+      { type: 'dossier', titre: 'Dans le dossier', liens: [lien('plans', 5, 'Plan de l’étage : 7,00 × 6,63'), lien('plans', 6, 'Façades : +5,62 et +6,70'), lien('cctp', 4, 'CCTP p. 4 : charpente'), lien('cctp', 5, 'CCTP p. 5 : couverture')] },
+      { type: 'note', texte: 'Ajout de l’auteur : la pente de 31 % n’est pas dans le dossier. Elle est calculée avec l’égout à +5,62 m, le faîtage à +6,70 m et une demi-largeur de 3,50 m (débord ignoré). La vérification se fait sur les façades.' },
     ],
   },
 
-  missions: {
-    1: [
-      { id: 'm1', etape: 'Étape 1 · types', titre: 'Créer les types de murs et de cloison', picto: 'couches',
-        taches: ['MUR-INFRA-BBP20-E10 : bloc plein 200 mm + enduit 10 mm', 'MUR-EXT-BBC20-E20-DBL : enduit 20 + bloc creux 200 + doublage 160 = 380 mm', 'CLOISON-PLACO-100 : 0,100 m (cote du plan)'],
-        tuto: { titre: 'Créer un type de mur', etapes: [
-          'Onglet **Architecture**, outil **Mur**. Dans la **palette des propriétés**, choisissez un type de mur de base (par exemple Générique).',
-          '**Modifier le type**, puis **Dupliquer** : donnez le nom du type (MUR-EXT-BBC20-E20-DBL).',
-          'Cliquez sur **Modifier** à côté de la structure : la liste des couches va de l’**extérieur** (en haut) à l’**intérieur** (en bas). Insérez chaque couche avec sa **fonction**, son **matériau** et son **épaisseur**.',
-          { titre: 'Fonctions.', texte: 'Le bloc est en **Structure** ; les enduits et la plaque sont des **Finitions** ; la laine est une **couche thermique**. Les fonctions règlent les jonctions entre murs.' },
-          { titre: 'Matériaux.', texte: 'Associez un matériau à chaque couche : il donne la hachure en coupe et la couleur en 3D.' },
-          'Faites de même pour **MUR-INFRA-BBP20-E10** (enduit 10 mm, bloc plein 200 mm) et pour **CLOISON-PLACO-100** (une seule couche de 0,100 m suffit pour ce TD).',
-        ] } },
-    ],
-    2: [
-      { id: 'm2', etape: 'Étape 2 · murs', titre: 'Tracer le contour du RDC', picto: 'murs',
-        taches: ['Je choisis le type MUR-EXT-BBC20-E20-DBL', 'Je règle la ligne de justification sur « Nu fini extérieur »', 'Je trace le rectangle 7,00 × 12,00 dans le sens horaire, sur les axes 1, 2, A et B', 'Contrainte de base : DALLE BRUTE ; contrainte supérieure : R+1', 'Je contrôle l’intérieur libre : 6,24 × 11,24'],
-        tuto: { titre: 'Tracer le contour du RDC', etapes: [
-          'Ouvrez le plan **RDC** (arborescence du projet). Onglet **Architecture**, outil **Mur**.',
-          'Palette des propriétés : type **MUR-EXT-BBC20-E20-DBL**. Barre des options : **ligne de justification : Nu fini extérieur**.',
-          'Dans le groupe **Dessiner**, choisissez **Rectangle**, puis tracez dans le sens des aiguilles d’une montre en accrochant les **intersections du quadrillage** (axes 1/A, 2/A, 2/B, 1/B). Sans quadrillage, corrigez les **cotes temporaires** pour obtenir **7,00** et **12,00** ({{plans:4|plan RDC · p. 4}}).',
-          'Sélectionnez les quatre murs. Propriétés : **contrainte de base** DALLE BRUTE, **contrainte supérieure** (jusqu’au niveau) R+1.',
-          'Onglet **Annoter**, **Cote alignée** : cotez l’intérieur. Calcul attendu : 7,00 − 2 × 0,38 = **6,24**, la même valeur que sur {{plans:5|le plan de l’étage · p. 5}}.',
-          { titre: 'Retournement.', texte: 'Si la face extérieure est du mauvais côté, annulez et retracez en sens horaire.', astuce: 'Barre d’espace pendant le tracé = inverser l’intérieur et l’extérieur.' },
-        ] } },
-    ],
-    3: [
-      { id: 'm3', etape: 'Étape 3 · R+1', titre: 'Monter les murs de l’étage', picto: 'murs',
-        taches: ['Je copie les murs du RDC (Ctrl + C)', 'Coller, Aligné sur les niveaux sélectionnés : R+1', 'J’ajuste le contour : 7,00 × environ 6,63', 'Contrainte de base R+1, contrainte supérieure ÉGOUT'],
-        tuto: { titre: 'Copier et ajuster', etapes: [
-          'Dans le plan **RDC**, sélectionnez les murs extérieurs avec une fenêtre de sélection, puis **Ctrl + C**.',
-          'Onglet **Modifier**, liste **Coller** : **Aligné sur les niveaux sélectionnés**, puis choisissez **R+1**.',
-          'Ouvrez le plan **R+1** : les murs font encore 12,00 m de long. Déplacez leurs extrémités pour obtenir 7,00 × environ 6,63 ({{plans:5|plan de l’étage · p. 5}}).',
-          'Propriétés des murs de l’étage : **contrainte de base** R+1, **contrainte supérieure** ÉGOUT.',
-          { titre: 'Joints.', texte: 'Si deux éléments se chevauchent mal, utilisez **Attacher la géométrie** (onglet **Modifier**, groupe **Géométrie**) : Revit crée des joints nets.' },
-        ] } },
-      { id: 'm4', etape: 'Étape 3 · cloisons', titre: 'Les cloisons de distribution', picto: 'cloison',
-        taches: ['Je choisis le type CLOISON-PLACO-100', 'Je trace les cloisons du RDC et de l’étage d’après les plans', 'RDC : de RDC à R+1 avec un décalage supérieur de −0,250', 'Je libère les jonctions qui se collent au mur voisin'],
-        tuto: { titre: 'Cloisonner', etapes: [
-          'Outil **Mur**, type **CLOISON-PLACO-100**, ligne de justification **Axe du mur**. Tracez d’après {{plans:4|le plan RDC · p. 4}}.',
-          'Corrigez avec les cotes temporaires pour retrouver les largeurs de pièces du plan (par exemple Ch3 | 0,10 | Ch2 : 3,07 + 0,10 + 3,07 sur {{plans:5|l’étage · p. 5}}).',
-          'Hauteurs : au RDC, **contrainte supérieure** R+1 avec **décalage supérieur** −0,250 (épaisseur du plancher). À l’étage, hauteur de 2,650 m (coupe AA).',
-          'Si une cloison se « colle » au mur voisin : clic droit sur son extrémité, **Interdire le joint**, puis déplacez l’extrémité.',
-          { titre: 'Épaisseur.', texte: 'Le CCTP annonce 70 mm (6.1.1), le plan cote 0,10 m. On modélise **0,100 m** pour retrouver les surfaces des pièces ; l’écart est à signaler.' },
-        ] } },
-    ],
-  },
+  missions: { 1: missions('types_murs'), 2: missions('murs_rdc'), 3: missions('etage_murs'), 4: missions('dallage', 'plancher_r1'), 5: missions('toit') },
 
-  apres: {
-    3: [{ type: 'flashcards', cle: 'fin' }],
-  },
-  memo: {
-    fin: [
-      ['Quelle est la différence entre famille, type et occurrence ?', 'La **famille** est le modèle, le **type** une taille ou une composition, l’**occurrence** un exemplaire posé.'],
-      ['Dans quel ordre la liste des couches d’un mur est-elle écrite ?', 'De l’**extérieur** (en haut) vers l’**intérieur** (en bas).'],
-      ['Que donne le plan, que donne le CCTP ?', 'Le **plan** : cotes et géométrie. Le **CCTP** : matériaux et mise en œuvre.'],
-      ['Quelle ligne de justification pour respecter une emprise cotée à l’extérieur ?', '**Nu fini extérieur** : le trait suit la face extérieure du mur.'],
-      ['Dans quel sens trace-t-on les murs d’un bâtiment ?', 'Dans le **sens horaire**, pour que la face extérieure soit à l’extérieur.'],
-      ['Que fait « Attacher la géométrie » ?', 'Elle crée des **joints nets** entre murs et planchers qui se chevauchent.'],
-      ['Comment copier les murs du RDC sur l’étage ?', '**Copier**, puis **Coller aligné sur les niveaux sélectionnés**, R+1.'],
-    ],
-  },
+  apres: { 5: [{ type: 'flashcards', cle: 'fin' }] },
+  memo: { fin: memo('fto', 'couches', 'plan_cctp', 'justification', 'sens', 'attacher', 'copier', 'plancher', 'pente') },
 
-  quiz: [
-    { atelier: 1, question: 'Quelle est la composition du mur extérieur, de l’extérieur vers l’intérieur ?', options: ['Bloc, enduit, plaque, laine', 'Plaque, laine, bloc, enduit', 'Enduit, bloc, doublage (laine et plaque)', 'Enduit, laine, bloc, plaque'], bonne: 2,
-      explication: 'Enduit monocouche 20 mm, bloc creux 200 mm, puis le doublage côté intérieur : 0,38 m au total.' },
-    { atelier: 1, question: 'Dans Revit, « MUR-EXT-BBC20-E20-DBL » est…', options: ['Une occurrence : un mur posé', 'Un type de la famille « mur de base »', 'Une famille chargeable (.rfa)', 'Un niveau'], bonne: 1,
-      explication: 'Le type se crée avec Dupliquer ; chaque mur posé avec ce type est une occurrence.' },
-    { atelier: 1, question: 'Le plan cote une cloison de 0,10 m, le CCTP annonce 70 mm. Que faites-vous ?', options: ['Je choisis la valeur du CCTP sans rien dire', 'Je modélise 0,10 m comme le plan et je signale l’écart', 'Je prends la moyenne des deux', 'Je supprime la cloison'], bonne: 1,
-      explication: 'Le plan fixe les cotes, le CCTP fixe les matériaux : une différence se signale au maître d’œuvre.' },
-    { atelier: 2, question: 'Quelle ligne de justification donne une emprise extérieure de 7,00 m × 12,00 m ?', options: ['Axe du mur', 'Nu fini intérieur', 'Axe porteur', 'Nu fini extérieur'], bonne: 3,
-      explication: 'Avec « nu fini extérieur », le trait suit la face extérieure : l’épaisseur du mur grossit vers l’intérieur.' },
-    { atelier: 2, question: 'Avec des murs de 0,38 m et une emprise de 7,00 m, quelle est la largeur libre à l’intérieur ?', options: ['6,24 m', '6,62 m', '7,38 m', '5,87 m'], bonne: 0,
-      explication: '7,00 − 2 × 0,38 = 6,24 m : c’est la valeur du plan de l’étage (3,07 + 0,10 + 3,07).' },
-    { atelier: 2, question: 'Dans quel sens trace-t-on les murs pour que la face extérieure soit du bon côté ?', options: ['Dans le sens inverse des aiguilles d’une montre', 'Dans n’importe quel sens', 'Dans le sens des aiguilles d’une montre', 'De bas en haut'], bonne: 2,
-      explication: 'En sens horaire, la face extérieure du mur se retrouve à l’extérieur ; la barre d’espace inverse les faces au besoin.' },
-    { atelier: 3, question: 'Comment obtenir rapidement les murs de l’étage à partir de ceux du RDC ?', options: ['Les retracer à la main', 'Copier puis coller aligné sur les niveaux sélectionnés', 'Changer l’altitude du niveau R+1', 'Dupliquer le fichier du projet'], bonne: 1,
-      explication: 'Coller aligné sur les niveaux sélectionnés place la copie sur R+1 ; on ajuste ensuite le contour.' },
-  ],
+  quiz: [un('composition', 1), un('famille_type', 1), un('justification', 2), un('largeur_libre', 2), un('sens', 2), un('copier_coller', 3), un('plancher_dessus', 4), un('pente', 5)],
   resultats: [
-    { min: 6, mot: 'Excellent', texte: 'Les murs n’ont plus de secret : vous pouvez passer au TD3 et poser les menuiseries.' },
-    { min: 4, mot: 'Bien', texte: 'Les bases sont là : revoyez les étapes où des erreurs sont restées, puis refaites les flashcards.' },
+    { min: 7, mot: 'Excellent', texte: 'L’enveloppe n’a plus de secret : vous pouvez passer au TD3 et poser cloisons, menuiseries et fondations.' },
+    { min: 5, mot: 'Bien', texte: 'Les bases sont là : revoyez les étapes où des erreurs sont restées, puis refaites les flashcards.' },
     { min: 0, mot: 'À revoir', texte: 'Reprenez les schémas et les missions des étapes indiquées, puis recommencez le quiz.' },
   ],
 };
@@ -1707,6 +2067,20 @@ function vueHero(id) {   // les vues propres aux quatre TD ; les autres viennent
     const lint = poly(rect(xi1 - 4, CZ(2.50), XR + 4, CZ(2.30)));
     return A(poly(rs.fen), 'f-b', 0) + P(poly(rs.fen), 'tbf', 0) + A(lint, 'f-v', 1) + P(lint, 'tvf', 1) + etiqF(436, CZ(2.4) - 24, 'linteau U 20 cm', XR + 4, CZ(2.4), 'tv', 2);
   }
+  if (id === 'cloisons') {
+    const c = poly(rect(m - 4, CZ(2.5), m + 4, CZ(0)));
+    return A(c, 'f-v', 0) + P(c, 'tvf', 0) + etiqF(214, 262, 'cloison 0,10 m', m - 4, CZ(1.0), 'tv', 1) + etiqF(214, 120, 'doublage : dans le mur', xi0, 128, 'tb', 2);
+  }
+  if (id === 'escalier') {
+    const pts = []; for (let i = 0; i <= 16; i++) pts.push([212 + i * 7.6, CZ(0) - (i * 2.75 / 16) * 34], [212 + (i + 1) * 7.6, CZ(0) - (i * 2.75 / 16) * 34]);
+    return P(ligne(pts.slice(0, 33)), 'tvf', 0) + etiqF(214, 140, '2,75 m à franchir', 300, CZ(1.4), 'tv', 1) + etiqF(214, 170, '16 contremarches', 290, CZ(2.0), 'tv', 2);
+  }
+  if (id === 'feuille') {
+    return P(poly(rect(14, 8, 546, 392)), 'trf', 0) + P(poly(rect(366, 336, 546, 392)), 'trf', 1) + T(456, 358, 'cartouche', 'petit t-r', 2) + T(456, 378, 'PCMI · échelle 1:100', 'petit t-r', 2);
+  }
+  if (id === 'ifc') {
+    return etiqF(214, 126, 'IfcWall', xi0, 134, 'tv', 1) + etiqF(214, 170, 'IfcSlab', 300, CZ(2.62), 'tv', 2) + etiqF(436, 66, 'IfcRoof', XR + 12, CZ(5.62) + 3, 'tv', 3) + etiqF(436, 352, 'IfcFooting', XR + 2, CZ(-1.1), 'tv', 4) + etiqF(214, 262, 'IfcBuildingStorey', 120, CZ(0), 'tv', 5);
+  }
   if (id === 'cotes') {
     return [6.70, 5.62, 2.75, 0, -1.25].map((z, i) => P(seg(78, CZ(z), XL - 12, CZ(z)), 'trf', i) + T(24, CZ(z) + 4, fz(z), 'petit halo t-r', i, 'start')).join('');
   }
@@ -1717,8 +2091,7 @@ function vueHero(id) {   // les vues propres aux quatre TD ; les autres viennent
 SCENES.reperes = el => sceneBascule(el, {
   viewBox: '0 0 560 340', aria: 'Choisir les couches du plan RDC', invite: 'Activez une couche pour la poser sur le plan.', legende: 'plan RDC schématique, cloisons non dessinées · croquis de principe',
   puces: [
-    { id: 'pdf', nom: 'Fond de plan PDF', on: true, texte: 'la page 4 du dossier, posée dans la vue RDC et calée à l’échelle 1:100. C’est une **image** : on la lit, on ne l’accroche pas.' },
-    { id: 'grille', nom: 'Quadrillage', on: false, texte: 'quatre axes **1, 2, A, B**, espacés de 7,00 m et de 12,00 m : les repères sur lesquels on trace.' },
+    { id: 'grille', nom: 'Quadrillage', on: true, texte: 'quatre axes **1, 2, A, B**, espacés de 7,00 m et de 12,00 m : les repères sur lesquels on trace.' },
     { id: 'murs', nom: 'Murs sur les axes', on: false, texte: 'le rectangle de murs tracé sur le quadrillage, en **nu fini extérieur** : l’emprise vaut 7,00 × 12,00, le mur grossit vers l’intérieur.' },
   ],
   base: E => {
@@ -2039,6 +2412,84 @@ SCENES.categories = el => sceneBascule(el, {
     { id: 'cotes', nom: 'Cotes d’altitude', on: false, texte: 'des **annotations** : elles aident à lire la coupe mais ne sont pas des objets de la maquette.' },
   ],
   base: E => dessinCoupe(E), vue: () => '',
+});
+
+/* ---------- TD4 : l'escalier, de la hauteur à franchir au nombre de marches ---------- */
+SCENES.escalier = el => sceneCurseur(el, {
+  viewBox: '0 0 560 330', aria: 'Régler le nombre de contremarches',
+  curseur: { nom: 'contremarches', min: 12, max: 20, pas: 1, val: 16, fmt: v => String(v), aria: 'Nombre de contremarches de l’escalier' },
+  legende: 'coupe sur l’escalier, du RDC au R+1 · croquis de principe',
+  dessin: E => {
+    const n = E.v, h = 2.75 / n, g = 0.62 - 2 * h, K = 70, x0 = 70, y0 = 280;   // g : giron tel que 2h + g = 0,62 m (milieu de la fourchette 0,60 à 0,64)
+    const pts = [];
+    for (let i = 0; i < n; i++) pts.push([x0 + i * g * K, y0 - i * h * K], [x0 + (i + 1) * g * K, y0 - i * h * K]);
+    pts.push([x0 + n * g * K, y0 - n * h * K]);
+    const yh = y0 - 2.75 * K, xf = x0 + (n - 1) * g * K;
+    return P(ligne(pts), 'tf', 0) + P(seg(30, y0, x0, y0), 't', 0) + P(seg(xf + g * K, yh, 540, yh), 't', 0)
+      + F(seg(30, y0, 540, y0), 'tb', '6 4', 1) + T(536, y0 - 6, 'RDC 0,00', 'petit t-b', 1, 'end') + F(seg(30, yh, 540, yh), 'tb', '6 4', 1) + T(536, yh - 6, 'R+1 +2,75', 'petit t-b', 1, 'end')
+      + cote(x0 - 10, y0, x0 - 10, y0 - h * K, '', 0, 0, 'tr', 't-r', 2) + T(x0 - 16, y0 - h * K / 2 + 4, `h = ${nf(h * 100, 1)} cm`, 'petit halo t-r', 2, 'end')
+      + cote(x0 + g * K, y0 + 14, x0 + 2 * g * K, y0 + 14, '', 0, 0, 'tv', 't-v', 2) + T(x0 + 1.5 * g * K, y0 + 32, `g = ${nf(g * 100, 1)} cm`, 'petit halo t-v', 2);
+  },
+  texte: E => {
+    const n = E.v, h = 2.75 / n, g = 0.62 - 2 * h, ok = h >= 0.16 && h <= 0.18 && g >= 0.25;
+    return `<p><b>${n} contremarches</b> de <b>${nf(h * 100, 1)} cm</b> pour franchir 2,75 m. Avec la règle de Blondel (2h + g entre 60 et 64 cm), un giron de <b>${nf(g * 100, 1)} cm</b> donne 2h + g = 62 cm : la volée s’étend sur ${nf((n - 1) * g, 2)} m en plan.</p><p>${ok ? '✓ Une hauteur de marche confortable : comptez les marches du plan pour vérifier.' : 'Une hauteur de marche inhabituelle : comptez les marches sur les plans avant de choisir.'}</p>`;
+  },
+});
+
+/* ---------- TD4 : une vue par feuille, comme dans le dossier ---------- */
+const FEUILLES = [
+  { id: 'rdc', nom: 'Plan RDC', picto: 'plans', couleur: 'var(--rouge)', titre: 'PLAN RDC · 1:100', vues: ['plan RDC'], texte: 'Page 4 du dossier : **PCMI**, plan RDC au **1:100**. Une vue : le plan du niveau RDC.' },
+  { id: 'etage', nom: 'Plan de l’étage', picto: 'plans', couleur: 'var(--bleu)', titre: 'PLAN ETAGE · 1:100', vues: ['plan R+1'], texte: 'Page 5 du dossier : plan de l’étage au **1:100**. Une vue : le plan du niveau R+1.' },
+  { id: 'facades', nom: 'Façades', picto: 'toit', couleur: 'var(--vert)', titre: 'FAÇADES · 1:100', vues: ['façade Nord-Est', 'façade Sud-Ouest'], texte: 'Pages 6 et 7 du dossier : **deux façades par feuille**, au 1:100 (Nord-Est et Sud-Ouest, puis Nord-Ouest et Sud-Est).' },
+  { id: 'coupes', nom: 'Coupes', picto: 'regle', couleur: '#c77a1e', titre: 'COUPES · 1:100', vues: ['coupe AA', 'coupe BB'], texte: 'Page 8 du dossier : les coupes **AA** et **BB** sur la même feuille, au 1:100.' },
+];
+SCENES.feuilles = el => sceneChoix(el, {
+  viewBox: '0 0 560 340', aria: 'Choisir une feuille', items: FEUILLES, cartes: true, depart: 'rdc',
+  legende: 'feuille de dessin avec son cartouche · croquis de principe',
+  base: () => P(poly(rect(40, 16, 520, 324)), 't', 0) + P(poly(rect(52, 28, 508, 312)), 't2', 0) + P(poly(rect(300, 268, 508, 312)), 't', 1) + P(seg(300, 290, 508, 290), 't2', 1) + T(404, 284, 'cartouche', 'petit t-g', 1),
+  vue: id => {
+    if (!id) return '';
+    const f = FEUILLES.find(x => x.id === id), n = f.vues.length, c = ({ rdc: 't-r', etage: 't-b', facades: 't-v', coupes: 't-o' })[id], k = ({ rdc: 'tr', etage: 'tb', facades: 'tv', coupes: 'to' })[id];
+    let g = T(404, 304, f.titre, 'petit ' + c, 2);
+    f.vues.forEach((v, i) => { const y0 = n === 1 ? 44 : 40 + i * 112, y1 = n === 1 ? 252 : y0 + 100, r = rect(70, y0, 490, y1); g += A(poly(r), 'f-g', 1) + P(poly(r), k + 'f', 1) + T(280, (y0 + y1) / 2 + 5, v, 'moyen ' + c, 2); });
+    return g;
+  },
+});
+
+/* ---------- TD5 : une nomenclature des murs, avant et après rangement ---------- */
+const NOM_COL = { avant: [['Famille', 40], ['Type', 140], ['Id', 270], ['Longueur', 310], ['Aire', 380], ['Volume', 440], ['Comm.', 495]], apres: [['Type de mur', 50], ['Longueur', 300], ['Surface', 380], ['Volume', 460]] };
+SCENES.nomenclature = el => sceneChoix(el, {
+  viewBox: '0 0 560 330', aria: 'Comparer une nomenclature brute et rangée', depart: 'avant', legende: 'mise en forme d’une nomenclature de murs · valeurs d’exemple (x,xx)',
+  items: [
+    { id: 'avant', nom: 'Avant : brute', lecture: '<h5>Une ligne par mur, dans le désordre</h5><p>Chaque occurrence a sa ligne, les types sont mélangés, il y a des colonnes inutiles (Id, commentaires) et aucun total : on ne peut rien lire.</p>' },
+    { id: 'apres', nom: 'Après : rangée', lecture: '<h5>Une ligne par type, triée, avec ses totaux</h5><p>Tri par <b>Famille et type</b>, <b>Détailler chaque occurrence</b> décoché, <b>Total</b> coché, totaux calculés pour la surface et le volume, titres de colonnes clairs.</p>' },
+  ],
+  base: () => P(poly(rect(30, 16, 530, 314)), 't', 0) + P(seg(30, 54, 530, 54), 'tf', 0),
+  vue: id => {
+    const cols = NOM_COL[id], T0 = (c, y, t, k) => T(c[1], y, t, 'petit' + (k ? ' ' + k : ''), 1, 'start');
+    let g = cols.map(c => T0(c, 40, c[0], 't-r')).join('');
+    const lignes = id === 'avant'
+      ? [['Mur de base', 'MUR-EXT-BBC20…', '312', 'x,xx', 'x,xx', 'x,xx', ''], ['Mur de base', 'MUR-INFRA-BBP…', '287', 'x,xx', 'x,xx', 'x,xx', ''], ['Mur de base', 'MUR-EXT-BBC20…', '318', 'x,xx', 'x,xx', 'x,xx', ''], ['Mur de base', 'CLOISON-PLACO…', '402', 'x,xx', 'x,xx', 'x,xx', ''], ['Mur de base', 'MUR-EXT-BBC20…', '325', 'x,xx', 'x,xx', 'x,xx', ''], ['Mur de base', 'MUR-INFRA-BBP…', '291', 'x,xx', 'x,xx', 'x,xx', '']]
+      : [['MUR-EXT-BBC20-E20-DBL', 'x,xx m', 'x,xx m²', 'x,xx m³'], ['MUR-INFRA-BBP20-E10', 'x,xx m', 'x,xx m²', 'x,xx m³'], ['CLOISON-PLACO-100', 'x,xx m', 'x,xx m²', 'x,xx m³']];
+    lignes.forEach((l, i) => { const y = 82 + i * (id === 'avant' ? 36 : 44); g += l.map((t, j) => T0(cols[j], y, t, '')).join('') + F(seg(36, y + 14, 524, y + 14), 't2', '2 3', 1); });
+    if (id === 'apres') g += P(seg(36, 232, 524, 232), 'tf', 2) + T0(cols[0], 258, 'Total général', 't-r') + T0(cols[1], 258, 'x,xx m', 't-r') + T0(cols[2], 258, 'x,xx m²', 't-r') + T0(cols[3], 258, 'x,xx m³', 't-r');
+    return g;
+  },
+});
+
+/* ---------- TD5 : de la maquette Revit à l'IFC ---------- */
+const IFC = [
+  { id: 'murs', nom: 'Murs', picto: 'murs', couleur: 'var(--rouge)', texte: 'Un mur Revit devient un **IfcWall** : il reste un mur dans tous les logiciels.' },
+  { id: 'planchers', nom: 'Planchers', picto: 'dalle', couleur: 'var(--bleu)', texte: 'Le dallage et le plancher de l’étage deviennent des **IfcSlab**.' },
+  { id: 'fond', nom: 'Semelles', picto: 'bloc', couleur: '#c77a1e', texte: 'Une semelle filante devient un **IfcFooting**.' },
+  { id: 'toit', nom: 'Toiture', picto: 'toit', couleur: 'var(--vert)', texte: 'Le toit devient un **IfcRoof**.' },
+  { id: 'ouvertures', nom: 'Portes, fenêtres', picto: 'fenetre', couleur: '#7b55c7', texte: 'Les portes et les fenêtres deviennent des **IfcDoor** et des **IfcWindow**.' },
+  { id: 'niveaux', nom: 'Niveaux', picto: 'niveau', couleur: 'var(--bleu)', texte: 'Un niveau devient un **IfcBuildingStorey** : l’étage auquel les objets sont rattachés.' },
+];
+SCENES.ifc = el => sceneChoix(el, {
+  viewBox: '0 0 560 400', aria: 'Choisir un ouvrage de la maquette', items: IFC, cartes: true, deselect: true,
+  legende: 'coupe sur la maison Bose · classes IFC usuelles, croquis de principe',
+  base: () => dessinCoupe(TOUT), vue: id => (id ? vueHero(id) : ''),
 });
 
 function htmlProbleme(texte, etiquette = 'PROBLÉMATIQUE') { return `<p class="postit probleme rv"><svg viewBox="0 0 34 34" aria-hidden="true">${etiquette.startsWith('PROBLÉMATIQUE') ? '<circle cx="17" cy="17" r="14"/><path d="M12.5 13a4.5 4.5 0 1 1 6.6 4c-1.4.8-2.1 1.8-2.1 3.2M17 25v.5"/>' : '<path d="M9 4h12l6 6v20H9z"/><path d="M21 4v6h6M13 16h10M13 21h10M13 26h6"/>'}</svg><span><small>${esc(etiquette)}</small>${esc(texte)}</span></p>`; }

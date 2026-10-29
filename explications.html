@@ -837,7 +837,7 @@ const DONNEES = {
   // le menu « Projets » tel qu'il se déplie sur le site (séquences et nombre d'activités)
   projets: [
     { nom: 'Restaurant scolaire', modele: 'restaurant', sequences: [{ n: 1, activites: 6 }, { n: 2, activites: 3 }] },
-    { nom: 'Maison Lisa', modele: 'lisa', sequences: [{ n: 3, activites: 6 }] },
+    { nom: 'Maison Bose', modele: 'lisa', sequences: [{ n: 3, activites: 6 }] },
     { nom: 'Maison passive', modele: 'passive', sequences: [{ n: 4, activites: 3 }] },
     { nom: 'Le patio', modele: 'patio', sequences: [{ n: 5, activites: 3 }] },
   ],
@@ -1170,7 +1170,7 @@ function initParcours() {
     return libre(1) >= libre(-1) ? n : [-n[0], -n[1]];
   };
   const pose = (t, d) => { const p = pt(t), n = cote(t), k = n[1] < -.4 ? d + 22 : d; return { x: p.x + n[0] * k, y: p.y + n[1] * k, n }; };
-  const ETAPES = [[.1, '01', 'Restaurant scolaire'], [.37, '02', 'Maison Lisa'], [.62, '03', 'Maison passive'], [.86, '04', 'Le patio']];
+  const ETAPES = [[.1, '01', 'Restaurant scolaire'], [.37, '02', 'Maison Bose'], [.62, '03', 'Maison passive'], [.86, '04', 'Le patio']];
   let html = '';
   ETAPES.forEach(([t, n, nom], k) => {
     const p = pt(t), e = pose(t, 30), ancre = e.n[0] > .35 ? 'start' : e.n[0] < -.35 ? 'end' : 'middle';

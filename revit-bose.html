@@ -221,7 +221,7 @@ poignee.addEventListener('keydown', e => {
 });
 
 /* les quatre TD : l'adresse dit lequel ouvrir (revit-bose.html#td2), et même l'étape (#td2-atelier-3) */
-const TDS = [[1, 'Démarrer', 'Activité 4'], [2, 'Murs', 'Activité 5'], [3, 'Menuiseries', 'Activité 6'], [4, 'Fondations', 'Activité 7']];
+const TDS = [[1, 'Démarrer', 'Activité 4'], [2, 'Murs', 'Activité 5'], [3, 'Menuiseries', 'Activités 6 et 7'], [4, 'Escalier', 'Activité 7'], [5, 'PDF et IFC', 'Activité 7']];
 const barreTds = $('#tds');
 barreTds.innerHTML = TDS.map(([n, t, a]) => `<button class="tdbtn" type="button" data-td="${n}" title="${a}"><b>TD${n}</b> ${t}</button>`).join('');
 function ouvrirTd(n, ancre) {
@@ -231,7 +231,7 @@ function ouvrirTd(n, ancre) {
   try { history.replaceState(null, '', '#td' + n + (ancre ? '-' + ancre : '')); } catch { /* fichier local */ }
 }
 barreTds.addEventListener('click', e => { const b = e.target.closest('.tdbtn'); if (b && +b.dataset.td !== courantTd) { courantTd = +b.dataset.td; ouvrirTd(courantTd); if (matchMedia('(max-width: 860px)').matches) vue('td'); } });
-const dem = location.hash.match(/^#td([1-4])(?:-(atelier-[1-9]|tables|quiz))?$/);
+const dem = location.hash.match(/^#td([1-5])(?:-(atelier-[1-9]|tables|quiz))?$/);
 let courantTd = dem ? +dem[1] : 1;
 ouvrirTd(courantTd, dem && dem[2]);
 
