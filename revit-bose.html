@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TD Revit · la maison Bose · 2EMNB</title>
+<meta name="description" content="TD Revit pour la seconde Bac Pro EMNB : le dossier de plans et le CCTP de la maison Bose à gauche, le tutoriel à droite.">
+<meta name="theme-color" content="#f7f4ec">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* TD Revit · page à deux volets : le dossier (plans, CCTP) à gauche, le tutoriel à droite.
+   Même carnet de croquis que les cours 2EMNB : papier quadrillé, crayon, surligneur. */
+:root{
+  --papier:#f7f4ec;--fiche:#fffdf7;--gr:#2a2a2a;--gr2:rgba(42,42,42,.66);--gr3:rgba(42,42,42,.2);
+  --rouge:#c93b31;--bleu:#2f6fd6;--vert:#3d9a5f;--jaune:rgba(255,222,40,.72);
+  --main:"Architects Daughter","Segoe Print","Comic Sans MS",cursive;
+  --texte:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --barre:52px;--w:50%;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background-color:var(--papier);background-image:linear-gradient(rgba(47,111,214,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(47,111,214,.085) 1px,transparent 1px);background-size:22px 22px;color:var(--gr);font:400 16px/1.5 var(--texte);overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+a{color:var(--bleu)}
+:focus-visible{outline:2px dashed var(--bleu);outline-offset:3px}
+.evite{position:fixed;left:16px;top:-80px;z-index:50;padding:10px 16px;border-radius:8px;background:var(--gr);color:var(--papier);font-weight:700;text-decoration:none}
+.evite:focus{top:10px}
+
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.barre{flex:none;height:var(--barre);display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1.6px solid var(--gr);background:rgba(247,244,236,.92)}
+.barre__logo{display:flex;align-items:center;gap:10px;color:var(--gr);text-decoration:none;min-width:0}
+.barre__logo svg{flex:none;width:30px;height:30px}
+.barre__logo b{display:block;font:400 21px/1 var(--main);letter-spacing:.02em}
+.barre__logo small{display:block;font:400 13px/1.1 var(--texte);color:var(--gr2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barre__vide{flex:1}
+.btn{position:relative;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;font:400 17px/1.1 var(--main);border:1.6px solid var(--gr);border-radius:4px 9px 5px 8px;background:var(--fiche)}
+.btn:hover{background:#fff7d0}
+.btn[aria-pressed="true"]{background:var(--jaune)}
+.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.split{flex:1;min-height:0;display:flex;padding:12px 12px 12px;gap:0}
+.doc,.td{min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--fiche);border:1.6px solid var(--gr);border-radius:3px 10px 4px 8px;box-shadow:0 2px 2px rgba(0,0,0,.05),0 14px 24px -16px rgba(0,0,0,.5);overflow:hidden}
+.doc{flex:none;width:var(--w)}
+.td{flex:1}
+.sans-doc .doc,.sans-doc .poignee{display:none}
+
+.doc__tete{flex:none;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:8px 12px 0;border-bottom:1.6px solid var(--gr);background:#fff8e1}
+.onglets{display:flex;gap:4px}
+.onglet{padding:7px 16px 6px;font:400 19px/1 var(--main);border:1.6px solid var(--gr);border-bottom:0;border-radius:8px 12px 0 0;background:transparent;margin-bottom:-1.6px;color:var(--gr2)}
+.onglet small{font:400 13px var(--texte);margin-left:6px}
+.onglet[aria-selected="true"]{background:var(--fiche);color:var(--gr)}
+.onglet:not([aria-selected="true"]):hover{background:rgba(255,255,255,.6)}
+.doc__ext{font:400 15.5px var(--main);padding:0 0 8px;white-space:nowrap}
+.pages{flex:none;display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;border-bottom:1px dashed var(--gr3);max-height:84px;overflow:auto}
+.page{padding:3px 10px;font:400 15px/1.35 var(--main);border:1.4px dashed var(--bleu);border-radius:3px 7px 4px 6px;color:var(--bleu);background:rgba(47,111,214,.05)}
+.page b{font-weight:400;color:var(--rouge);margin-right:4px}
+.page:hover{background:rgba(47,111,214,.15)}
+.page[aria-current="page"]{border-style:solid;background:var(--jaune);color:var(--gr)}
+.doc__zone{position:relative;flex:1;min-height:0;background:#e9e6dd}
+.doc__zone::before{content:"Chargement du document… s’il ne s’affiche pas, utilisez « Ouvrir dans un onglet ».";position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font:400 17px var(--main);color:var(--gr2)}
+.pdf{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.pdf[hidden]{display:none}
+
+.poignee{flex:none;width:18px;display:grid;place-items:center;cursor:col-resize;touch-action:none;color:var(--gr2)}
+.poignee::before{content:"";width:6px;height:56px;border-left:2px dotted currentColor;border-right:2px dotted currentColor}
+.poignee:hover,.poignee:focus-visible{color:var(--rouge)}
+.glisse{user-select:none;cursor:col-resize}
+.glisse iframe{pointer-events:none}
+.td iframe{flex:1;width:100%;border:0;background:var(--papier)}
+
+.bascule{display:none}
+@media (max-width:860px){
+  :root{--barre:48px}
+  .barre__logo small,.btn--dossier{display:none}
+  .split{padding:8px 8px 0}
+  .doc,.td{width:100%;flex:1}
+  .poignee{display:none}
+  .app[data-vue="doc"] .td,.app[data-vue="td"] .doc{display:none}
+  .bascule{flex:none;display:flex;gap:8px;padding:8px;border-top:1.6px solid var(--gr);background:rgba(247,244,236,.96)}
+  .bascule button{flex:1;padding:10px;font:400 19px/1 var(--main);border:1.6px solid var(--gr);border-radius:4px 10px 5px 8px;background:var(--fiche)}
+  .bascule button[aria-pressed="true"]{background:var(--jaune)}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="evite" href="#td">Aller au TD</a>
+<div class="app" id="app" data-vue="td">
+  <header class="barre">
+    <a class="barre__logo" href="index.html" aria-label="2EMNB, accueil du carnet">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l2.6-8.4L21.5 4.7l5.8 5.8L13.4 24.4z" fill="#f2c14e" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l2.6-8.4 5.8 5.8z" fill="#f1dfc0" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l1.2-3.9 2.7 2.7z" fill="#2a2a2a"/><path d="M18.6 7.6l5.8 5.8" stroke="#2a2a2a" stroke-width="1.4"/></svg>
+      <span><b>2EMNB</b><small>td revit · la maison Bose</small></span>
+    </a>
+    <span class="barre__vide"></span>
+    <button class="btn btn--dossier" id="masquer" type="button" aria-pressed="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v12H3zM9 4v12"/></svg><span>Masquer le dossier</span>
+    </button>
+  </header>
+
+  <main class="split" id="split">
+    <section class="doc" id="doc" aria-label="Dossier : plans et CCTP">
+      <div class="doc__tete">
+        <div class="onglets" role="tablist" aria-label="Document affiché">
+          <button class="onglet" role="tab" id="onglet-plans" type="button" aria-selected="true" aria-controls="doc-zone" data-doc="plans">Plans<small>9 p.</small></button>
+          <button class="onglet" role="tab" id="onglet-cctp" type="button" aria-selected="false" aria-controls="doc-zone" data-doc="cctp">CCTP<small>7 p.</small></button>
+        </div>
+        <a class="doc__ext" id="doc-ext" href="Dossier-plans-bose.pdf" target="_blank" rel="noopener">Ouvrir dans un onglet ↗</a>
+      </div>
+      <div class="pages" id="pages" role="group" aria-label="Aller à une page du document"></div>
+      <div class="doc__zone" id="doc-zone" role="tabpanel"></div>
+    </section>
+
+    <div class="poignee" id="poignee" role="separator" aria-orientation="vertical" aria-label="Largeur du dossier : flèches gauche et droite" tabindex="0" aria-valuemin="20" aria-valuemax="75" aria-valuenow="50"></div>
+
+    <section class="td" id="td" aria-label="Tutoriel">
+      <iframe id="td-frame" title="TD Revit : la maison Bose" allow="fullscreen"></iframe>
+    </section>
+  </main>
+
+  <nav class="bascule" aria-label="Changer de volet">
+    <button type="button" data-vue="doc" aria-pressed="false">Dossier</button>
+    <button type="button" data-vue="td" aria-pressed="true">TD</button>
+  </nav>
+</div>
+
+<noscript><p style="padding:24px">Cette page a besoin de JavaScript. Ouvrez directement <a href="revit-bose-td.html">le TD</a>.</p></noscript>
+<script>
+(() => {
+'use strict';
+const DOCS = {
+  plans: { fichier: 'Dossier-plans-bose.pdf', nom: 'Plans', pages: [[1, 'Garde'], [2, 'Géomètre 1/250'], [3, 'Masse 1/300'], [4, 'RDC 1/100'], [5, 'Étage 1/100'], [6, 'Façades NE · SO'], [7, 'Façades NO · SE'], [8, 'Coupes AA · BB'], [9, 'Perspectives']] },
+  cctp: { fichier: 'CCTP-maison-Bose.pdf', nom: 'CCTP', pages: [[1, 'Lot 01 · sol'], [2, 'Lot 02 · fondations'], [3, 'Lots 02-03 · murs, enduits'], [4, 'Lot 04 · charpente'], [5, 'Lots 04-06 · couverture, menuiseries'], [6, 'Lots 06-07 · cloisons, portes']] },
+};
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const app = $('#app'), zone = $('#doc-zone'), pages = $('#pages'), ext = $('#doc-ext'), tdFrame = $('#td-frame');
+const etat = { doc: 'plans', page: { plans: 1, cctp: 1 } };
+const url = (doc, page) => `${DOCS[doc].fichier}#page=${page}&view=FitH&navpanes=0`;
+const lire = (c, d) => { try { return JSON.parse(localStorage.getItem(c)) ?? d; } catch { return d; } };
+const ecrire = (c, v) => { try { localStorage.setItem(c, JSON.stringify(v)); } catch { /* navigation privée */ } };
+
+function creer(doc, page) {   // un nouvel iframe à chaque saut : le lecteur PDF repart à la bonne page
+  const f = document.createElement('iframe');
+  f.className = 'pdf'; f.dataset.doc = doc; f.title = `${DOCS[doc].nom} de la maison Bose`; f.src = url(doc, page);
+  return f;
+}
+function remplacer(doc, page) {
+  const ancien = $(`.pdf[data-doc="${doc}"]`, zone), neuf = creer(doc, page);
+  neuf.hidden = doc !== etat.doc;
+  zone.append(neuf);
+  if (ancien) setTimeout(() => ancien.remove(), 400);
+}
+function pastilles() {
+  const d = DOCS[etat.doc];
+  pages.innerHTML = d.pages.map(([n, t]) => `<button class="page" type="button" data-page="${n}"${etat.page[etat.doc] === n ? ' aria-current="page"' : ''}><b>p.${n}</b>${t}</button>`).join('');
+}
+function montrer(doc, page, saut) {   // saut : on demande une page précise (clic sur une pastille ou un lien du TD)
+  const change = doc !== etat.doc;
+  etat.doc = doc;
+  if (page) etat.page[doc] = page;
+  $$('.onglet').forEach(o => o.setAttribute('aria-selected', String(o.dataset.doc === doc)));
+  $$('.pdf', zone).forEach(f => (f.hidden = f.dataset.doc !== doc));
+  ext.href = url(doc, etat.page[doc]);
+  pastilles();
+  if (!$(`.pdf[data-doc="${doc}"]`, zone)) zone.append(creer(doc, etat.page[doc]));
+  else if (saut) remplacer(doc, etat.page[doc]);
+  if (change) $$('.pdf', zone).forEach(f => (f.hidden = f.dataset.doc !== doc));
+}
+$$('.onglet').forEach(o => o.addEventListener('click', () => montrer(o.dataset.doc)));
+pages.addEventListener('click', e => { const b = e.target.closest('.page'); if (b) montrer(etat.doc, +b.dataset.page, true); });
+
+/* le TD envoie « ouvre ce document à cette page » */
+addEventListener('message', e => {
+  const d = e.data;
+  if (e.source !== tdFrame.contentWindow || !d || d.type !== 'bose-doc' || !DOCS[d.doc]) return;
+  const p = Math.min(Math.max(1, Math.round(+d.page) || 1), 12);
+  app.classList.remove('sans-doc'); $('#masquer').setAttribute('aria-pressed', 'false'); $('#masquer span').textContent = 'Masquer le dossier';
+  montrer(d.doc, p, true);
+  if (matchMedia('(max-width: 860px)').matches) vue('doc');
+});
+
+/* masquer / afficher le dossier */
+$('#masquer').addEventListener('click', e => {
+  const b = e.currentTarget, cache = !app.classList.contains('sans-doc');
+  app.classList.toggle('sans-doc', cache); b.setAttribute('aria-pressed', String(cache));
+  $('span', b).textContent = cache ? 'Afficher le dossier' : 'Masquer le dossier';
+});
+
+/* téléphone : un volet à la fois */
+function vue(v) { app.dataset.vue = v; $$('.bascule button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vue === v))); }
+$$('.bascule button').forEach(b => b.addEventListener('click', () => vue(b.dataset.vue)));
+
+/* la poignée : on la tire ou on la déplace aux flèches */
+const split = $('#split'), poignee = $('#poignee');
+const largeur = pc => { pc = Math.min(75, Math.max(20, pc)); split.style.setProperty('--w', pc + '%'); poignee.setAttribute('aria-valuenow', Math.round(pc)); return pc; };
+let pc = largeur(lire('revit-bose-largeur', 50));
+poignee.addEventListener('pointerdown', e => { poignee.setPointerCapture(e.pointerId); document.body.classList.add('glisse'); });
+poignee.addEventListener('pointermove', e => {
+  if (!poignee.hasPointerCapture(e.pointerId)) return;
+  const r = split.getBoundingClientRect(); pc = largeur(100 * (e.clientX - r.left - 12) / (r.width - 24));
+});
+const fin = () => { document.body.classList.remove('glisse'); ecrire('revit-bose-largeur', pc); };
+poignee.addEventListener('pointerup', fin); poignee.addEventListener('pointercancel', fin);
+poignee.addEventListener('keydown', e => {
+  const pas = e.shiftKey ? 8 : 2;
+  if (e.key === 'ArrowLeft') { pc = largeur(pc - pas); ecrire('revit-bose-largeur', pc); e.preventDefault(); }
+  if (e.key === 'ArrowRight') { pc = largeur(pc + pas); ecrire('revit-bose-largeur', pc); e.preventDefault(); }
+});
+
+/* le tutoriel s'ouvre à l'étape demandée dans l'adresse : revit-bose.html#atelier-3 */
+const ancre = location.hash.match(/^#(atelier-[1-7]|tables|quiz)$/);
+tdFrame.src = 'revit-bose-td.html' + (ancre ? ancre[0] : '');
+
+montrer('plans');
+if (matchMedia('(max-width: 860px)').matches) vue('td');
+})();
+</script>
+</body>
+</html>
