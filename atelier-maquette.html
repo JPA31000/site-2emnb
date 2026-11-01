@@ -492,7 +492,7 @@ dialog.dlg-accueil .note-dlg{text-align:center}
   <div id="attente-voile"></div>
   <div id="attente-bas">
     <p id="attente-titre">Atelier Maquette Numérique</p>
-    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.68</span></p>
+    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.69</span></p>
     <div id="attente-licence" role="note">
       <p class="al-titre">Licence Creative Commons <b>CC BY-NC-SA 4.0</b></p>
       <p class="al-texte">Libre pour enseigner et apprendre, à trois conditions : citer l’auteur · pas d’usage commercial · partager les adaptations dans les mêmes conditions.</p>
@@ -106365,6 +106365,378 @@ if(typeof AUTOTESTS !== "undefined"){
         });
       } finally { vue.mode = vm; vue.mode2 = vm2; cacherMenuCtx(); }
       return r;
+    }});
+}
+
+/* =====================================================================
+   MODULE 96 (v9.69) — LES ONGLETS DÉFILENT, COMME LE RUBAN
+
+   JP, le 1er novembre : « le menu Architecture, Structure, Annoter…
+   doit pouvoir circuler comme le ruban en mode écran tactile ».
+
+   Le ruban (module 53) déborde sans se cacher : deux chevrons, un fondu,
+   la molette, le doigt. La rangée d'onglets qui le surmonte — Fichier,
+   Architecture, Structure, Annoter, Analyser, Vue, Modifier, Électricité,
+   Connaissances, Capteur | Réel, puis TwinQuest, Chercher et les pastilles
+   du projet — n'avait rien de tout cela. Sur une tablette de 1024 pixels,
+   tout ce qui dépassait à droite était perdu, sans le moindre moyen de
+   l'atteindre : « Capteur | Réel » coupé en deux, TwinQuest et Chercher
+   absents. Au doigt, on ne pouvait même pas faire glisser la rangée.
+
+   LA MÉTHODE EST CELLE DU RUBAN. On glisse un cadre autour de la rangée,
+   à sa place exacte dans la colonne de la page ; elle garde son identifiant,
+   ses styles et tout ce qui la désigne. Quand elle déborde, le cadre lui
+   prend 26 px de chaque côté (36 en mode tactile) pour y poser deux
+   chevrons — les mêmes que ceux du ruban, au même fondu — qui ne paraissent
+   que du côté où il reste quelque chose. La molette fait défiler à
+   l'horizontale ; le doigt fait glisser la rangée (elle est un vrai
+   conteneur défilant) ; l'appui prolongé sur un chevron file d'un trait.
+
+   DEUX PIÈGES, PROPRES AUX ONGLETS.
+
+   · Le menu Fichier. Sa liste déroulante est posée en `position:absolute`
+     sous le bouton, DANS la rangée. Une rangée qui défile coupe en même
+     temps tout ce qui sort de sa hauteur : la liste aurait disparu. Tant
+     que la rangée déborde, la liste passe donc en `position:fixed` — un
+     élément fixe n'est coupé par aucun conteneur — et se place sous le
+     bouton à chaque ouverture ; elle se referme si l'on fait défiler la
+     rangée, puisque le bouton, lui, s'en va.
+
+   · L'onglet actif. Un onglet qui change PAR PROGRAMME (le guide, la palette
+     Ctrl+K, TwinQuest) peut se trouver hors de vue : la rangée défile
+     jusqu'à lui, plutôt que de laisser l'élève devant un ruban qu'il ne sait
+     pas à quel onglet rattacher.
+
+   TANT QUE LA RANGÉE NE DÉBORDE PAS, RIEN NE CHANGE : mêmes tailles, même
+   liste déroulante qu'en 9.68 — le cadre est alors un simple emballage.
+
+       96.1  le cadre, les chevrons, la mesure du débordement
+       96.2  la liste du menu Fichier
+       96.3  l'onglet actif revient dans le champ
+       96.4  autotests
+   ===================================================================== */
+
+var RT_ONG = {cadre:null, bande:null, bg:null, bd:null, actif:null, ignorerJusque:0, minuteur:null};
+
+/* ---------------------------------------------------------------------
+   96.1 · LE CADRE, LES CHEVRONS, LA MESURE DU DÉBORDEMENT
+   --------------------------------------------------------------------- */
+function rtOngletsCaler(){
+  var c = RT_ONG.cadre, b = RT_ONG.bande;
+  if(!c || !b) return;
+  /* une rangée masquée (mode présentation…) ne déborde de rien */
+  var visible = b.offsetParent !== null;
+  /* LA MESURE SE FAIT CONTRE LA LARGEUR DU CADRE, qui ne dépend pas de la
+     classe « deborde » : mesurée contre la rangée, qui rétrécit de 2 × 26 px
+     quand les chevrons arrivent, elle laisserait une zone où les deux états
+     se tiennent debout. */
+  var deborde = visible && b.scrollWidth > c.clientWidth + 1;
+  if(deborde !== c.classList.contains("deborde")){
+    c.classList.toggle("deborde", deborde);
+    if(!deborde) Array.prototype.forEach.call(b.querySelectorAll(".deroulant"), function(d){ d.style.left = ""; d.style.top = ""; });
+  }
+  var reste = b.scrollWidth - b.clientWidth;
+  RT_ONG.bg.classList.toggle("visible", deborde && b.scrollLeft > 2);
+  RT_ONG.bd.classList.toggle("visible", deborde && b.scrollLeft < reste - 2);
+  /* les chevrons et leur fondu prennent la couleur de la rangée, quel que soit le thème */
+  try {
+    var cs = getComputedStyle(b);
+    c.style.setProperty("--onglets-fond", cs.backgroundColor);
+    c.style.setProperty("--onglets-bord", cs.borderBottomColor);
+  } catch(_e96a){}
+}
+
+/* on remesure APRÈS que le navigateur a repris la page, deux fois : le second
+   passage rattrape ce qui se peint après coup. Les mesures ne s'empilent pas : le nom du projet ou le
+   niveau actif se réécrivent souvent, et chaque réécriture réveille l'observateur. */
+function rtOngletsRecaler(){
+  if(RT_ONG.minuteur) return;
+  RT_ONG.minuteur = setTimeout(function(){
+    RT_ONG.minuteur = null;
+    rtOngletsCaler();
+    requestAnimationFrame(rtOngletsCaler);
+  }, 50);
+}
+
+function rtOngletsFleche(sens){
+  var c = RT_ONG.cadre, t = RT_ONG.bande;
+  var b = document.createElement("button");
+  var titre = sens < 0 ? "Faire défiler les onglets vers la gauche" : "Faire défiler les onglets vers la droite";
+  b.type = "button";
+  b.className = "rub-fleche " + (sens < 0 ? "rub-g" : "rub-d");
+  b.title = titre;
+  b.setAttribute("aria-label", titre);
+  b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M' + (sens < 0 ? "15 5 8 12 15 19" : "9 5 16 12 9 19") + '"/></svg>';
+  c.appendChild(b);
+  var minuteur = null, repete = null, anim = null;
+  /* le glissé est fait à la main : le défilement doux du navigateur s'interrompt
+     dès que quelque chose d'autre touche à la position (voir le module 53) */
+  var glisser = function(vers){
+    var depart = t.scrollLeft;
+    var borne = Math.max(0, Math.min(t.scrollWidth - t.clientWidth, vers));
+    var t0 = performance.now(), duree = 260;
+    if(anim) cancelAnimationFrame(anim);
+    var image = function(now){
+      var u = Math.min(1, (now - t0) / duree);
+      var e = u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2)/2;
+      t.scrollLeft = depart + (borne - depart) * e;
+      anim = u < 1 ? requestAnimationFrame(image) : null;
+    };
+    anim = requestAnimationFrame(image);
+  };
+  var filer = function(){
+    if(anim){ cancelAnimationFrame(anim); anim = null; }
+    t.scrollLeft += sens * 14;
+  };
+  var presser = function(e){
+    e.preventDefault();
+    glisser(t.scrollLeft + sens * Math.max(140, t.clientWidth * 0.7));
+    minuteur = setTimeout(function(){ repete = setInterval(filer, 16); }, 420);
+  };
+  var relacher = function(){
+    if(minuteur){ clearTimeout(minuteur); minuteur = null; }
+    if(repete){ clearInterval(repete); repete = null; }
+  };
+  b.addEventListener("pointerdown", presser);
+  b.addEventListener("pointerup", relacher);
+  b.addEventListener("pointerleave", relacher);
+  b.addEventListener("pointercancel", relacher);
+  b.addEventListener("mousedown", function(e){ e.preventDefault(); });
+  return b;
+}
+
+/* LA TAILLE DE L'INTERFACE (125 / 150 %, pour la projection et les TBI) est un `zoom` posé sur <html> :
+   les rectangles (getBoundingClientRect) sont alors en pixels d'écran, alors que scrollLeft, offsetWidth
+   et les positions `left` / `top` d'un élément fixe sont en pixels de mise en page — d'un facteur 1,25 ou 1,5.
+   On mesure ce facteur sur le cadre et l'on convertit, sans quoi la liste du menu Fichier s'ouvre à côté de
+   son bouton et la rangée défile trop loin. */
+function rtOngletsZoom(){
+  var c = RT_ONG.cadre;
+  if(!c || !c.offsetWidth) return 1;
+  var z = c.getBoundingClientRect().width / c.offsetWidth;
+  return (z > 0.2 && z < 6) ? z : 1;
+}
+
+/* ---------------------------------------------------------------------
+   96.2 · LA LISTE DU MENU FICHIER, TANT QUE LA RANGÉE DÉFILE
+   --------------------------------------------------------------------- */
+function rtOngletsPlacerMenu(menu){
+  var der = menu.querySelector(".deroulant"), c = RT_ONG.cadre, b = RT_ONG.bande;
+  if(!der || !c || !b) return;
+  if(!c.classList.contains("deborde")){ der.style.left = ""; der.style.top = ""; return; }
+  var z = rtOngletsZoom();
+  /* ouvert par programme (palette Ctrl+K) alors que son bouton est hors de vue : on le ramène */
+  var bt = menu.getBoundingClientRect(), v = b.getBoundingClientRect();
+  if(bt.left < v.left || bt.right > v.right){
+    RT_ONG.ignorerJusque = Date.now() + 250;
+    b.scrollLeft += (bt.left < v.left ? bt.left - v.left : bt.right - v.right) / z;
+    bt = menu.getBoundingClientRect();
+  }
+  var larg = der.offsetWidth || 280;
+  der.style.top = Math.round(bt.bottom / z) + "px";
+  der.style.left = Math.max(4, Math.min(Math.round(bt.left / z), Math.floor(window.innerWidth / z) - larg - 4)) + "px";
+}
+
+/* ---------------------------------------------------------------------
+   96.3 · L'ONGLET ACTIF REVIENT DANS LE CHAMP
+   --------------------------------------------------------------------- */
+function rtOngletsVoirActif(){
+  var c = RT_ONG.cadre, b = RT_ONG.bande;
+  if(!c || !b || !c.classList.contains("deborde")) return;
+  var a = b.querySelector(".onglet.actif");
+  if(!a) return;
+  var z = rtOngletsZoom();
+  var r = a.getBoundingClientRect(), v = b.getBoundingClientRect(), marge = 14 * z, dx = 0;
+  if(r.left < v.left + marge) dx = r.left - v.left - marge;
+  else if(r.right > v.right - marge) dx = r.right - v.right + marge;
+  if(dx){ RT_ONG.ignorerJusque = Date.now() + 250; b.scrollLeft += dx / z; }
+}
+
+function rtOngletsInit(){
+  var bande = document.getElementById("ruban-onglets");
+  if(!bande || document.getElementById("onglets-cadre")) return;
+  var cadre = document.createElement("div");
+  cadre.id = "onglets-cadre";
+  bande.parentNode.insertBefore(cadre, bande);
+  cadre.appendChild(bande);
+  RT_ONG.cadre = cadre; RT_ONG.bande = bande;
+  RT_ONG.bg = rtOngletsFleche(-1);
+  RT_ONG.bd = rtOngletsFleche(+1);
+
+  /* le doigt fait glisser la rangée, la molette aussi — comme sur le ruban */
+  bande.addEventListener("wheel", function(e){
+    if(bande.scrollWidth - bande.clientWidth <= 2) return;
+    var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if(!d) return;
+    e.preventDefault();
+    bande.scrollLeft += d;
+  }, {passive:false});
+  bande.addEventListener("scroll", function(){
+    rtOngletsCaler();
+    /* le bouton Fichier s'en va avec la rangée : sa liste ne reste pas en l'air */
+    if(Date.now() > RT_ONG.ignorerJusque)
+      Array.prototype.forEach.call(bande.querySelectorAll(".menu.ouvert"), function(m){ m.classList.remove("ouvert"); });
+  }, {passive:true});
+  window.addEventListener("resize", rtOngletsRecaler);
+
+  /* la liste du menu Fichier se place à chaque ouverture */
+  Array.prototype.forEach.call(bande.querySelectorAll(".menu"), function(m){
+    try {
+      new MutationObserver(function(){ if(m.classList.contains("ouvert")) rtOngletsPlacerMenu(m); })
+        .observe(m, {attributes:true, attributeFilter:["class"]});
+    } catch(_e96b){}
+  });
+
+  /* ce que contient la rangée change (onglets montrés ou masqués par les préférences, nom du projet,
+     niveau actif) : on remesure ; et un nouvel onglet actif revient dans le champ */
+  var sur = function(){
+    var a = bande.querySelector(".onglet.actif");
+    if(a !== RT_ONG.actif){ RT_ONG.actif = a; setTimeout(rtOngletsVoirActif, 60); }
+    rtOngletsRecaler();
+  };
+  try { new ResizeObserver(rtOngletsRecaler).observe(bande); } catch(_e96c){}
+  try { new ResizeObserver(rtOngletsRecaler).observe(cadre); } catch(_e96d){}
+  try {
+    new MutationObserver(sur).observe(bande, {childList:true, subtree:true, characterData:true,
+                                              attributes:true, attributeFilter:["style", "class", "hidden"]});
+  } catch(_e96e){}
+  RT_ONG.actif = bande.querySelector(".onglet.actif");
+
+  document.head.insertAdjacentHTML("beforeend", '<style>' +
+    '#onglets-cadre{position:relative; flex:none; display:flex; background:var(--onglets-fond,#fff)}' +
+    '#onglets-cadre > #ruban-onglets{flex:1; min-width:0}' +
+    /* la place des chevrons est prise sur le CADRE : elle rétrécit la rangée au lieu d'allonger son contenu */
+    '#onglets-cadre.deborde{padding-left:26px; padding-right:26px;' +
+      ' background-image:linear-gradient(var(--onglets-bord,#ccc),var(--onglets-bord,#ccc));' +
+      ' background-size:100% 1px; background-position:left bottom; background-repeat:no-repeat}' +
+    '#onglets-cadre.deborde > #ruban-onglets{overflow-x:auto; overflow-y:hidden; scrollbar-width:none;' +
+      ' -ms-overflow-style:none; touch-action:pan-x; overscroll-behavior-x:contain}' +
+    '#onglets-cadre > #ruban-onglets::-webkit-scrollbar{height:0; width:0}' +
+    /* débordant, les éléments gardent leur largeur : c'est la rangée qui défile, pas eux qui s'écrasent */
+    '#onglets-cadre.deborde > #ruban-onglets > *{flex-shrink:0}' +
+    /* au doigt, les onglets font 34 px dans une rangée de 30 : une rangée qui défile couperait leur bas */
+    '#onglets-cadre.deborde > #ruban-onglets > .onglet,' +
+    '#onglets-cadre.deborde > #ruban-onglets > .menu > button,' +
+    '#onglets-cadre.deborde > #ruban-onglets > .droite > button{min-height:0}' +
+    /* la liste du menu Fichier sort de la rangée : une rangée qui défile couperait tout ce qui dépasse */
+    '#onglets-cadre.deborde .deroulant{position:fixed; left:0; top:0}' +
+    /* chevrons et fondu aux couleurs de la rangée (ceux du ruban sont gris « chrome ») */
+    /* au doigt, les boutons font 34 px de haut au moins : la rangée n'en fait que 30, le chevron déborderait sur le ruban */
+    '#onglets-cadre .rub-fleche{background:var(--onglets-fond,#fff); min-height:0}' +
+    '#onglets-cadre .rub-g{box-shadow:14px 0 14px -8px var(--onglets-fond,#fff)}' +
+    '#onglets-cadre .rub-d{box-shadow:-14px 0 14px -8px var(--onglets-fond,#fff)}' +
+    '#onglets-cadre .rub-g::after{background:linear-gradient(90deg,var(--onglets-fond,#fff),transparent)}' +
+    '#onglets-cadre .rub-d::after{background:linear-gradient(270deg,var(--onglets-fond,#fff),transparent)}' +
+    /* au doigt, la cible mérite d'être large */
+    'body.tactile #onglets-cadre .rub-fleche{width:34px}' +
+    'body.tactile #onglets-cadre.deborde{padding-left:36px; padding-right:36px}' +
+    'body.tactile #onglets-cadre .rub-fleche svg{width:20px; height:20px}' +
+    'body.tactile #onglets-cadre .rub-g::after{left:34px}' +
+    'body.tactile #onglets-cadre .rub-d::after{right:34px}' +
+    '</style>');
+  rtOngletsRecaler();
+  setTimeout(rtOngletsCaler, 500);
+  setTimeout(rtOngletsCaler, 1500);
+}
+try { rtOngletsInit(); } catch(_e96f){}
+
+/* ---------------------------------------------------------------------
+   96.4 · AUTOTESTS
+   On étrangle le cadre à une largeur de tablette, on regarde, on le rend tel qu'il était.
+   --------------------------------------------------------------------- */
+function rtOngletsEssai(largeur, fn){
+  var c = RT_ONG.cadre, b = RT_ONG.bande;
+  if(!c || !b) return "le cadre des onglets est absent";
+  var avant = c.style.width, ouvertAvant = Array.prototype.map.call(b.querySelectorAll(".menu"), function(m){ return m.classList.contains("ouvert"); });
+  try {
+    c.style.width = largeur;
+    b.scrollLeft = 0;
+    rtOngletsCaler();
+    return fn(c, b);
+  } finally {
+    Array.prototype.forEach.call(b.querySelectorAll(".menu"), function(m, i){ m.classList.toggle("ouvert", !!ouvertAvant[i]); });
+    c.style.width = avant;
+    b.scrollLeft = 0;
+    rtOngletsCaler();
+  }
+}
+if(typeof AUTOTESTS !== "undefined"){
+  AUTOTESTS.push({
+    nom:"9.69 · Les onglets défilent comme le ruban : chevrons, défilement, bout de course",
+    f:function(){
+      return rtOngletsEssai("380px", function(c, b){
+        if(!c.classList.contains("deborde")) return "à 380 px de large, la rangée devrait déborder (contenu : " + b.scrollWidth + " px)";
+        var cs = getComputedStyle(b);
+        if(cs.overflowX !== "auto") return "la rangée ne défile pas (overflow-x : " + cs.overflowX + ")";
+        if(!RT_ONG.bd.classList.contains("visible")) return "la flèche de droite devrait être visible au début";
+        if(RT_ONG.bg.classList.contains("visible")) return "la flèche de gauche ne devrait pas être visible au début";
+        b.scrollLeft = 150; rtOngletsCaler();
+        if(b.scrollLeft < 100) return "la rangée n'a pas défilé (scrollLeft : " + b.scrollLeft + ")";
+        if(!RT_ONG.bg.classList.contains("visible")) return "la flèche de gauche devrait paraître après un défilement";
+        b.scrollLeft = b.scrollWidth; rtOngletsCaler();
+        if(RT_ONG.bd.classList.contains("visible")) return "la flèche de droite devrait disparaître au bout";
+        var dr = b.querySelector(".droite");
+        if(dr){
+          var rd = dr.getBoundingClientRect(), rb = b.getBoundingClientRect();
+          if(rd.right > rb.right + 2) return "la zone de droite (TwinQuest, Chercher, pastilles) reste hors de vue au bout du défilement";
+        }
+        if(RT_ONG.bg.tagName !== "BUTTON" || RT_ONG.bd.tagName !== "BUTTON") return "les chevrons ne sont pas des boutons";
+        return null;
+      });
+    }});
+  AUTOTESTS.push({
+    nom:"9.69 · Les onglets : la liste du menu Fichier n'est pas coupée quand la rangée défile, et retrouve sa place sinon",
+    f:function(){
+      var m = document.querySelector('#ruban-onglets .menu[data-menu="fichier"]');
+      if(!m) return "le menu Fichier est introuvable";
+      var der = m.querySelector(".deroulant");
+      var r = rtOngletsEssai("380px", function(c, b){
+        m.classList.add("ouvert"); rtOngletsPlacerMenu(m);
+        var cs = getComputedStyle(der), q = der.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        if(cs.position !== "fixed") return "la liste du menu Fichier devrait être en position fixe quand la rangée défile (elle est « " + cs.position + " »)";
+        if(q.width < 100 || q.height < 100) return "la liste du menu Fichier est vide ou invisible (" + Math.round(q.width) + " × " + Math.round(q.height) + ")";
+        if(q.left < 0 || q.right > window.innerWidth + 1) return "la liste du menu Fichier sort de la fenêtre (" + Math.round(q.left) + " → " + Math.round(q.right) + ")";
+        if(q.top < rb.bottom - 2) return "la liste du menu Fichier remonte sur la rangée (haut : " + Math.round(q.top) + ", rangée : " + Math.round(rb.bottom) + ")";
+        /* on fait défiler la rangée : la liste ne reste pas en l'air */
+        RT_ONG.ignorerJusque = 0;
+        b.scrollLeft = 120;
+        b.dispatchEvent(new Event("scroll"));
+        if(m.classList.contains("ouvert")) return "faire défiler la rangée devrait refermer la liste du menu Fichier";
+        return null;
+      });
+      if(r) return r;
+      /* à large cadre, plus rien ne déborde : mise en page d'origine */
+      return rtOngletsEssai("4000px", function(c, b){
+        if(c.classList.contains("deborde")) return "à 4000 px de large, la rangée ne devrait pas déborder";
+        m.classList.add("ouvert"); rtOngletsPlacerMenu(m);
+        var cs = getComputedStyle(der);
+        if(cs.position !== "absolute") return "sans débordement, la liste du menu Fichier devrait rester en position absolue (« " + cs.position + " »)";
+        if(der.style.left || der.style.top) return "sans débordement, la liste du menu Fichier ne devrait porter aucune position imposée";
+        if(getComputedStyle(b).overflowX !== "visible") return "sans débordement, la rangée ne devrait pas défiler (overflow-x : " + getComputedStyle(b).overflowX + ")";
+        return null;
+      });
+    }});
+  AUTOTESTS.push({
+    nom:"9.69 · Les onglets : un onglet qui devient actif par programme revient dans le champ",
+    f:function(){
+      return rtOngletsEssai("380px", function(c, b){
+        var tous = Array.prototype.filter.call(b.querySelectorAll(".onglet"), function(o){ return o.offsetWidth > 0; });
+        if(tous.length < 3) return "moins de trois onglets visibles";
+        var dernier = tous[tous.length - 1], prec = b.querySelector(".onglet.actif");
+        try {
+          if(prec) prec.classList.remove("actif");
+          dernier.classList.add("actif");
+          RT_ONG.actif = null;
+          rtOngletsVoirActif();
+          var r = dernier.getBoundingClientRect(), v = b.getBoundingClientRect();
+          if(r.left < v.left - 1 || r.right > v.right + 1) return "l'onglet « " + dernier.textContent.trim() + " » reste hors de vue (" + Math.round(r.left) + " → " + Math.round(r.right) + ", champ : " + Math.round(v.left) + " → " + Math.round(v.right) + ")";
+          return null;
+        } finally {
+          dernier.classList.remove("actif");
+          if(prec) prec.classList.add("actif");
+          RT_ONG.actif = prec;
+        }
+      });
     }});
 }
 
