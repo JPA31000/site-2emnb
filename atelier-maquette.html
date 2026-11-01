@@ -492,7 +492,7 @@ dialog.dlg-accueil .note-dlg{text-align:center}
   <div id="attente-voile"></div>
   <div id="attente-bas">
     <p id="attente-titre">Atelier Maquette Numérique</p>
-    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.69</span></p>
+    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.70</span></p>
     <div id="attente-licence" role="note">
       <p class="al-titre">Licence Creative Commons <b>CC BY-NC-SA 4.0</b></p>
       <p class="al-texte">Libre pour enseigner et apprendre, à trois conditions : citer l’auteur · pas d’usage commercial · partager les adaptations dans les mêmes conditions.</p>
@@ -105401,6 +105401,8 @@ cv.addEventListener("dblclick", function(e){
       « Propriétés », que l'application ouvrait d'elle-même, et ceux que les
       modules de structure ouvraient par défaut. Ensuite il garde ce que
       l'élève en a fait, jusqu'à la fermeture de l'application.
+      (9.70) Même règle avec un OUTIL en main — « Murs porteurs », « Plancher
+      à tracer »… — et dans la feuille de présentation : voir le module 97.
    --------------------------------------------------------------------- */
 htmlNiveaux = function(){ return ""; };
 
@@ -105421,8 +105423,10 @@ function rtPlierTousLesChapitres(){
       if(!(cle in panneauReplie)) panneauReplie[cle] = true;
     });
     pliagePanneau();
-    /* 2 · fermés au départ : la première fois qu'ils se montrent sur un élément sélectionné */
-    if(outil === "selection" && toutesSelections().length){
+    /* 2 · fermés au départ : la première fois qu'ils se montrent — sur un élément sélectionné, avec un outil en main
+       ou dans la feuille de présentation (9.70). Sans outil ni sélection, on ne touche à rien : en 3D, « Propriétés »
+       porte le réglage du toit (52.2) */
+    if(outil !== "selection" || toutesSelections().length || vue.mode === "cartouche"){
       pan.querySelectorAll(".section > h3").forEach(function(h3){
         var cle = rtCleChapitre(h3);
         if(RT_VUS[cle]) return;
@@ -106736,6 +106740,113 @@ if(typeof AUTOTESTS !== "undefined"){
           if(prec) prec.classList.add("actif");
           RT_ONG.actif = prec;
         }
+      });
+    }});
+}
+
+/* =====================================================================
+   MODULE 97 (v9.70) — LE CHAPITRE PRINCIPAL D'UN OUTIL EST FERMÉ AU DÉPART
+
+   JP, le 1er novembre : « Le chapitre principal de chaque outil (types de
+   murs, plancher à tracer…) reste ouvert. Qu'il soit fermé aussi. »
+
+   La 9.68 avait fermé au départ tous les chapitres de la fenêtre Propriétés
+   d'un élément SÉLECTIONNÉ. Restaient ouverts ceux qui s'affichent quand un
+   OUTIL est en main : « Murs porteurs — 6 types », « Cloisons », « Plancher
+   à tracer », « Pièce », « Toiture à tracer », « Escalier à poser »,
+   « Trémie » et « Trémie d'escalier ». C'est la palette qui les ouvrait
+   d'elle-même (la liste « toujours ouvertes » de `pliagePanneau` : tout
+   titre qui commence par mur, cloison, plancher, pièce, toit, escalier,
+   trémie, feuille…) et la règle de la 9.68 ne regardait que la sélection.
+   La feuille de présentation avait le même défaut : « Feuilles de
+   présentation » et « Feuille » s'ouvraient seules.
+
+   LA RÈGLE EST CELLE DE LA 9.68, ÉLARGIE. Un chapitre qui se montre pour la
+   première fois pendant la séance se ferme ; ensuite il garde ce que l'élève
+   en a fait. C'est `rtPlierTousLesChapitres` (module 95) dont la condition
+   passe de « un élément est sélectionné » à « un élément est sélectionné,
+   OU un outil est en main, OU la feuille de présentation est affichée ».
+   Sans outil ni sélection, en plan comme en 3D, on ne touche à rien : en 3D,
+   le bloc « Propriétés » porte le réglage du toit (52.2) et doit rester
+   sous les yeux.
+
+   LA CLÉ D'UN CHAPITRE NE DIT PLUS LE MOMENT. Le titre d'un chapitre d'outil
+   nomme le niveau actif (« … — niveau RDC »), le nombre de types (« … — 6
+   types ») ou le nombre de feuilles (« … (2) »). La palette mémorise
+   l'état ouvert ou fermé sous une clé tirée du titre : changer de niveau,
+   ou composer un type de mur, aurait donné un chapitre « nouveau » — donc
+   fermé — à l'élève qui venait de l'ouvrir. `cleSection` retire ces
+   mentions : « Plancher à tracer — niveau RDC » et « … — niveau R+1 » sont
+   le même chapitre et gardent le même état. Les titres fixes (« Fiche
+   produit — DOE / GEM », « Trémie d'escalier ») ne sont pas touchés.
+   ===================================================================== */
+var cleSectionDeBase = cleSection;
+cleSection = function(txt){
+  return cleSectionDeBase(String(txt)
+    .replace(/\s+[—–]\s+(?:niveau\b.*|\d+\s+types?)\s*$/i, "")
+    .replace(/\s*\((?:sur\s.*|\d+)\)\s*$/i, ""));
+};
+
+if(typeof AUTOTESTS !== "undefined"){
+  AUTOTESTS.push({
+    nom:"9.70 · Propriétés : le chapitre principal d'un outil et ceux de la feuille sont fermés au départ, gardent le choix de l'élève, même si le niveau change",
+    f:function(){
+      return rtEssaiScene(function(n){
+        var r = [], pan = document.getElementById("panneau"), vus0 = RT_VUS, rep0 = panneauReplie;
+        var depart = function(){ RT_VUS = {}; panneauReplie = {"__defaut": true}; };   // « au départ » : une séance toute neuve
+        var chapitres = function(){
+          rtPlierTousLesChapitres();
+          return Array.prototype.map.call(pan.querySelectorAll(".section > h3"), function(h){
+            return {txt:h.textContent.replace(/^[+−-]/, "").trim(), plie:!!h.querySelector(".arbo-plier"), ferme:h.parentElement.classList.contains("replie"), h3:h};
+          });
+        };
+        var trouver = function(t, re){ return t.filter(function(x){ return re.test(x.txt); })[0]; };
+        try {
+          rtEssaiMur(n, 0, 0, 6, 0);
+          /* chaque outil, pris « au départ » : son chapitre principal est là, et fermé comme les autres */
+          [["porteur", /^Murs porteurs/], ["cloison", /^Cloisons/], ["plancher", /^Plancher à tracer/], ["piece", /^Pièce/],
+           ["toiture", /^Toiture à tracer/], ["escalier", /^Escalier à poser/], ["tremie", /^Trémie —/]].forEach(function(a){
+            depart(); outil = a[0]; majPanneau();
+            var t = chapitres();
+            if(!trouver(t, a[1])) r.push("outil « " + a[0] + " » : le chapitre principal manque");
+            t.forEach(function(x){
+              if(!x.plie) r.push("outil « " + a[0] + " » : le chapitre « " + x.txt + " » ne se replie pas");
+              else if(!x.ferme) r.push("outil « " + a[0] + " » : le chapitre « " + x.txt + " » est ouvert au départ");
+            });
+          });
+          /* l'élève ouvre « Plancher à tracer » : il le reste quand le niveau change de nom, et d'un outil à l'autre */
+          depart(); outil = "plancher"; majPanneau();
+          var p = trouver(chapitres(), /^Plancher à tracer/);
+          if(!p) r.push("outil « plancher » : le chapitre principal manque");
+          else {
+            p.h3.querySelector(".arbo-plier").click();
+            if(p.h3.parentElement.classList.contains("replie")) r.push("un clic sur le carré n'ouvre pas « Plancher à tracer »");
+            n.nom = "R+1"; majPanneau();
+            var q = trouver(chapitres(), /^Plancher à tracer/);
+            if(!q || !/R\+1/.test(q.txt)) r.push("le titre de « Plancher à tracer » ne suit pas le niveau actif");
+            else if(q.ferme) r.push("« Plancher à tracer » s'est refermé quand le niveau a changé de nom");
+            outil = "cloison"; majPanneau(); chapitres();
+            outil = "plancher"; majPanneau();
+            q = trouver(chapitres(), /^Plancher à tracer/);
+            if(!q || q.ferme) r.push("« Plancher à tracer » s'est refermé en changeant d'outil");
+          }
+          /* la clé ignore le niveau, le nombre de types et le nombre de feuilles — pas les titres fixes */
+          if(cleSection("Murs porteurs — 6 types") !== cleSection("Murs porteurs — 7 types")) r.push("« Murs porteurs — 6 types » et « — 7 types » ne sont pas le même chapitre");
+          if(cleSection("Pièce — niveau RDC") !== cleSection("Pièce — niveau Rez-de-jardin")) r.push("« Pièce » change de clé avec le niveau");
+          if(cleSection("Toiture à tracer (sur RDC)") !== cleSection("Toiture à tracer (sur R+1)")) r.push("« Toiture à tracer » change de clé avec le niveau");
+          if(cleSection("Feuilles de présentation (1)") !== cleSection("Feuilles de présentation (2)")) r.push("« Feuilles de présentation » change de clé avec le nombre de feuilles");
+          if(cleSection("Trémie — niveau RDC") === cleSection("Trémie d’escalier — niveau RDC")) r.push("« Trémie » et « Trémie d'escalier » ont la même clé");
+          if(cleSection("Fiche produit — DOE / GEM") === cleSection("Fiche produit")) r.push("le titre fixe « Fiche produit — DOE / GEM » a été raccourci");
+          /* la feuille de présentation : « Feuilles de présentation » et « Feuille » ne s'ouvrent plus d'eux-mêmes */
+          depart(); outil = "selection"; viderSel(); vue.mode = "cartouche"; majPanneau();
+          var f = chapitres();
+          if(!trouver(f, /^Feuilles de présentation/) || !trouver(f, /^Feuille$/)) r.push("feuille de présentation : « Feuilles de présentation » ou « Feuille » manque");
+          f.forEach(function(x){
+            if(!x.plie) r.push("feuille de présentation : le chapitre « " + x.txt + " » ne se replie pas");
+            else if(!x.ferme) r.push("feuille de présentation : le chapitre « " + x.txt + " » est ouvert au départ");
+          });
+        } finally { RT_VUS = vus0; panneauReplie = rep0; }
+        return r;
       });
     }});
 }
