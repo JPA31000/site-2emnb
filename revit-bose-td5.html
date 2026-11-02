@@ -973,7 +973,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     <div><h4>Le carnet</h4><ul><li><a id="pied-carnet">Accueil du carnet</a></li></ul></div>
     <div><h4>Présenter</h4><ul><li><button type="button" data-presenter>Une partie par écran</button></li></ul></div>
   </div>
-  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · <a href="licence.html">CC BY-NC-SA 4.0</a></span><a href="#accueil">Haut de page ↑</a></div>
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · <a href="licence.html">CC BY-NC-SA 4.0</a> <a class="pied__stat" href="stat.html" title="Statistiques de fréquentation (accès enseignant)" style="padding:0 .55em 1px;border:1.4px solid currentColor;border-radius:9px 11px 8px 10px;text-decoration:none">Stat</a></span><a href="#accueil">Haut de page ↑</a></div>
 </footer>
 
 <!-- ===================== BARRE DE PRÉSENTATION ===================== -->
@@ -2927,5 +2927,5 @@ let tRes;
 addEventListener('resize', () => { clearTimeout(tRes); tRes = setTimeout(toutMesurer, 150); });
 })();
 </script>
-</body>
+<!--stat--><script src="stats.js"></script><!--/stat--></body>
 </html>

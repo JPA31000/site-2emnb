@@ -384,7 +384,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     <div><h4>Pour prolonger</h4><ul><li><a href="pas-a-pas.html">Pas à pas, le livret</a></li><li><a href="syntheses.html">Les synthèses</a></li></ul></div>
     <div><h4>Le carnet</h4><ul><li><a href="index.html">Accueil du carnet</a></li><li><a href="index.html#projets">Projets</a></li><li><a href="index.html#decouvrir">Découvrir</a></li></ul></div>
   </div>
-  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · aucun cookie · <a href="licence.html">CC BY-NC-SA 4.0</a></span><a href="#accueil">Haut de page ↑</a></div>
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · aucun cookie · <a href="licence.html">CC BY-NC-SA 4.0</a> <a class="pied__stat" href="stat.html" title="Statistiques de fréquentation (accès enseignant)" style="padding:0 .55em 1px;border:1.4px solid currentColor;border-radius:9px 11px 8px 10px;text-decoration:none">Stat</a></span><a href="#accueil">Haut de page ↑</a></div>
 </footer>
 
 <noscript><div class="noscript">Cette page a besoin de JavaScript. L’atelier est ici&nbsp;: <a href="atelier-maquette.html">ouvrir l’atelier</a>. Les films&nbsp;: <a href="videos/bim-educ.mp4">BIM Éducation</a>, <a href="videos/twinquest.mp4">TwinQuest</a>.</div></noscript>
@@ -621,5 +621,5 @@ let tRes;
 addEventListener('resize', () => { clearTimeout(tRes); tRes = setTimeout(toutMesurer, 150); });
 })();
 </script>
-</body>
+<!--stat--><script src="stats.js"></script><!--/stat--></body>
 </html>

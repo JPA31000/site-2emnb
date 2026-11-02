@@ -596,7 +596,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     <div><h4>Raccourcis</h4><ul id="pied-raccourcis"></ul></div>
     <div><h4>Trouver vite</h4><ul><li><button type="button" data-chercher>Chercher dans le site</button></li><li><a id="pied-wix" target="_blank" rel="noopener">Ancienne version (Wix)<span class="sr"> (nouvel onglet)</span></a></li></ul></div>
   </div>
-  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · aucun cookie · <a href="licence.html">CC BY-NC-SA 4.0</a></span><a href="#accueil">Haut de page ↑</a></div>
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · aucun cookie · <a href="licence.html">CC BY-NC-SA 4.0</a> <a class="pied__stat" href="stat.html" title="Statistiques de fréquentation (accès enseignant)" style="padding:0 .55em 1px;border:1.4px solid currentColor;border-radius:9px 11px 8px 10px;text-decoration:none">Stat</a></span><a href="#accueil">Haut de page ↑</a></div>
 </footer>
 
 <!-- ===================== RECHERCHE ===================== -->
@@ -1840,5 +1840,5 @@ addEventListener('resize', () => {
 if ('ResizeObserver' in window) new ResizeObserver(() => mesurer()).observe(document.body);
 })();
 </script>
-</body>
+<!--stat--><script src="stats.js"></script><!--/stat--></body>
 </html>
