@@ -492,7 +492,7 @@ dialog.dlg-accueil .note-dlg{text-align:center}
   <div id="attente-voile"></div>
   <div id="attente-bas">
     <p id="attente-titre">Atelier Maquette Numérique</p>
-    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.76</span></p>
+    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.78</span></p>
     <div id="attente-licence" role="note">
       <p class="al-titre">Licence Creative Commons <b>CC BY-NC-SA 4.0</b></p>
       <p class="al-texte">Libre pour enseigner et apprendre, à trois conditions : citer l’auteur · pas d’usage commercial · partager les adaptations dans les mêmes conditions.</p>
@@ -106908,6 +106908,10 @@ if(typeof AUTOTESTS !== "undefined"){
    avant le rendu, fin d'un geste, double-clic, appui long), un clic ne fait
    plus tourner en deçà de 3 pixels, tampon de gabarit et nuanceurs prêts
    pour les plans de coupe. Modules 99 à 103.
+   (9.78) Pour la fenêtre Matériaux (module 105) : chaque morceau du maillage
+   passe par `tr3dMatFinal` avant d'être regroupé, l'habillage a sa clé, et
+   le nuanceur règle l'échelle de sa toile (`uRep`, 1 par défaut). Quand seul
+   l'habillage change, le maillage gardé est regroupé sans être refait.
    ===================================================================== */
 var TR3D = "tr3d";                                     // la clé de la vue « 3D temps réel »
 var TR3D_OPTIONS = {brut:true, contenu:"projet", infra:false, menuiseries:true, toitures:true,
@@ -106922,8 +106926,8 @@ var _tr3dGeste = null, _tr3dTape = null, _tr3dImage = 0;
 /* (9.72) les nuanceurs acceptent les plans de coupe de Three.js : sans plan, rien ne change */
 var TR3D_VS =
   "#include <clipping_planes_pars_vertex>\n" +
-  "varying vec3 vN; varying vec2 vT;" +
-  "void main(){ vN = normal; vT = uv; vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);" +
+  "varying vec3 vN; varying vec2 vT; uniform float uRep;" +
+  "void main(){ vN = normal; vT = uv * uRep; vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);" +
   " gl_Position = projectionMatrix * mvPosition;\n#include <clipping_planes_vertex>\n}";
 var TR3D_FS =
   "#include <clipping_planes_pars_fragment>\n" +
@@ -106940,6 +106944,10 @@ var tr3dDoigtTape = function(G){};
 var tr3dAppuiLong = function(x, y){};
 var tr3dDoubleClic = function(e){ tr3dDepart(); };
 var tr3dDoubleAppui = function(x, y){ tr3dDepart(); };
+/* (9.78) l'habillage : une clé de plus pour le maillage, et le matériau de chaque morceau (`ctx` : un objet neuf par regroupement) */
+var tr3dCleHabillage = function(){ return ""; };
+var tr3dMatFinal = function(g, ctx){ return g.mat; };
+var TR3D_GARDE = 60000;                                // au-delà, le maillage n'est pas gardé pour un regroupement
 
 /* ---------------------------------------------------------------------
    98.1 · LE MOTEUR : THREE.JS, OU UN MESSAGE CLAIR
@@ -106952,7 +106960,7 @@ var tr3dDoubleAppui = function(x, y){ tr3dDepart(); };
 function tr3dNuanceur(tex, c){
   var m = new THREE.ShaderMaterial({
     uniforms:{uC:{value:new THREE.Vector4(c[0], c[1], c[2], c[3])}, uS:{value:tex}, uTex:{value:tex ? 1 : 0},
-              uL:{value:new THREE.Vector3(TR3D_L[0], TR3D_L[1], TR3D_L[2])}},
+              uL:{value:new THREE.Vector3(TR3D_L[0], TR3D_L[1], TR3D_L[2])}, uRep:{value:1}},
     vertexShader:TR3D_VS, fragmentShader:TR3D_FS, side:THREE.DoubleSide, clipping:true});
   m.toneMapped = false;
   return m;
@@ -107069,23 +107077,26 @@ function tr3dPreparer(){
   var C = _tr3d.cache, t0 = performance.now(), ouverture = _tr3d.ouverture;
   _tr3d.ouverture = false;
   if(C && _tr3dGeste && t0 - _tr3dGeste.depuis < 20000) return C;
-  var cle = tr3dSignature();
+  var cleG = tr3dSignature(), cle = cleG + tr3dCleHabillage();
   if(C && C.cle === cle){ C.enRetard = false; return C; }
+  /* (9.78) seul l'habillage a changé : le maillage gardé est regroupé autrement, sans être refait */
+  var sc = C && C.cleG === cleG && C.sc ? C.sc : null, reprise = !!sc, msG = reprise ? C.msG : 0;
   /* un gros projet (maillage long à refaire) qu'on modifie la vue sous les yeux — en vue double, par exemple :
      on garde l'ancien maillage et on attend une pause, plutôt que de figer l'atelier à chaque clic.
      La vue qu'on vient d'ouvrir, elle, montre tout de suite le projet tel qu'il est. */
-  if(C && C.ms > 400 && !_tr3d.maintenant && !ouverture){
+  if(!reprise && C && C.ms > 400 && !_tr3d.maintenant && !ouverture){
     clearTimeout(_tr3d.attente);
     _tr3d.attente = setTimeout(tr3dRefaireApresPause, 900);
     C.enRetard = true;
     return C;
   }
   clearTimeout(_tr3d.attente); _tr3d.attente = 0;
-  var sc = rbxConstruire(TR3D_OPTIONS);
-  var groupe = new THREE.Group(), boite = new THREE.Box3(), parMat = {}, utiles = {}, nTri = 0;
+  if(!reprise){ sc = rbxConstruire(TR3D_OPTIONS); msG = performance.now() - t0; }
+  var groupe = new THREE.Group(), boite = new THREE.Box3(), parMat = {}, utiles = {}, nTri = 0, ctx = {};
   sc.maillages.forEach(function(g){
     if(!g.idx.length) return;
-    (parMat[g.mat] = parMat[g.mat] || []).push(g);
+    var mat = tr3dMatFinal(g, ctx);
+    (parMat[mat] = parMat[mat] || []).push(g);
     nTri += g.idx.length / 3;
   });
   Object.keys(parMat).forEach(function(mat){
@@ -107134,8 +107145,9 @@ function tr3dPreparer(){
   var rSol = Math.max(25, sphere.radius * 4);
   _tr3d.sol.scale.set(rSol, 1, rSol);
   _tr3d.sol.position.set(sphere.center.x, -0.03, sphere.center.z);
-  _tr3d.cache = {cle:cle, groupe:groupe, nTri:nTri, nObjets:groupe.children.length, boite:boite, sphere:sphere,
-                 rSol:rSol, ms:Math.round(performance.now() - t0)};
+  _tr3d.cache = {cle:cle, cleG:cleG, sc:nTri <= TR3D_GARDE ? sc : null, msG:msG, reprise:reprise,
+                 groupe:groupe, nTri:nTri, nObjets:groupe.children.length, boite:boite, sphere:sphere,
+                 rSol:rSol, ms:Math.round((reprise ? msG : 0) + performance.now() - t0)};
   _tr3d.image = "";
   return _tr3d.cache;
 }
@@ -109546,6 +109558,1189 @@ if(typeof AUTOTESTS !== "undefined"){
           return r;
         });
       } finally { rendre(); vue.qCam = q0; _urbqSel = sel0; }
+    }});
+}
+
+/* =====================================================================
+   MODULE 104 (v9.77) — L'INFO-BULLE DÉCRIT AUSSI LES OUVRAGES DES AUTRES NIVEAUX
+
+   Au survol, la bulle dit ce qu'est l'ouvrage (`majBulle` → `decrisElement`).
+   Mais `decrisElement` cherche l'ouvrage sur le niveau ACTIF : `murParId`,
+   `plancherParId`, `escalierParId` lisent `NIV()`. Dans la 3D dessinée et la
+   3D temps réel, où tous les niveaux sont visibles, un mur de l'étage survolé
+   depuis le RDC se surlignait et se laissait choisir… sans bulle. Défaut
+   d'avant la 9.71, repéré en vérifiant la 9.76 en ligne.
+
+   Quand le niveau actif ne connaît pas l'ouvrage survolé, on le décrit sur
+   son propre niveau — le niveau actif est rendu aussitôt, sans rien
+   redessiner — et la bulle ajoute ce niveau (« · niveau R+1 »). Pour un
+   ouvrage du niveau actif, la bulle ne change pas.
+
+     104.1  la bulle
+     104.2  autotests
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   104.1 · LA BULLE
+   --------------------------------------------------------------------- */
+/* l'ouvrage décrit sur le niveau où il se trouve : {txt, niv}, ou null si aucun niveau ne le connaît */
+function decrisAutreNiveau(s){
+  var n0 = S.nivActif;
+  try {
+    for(var n = 0; n < S.niveaux.length; n++){
+      if(n === n0) continue;
+      S.nivActif = n;
+      var txt = decrisElement(s);
+      if(txt) return {txt:txt, niv:n};
+    }
+  } finally { S.nivActif = n0; }
+  return null;
+}
+try {
+if(typeof majBulle === "function"){
+  var _nivBulleAvant = majBulle;
+  majBulle = function(sx, sy){
+    var r = _nivBulleAvant.apply(this, arguments);
+    try {
+      if(bulleEl && survolSel && bulleEl.style.display !== "block" && S.niveaux.length > 1){
+        var d = decrisAutreNiveau(survolSel);
+        if(d){
+          bulleEl.innerHTML = echap(d.txt + " · niveau " + (S.niveaux[d.niv].nom || nomNiveauDefaut(d.niv))) + indiceCycle();
+          bulleEl.style.display = "block";
+          poserSurcouche(bulleEl, sx, sy, 16, 22);
+        }
+      }
+    } catch(_e){}
+    return r;
+  };
+}
+} catch(_e104){}
+
+/* ---------------------------------------------------------------------
+   104.2 · AUTOTESTS
+   --------------------------------------------------------------------- */
+if(typeof AUTOTESTS !== "undefined"){
+  AUTOTESTS.push({
+    nom:"9.77 · Info-bulle : un ouvrage d’un autre niveau que le niveau actif est décrit, avec son niveau ; celle d’un ouvrage du niveau actif ne change pas",
+    f:function(){
+      if(!bulleEl) return "la bulle de survol manque";
+      var sur0 = survolSel, nb0 = survolNb, cyc0 = axoCycle, aff0 = bulleEl.style.display, html0 = bulleEl.innerHTML;
+      var lire = function(sel){ survolSel = sel; majBulle(40, 40); return bulleEl.style.display === "block" ? bulleEl.textContent : ""; };
+      try {
+        return rtEssaiScene(function(){
+          var r = [];
+          tr3dEssaiPavillon();
+          if(S.niveaux.length < 2) return "le pavillon d’essai n’a qu’un niveau";
+          S.nivActif = 0; axoCycle = null; survolNb = 1;
+          var m0 = S.niveaux[0].murs[0], m1 = S.niveaux[1].murs[0];
+          if(!m0 || !m1) return "le pavillon d’essai n’a pas de mur sur ses deux niveaux";
+          var nom1 = S.niveaux[1].nom || nomNiveauDefaut(1);
+          /* un mur de l'étage, survolé depuis le RDC */
+          var t = lire({murId:m1.id});
+          if(!t) r.push("pas de bulle pour un mur de l’étage survolé depuis le RDC");
+          else if(!/^(Mur porteur|Cloison) · /.test(t) || t.slice(-(" · niveau " + nom1).length) !== " · niveau " + nom1) r.push("bulle inattendue pour un mur de l’étage : « " + t + " »");
+          if(S.nivActif !== 0) r.push("la bulle a changé le niveau actif");
+          /* une baie de l'étage */
+          var mo = S.niveaux[1].murs.find(function(w){ return w.ouvertures && w.ouvertures.length; });
+          if(mo){
+            var tb = lire({murId:mo.id, ouvId:mo.ouvertures[0].id});
+            if(!/^(Porte|Fenêtre) /.test(tb) || tb.indexOf(" · niveau " + nom1) < 0) r.push("bulle inattendue pour une baie de l’étage : « " + tb + " »");
+          }
+          /* un mur du niveau actif : la bulle d'avant, mot pour mot */
+          var t0 = lire({murId:m0.id});
+          if(t0 !== decrisElement({murId:m0.id})) r.push("la bulle d’un mur du niveau actif a changé : « " + t0 + " »");
+          /* un ouvrage qu'aucun niveau ne connaît : pas de bulle */
+          if(lire({murId:"essai-inconnu"})) r.push("une bulle s’affiche pour un ouvrage qui n’existe pas");
+          return r;
+        });
+      } finally {
+        survolSel = sur0; survolNb = nb0; axoCycle = cyc0;
+        bulleEl.innerHTML = html0; bulleEl.style.display = aff0;
+      }
+    }});
+}
+
+/* =====================================================================
+   MODULE 105 (v9.78) — LA FENÊTRE « MATÉRIAUX » DE LA 3D TEMPS RÉEL
+
+   Demande de JP, le 2 novembre : « proposer 5 matériaux texturés par
+   catégorie : enduit, mur, sol, nature, couverture, menuiserie extérieure,
+   verre. Ajouter en mode 3D temps réel une fenêtre matériaux sous la
+   fenêtre arborescence. »
+
+   UNE BIBLIOTHÈQUE, COMME DANS UN LOGICIEL DE RENDU. Trente-cinq toiles
+   dessinées ici même, sans image téléchargée : l'atelier reste hors ligne.
+   Chacune se raccorde sur ses quatre bords et porte sa taille réelle
+   (`pas` : les mètres couverts par une toile) — une brique foraine fait
+   5 cm d'épaisseur sous 2 cm de joint de chaux, une tuile canal 17 cm de
+   large, un trou de banche revient tous les 60 cm.
+
+   CE QUE CHAQUE CATÉGORIE HABILLE. Enduit et Mur : les façades — la face
+   extérieure des murs porteurs et les tableaux des baies ; Sol : le dessus
+   des planchers ; Nature : le terrain autour du projet ; Couverture : les
+   pans de toiture et les toits-terrasses ; Menuiserie extérieure : dormants,
+   ouvrants et vantaux des baies des murs porteurs ; Verre : les vitrages.
+
+   POUR TOUT LE PROJET OU OUVRAGE PAR OUVRAGE. Sans sélection, une vignette
+   habille tout le projet ; avec une sélection, les ouvrages choisis — une
+   cloison ou une porte intérieure aussi, mais seulement ainsi. On peut
+   aussi glisser une vignette sur la maquette. ↺ rend le matériau d'origine.
+
+   UN HABILLAGE D'ASPECT. Les choix s'enregistrent avec le projet
+   (`S.habillage`) et s'annulent par Ctrl+Z, mais ne touchent ni aux types
+   de murs, ni au métré, ni aux prix, ni aux autres vues : c'est la 3D temps
+   réel qui s'habille. Changer de matériau ne refait pas le maillage : il est
+   regroupé autrement (module 98).
+
+     105.1  les toiles : 7 catégories × 5 matériaux
+     105.2  l'habillage : ce que devient chaque morceau de la maquette
+     105.3  les matériaux de la carte graphique, et le terrain
+     105.4  poser, retirer
+     105.5  la fenêtre « Matériaux », sous l'arborescence
+     105.6  glisser une vignette sur la maquette
+     105.7  autotests
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   105.1 · LES TOILES : 7 CATÉGORIES × 5 MATÉRIAUX
+   Les sommets des faces portent des coordonnées de toile en mètres divisés
+   par le `pas` du matériau d'origine ; le nuanceur les remet à l'échelle du
+   nouveau (`uRep`). Sur un mur, le haut de la toile est en haut ; sur un
+   pan de toiture, il est côté faîtage.
+   --------------------------------------------------------------------- */
+var MAT3D_FAMILLES = [
+  {id:"enduit",     nom:"Enduit",                place:"facade"},
+  {id:"mur",        nom:"Mur",                   place:"facade"},
+  {id:"sol",        nom:"Sol",                   place:"sol"},
+  {id:"nature",     nom:"Nature",                place:"nature"},
+  {id:"couverture", nom:"Couverture",            place:"couverture"},
+  {id:"menuiserie", nom:"Menuiserie extérieure", place:"menuiserie"},
+  {id:"verre",      nom:"Verre",                 place:"verre"}
+];
+var MAT3D_PLACES = {facade:"les façades", sol:"les sols", nature:"le terrain", couverture:"les couvertures",
+                    menuiserie:"les menuiseries extérieures", verre:"les vitrages"};
+var MAT3D_QUOI = {facade:"un mur", sol:"un plancher", couverture:"une toiture", menuiserie:"une baie", verre:"une baie"};
+
+/* un motif qui déborde d'un bord se recopie de l'autre côté : la toile se raccorde */
+function m3Partout(T, x, y, m, f){
+  for(var dx = -1; dx <= 1; dx++) for(var dy = -1; dy <= 1; dy++){
+    var X = x + dx * T, Y = y + dy * T;
+    if(X + m < 0 || X - m > T || Y + m < 0 || Y - m > T) continue;
+    f(X, Y);
+  }
+}
+function m3Choix(r, L){ return L[Math.floor(r() * L.length)]; }
+/* des nappes claires et sombres, très douces */
+function m3Nuages(c, T, r, n, r0, r1, clair, sombre, a){
+  for(var k = 0; k < n; k++){
+    var x = r() * T, y = r() * T, R = r0 + r() * (r1 - r0), col = r() < 0.5 ? clair : sombre, al = a * (0.5 + r() * 0.5);
+    m3Partout(T, x, y, R, function(X, Y){
+      var g = c.createRadialGradient(X, Y, 0, X, Y, R);
+      g.addColorStop(0, "rgba(" + col + "," + al.toFixed(3) + ")"); g.addColorStop(1, "rgba(" + col + ",0)");
+      c.fillStyle = g; c.fillRect(X - R, Y - R, 2 * R, 2 * R);
+    });
+  }
+}
+/* des points — grains, mouchetures, fleurs — peints couleur par couleur, d'un seul trait */
+function m3Points(c, T, r, n, r0, r1, couleurs){
+  var L = Array.isArray(couleurs) ? couleurs : [couleurs], P = L.map(function(){ return []; });
+  for(var k = 0; k < n; k++) P[Math.floor(r() * L.length)].push([r() * T, r() * T, r0 + r() * (r1 - r0)]);
+  L.forEach(function(coul, i){
+    c.fillStyle = coul; c.beginPath();
+    P[i].forEach(function(p){ m3Partout(T, p[0], p[1], p[2], function(X, Y){ c.moveTo(X + p[2], Y); c.arc(X, Y, p[2], 0, 6.2832); }); });
+    c.fill();
+  });
+}
+/* des brins d'herbe, peints de même */
+function m3Brins(c, T, r, n, l0, l1, larg, couleurs){
+  var P = couleurs.map(function(){ return []; });
+  for(var k = 0; k < n; k++){
+    var l = l0 + r() * (l1 - l0), a = r() * 6.2832;
+    P[Math.floor(r() * couleurs.length)].push([r() * T, r() * T, Math.cos(a) * l, Math.sin(a) * l, l]);
+  }
+  c.lineCap = "round"; c.lineWidth = larg;
+  couleurs.forEach(function(coul, i){
+    c.strokeStyle = coul; c.beginPath();
+    P[i].forEach(function(b){ m3Partout(T, b[0], b[1], b[4], function(X, Y){ c.moveTo(X, Y); c.lineTo(X + b[2], Y + b[3]); }); });
+    c.stroke();
+  });
+}
+/* un appareil en rangs — briques, dalles, pavés, ardoises : chaque élément est teinté une fois, peint, recopié s'il
+   déborde ; `deco` l'orne, dans ses limites, avec un hasard qui lui est propre (le même pour ses copies).
+   Avec un décalage, un nombre PAIR de rangs : sans quoi deux rangs alignés se suivraient au raccord. */
+function m3Appareil(c, T, r, rangs, cols, j, teinte, dec, deco){
+  var h = T / rangs, w = T / cols;
+  for(var y = 0; y < rangs; y++){
+    var d = (y % 2) ? w * dec : 0;
+    for(var k = 0; k < cols; k++){
+      var x = k * w + d, t = teinte(y, k), g0 = Math.floor(r() * 4294967296);
+      for(var s = -1; s <= 1; s++){
+        var X = x + s * T;
+        if(X + w <= 0 || X >= T) continue;
+        c.fillStyle = t; c.fillRect(X + j / 2, y * h + j / 2, w - j, h - j);
+        if(!deco) continue;
+        c.save(); c.beginPath(); c.rect(X + j / 2, y * h + j / 2, w - j, h - j); c.clip();
+        deco(X + j / 2, y * h + j / 2, w - j, h - j, rbxHasard(g0));
+        c.restore();
+      }
+    }
+  }
+}
+/* des reflets en bandes obliques, raccordés (ils ne dépendent que de x − y, modulo la toile) */
+function m3Bandes(c, T, r, n, rgb, a0, a1){
+  for(var k = 0; k < n; k++){
+    var d = r() * T, l = T * (0.04 + r() * 0.12);
+    c.fillStyle = "rgba(" + rgb + "," + (a0 + r() * (a1 - a0)).toFixed(3) + ")";
+    for(var s = -2; s <= 1; s++){
+      var D = d + s * T;
+      c.beginPath(); c.moveTo(D, 0); c.lineTo(D + l, 0); c.lineTo(D + l + T, T); c.lineTo(D + T, T); c.closePath(); c.fill();
+    }
+  }
+}
+/* les arcs d'une taloche ou d'une lisseuse */
+function m3Arcs(c, T, r, n, r0, r1, larg, clair, sombre){
+  c.lineCap = "round";
+  for(var k = 0; k < n; k++){
+    var x = r() * T, y = r() * T, R = r0 + r() * (r1 - r0), a0 = r() * 6.2832, da = 0.5 + r() * 1.2;
+    c.strokeStyle = r() < 0.55 ? clair : sombre;
+    c.lineWidth = larg * (0.7 + r() * 0.6);
+    m3Partout(T, x, y, R + larg, function(X, Y){ c.beginPath(); c.arc(X, Y, R, a0, a0 + da); c.stroke(); });
+  }
+}
+function m3Uni(c, T, f){ c.fillStyle = f; c.fillRect(0, 0, T, T); }
+
+var MAT3D = {
+  /* — Enduit : une toile pour 2 m de façade — */
+  "enduit-gratte":{fam:"enduit", nom:"Enduit gratté, blanc cassé", pas:2.0, fond:"#ebe5d5", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 16, T / 8, T / 3, "255,255,255", "120,100,70", 0.06);
+    rbxGrain(c, T, 28, r);
+    m3Points(c, T, r, Math.round(T * T / 70), 0.5, Math.max(0.8, T / 380), ["rgba(105,90,66,0.30)", "rgba(255,255,255,0.45)"]);
+  }},
+  "enduit-taloche":{fam:"enduit", nom:"Enduit taloché, ocre", pas:2.0, fond:"#d5b07a", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 14, T / 6, T / 3, "255,238,205", "120,80,30", 0.07);
+    m3Arcs(c, T, r, Math.round(T * 0.8), T / 40, T / 12, Math.max(1, T / 220), "rgba(255,244,222,0.18)", "rgba(105,70,28,0.13)");
+    rbxGrain(c, T, 16, r);
+  }},
+  "enduit-ecrase":{fam:"enduit", nom:"Enduit écrasé, rose de Toulouse", pas:2.0, fond:"#d5a08a", dessin:function(c, T, r, f){
+    m3Uni(c, T, rbxTeinte(f, -12));                                     // le fond, dans les creux
+    rbxGrain(c, T, 12, r);
+    for(var k = 0; k < Math.round(T * 0.7); k++){                        // les plaques écrasées à la lisseuse
+      var x = r() * T, y = r() * T, rx = T / 70 + r() * T / 24, ry = rx * (0.45 + r() * 0.5), a = r() * 3.1416, t = rbxTeinte(f, 1 + r() * 14);
+      m3Partout(T, x, y, rx + 1, function(X, Y){ c.fillStyle = t; c.beginPath(); c.ellipse(X, Y, rx, ry, a, 0, 6.2832); c.fill(); });
+    }
+    rbxGrain(c, T, 12, r);
+  }},
+  "enduit-chaux":{fam:"enduit", nom:"Enduit à la chaux, ton sable", pas:2.0, fond:"#d9c7a1", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 50, T / 10, T / 3, "255,250,232", "125,98,58", 0.10);
+    rbxGrain(c, T, 12, r);
+  }},
+  "enduit-lisse":{fam:"enduit", nom:"Enduit lissé, gris perle", pas:2.0, fond:"#c8c6c0", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 18, T / 7, T / 3, "255,255,255", "70,70,70", 0.05);
+    m3Arcs(c, T, r, 60, T / 6, T / 3, Math.max(1, T / 110), "rgba(255,255,255,0.08)", "rgba(80,80,80,0.05)");
+    rbxGrain(c, T, 6, r);
+  }},
+
+  /* — Mur : la façade sans enduit — */
+  "brique-foraine":{fam:"mur", nom:"Brique foraine toulousaine", pas:1.2, fond:"#c8865f", dessin:function(c, T, r, f){
+    /* 16 rangs de 5 cm sous 2 cm de joint de chaux, briques de 38 cm : le mur toulousain */
+    m3Uni(c, T, "#e2d6bf");
+    rbxGrain(c, T, 20, r);
+    var P = ["#c9845b", "#d39669", "#b8714d", "#cf9b72", "#ad6646", "#d8a27a", "#c27a52"], ep = Math.max(1, T / 300);
+    m3Appareil(c, T, r, 16, 3, T / 60, function(){ return rbxTeinte(m3Choix(r, P), (r() - 0.5) * 16); }, 0.5, function(X, Y, w, h, rr){
+      c.fillStyle = "rgba(255,225,190,0.16)"; c.fillRect(X, Y, w, ep);                 // l'arête éclairée
+      c.fillStyle = "rgba(70,30,12,0.24)"; c.fillRect(X, Y + h - ep, w, ep);          // l'arête dans l'ombre
+      for(var k = 0; k < 8; k++){ c.fillStyle = "rgba(90,40,18," + (0.10 + rr() * 0.15).toFixed(3) + ")"; c.fillRect(X + rr() * w, Y + rr() * h, ep, ep); }
+    });
+    rbxGrain(c, T, 14, r);
+  }},
+  "brique-rouge":{fam:"mur", nom:"Brique pleine rouge", pas:1.2, fond:"#a5452f", dessin:function(c, T, r, f){
+    m3Uni(c, T, "#cdc4b3");
+    rbxGrain(c, T, 14, r);
+    var P = ["#a5452f", "#9a3e2a", "#b04f35", "#8f3a27", "#ad4a32", "#93402c"], ep = Math.max(1, T / 300);
+    m3Appareil(c, T, r, 18, 5, T / 110, function(){ return rbxTeinte(m3Choix(r, P), (r() - 0.5) * 14); }, 0.5, function(X, Y, w, h){
+      c.fillStyle = "rgba(255,200,170,0.10)"; c.fillRect(X, Y, w, ep);
+      c.fillStyle = "rgba(40,10,5,0.25)"; c.fillRect(X, Y + h - ep, w, ep);
+    });
+    rbxGrain(c, T, 18, r);
+  }},
+  "pierre-taille":{fam:"mur", nom:"Pierre de taille calcaire", pas:1.6, fond:"#dacfb3", dessin:function(c, T, r, f){
+    /* 4 assises de 40 cm, blocs de 50 à 90 cm, joints fins */
+    var rangs = 4, h = T / rangs, j = Math.max(1, T / 170);
+    m3Uni(c, T, "#b8ac92");
+    for(var y = 0; y < rangs; y++){
+      var L = [], s = 0;
+      while(s < T){ var l0 = T * (0.30 + r() * 0.26); L.push(l0); s += l0; }
+      var x = r() * T;
+      for(var i = 0; i < L.length; i++){
+        var l = L[i] * T / s, t = rbxTeinte(f, (r() - 0.5) * 20 + (r() < 0.2 ? 8 : 0)), g0 = Math.floor(r() * 4294967296);
+        for(var sh = -1; sh <= 1; sh++){
+          var X = x + sh * T;
+          if(X + l <= 0 || X >= T) continue;
+          c.fillStyle = t; c.fillRect(X + j / 2, y * h + j / 2, l - j, h - j);
+          var g = c.createLinearGradient(0, y * h, 0, y * h + h);
+          g.addColorStop(0, "rgba(255,255,255,0.10)"); g.addColorStop(1, "rgba(60,50,30,0.10)");
+          c.fillStyle = g; c.fillRect(X + j / 2, y * h + j / 2, l - j, h - j);
+          var rr = rbxHasard(g0);
+          for(var k = 0; k < 14; k++){
+            c.fillStyle = "rgba(110,95,70," + (0.12 + rr() * 0.2).toFixed(3) + ")";
+            c.beginPath(); c.arc(X + j + rr() * (l - 2 * j), y * h + j + rr() * (h - 2 * j), Math.max(0.6, T / 600 + rr() * T / 500), 0, 6.2832); c.fill();
+          }
+        }
+        x += l;
+      }
+    }
+    rbxGrain(c, T, 14, r);
+  }},
+  "beton-banche":{fam:"mur", nom:"Béton brut de banche", pas:2.4, fond:"#b7b5ae", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 30, T / 12, T / 4, "255,255,255", "60,60,55", 0.07);
+    rbxGrain(c, T, 18, r);
+    m3Points(c, T, r, Math.round(T * T / 300), 0.6, Math.max(1, T / 260), ["rgba(70,68,62,0.35)", "rgba(95,92,85,0.25)"]);   // le bullage
+    var ep = Math.max(1, T / 400);
+    c.fillStyle = "rgba(70,68,62,0.35)"; c.fillRect(0, 0, ep, T); c.fillRect(0, T / 2, T, ep);       // les joints des banches
+    c.fillStyle = "rgba(255,255,255,0.18)"; c.fillRect(ep, 0, ep, T); c.fillRect(0, T / 2 + ep, T, ep);
+    [0.25, 0.75].forEach(function(u){ [0.125, 0.375, 0.625, 0.875].forEach(function(v){     // les trous de banche, tous les 60 cm
+      var x = u * T, y = v * T, R = Math.max(1.2, T / 110);
+      c.fillStyle = "rgba(255,255,255,0.25)"; c.beginPath(); c.arc(x + R * 0.25, y + R * 0.25, R * 1.25, 0, 6.2832); c.fill();
+      c.fillStyle = "#77746d"; c.beginPath(); c.arc(x, y, R, 0, 6.2832); c.fill();
+      c.fillStyle = "#5a5852"; c.beginPath(); c.arc(x - R * 0.2, y - R * 0.2, R * 0.55, 0, 6.2832); c.fill();
+    }); });
+  }},
+  "bardage-bois":{fam:"mur", nom:"Bardage bois, mélèze", pas:1.2, fond:"#a67a50", dessin:function(c, T, r, f){
+    rbxLames(c, T, 9, f, "rgba(40,22,10,0.6)", r, true, false);
+    for(var k = 0; k < 40; k++){                                         // les coulures du temps, claires ou sombres
+      var x = r() * T, w = Math.max(1, T / 300 + r() * T / 200), y0 = r() * T, L = T / 6 + r() * T / 2;
+      c.fillStyle = r() < 0.5 ? "rgba(235,225,210,0.07)" : "rgba(50,30,15,0.06)";
+      m3Partout(T, x, y0, L, function(X, Y){ c.fillRect(X, Y, w, L); });
+    }
+    rbxGrain(c, T, 10, r);
+  }},
+
+  /* — Sol : le dessus des planchers — */
+  "carrelage-gres":{fam:"sol", nom:"Carrelage grès cérame 60 × 60", pas:1.2, fond:"#d7d2c9", dessin:function(c, T, r, f){
+    m3Uni(c, T, "#a39f97");
+    m3Appareil(c, T, r, 2, 2, Math.max(2, T / 170), function(){ return rbxTeinte(f, (r() - 0.5) * 8); }, 0, function(X, Y, w, h, rr){
+      c.lineWidth = Math.max(1, T / 400);
+      for(var k = 0; k < 5; k++){                                         // de fines veines, à peine
+        c.strokeStyle = "rgba(120,112,100," + (0.05 + rr() * 0.06).toFixed(3) + ")";
+        c.beginPath(); c.moveTo(X + rr() * w, Y + rr() * h); c.quadraticCurveTo(X + rr() * w, Y + rr() * h, X + rr() * w, Y + rr() * h); c.stroke();
+      }
+    });
+    rbxGrain(c, T, 6, r);
+  }},
+  "parquet-chene":{fam:"sol", nom:"Parquet chêne, lames à l’anglaise", pas:1.2, fond:"#c4955f", dessin:function(c, T, r, f){
+    rbxLames(c, T, 8, f, "rgba(60,35,15,0.45)", r, false, false);
+    var h = T / 8, ep = Math.max(1, T / 400);
+    for(var k = 0; k < 8; k++){                                           // deux coupes par rang : une lame d'un autre ton entre elles
+      var a = r() * T, b = (a + T * (0.4 + r() * 0.2)) % T, x0 = Math.min(a, b), x1 = Math.max(a, b);
+      c.fillStyle = r() < 0.5 ? "rgba(255,240,220,0.08)" : "rgba(60,35,15,0.08)";
+      c.fillRect(x0, k * h, x1 - x0, h);
+      c.fillStyle = "rgba(50,28,12,0.5)"; c.fillRect(x0, k * h, ep, h); c.fillRect(x1, k * h, ep, h);
+    }
+    rbxGrain(c, T, 8, r);
+  }},
+  "beton-cire":{fam:"sol", nom:"Béton ciré", pas:2.0, fond:"#a8a49c", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 36, T / 10, T / 3, "255,255,255", "50,48,44", 0.08);
+    m3Arcs(c, T, r, 120, T / 20, T / 7, Math.max(1, T / 90), "rgba(255,255,255,0.05)", "rgba(40,40,36,0.04)");
+    rbxGrain(c, T, 5, r);
+  }},
+  "tomettes":{fam:"sol", nom:"Tomettes en terre cuite", pas:1.15, fond:"#b65b3c", dessin:function(c, T, r, f){
+    /* hexagones pointe en haut : 7 par rang, 8 rangs décalés, à peine resserrés pour que la toile se raccorde */
+    m3Uni(c, T, "#d6c7ae");
+    rbxGrain(c, T, 10, r);
+    var rangs = 8, cols = 7, s = T / (1.5 * rangs), w = T / cols, kx = w / (Math.sqrt(3) * s), joint = 0.9;
+    var P = ["#b65b3c", "#a9502f", "#c26a45", "#9e4b2f", "#bb6341", "#ad5737"];
+    for(var i = 0; i < rangs; i++) for(var k = 0; k < cols; k++){
+      var cx = k * w + (i % 2 ? w / 2 : 0), cy = i * 1.5 * s, t = rbxTeinte(m3Choix(r, P), (r() - 0.5) * 12);
+      m3Partout(T, cx, cy, s + 2, function(X, Y){
+        c.beginPath();
+        for(var a = 0; a < 6; a++){
+          var an = Math.PI / 6 + a * Math.PI / 3, px = X + Math.cos(an) * s * joint * kx, py = Y + Math.sin(an) * s * joint;
+          if(a) c.lineTo(px, py); else c.moveTo(px, py);
+        }
+        c.closePath(); c.fillStyle = t; c.fill();
+        var g = c.createRadialGradient(X - s * 0.2, Y - s * 0.2, 0, X, Y, s);
+        g.addColorStop(0, "rgba(255,220,190,0.12)"); g.addColorStop(1, "rgba(60,20,8,0.12)");
+        c.fillStyle = g; c.fill();
+      });
+    }
+    rbxGrain(c, T, 12, r);
+  }},
+  "travertin":{fam:"sol", nom:"Dallage travertin", pas:1.6, fond:"#dfcfae", dessin:function(c, T, r, f){
+    /* dalles de 80 × 40 cm, à joints décalés */
+    m3Uni(c, T, "#c9b896");
+    m3Appareil(c, T, r, 4, 2, Math.max(1, T / 260), function(){ return rbxTeinte(f, (r() - 0.5) * 12); }, 0.5, function(X, Y, w, h, rr){
+      for(var k = 0; k < 4; k++){                                         // les veines, couchées
+        c.fillStyle = "rgba(175,145,100," + (0.06 + rr() * 0.07).toFixed(3) + ")";
+        c.fillRect(X, Y + rr() * h, w, Math.max(1, h * (0.03 + rr() * 0.08)));
+      }
+      for(var n = 0; n < 10; n++){                                        // les vacuoles
+        c.fillStyle = "rgba(140,115,80," + (0.25 + rr() * 0.25).toFixed(3) + ")";
+        c.beginPath(); c.ellipse(X + rr() * w, Y + rr() * h, Math.max(1, w * (0.01 + rr() * 0.04)), Math.max(0.6, h * (0.006 + rr() * 0.012)), 0, 0, 6.2832); c.fill();
+      }
+    });
+    rbxGrain(c, T, 10, r);
+  }},
+
+  /* — Nature : le terrain autour du projet — */
+  "gazon":{fam:"nature", nom:"Gazon", pas:2.0, fond:"#6c9746", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 30, T / 10, T / 4, "190,220,120", "30,60,20", 0.12);
+    m3Brins(c, T, r, Math.round(T * T / 26), T / 170, T / 70, Math.max(1, T / 400), ["#5a8738", "#7dab50", "#8ebc5c", "#4c7630", "#a0c467", "#6a9a42"]);
+    rbxGrain(c, T, 10, r);
+  }},
+  "prairie":{fam:"nature", nom:"Prairie fleurie", pas:2.0, fond:"#829f50", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 30, T / 10, T / 4, "215,220,140", "40,60,20", 0.12);
+    m3Brins(c, T, r, Math.round(T * T / 30), T / 120, T / 45, Math.max(1, T / 380), ["#7a9948", "#99b35e", "#a8bc6a", "#66863b", "#b6c27a"]);
+    m3Points(c, T, r, Math.round(T * T / 650), Math.max(0.8, T / 420), Math.max(1.2, T / 230),
+             ["#f6f3ea", "#f6f3ea", "#ecd04a", "#ecd04a", "#a083c6", "#cf4b33"]);
+    rbxGrain(c, T, 8, r);
+  }},
+  "gravier":{fam:"nature", nom:"Gravier calcaire", pas:1.0, fond:"#bfb5a1", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    rbxGrain(c, T, 20, r);
+    var P = ["#d9d2c3", "#c7bca8", "#e6e0d3", "#b3a893", "#a59a86", "#cfc6b5", "#ddd5c4"];
+    for(var k = 0; k < Math.round(T * T / 40); k++){
+      var x = r() * T, y = r() * T, rx = Math.max(1, T / 240 + r() * T / 110), ry = rx * (0.6 + r() * 0.4), a = r() * 3.1416,
+          t = rbxTeinte(m3Choix(r, P), (r() - 0.5) * 10);
+      m3Partout(T, x, y, rx + 2, function(X, Y){
+        c.fillStyle = "rgba(70,60,45,0.30)"; c.beginPath(); c.ellipse(X + rx * 0.25, Y + rx * 0.3, rx, ry, a, 0, 6.2832); c.fill();
+        c.fillStyle = t; c.beginPath(); c.ellipse(X, Y, rx, ry, a, 0, 6.2832); c.fill();
+        c.fillStyle = "rgba(255,255,255,0.22)"; c.beginPath(); c.ellipse(X - rx * 0.25, Y - ry * 0.3, rx * 0.45, ry * 0.4, a, 0, 6.2832); c.fill();
+      });
+    }
+  }},
+  "terre":{fam:"nature", nom:"Terre battue", pas:2.0, fond:"#9c7653", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 40, T / 12, T / 4, "200,160,115", "60,38,20", 0.13);
+    c.lineCap = "round"; c.lineJoin = "round"; c.lineWidth = Math.max(1, T / 380); c.strokeStyle = "rgba(60,38,20,0.30)";
+    for(var k = 0; k < 26; k++){                                          // les fentes du sec
+      var x = r() * T, y = r() * T, a = r() * 6.2832, n = 8 + Math.floor(r() * 10), pts = [[0, 0]], px = 0, py = 0;
+      for(var s = 0; s < n; s++){ a += (r() - 0.5) * 1.2; px += Math.cos(a) * T / 60; py += Math.sin(a) * T / 60; pts.push([px, py]); }
+      m3Partout(T, x, y, T / 3, function(X, Y){
+        c.beginPath();
+        pts.forEach(function(p, i){ if(i) c.lineTo(X + p[0], Y + p[1]); else c.moveTo(X + p[0], Y + p[1]); });
+        c.stroke();
+      });
+    }
+    m3Points(c, T, r, Math.round(T * T / 260), Math.max(0.6, T / 500), Math.max(1, T / 200), ["rgba(190,170,140,0.7)", "rgba(110,85,60,0.6)"]);
+    rbxGrain(c, T, 22, r);
+  }},
+  "paves":{fam:"nature", nom:"Pavés de granit", pas:1.0, fond:"#8f8c87", dessin:function(c, T, r, f){
+    m3Uni(c, T, "#b2a78f");
+    rbxGrain(c, T, 24, r);
+    var P = ["#8f8c87", "#9d9993", "#7f7c78", "#a9a59e", "#87837d", "#96918a"], e = Math.max(1, T / 400);
+    m3Appareil(c, T, r, 8, 8, Math.max(2, T / 64), function(){ return rbxTeinte(m3Choix(r, P), (r() - 0.5) * 10); }, 0.5, function(X, Y, w, h, rr){
+      var g = c.createRadialGradient(X + w * 0.4, Y + h * 0.35, 0, X + w / 2, Y + h / 2, w * 0.75);
+      g.addColorStop(0, "rgba(255,255,255,0.14)"); g.addColorStop(1, "rgba(30,28,25,0.22)");
+      c.fillStyle = g; c.fillRect(X, Y, w, h);
+      for(var k = 0; k < 18; k++){ c.fillStyle = rr() < 0.5 ? "rgba(30,30,30,0.35)" : "rgba(240,240,235,0.35)"; c.fillRect(X + rr() * w, Y + rr() * h, e, e); }
+    });
+  }},
+
+  /* — Couverture : une toile pour 1 m de pan ; le haut de la toile est côté faîtage — */
+  "tuile-canal":{fam:"couverture", nom:"Tuile canal, terre cuite", pas:1.0, fond:"#b65a3a", dessin:function(c, T, r, f){
+    /* 6 files de 17 cm, courants et couvrants en alternance, 3 rangs de 33 cm décalés d'une file à l'autre */
+    var files = 6, rangs = 3, w = T / files, h = T / rangs, e = Math.max(1, T / 300);
+    var P = ["#b65a3a", "#c06642", "#ab5332", "#c2704a", "#b4603f", "#a54e30"];
+    for(var k = 0; k < files; k++){
+      var couvrant = k % 2 === 1, dec = couvrant ? h / 2 : 0;
+      for(var y = 0; y < rangs; y++){
+        var t = rbxTeinte(m3Choix(r, P), (r() - 0.5) * 12), y0 = y * h + dec;
+        for(var s = -1; s <= 0; s++){                                     // le rang qui sort en bas reprend en haut
+          var Y = y0 + s * T;
+          if(Y + h <= 0 || Y >= T) continue;
+          c.fillStyle = t; c.fillRect(k * w, Y, w, h);
+          var g = c.createLinearGradient(k * w, 0, k * w + w, 0);        // le galbe : bombé ou creux
+          if(couvrant){ g.addColorStop(0, "rgba(40,12,4,0.30)"); g.addColorStop(0.5, "rgba(255,225,195,0.14)"); g.addColorStop(1, "rgba(40,12,4,0.30)"); }
+          else { g.addColorStop(0, "rgba(255,225,195,0.05)"); g.addColorStop(0.5, "rgba(40,12,4,0.24)"); g.addColorStop(1, "rgba(255,225,195,0.05)"); }
+          c.fillStyle = g; c.fillRect(k * w, Y, w, h);
+          var gb = c.createLinearGradient(0, Y, 0, Y + h * 0.14);          // l'ombre du nez de la tuile du dessus
+          gb.addColorStop(0, "rgba(35,10,3,0.34)"); gb.addColorStop(1, "rgba(35,10,3,0)");
+          c.fillStyle = gb; c.fillRect(k * w, Y, w, h * 0.14);
+          c.fillStyle = "rgba(255,220,190,0.28)"; c.fillRect(k * w, Y + h - e, w, e);   // le nez, éclairé
+        }
+      }
+    }
+    m3Points(c, T, r, Math.round(T * T / 3000), Math.max(0.8, T / 300), Math.max(1.5, T / 140), ["rgba(170,168,120,0.35)", "rgba(215,195,120,0.30)"]);
+    rbxGrain(c, T, 14, r);
+  }},
+  "tuile-meca":{fam:"couverture", nom:"Tuile mécanique à côte", pas:1.0, fond:"#a54d36", dessin:function(c, T, r, f){
+    var files = 5, rangs = 3, e = Math.max(1, T / 260);
+    for(var y = 0; y < rangs; y++) for(var k = 0; k < files; k++){
+      /* bords au pixel près : chaque tuile finit comme celle du raccord */
+      var x = Math.round(k * T / files), w = Math.round((k + 1) * T / files) - x, Y = Math.round(y * T / rangs), h = Math.round((y + 1) * T / rangs) - Y;
+      c.fillStyle = rbxTeinte(f, (r() - 0.5) * 18); c.fillRect(x, Y, w, h);
+      var g = c.createLinearGradient(x, 0, x + w, 0);                    // une côte bombée, puis le fond plat
+      g.addColorStop(0, "rgba(40,12,4,0.35)"); g.addColorStop(0.18, "rgba(255,220,190,0.20)"); g.addColorStop(0.36, "rgba(40,12,4,0.30)");
+      g.addColorStop(0.42, "rgba(40,12,4,0.10)"); g.addColorStop(0.9, "rgba(255,220,190,0.06)"); g.addColorStop(1, "rgba(40,12,4,0.30)");
+      c.fillStyle = g; c.fillRect(x, Y, w, h);
+      var gb = c.createLinearGradient(0, Y, 0, Y + h * 0.14);
+      gb.addColorStop(0, "rgba(30,8,2,0.45)"); gb.addColorStop(1, "rgba(30,8,2,0)");
+      c.fillStyle = gb; c.fillRect(x, Y, w, h * 0.14);
+      c.fillStyle = "rgba(255,215,185,0.30)"; c.fillRect(x, Y + h - e, w, e);
+    }
+    rbxGrain(c, T, 12, r);
+  }},
+  "ardoise":{fam:"couverture", nom:"Ardoise naturelle", pas:1.0, fond:"#4b5058", dessin:function(c, T, r, f){
+    /* pureau de 12,5 cm, ardoises de 20 cm, à joints croisés */
+    m3Uni(c, T, "#2c2f34");
+    var e = Math.max(1, T / 300);
+    m3Appareil(c, T, r, 8, 5, Math.max(1, T / 256), function(){ return rbxTeinte(f, (r() - 0.5) * 14); }, 0.5, function(X, Y, w, h, rr){
+      var g = c.createLinearGradient(0, Y, 0, Y + h * 0.25);
+      g.addColorStop(0, "rgba(10,12,15,0.45)"); g.addColorStop(1, "rgba(10,12,15,0)");
+      c.fillStyle = g; c.fillRect(X, Y, w, h * 0.25);
+      c.fillStyle = "rgba(200,210,225," + (0.03 + rr() * 0.05).toFixed(3) + ")";       // un reflet de schiste
+      c.beginPath(); c.moveTo(X + rr() * w, Y); c.lineTo(X + w, Y + rr() * h); c.lineTo(X + w, Y + h); c.lineTo(X + rr() * w * 0.6, Y + h); c.closePath(); c.fill();
+      c.fillStyle = "rgba(220,225,235,0.18)"; c.fillRect(X, Y + h - e, w, e);
+    });
+    rbxGrain(c, T, 10, r);
+  }},
+  "zinc-joint":{fam:"couverture", nom:"Zinc à joint debout", pas:1.0, fond:"#8f989d", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    for(var k = 0; k < 2; k++){ c.fillStyle = rbxTeinte(f, (r() - 0.5) * 8); c.fillRect(k * T / 2, 0, T / 2, T); }   // deux bacs de 50 cm
+    for(var n = 0; n < 60; n++){ c.fillStyle = "rgba(255,255,255," + (r() * 0.035).toFixed(3) + ")"; c.fillRect(0, r() * T, T, Math.max(1, T / 200)); }
+    var e = Math.max(1, T / 180);
+    [0, T / 2].forEach(function(x){                                       // les joints debout, dans le sens de la pente
+      c.fillStyle = "rgba(255,255,255,0.40)"; c.fillRect(x, 0, e, T);
+      c.fillStyle = "rgba(30,34,38,0.40)"; c.fillRect(x + e, 0, e, T);
+      c.fillStyle = "rgba(30,34,38,0.15)"; c.fillRect(x + 2 * e, 0, 3 * e, T);
+    });
+    rbxGrain(c, T, 6, r);
+  }},
+  "vegetale":{fam:"couverture", nom:"Toiture végétalisée, sedum", pas:1.0, fond:"#6f8541", terrasse:true, dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 26, T / 10, T / 4, "200,215,120", "120,60,40", 0.16);
+    m3Points(c, T, r, Math.round(T * T / 16), Math.max(0.8, T / 400), Math.max(1.4, T / 190),
+             ["#7e9a48", "#93ad5a", "#a8bf6c", "#5f7a35", "#7e9a48", "#93ad5a", "#a35a3e", "#b97a4f", "#c7a24e"]);
+    rbxGrain(c, T, 10, r);
+  }},
+
+  /* — Menuiserie extérieure : dormants, ouvrants, vantaux — */
+  "pvc-blanc":{fam:"menuiserie", nom:"PVC blanc", pas:1.0, fond:"#f1f1ed", dessin:function(c, T, r, f){
+    m3Uni(c, T, f); rbxGrain(c, T, 5, r);
+  }},
+  "alu-anthracite":{fam:"menuiserie", nom:"Aluminium gris anthracite", pas:1.0, fond:"#3d4246", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    for(var y = 0; y < T; y += 2){ c.fillStyle = "rgba(255,255,255," + (r() * 0.05).toFixed(3) + ")"; c.fillRect(0, y, T, 1); }   // le brossé
+    rbxGrain(c, T, 4, r);
+  }},
+  "bois-chene":{fam:"menuiserie", nom:"Bois chêne naturel", pas:1.0, fond:"#94643a", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    for(var k = 0; k < Math.round(T * 0.9); k++){                       // le fil du bois, en long
+      var x = r() * T, w = Math.max(1, r() * T / 160);
+      c.fillStyle = r() < 0.5 ? "rgba(60,32,12," + (0.05 + r() * 0.10).toFixed(3) + ")" : "rgba(255,225,180," + (0.03 + r() * 0.06).toFixed(3) + ")";
+      c.fillRect(x, 0, w, T);
+      if(x + w > T) c.fillRect(x - T, 0, w, T);
+    }
+    m3Nuages(c, T, r, 10, T / 8, T / 4, "255,220,170", "60,30,10", 0.06);
+    rbxGrain(c, T, 8, r);
+  }},
+  "bois-pastel":{fam:"menuiserie", nom:"Bois peint, bleu pastel", pas:1.0, fond:"#7e9fb7", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    for(var k = 0; k < 140; k++){                                         // les coups de pinceau
+      var x = r() * T, w = Math.max(1, T / 260 + r() * T / 160), y0 = r() * T, L = T / 4 + r() * T * 0.75;
+      c.fillStyle = r() < 0.5 ? "rgba(255,255,255,0.05)" : "rgba(30,50,70,0.05)";
+      m3Partout(T, x, y0, L, function(X, Y){ c.fillRect(X, Y, w, L); });
+    }
+    rbxGrain(c, T, 6, r);
+  }},
+  "acier-noir":{fam:"menuiserie", nom:"Acier thermolaqué noir", pas:1.0, fond:"#2b2d30", dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Points(c, T, r, Math.round(T * T / 120), 0.5, Math.max(0.8, T / 500), "rgba(255,255,255,0.07)");
+    rbxGrain(c, T, 5, r);
+  }},
+
+  /* — Verre : les vitrages, plus ou moins transparents — */
+  "verre-clair":{fam:"verre", nom:"Verre clair", pas:1.0, fond:"#cde3ed", alpha:0.30, dessin:function(c, T, r, f){
+    m3Uni(c, T, f); m3Bandes(c, T, r, 4, "255,255,255", 0.10, 0.30);
+  }},
+  "verre-bronze":{fam:"verre", nom:"Verre teinté bronze", pas:1.0, fond:"#8b6f53", alpha:0.55, dessin:function(c, T, r, f){
+    m3Uni(c, T, f); m3Bandes(c, T, r, 4, "255,240,220", 0.08, 0.20);
+  }},
+  "verre-gris":{fam:"verre", nom:"Verre teinté gris", pas:1.0, fond:"#6d767d", alpha:0.55, dessin:function(c, T, r, f){
+    m3Uni(c, T, f); m3Bandes(c, T, r, 4, "255,255,255", 0.08, 0.20);
+  }},
+  "verre-reflechissant":{fam:"verre", nom:"Verre réfléchissant bleuté", pas:1.0, fond:"#6f9cc2", alpha:0.82, dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 14, T / 6, T / 3, "235,245,255", "30,60,100", 0.16);   // le ciel qui s'y reflète
+    m3Bandes(c, T, r, 5, "255,255,255", 0.07, 0.20);
+  }},
+  "verre-depoli":{fam:"verre", nom:"Verre dépoli, sablé", pas:1.0, fond:"#e5edf0", alpha:0.85, dessin:function(c, T, r, f){
+    m3Uni(c, T, f);
+    m3Nuages(c, T, r, 20, T / 8, T / 3, "255,255,255", "120,140,150", 0.08);
+    rbxGrain(c, T, 14, r);
+  }}
+};
+function mat3dIds(fam){ return Object.keys(MAT3D).filter(function(id){ return MAT3D[id].fam === fam; }); }
+function mat3dFamille(id){
+  var L = MAT3D[id];
+  return L ? MAT3D_FAMILLES.filter(function(F){ return F.id === L.fam; })[0] : null;
+}
+/* la toile d'un matériau, T × T pixels, toujours la même pour le même matériau */
+function mat3dToile(id, T){
+  var L = MAT3D[id], cv = document.createElement("canvas");
+  cv.width = T; cv.height = T;
+  var c = cv.getContext("2d", {willReadFrequently:true}), graine = 0;
+  for(var i = 0; i < id.length; i++) graine = (graine * 31 + id.charCodeAt(i)) | 0;
+  L.dessin(c, T, rbxHasard(graine), L.fond);
+  if(L.alpha !== undefined){
+    var img = c.getImageData(0, 0, T, T);
+    for(var k = 3; k < img.data.length; k += 4) img.data[k] = Math.round(L.alpha * 255);
+    c.putImageData(img, 0, 0);
+  }
+  return cv;
+}
+
+/* ---------------------------------------------------------------------
+   105.2 · L'HABILLAGE : CE QUE DEVIENT CHAQUE MORCEAU DE LA MAQUETTE
+   `S.habillage` = {tous:{place: matériau}, ouvrages:{clé d'ouvrage: {place: matériau}}}.
+   Un ouvrage habillé à part l'emporte sur « tout le projet » ; une cloison
+   et les baies d'une cloison ne s'habillent qu'à part.
+   --------------------------------------------------------------------- */
+function mat3dCleOuvrage(s){
+  if(!s) return "";
+  if(s.ouvId) return "baie:" + s.murId + "/" + s.ouvId;
+  if(s.murId) return "mur:" + s.murId;
+  if(s.plancherId) return "plancher:" + s.plancherId;
+  if(s.toitureId) return "toit:" + s.toitureId;
+  if(s.gcId) return "gc:" + s.gcId;
+  return "";
+}
+/* les murs du projet, et leurs matériaux d'export, calculés une fois par regroupement */
+function mat3dMur(id, ctx){
+  if(!ctx.murs){
+    ctx.murs = {};
+    S.niveaux.forEach(function(n){ (n.murs || []).forEach(function(m){ ctx.murs[m.id] = {m:m, M:null}; }); });
+  }
+  var w = ctx.murs[id];
+  if(w && !w.M){ try { w.M = rbxMatsMur(w.m); } catch(_e){ w.M = {ext:null}; } }
+  return w || null;
+}
+/* la place d'un morceau du maillage : façade, sol, couverture, menuiserie, verre — ou rien */
+function mat3dPlace(g, ctx){
+  var s = g.src && g.src.sel, base = String(g.mat).split("~")[0];
+  if(base === "verre") return "verre";
+  if(!s) return null;
+  if(s.ouvId) return /^(pvc|alu|bois_menuiserie|porte_bois|porte_pleine)$/.test(base) ? "menuiserie" : null;
+  if(s.murId){ var w = mat3dMur(s.murId, ctx); return w && w.M && g.mat === w.M.ext ? "facade" : null; }
+  if(s.plancherId) return base === "carrelage" || base === "parquet" ? "sol" : null;
+  if(s.toitureId) return /^couv_/.test(base) || base === "etancheite" ? "couverture" : null;
+  return null;
+}
+/* un toit-terrasse ne se couvre pas de tuiles ni d'ardoises : il garde ses gravillons, ou se végétalise */
+function mat3dConvient(id, g, place){
+  if(!id || !MAT3D[id]) return false;
+  if(place !== "couverture") return true;
+  return String(g.mat).split("~")[0] === "etancheite" ? !!MAT3D[id].terrasse : true;
+}
+/* le matériau choisi pour ce morceau, ou null (celui d'origine) */
+function mat3dChoix(g, place, ctx){
+  var H = S.habillage, s = g.src && g.src.sel, cle = mat3dCleOuvrage(s);
+  var o = cle && H.ouvrages ? H.ouvrages[cle] : null;
+  if(o && o[place] && mat3dConvient(o[place], g, place)) return o[place];
+  if((place === "facade" || place === "menuiserie") && s && s.murId){
+    var w = mat3dMur(s.murId, ctx);
+    if(w && w.m.cat === "cloison") return null;                        // l'intérieur ne s'habille qu'ouvrage par ouvrage
+  }
+  var id = H.tous ? H.tous[place] : null;
+  return mat3dConvient(id, g, place) ? id : null;
+}
+function mat3dToitTerrasse(id){
+  var t = (S.toitures || []).filter(function(x){ return x.id === id; })[0];
+  return !!t && t.type === "terrasse";
+}
+tr3dMatFinal = function(g, ctx){
+  if(!S.habillage) return g.mat;
+  var place = mat3dPlace(g, ctx), id = place ? mat3dChoix(g, place, ctx) : null;
+  if(!id) return g.mat;
+  var M0 = RBX_MATERIAUX[String(g.mat).split("~")[0]] || RBX_MATERIAUX.enduit;
+  return "hab|" + id + "|" + M0.pas;                                   // le pas d'origine : la toile se remet à l'échelle
+};
+/* le terrain ne passe pas par le maillage : il n'entre que dans la clé de l'image */
+tr3dCleHabillage = function(){
+  var H = S.habillage;
+  if(!H) return "";
+  var t = Object.assign({}, H.tous || {});
+  delete t.nature;
+  return "#" + JSON.stringify([t, H.ouvrages || {}]);
+};
+var _tr3dCleImageAvantHab = tr3dCleImage;
+tr3dCleImage = function(){
+  var n = S.habillage && S.habillage.tous ? S.habillage.tous.nature || "" : "";
+  return _tr3dCleImageAvantHab.apply(this, arguments) + "|terrain:" + n;
+};
+
+/* ---------------------------------------------------------------------
+   105.3 · LES MATÉRIAUX DE LA CARTE GRAPHIQUE, ET LE TERRAIN
+   Une toile de 512 pixels par matériau choisi, faite à la première image
+   qui s'en sert et libérée avec le maillage quand plus rien ne la porte.
+   --------------------------------------------------------------------- */
+var _mat3d = {sol0:null, matSol:null, cleSol:"", glisse:null};
+function mat3dTexture(id){
+  var t = new THREE.CanvasTexture(mat3dToile(id, 512));
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true;
+  t.flipY = false; t.encoding = THREE.LinearEncoding;
+  return t;
+}
+var _tr3dMateriauAvantHab = tr3dMateriau;
+tr3dMateriau = function(mat){
+  if(String(mat).indexOf("hab|") !== 0) return _tr3dMateriauAvantHab.apply(this, arguments);
+  if(_tr3d.mats[mat]) return _tr3d.mats[mat];
+  var p = String(mat).split("|"), L = MAT3D[p[1]], t = mat3dTexture(p[1]);
+  var m = tr3dNuanceur(t, [1, 1, 1, 1]);
+  m.uniforms.uRep.value = (+p[2] || 1) / L.pas;
+  if(L.alpha !== undefined){ m.transparent = true; m.depthWrite = false; }
+  _tr3d.tex[mat] = t; _tr3d.mats[mat] = m;
+  return m;
+};
+/* le terrain : le disque du sol prend la toile choisie, à l'échelle de son rayon */
+function mat3dTerrain(C){
+  var sol = _tr3d.sol;
+  if(!sol) return;
+  if(!_mat3d.sol0) _mat3d.sol0 = sol.material;                       // le sol uni d'origine
+  var id = S.habillage && S.habillage.tous ? S.habillage.tous.nature : null;
+  if(!id || !MAT3D[id]) id = null;
+  var cle = id ? id + "|" + C.rSol : "";
+  if(cle === _mat3d.cleSol && (!id || sol.material === _mat3d.matSol)) return;
+  if(_mat3d.matSol && (!id || _mat3d.matSol.userData.id !== id)){
+    _mat3d.matSol.uniforms.uS.value.dispose(); _mat3d.matSol.dispose(); _mat3d.matSol = null;
+  }
+  _mat3d.cleSol = cle;
+  if(!id){ sol.material = _mat3d.sol0; return; }
+  if(!_mat3d.matSol){
+    var m = tr3dNuanceur(mat3dTexture(id), [1, 1, 1, 1]);
+    m.polygonOffset = true; m.polygonOffsetFactor = 1; m.polygonOffsetUnits = 4;
+    m.clipping = false;                                               // comme le sol d'origine : une coupe ne tranche pas le terrain
+    m.userData.id = id;
+    _mat3d.matSol = m;
+  }
+  _mat3d.matSol.uniforms.uRep.value = 2 * C.rSol / MAT3D[id].pas;     // le disque fait 2 rayons de large
+  sol.material = _mat3d.matSol;
+}
+var _tr3dAvantRenduAvantHab = tr3dAvantRendu;
+tr3dAvantRendu = function(C, W, H){
+  _tr3dAvantRenduAvantHab.apply(this, arguments);
+  try { mat3dTerrain(C); } catch(_e){}
+};
+
+/* ---------------------------------------------------------------------
+   105.4 · POSER, RETIRER
+   --------------------------------------------------------------------- */
+/* l'ouvrage qui reçoit un matériau de cette place, pour un ouvrage désigné — une baie désignée pour une
+   façade : son mur —, ou null */
+function mat3dCible(s, place){
+  if(!s) return null;
+  if(place === "facade") return s.murId ? {murId:s.murId} : null;
+  if(place === "menuiserie") return s.ouvId ? {murId:s.murId, ouvId:s.ouvId} : null;
+  if(place === "verre") return s.ouvId ? {murId:s.murId, ouvId:s.ouvId} : s.gcId ? {gcId:s.gcId} : null;
+  if(place === "sol") return s.plancherId ? {plancherId:s.plancherId} : null;
+  if(place === "couverture") return s.toitureId ? {toitureId:s.toitureId} : null;
+  return null;
+}
+function mat3dCibles(sels, place){
+  var res = [], vues = {};
+  (sels || []).forEach(function(s){
+    var c = mat3dCible(s, place), k = mat3dCleOuvrage(c);
+    if(c && !vues[k]){ vues[k] = true; res.push(c); }
+  });
+  return res;
+}
+function mat3dEtat(){
+  if(!S.habillage || typeof S.habillage !== "object") S.habillage = {};
+  if(!S.habillage.tous) S.habillage.tous = {};
+  if(!S.habillage.ouvrages) S.habillage.ouvrages = {};
+  return S.habillage;
+}
+function mat3dRanger(){
+  var H = S.habillage;
+  if(!H) return;
+  Object.keys(H.ouvrages || {}).forEach(function(k){ if(!Object.keys(H.ouvrages[k]).length) delete H.ouvrages[k]; });
+  Object.keys(H.tous || {}).forEach(function(p){ if(!H.tous[p]) delete H.tous[p]; });
+  if(!Object.keys(H.tous || {}).length && !Object.keys(H.ouvrages || {}).length) delete S.habillage;
+}
+function mat3dPhrase(p){ var t = MAT3D_PLACES[p] || ""; return t.charAt(0).toUpperCase() + t.slice(1); }
+/* pose un matériau : sur les ouvrages désignés qui ont cette place, ou, sans désignation, sur tout le projet */
+function mat3dPoser(id, sels){
+  var L = MAT3D[id], F = mat3dFamille(id);
+  if(!L || !F) return false;
+  var place = F.place, cibles = place === "nature" ? [] : mat3dCibles(sels, place);
+  if(place !== "nature" && sels && sels.length && !cibles.length){
+    statut("« " + L.nom + " » habille " + MAT3D_PLACES[place] + " : choisissez " + MAT3D_QUOI[place] +
+           ", ou rien pour l’appliquer à tout le projet.");
+    return false;
+  }
+  var terrasses = place === "couverture" && !L.terrasse && (S.toitures || []).some(function(t){ return t.type === "terrasse"; });
+  if(terrasses && cibles.length){
+    cibles = cibles.filter(function(c){ return !mat3dToitTerrasse(c.toitureId); });
+    if(!cibles.length){
+      statut("Un toit-terrasse ne se couvre pas de « " + L.nom + " » : il garde ses gravillons, ou se végétalise.");
+      return false;
+    }
+  }
+  pousserHistorique();
+  var H = mat3dEtat(), msg;
+  if(!cibles.length){
+    H.tous[place] = id;
+    Object.keys(H.ouvrages).forEach(function(k){ delete H.ouvrages[k][place]; });
+    msg = "« " + L.nom + " » sur " + MAT3D_PLACES[place] + (place === "nature" ? "." : " de tout le projet" +
+          (place === "facade" ? " (murs porteurs)." : terrasses ? " (les toits-terrasses gardent leurs gravillons)." : "."));
+  } else {
+    cibles.forEach(function(c){ var k = mat3dCleOuvrage(c); (H.ouvrages[k] = H.ouvrages[k] || {})[place] = id; });
+    msg = "« " + L.nom + " » sur " + (cibles.length > 1 ? cibles.length + " ouvrages choisis." : "l’ouvrage choisi.");
+  }
+  mat3dRanger();
+  majTout();
+  statut(msg);
+  return true;
+}
+/* rend le matériau d'origine : aux ouvrages désignés, ou à tout le projet */
+function mat3dOrigine(place, sels){
+  var cibles = place === "nature" ? [] : mat3dCibles(sels, place), H = S.habillage, un = place === "nature", msg;
+  if(!H){ statut(mat3dPhrase(place) + (un ? " a" : " ont") + " déjà " + (un ? "son" : "leur") + " matériau d’origine."); return; }
+  pousserHistorique();
+  H = mat3dEtat();
+  if(!cibles.length){
+    delete H.tous[place];
+    Object.keys(H.ouvrages).forEach(function(k){ delete H.ouvrages[k][place]; });
+    msg = mat3dPhrase(place) + (un ? " reprend son" : " reprennent leur") + " matériau d’origine.";
+  } else {
+    cibles.forEach(function(c){ var o = H.ouvrages[mat3dCleOuvrage(c)]; if(o) delete o[place]; });
+    msg = cibles.length > 1 ? "Les ouvrages choisis reprennent le matériau de tout le projet." : "L’ouvrage choisi reprend le matériau de tout le projet.";
+  }
+  mat3dRanger();
+  majTout();
+  statut(msg);
+}
+function mat3dToutOrigine(){
+  if(!S.habillage){ statut("La maquette a déjà ses matériaux d’origine."); return; }
+  pousserHistorique();
+  delete S.habillage;
+  majTout();
+  statut("Tous les matériaux d’origine sont revenus.");
+}
+/* ce que porte la place dans le contexte courant : un matériau, null (d'origine) ou "plusieurs" */
+function mat3dEffectif(place){
+  var H = S.habillage || {}, T = H.tous || {}, O = H.ouvrages || {};
+  if(place === "nature") return T.nature || null;
+  var cibles = mat3dCibles(toutesSelections(), place);
+  if(!cibles.length) return T[place] || null;
+  var ids = cibles.map(function(c){ var o = O[mat3dCleOuvrage(c)]; return (o && o[place]) || T[place] || null; });
+  return ids.every(function(x){ return x === ids[0]; }) ? ids[0] : "plusieurs";
+}
+
+/* ---------------------------------------------------------------------
+   105.5 · LA FENÊTRE « MATÉRIAUX », SOUS L'ARBORESCENCE
+   Ouverte quand la 3D temps réel est à l'écran (seule ou en vue double).
+   Faite une fois ; ensuite, seules la ligne de titre et les vignettes
+   choisies changent. Le titre la replie.
+   --------------------------------------------------------------------- */
+document.head.insertAdjacentHTML("beforeend", '<style>' +
+  '#mat3d-panneau{flex:none;max-height:62%;display:none;flex-direction:column;' +
+    'border-top:2px solid var(--bord,#d9d1c2);background:var(--chrome2,#efe9dc)}' +
+  '#mat3d-panneau.ouvert{display:flex}' +
+  '#mat3d-titre{font:600 11px "Segoe UI",sans-serif;text-transform:uppercase;letter-spacing:.06em;' +
+    'padding:6px 8px 5px;color:var(--txt2,#5c5449);border-bottom:1px solid var(--bord2,#ece6da);' +
+    'display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}' +
+  '#mat3d-titre b{font-weight:600;color:var(--acc,#b0651e);text-transform:none;letter-spacing:0;' +
+    'white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+  '#mat3d-titre .m3-fleche{display:inline-block;transition:transform .15s}' +
+  '#mat3d-panneau.replie #mat3d-corps{display:none}' +
+  '#mat3d-panneau.replie .m3-fleche{transform:rotate(-90deg)}' +
+  '#mat3d-corps{flex:1;overflow-y:auto;padding:4px 6px 56px}' +          /* le bas passe au-dessus du bouton « Vue » */
+  '.m3-fam{margin:2px 0 6px}' +
+  '.m3-tete{display:flex;justify-content:space-between;align-items:baseline;gap:6px;' +
+    'font:600 11px "Segoe UI",sans-serif;color:#4a443b;padding:2px 1px}' +
+  '.m3-actuel{font-weight:400;font-style:italic;color:#8a7f6e;white-space:nowrap;overflow:hidden;' +
+    'text-overflow:ellipsis;min-width:0}' +
+  '.m3-rang{display:flex;gap:3px;align-items:center}' +
+  '.m3-v{width:38px;height:38px;padding:0;border:1px solid #cfc6b6;border-radius:3px;background:#fff;' +
+    'cursor:grab;flex:none;overflow:hidden}' +
+  '.m3-v canvas{width:36px;height:36px;display:block;pointer-events:none}' +
+  '.m3-v:hover{border-color:#8a7f6e}' +
+  '.m3-v.actif{outline:2px solid var(--acc,#b0651e);outline-offset:1px;border-color:var(--acc,#b0651e)}' +
+  '.m3-orig{width:24px;height:38px;flex:none;border:1px dashed #cfc6b6;border-radius:3px;background:transparent;' +
+    'color:#7a705f;cursor:pointer;font-size:14px;padding:0}' +
+  '.m3-orig:hover{background:#fff;color:#4a443b}' +
+  '.m3-note{margin:4px 1px 6px;font-size:10.5px;line-height:1.35;color:#7a705f}' +
+  '.m3-tout{font-size:11px;padding:3px 8px;border:1px solid #cfc6b6;border-radius:3px;background:#fff;' +
+    'color:#4a443b;cursor:pointer}' +
+  '.m3-tout:disabled{opacity:.45;cursor:default}' +
+  '</style>');
+/* une vignette : la toile du matériau ; un verre, posé sur un fond clair barré d'une bande sombre */
+function mat3dVignette(id, T){
+  var L = MAT3D[id], toile = mat3dToile(id, T);
+  if(L.alpha === undefined) return toile;
+  var cv = document.createElement("canvas"), c = cv.getContext("2d");
+  cv.width = T; cv.height = T;
+  var g = c.createLinearGradient(0, 0, 0, T);
+  g.addColorStop(0, "#f4f1ea"); g.addColorStop(1, "#dcd5c6");
+  c.fillStyle = g; c.fillRect(0, 0, T, T);
+  c.fillStyle = "#6b6257"; c.beginPath(); c.moveTo(0, T * 0.62); c.lineTo(T * 0.62, 0); c.lineTo(T * 0.82, 0); c.lineTo(0, T * 0.82); c.closePath(); c.fill();
+  c.drawImage(toile, 0, 0);
+  return cv;
+}
+function mat3dPanneau(){
+  var pan = document.getElementById("mat3d-panneau");
+  if(pan) return pan;
+  var arb = document.getElementById("arbo");
+  if(!arb) return null;
+  pan = document.createElement("div");
+  pan.id = "mat3d-panneau";
+  pan.innerHTML = '<div id="mat3d-titre" title="Replier ou déplier la fenêtre Matériaux"><span class="m3-fleche">▾</span>' +
+    '<span>Matériaux —</span><b id="mat3d-pour">tout le projet</b></div><div id="mat3d-corps"></div>';
+  arb.appendChild(pan);
+  var corps = pan.querySelector("#mat3d-corps");
+  MAT3D_FAMILLES.forEach(function(F){
+    var fam = document.createElement("div");
+    fam.className = "m3-fam"; fam.dataset.fam = F.id;
+    fam.innerHTML = '<div class="m3-tete"><span class="m3-nom">' + echap(F.nom) + '</span><span class="m3-actuel"></span></div>' +
+                    '<div class="m3-rang"></div>';
+    var rang = fam.querySelector(".m3-rang");
+    mat3dIds(F.id).forEach(function(id){
+      var L = MAT3D[id], b = document.createElement("button");
+      b.className = "m3-v"; b.dataset.m3 = id; b.draggable = true;
+      b.title = L.nom + " — " + (F.place === "nature" ? "le terrain" : MAT3D_PLACES[F.place]) +
+                (F.place === "nature" ? "" : " (cliquer : la sélection, ou tout le projet ; glisser sur la maquette : cet ouvrage)");
+      b.setAttribute("aria-label", L.nom);
+      b.appendChild(mat3dVignette(id, 72));
+      rang.appendChild(b);
+    });
+    var o = document.createElement("button");
+    o.className = "m3-orig"; o.dataset.m3Orig = F.place; o.textContent = "↺";
+    o.title = "Matériau d’origine pour " + (F.place === "nature" ? "le terrain" : MAT3D_PLACES[F.place]);
+    o.setAttribute("aria-label", o.title);
+    rang.appendChild(o);
+    corps.appendChild(fam);
+  });
+  corps.insertAdjacentHTML("beforeend",
+    '<p class="m3-note">Sans sélection, une vignette habille tout le projet ; avec une sélection, les ouvrages choisis. ' +
+    'On peut aussi la glisser sur un ouvrage de la maquette. ↺ rend le matériau d’origine. ' +
+    'C’est l’aspect de la 3D temps réel : types de murs, métré et prix ne changent pas.</p>' +
+    '<button class="m3-tout" type="button">Tout remettre d’origine</button>');
+  pan.querySelector("#mat3d-titre").addEventListener("click", function(){ vue.mat3dReplie = !vue.mat3dReplie; mat3dMaj(); });
+  corps.addEventListener("click", function(e){
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if(!b) return;
+    if(b.dataset.m3) mat3dPoser(b.dataset.m3, toutesSelections());
+    else if(b.dataset.m3Orig) mat3dOrigine(b.dataset.m3Orig, toutesSelections());
+    else if(b.classList.contains("m3-tout")) mat3dToutOrigine();
+    b.blur();
+  });
+  corps.addEventListener("dragstart", function(e){
+    var b = e.target.closest ? e.target.closest(".m3-v") : null;
+    if(!b) return;
+    _mat3d.glisse = b.dataset.m3;
+    try { e.dataTransfer.setData("text/plain", MAT3D[b.dataset.m3].nom); e.dataTransfer.effectAllowed = "copy"; } catch(_e){}
+  });
+  corps.addEventListener("dragend", function(){
+    _mat3d.glisse = null;
+    if(survolSel){ survolSel = null; tr3dRedessiner(); }
+  });
+  return pan;
+}
+function mat3dMaj(){
+  var vis = vue.mode === TR3D || vue.mode2 === TR3D;
+  var pan = vis ? mat3dPanneau() : document.getElementById("mat3d-panneau");
+  if(!pan) return;
+  pan.classList.toggle("ouvert", vis);
+  if(!vis) return;
+  pan.classList.toggle("replie", !!vue.mat3dReplie);
+  var n = toutesSelections().length;
+  document.getElementById("mat3d-pour").textContent = n ? (n > 1 ? n + " ouvrages choisis" : "l’ouvrage choisi") : "tout le projet";
+  MAT3D_FAMILLES.forEach(function(F){
+    var eff = mat3dEffectif(F.place), fam = pan.querySelector('.m3-fam[data-fam="' + F.id + '"]');
+    if(!fam) return;
+    fam.querySelectorAll(".m3-v").forEach(function(b){ b.classList.toggle("actif", b.dataset.m3 === eff); });
+    fam.querySelector(".m3-actuel").textContent = eff === "plusieurs" ? "plusieurs" : eff && MAT3D[eff] ? MAT3D[eff].nom : "d’origine";
+  });
+  var t = pan.querySelector(".m3-tout");
+  if(t) t.disabled = !S.habillage;
+}
+var _majToutAvantMat3d = majTout;
+majTout = function(){
+  var r = _majToutAvantMat3d.apply(this, arguments);
+  try { mat3dMaj(); } catch(_e){}
+  return r;
+};
+var _changerVueAvantMat3d = changerVue;
+changerVue = function(){
+  var r = _changerVueAvantMat3d.apply(this, arguments);
+  try { mat3dMaj(); } catch(_e){}
+  return r;
+};
+
+/* ---------------------------------------------------------------------
+   105.6 · GLISSER UNE VIGNETTE SUR LA MAQUETTE
+   Pendant le glisser, l'ouvrage visé se surligne ; au lâcher, il prend le
+   matériau s'il a cette place (une baie, pour une façade : son mur). Un
+   matériau de Nature habille le terrain, où qu'on le lâche.
+   --------------------------------------------------------------------- */
+cv.addEventListener("dragover", function(e){
+  if(!_mat3d.glisse || !tr3dSur(e)) return;
+  e.preventDefault();
+  try { e.dataTransfer.dropEffect = "copy"; } catch(_e){}
+  var p = posSouris(e), h = tr3dSousEcran(p.sx, p.sy, false), nouv = h ? h.sel : null;
+  if(!memeSel(nouv, survolSel) || (!nouv) !== (!survolSel)){ survolSel = nouv; tr3dRedessiner(); }
+});
+cv.addEventListener("drop", function(e){
+  var id = _mat3d.glisse;
+  _mat3d.glisse = null;
+  if(!id || !tr3dSur(e)) return;
+  e.preventDefault();
+  var L = MAT3D[id], place = mat3dFamille(id).place, p = posSouris(e), h = tr3dSousEcran(p.sx, p.sy, false);
+  survolSel = null;
+  if(place === "nature"){ mat3dPoser(id, []); return; }
+  if(!h){ statut("Lâchez « " + L.nom + " » sur " + MAT3D_QUOI[place] + " de la maquette."); tr3dRedessiner(); return; }
+  if(!mat3dCible(h.sel, place)){
+    statut("« " + L.nom + " » habille " + MAT3D_PLACES[place] + " : lâchez-le sur " + MAT3D_QUOI[place] + ".");
+    tr3dRedessiner(); return;
+  }
+  mat3dPoser(id, [h.sel]);
+});
+
+/* ---------------------------------------------------------------------
+   105.7 · AUTOTESTS
+   --------------------------------------------------------------------- */
+if(typeof AUTOTESTS !== "undefined"){
+  AUTOTESTS.push({
+    nom:"9.78 · Matériaux : 5 matériaux texturés dans chacune des 7 catégories, dessinés sans erreur, non unis, raccordés sur leurs bords ; seuls les verres sont transparents",
+    f:function(){
+      var r = [], noms = {};
+      if(MAT3D_FAMILLES.length !== 7) r.push(MAT3D_FAMILLES.length + " catégories au lieu de 7");
+      MAT3D_FAMILLES.forEach(function(F){
+        var ids = mat3dIds(F.id);
+        if(ids.length !== 5) r.push("« " + F.nom + " » : " + ids.length + " matériaux au lieu de 5");
+        ids.forEach(function(id){
+          var L = MAT3D[id], T = 128, cv3;
+          if(noms[L.nom]) r.push("deux matériaux s’appellent « " + L.nom + " »");
+          noms[L.nom] = true;
+          if(!(L.pas > 0)) r.push(id + " : pas de taille réelle");
+          try { cv3 = mat3dToile(id, T); } catch(err){ r.push(id + " : " + err.message); return; }
+          var d = cv3.getContext("2d").getImageData(0, 0, T, T).data, lum = function(i){ return 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]; };
+          var s = 0, s2 = 0, n = T * T, alpha = d[3];
+          for(var i = 0; i < d.length; i += 4){ var v = lum(i); s += v; s2 += v * v; }
+          if(Math.sqrt(Math.max(0, s2 / n - (s / n) * (s / n))) < 0.5) r.push(id + " est uni");
+          /* le raccord : l'écart entre la dernière et la première colonne (ligne) ne dépasse pas le pire écart intérieur */
+          var col = function(x){ var e = 0; for(var y = 0; y < T; y++) e += Math.abs(lum((y * T + x) * 4) - lum((y * T + (x + 1) % T) * 4)); return e / T; };
+          var lig = function(y){ var e = 0; for(var x = 0; x < T; x++) e += Math.abs(lum((y * T + x) * 4) - lum((((y + 1) % T) * T + x) * 4)); return e / T; };
+          var pireC = 0, pireL = 0;
+          for(var k = 0; k < T - 1; k++){ pireC = Math.max(pireC, col(k)); pireL = Math.max(pireL, lig(k)); }
+          if(col(T - 1) > pireC * 1.15 + 4 || lig(T - 1) > pireL * 1.15 + 4) r.push(id + " ne se raccorde pas sur ses bords");
+          if(L.fam === "verre" ? !(alpha < 255) : alpha !== 255) r.push(id + (L.fam === "verre" ? " n’est pas transparent" : " est transparent"));
+        });
+      });
+      if(Object.keys(MAT3D).length !== 35) r.push(Object.keys(MAT3D).length + " matériaux au lieu de 35");
+      return r;
+    }});
+  AUTOTESTS.push({
+    nom:"9.78 · Habillage en 3D temps réel : façades, sols, couvertures, menuiseries et verres changent de toile, pour tout le projet ou ouvrage par ouvrage, sans refaire ni changer le maillage ; le terrain se texture ; tout revient",
+    f:function(){
+      var rendre = tr3dEssaiNeutre();
+      try {
+        return rtEssaiScene(function(){
+          var r = [], toile = document.createElement("canvas");
+          toile.width = 320; toile.height = 240;
+          tr3dEssaiPavillon();
+          tr3dEssaiPeindre(toile, TR3D);
+          if(!_tr3d.R || _tr3d.perdu || !_tr3d.cache) return null;          // sans WebGL : l'essai 9.71 le dit
+          var C0 = _tr3d.cache, n0 = C0.nTri, cles = function(C){ return C.groupe.children.map(function(me){ return String(me.userData.mat); }); };
+          S.habillage = {tous:{facade:"brique-foraine", sol:"tomettes", couverture:"ardoise", menuiserie:"alu-anthracite",
+                               verre:"verre-bronze", nature:"gazon"}, ouvrages:{}};
+          tr3dEssaiPeindre(toile, TR3D);
+          var C1 = _tr3d.cache;
+          if(C1 === C0) return "l’habillage n’a pas regroupé le maillage";
+          if(C1.nTri !== n0) r.push("le nombre de triangles a changé (" + n0 + " → " + C1.nTri + ")");
+          if(!C1.reprise) r.push("le maillage a été refait au lieu d’être regroupé");
+          ["brique-foraine", "tomettes", "ardoise", "alu-anthracite", "verre-bronze"].forEach(function(id){
+            if(!cles(C1).some(function(k){ return k.indexOf("hab|" + id + "|") === 0; })) r.push("aucun morceau en « " + MAT3D[id].nom + " »");
+          });
+          var murs = {}, ctx = {};
+          S.niveaux.forEach(function(nv){ nv.murs.forEach(function(m){ murs[m.id] = m; }); });
+          C1.groupe.children.forEach(function(me){
+            if(String(me.userData.mat).indexOf("hab|") === 0) return;
+            (me.userData.sources || []).forEach(function(so){
+              var sel = so.src && so.src.sel, m = sel && sel.murId && !sel.ouvId ? murs[sel.murId] : null;
+              if(m && m.cat !== "cloison" && me.userData.mat === rbxMatsMur(m).ext) r.push("le mur " + m.id + " garde sa façade d’origine");
+            });
+          });
+          C1.groupe.children.forEach(function(me){
+            if(String(me.userData.mat).indexOf("hab|verre-bronze|") === 0 && !me.material.transparent) r.push("le verre bronze n’est pas transparent");
+            if(String(me.userData.mat) === "hab|brique-foraine|2" && Math.abs(me.material.uniforms.uRep.value - 2 / 1.2) > 1e-6)
+              r.push("la brique foraine n’est pas remise à l’échelle de l’enduit qu’elle remplace");
+          });
+          if(_tr3d.sol.material.uniforms.uTex.value !== 1) r.push("le terrain n’a pas pris le gazon");
+          /* le toit-terrasse du garage garde ses gravillons sous l'ardoise de tout le projet */
+          C1.groupe.children.forEach(function(me){
+            if(String(me.userData.mat).indexOf("hab|ardoise|") !== 0) return;
+            (me.userData.sources || []).forEach(function(so){
+              if(so.src && so.src.sel.toitureId && mat3dToitTerrasse(so.src.sel.toitureId)) r.push("un toit-terrasse a pris l’ardoise");
+            });
+          });
+          /* un mur à part */
+          var w = S.niveaux[0].murs.filter(function(m){ return m.cat !== "cloison"; })[0];
+          S.habillage.ouvrages["mur:" + w.id] = {facade:"pierre-taille"};
+          tr3dEssaiPeindre(toile, TR3D);
+          var mp = _tr3d.cache.groupe.children.filter(function(me){ return String(me.userData.mat).indexOf("hab|pierre-taille|") === 0; });
+          if(!mp.length) r.push("le mur habillé à part n’a pas pris la pierre de taille");
+          else if(mp.some(function(me){ return me.userData.sources.some(function(so){ return !so.src || so.src.sel.murId !== w.id; }); }))
+            r.push("la pierre de taille déborde du mur choisi");
+          /* tout revient */
+          delete S.habillage;
+          tr3dEssaiPeindre(toile, TR3D);
+          if(cles(_tr3d.cache).some(function(k){ return k.indexOf("hab|") === 0; })) r.push("des matériaux de l’habillage restent après son retrait");
+          if(_tr3d.sol.material.uniforms.uTex.value !== 0) r.push("le terrain garde sa toile après le retrait");
+          if(_tr3d.cache.nTri !== n0) r.push("le maillage d’origine n’a plus le même nombre de triangles");
+          return r;
+        });
+      } finally { rendre(); }
+    }});
+  AUTOTESTS.push({
+    nom:"9.78 · Fenêtre Matériaux : sous l’arborescence en 3D temps réel seulement ; une vignette habille tout le projet ou l’ouvrage choisi, refuse ce qui ne lui va pas, ↺ la retire, Ctrl+Z l’annule",
+    f:function(){
+      var repli = vue.mat3dReplie;
+      try {
+        return rtEssaiScene(function(){
+          var r = [];
+          tr3dEssaiPavillon();
+          vue.mode2 = null; vue.mode = "plan"; vue.mat3dReplie = false; mat3dMaj();
+          var pan = document.getElementById("mat3d-panneau");
+          if(pan && pan.classList.contains("ouvert")) r.push("la fenêtre est ouverte en plan");
+          vue.mode = TR3D; mat3dMaj();
+          pan = document.getElementById("mat3d-panneau");
+          if(!pan || !pan.classList.contains("ouvert")) return "la fenêtre Matériaux ne s’ouvre pas en 3D temps réel";
+          if(pan.parentNode !== document.getElementById("arbo")) r.push("la fenêtre n’est pas sous l’arborescence");
+          var corps = document.getElementById("arbo-corps");
+          if(corps && !(corps.compareDocumentPosition(pan) & Node.DOCUMENT_POSITION_FOLLOWING)) r.push("la fenêtre n’est pas sous l’arbre du projet");
+          if(pan.querySelectorAll(".m3-v").length !== 35) r.push(pan.querySelectorAll(".m3-v").length + " vignettes au lieu de 35");
+          var clic = function(id){ pan.querySelector('.m3-v[data-m3="' + id + '"]').click(); };
+          viderSel(); clic("enduit-chaux");
+          if(!S.habillage || S.habillage.tous.facade !== "enduit-chaux") r.push("une vignette, sans sélection, n’habille pas tout le projet");
+          if(!pan.querySelector('.m3-v[data-m3="enduit-chaux"]').classList.contains("actif")) r.push("la vignette choisie n’est pas marquée");
+          var w = S.niveaux[0].murs.filter(function(m){ return m.cat !== "cloison"; })[0];
+          selUnique({murId:w.id}); clic("brique-rouge");
+          var o = S.habillage.ouvrages["mur:" + w.id];
+          if(!o || o.facade !== "brique-rouge") r.push("une vignette n’habille pas le mur choisi");
+          if(S.habillage.tous.facade !== "enduit-chaux") r.push("habiller un mur a changé tout le projet");
+          clic("tomettes");
+          if((o && o.sol) || S.habillage.tous.sol) r.push("un sol a été posé sur un mur");
+          pan.querySelector('.m3-orig[data-m3-orig="facade"]').click();
+          if(S.habillage.ouvrages["mur:" + w.id]) r.push("↺ ne rend pas au mur choisi le matériau de tout le projet");
+          viderSel(); clic("gazon");
+          if(S.habillage.tous.nature !== "gazon") r.push("la nature n’habille pas le terrain");
+          annuler();
+          if(S.habillage && S.habillage.tous.nature) r.push("Ctrl+Z n’annule pas le dernier matériau");
+          if(!S.habillage || S.habillage.tous.facade !== "enduit-chaux") r.push("Ctrl+Z est allé trop loin");
+          return r;
+        });
+      } finally { vue.mat3dReplie = repli; try { mat3dMaj(); } catch(_e){} }
     }});
 }
 
