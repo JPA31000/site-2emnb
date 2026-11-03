@@ -6,7 +6,7 @@
    si le visiteur a coché « Ne pas compter mes visites » sur la page Stat, ni pour les robots d'indexation. */
 (function () {
   'use strict';
-  var URL_RELEVE = 'https://script.google.com/macros/s/AKfycbyWC72H08uxAoKwwy0vM9EFXv9mhx1SsfdORETazVGyCEx0bP3EOeF3gX4EdVAtHY42EA/exec';   // l'adresse de l'application Web Google (elle finit par /exec) ; vide = relevé éteint (voir MODE_D_EMPLOI.md)
+  var URL_RELEVE = 'https://script.google.com/macros/s/AKfycbx-d2dnHiXWVYBLNUbZePKlJRF3Kdpx_DUVYhM5ssJQrQuofivZXJqqSoHCze6ackcFwA/exec';   // l'adresse de l'application Web Google (elle finit par /exec) ; vide = relevé éteint (voir MODE_D_EMPLOI.md)
   var HOTES = ['jpa31000.github.io'];
   var CLE_IGNORER = 'carnet-stat-ignorer';
   window.CARNET_STAT = { url: URL_RELEVE, cleIgnorer: CLE_IGNORER };
