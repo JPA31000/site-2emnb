@@ -862,6 +862,9 @@ const DONNEES = {
       { nom: 'Découvrir Claude', icone: 'ia', url: 'claude.html', resume: 'Comment fonctionne Claude, ses quatre portes d’entrée, les modèles et l’effort, les autorisations, les skills et les agents.' },   // page du carnet
       { nom: 'Alerte réseaux sociaux', icone: 'reseaux', url: 'https://gamma.app/docs/s0pfmxc7n3itqfb', resume: 'Les bons réflexes sur les réseaux.' },
     ] },
+    { groupe: 'Évaluations', items: [
+      { nom: 'Les évaluations', icone: 'evaluation', url: 'evaluations.html', resume: 'Chaque évaluation s’ouvre à l’heure choisie par le professeur : le sujet, le dossier de plans, puis vos réponses à enregistrer dans un fichier.' },   // page du carnet
+    ] },
   ],
 
   // Mots des bandeaux défilants
@@ -932,6 +935,7 @@ const ICONES = {
   scanner3d: '<rect x="8" y="3" width="8" height="6" rx="1.2"/><path d="M12 9v3M6 21l6-9 6 9M12 12v9M9 17.5h6"/><path d="M3 5h.01M3 9h.01M21 5h.01M21 9h.01M4.5 13h.01M19.5 13h.01"/>',
   capture: '<path d="M5 20v-8l7-5.5 7 5.5v8z"/><path d="M9.5 20v-4.5h5V20M2.5 20h19"/><path d="M3 4.5h.01M7 2.8h.01M12 2.2h.01M17 2.8h.01M21 4.5h.01M2.5 9h.01M21.5 9h.01"/>',
   planeur: '<path d="M12 2.6c1.3 1.5 1.7 4.2 1.7 7.4l-.6 9.6h-2.2l-.6-9.6c0-3.2.4-5.9 1.7-7.4z"/><path d="M1.8 9.6L12 7.9l10.2 1.7v2.7L12 11.4l-10.2.9z"/><path d="M7.6 19.6l4.4-.8 4.4.8v1.9l-4.4-.5-4.4.5z"/>',
+  evaluation: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12l1.6 1.6L14 10M9 17h6"/>',
 };
 const icone = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[n] || ''}</svg>`;
 const cadenas = p => (p ? `<span class="cadenas" title="Espace réservé : mot de passe demandé">${icone('verrou')}<span class="sr"> (espace réservé)</span></span>` : '');
