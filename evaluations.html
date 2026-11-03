@@ -103,6 +103,10 @@ input[type=file]{font:400 16px var(--texte)}
 #espace-ens h2{display:flex;align-items:center;gap:12px}
 .depot{display:grid;gap:14px;margin-top:6px}
 .resume{padding:10px 14px;background:rgba(61,154,95,.12);border-left:4px solid var(--vert);font-size:16.5px}
+.alertes-depot{margin:0;padding:10px 14px 10px 32px;background:rgba(255,222,40,.28);border-left:4px solid #8a6c00;font-size:16px}
+.alertes-depot li{margin:3px 0}
+.dossier-admin{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:12px}
+.dossier-admin input[type=file]{max-width:100%}
 .lignes{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
 
 /* ---------- le passage d'une évaluation ---------- */
@@ -199,16 +203,19 @@ fieldset.question legend+*{clear:both}
         <div class="lignes"><span class="etat etat--ouverte">connecté</span><button class="btn btn--petit" type="button" id="sortir">Se déconnecter</button><span class="avis">Déconnexion automatique après 20 minutes sans activité.</span></div>
         <h3 style="margin-top:22px">Déposer une évaluation</h3>
         <form class="depot" id="form-depot" autocomplete="off">
-          <div class="champ"><label for="fichier">Fichier de l’évaluation (.json)</label><input id="fichier" type="file" accept=".json,application/json"></div>
-          <p class="avis" style="margin:0">Pas de fichier ? <button class="btn btn--petit" type="button" id="modele">Télécharger un modèle</button> Il décrit les parties, les questions, les corrigés et le dossier PDF éventuel.</p>
+          <div class="champ"><label for="fichier">Évaluation à déposer (fichier .html ou .json)</label><input id="fichier" type="file" accept=".html,.htm,.json,text/html,application/json"></div>
+          <p class="avis" style="margin:0">Une évaluation « interactive » en HTML (la page avec sa liste de questions et leurs corrigés) se dépose <b>telle quelle</b>. Autrement : <button class="btn btn--petit" type="button" id="modele">téléchargez un modèle JSON</button>.</p>
           <div id="resume-depot" class="resume" hidden></div>
+          <ul id="alertes-depot" class="alertes-depot" hidden></ul>
+          <div class="champ" id="champ-pdf" hidden><label for="fichier-pdf">Dossier de plans (PDF), facultatif · 8 Mo au plus</label><input id="fichier-pdf" type="file" accept=".pdf,application/pdf"><span class="avis" id="aide-pdf" role="status"></span></div>
           <div class="champs" id="champs-depot" hidden>
+            <div class="champ" style="grid-column:1/-1"><label for="dep-titre">Titre</label><input id="dep-titre" type="text" maxlength="200"></div>
             <div class="champ"><label for="dep-id">Identifiant (dans l’adresse)</label><input id="dep-id" type="text" maxlength="41" spellcheck="false" placeholder="acte-de-construire"></div>
             <div class="champ"><label for="dep-ouv">Ouverture (heure de Paris)</label><input id="dep-ouv" type="datetime-local"></div>
             <div class="champ"><label for="dep-fer">Fermeture (facultative)</label><input id="dep-fer" type="datetime-local"></div>
           </div>
-          <p class="avis" id="aide-dates" hidden>Sans date d’ouverture, l’évaluation reste un brouillon : seul vous la voyez.</p>
-          <div class="lignes"><button class="btn btn--plein" type="submit" id="deposer" hidden>Déposer</button></div>
+          <p class="avis" id="aide-dates" hidden>Sans date d’ouverture, l’évaluation reste un brouillon : seul vous la voyez. Le dossier PDF est gardé chez Google et ne parvient aux élèves qu’à l’ouverture.</p>
+          <div class="lignes"><button class="btn btn--plein" type="submit" id="deposer" hidden>Déposer</button><button class="btn btn--petit" type="button" id="renvoyer" hidden>Renvoyer le dossier PDF</button></div>
           <div class="msg" id="msg-depot" role="alert"></div>
         </form>
       </div>
@@ -295,7 +302,7 @@ const slug = t => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase
 const nomFichier = t => String(t).trim().replace(/[^\p{L}\p{N}_-]+/gu, '_').replace(/^_+|_+$/g, '') || 'Anonyme';
 const maintenant = () => Date.now() + S.decalage;
 
-const S = { liste: [], code: '', decalage: 0, courante: null, attente: '', derniere: Date.now(), relances: new Map(), derniereRelance: 0, annonces: new Set() };
+const S = { liste: [], code: '', decalage: 0, courante: null, attente: '', derniere: Date.now(), relances: new Map(), derniereRelance: 0, annonces: new Set(), dossiers: new Map(), urlDossier: '', messages: new Map(), dossiersOk: true };   // messages : les confirmations d'une carte, gardées le temps que la liste se redessine
 const champ = q => 'rep-' + q.id;   // l'id d'un champ de réponse : préfixé, pour ne jamais heurter « nom », « classe », « code »…
 
 /* ---------- le dialogue avec le script Google ---------- */
@@ -309,7 +316,7 @@ async function appel(action, donnees = {}, essais = 1) {
     if (r && typeof r.maintenant === 'number') S.decalage = r.maintenant - Date.now();
     return r;
   } catch (e) {
-    if (essais > 0 && /^eval_(liste|ouvrir)$/.test(action)) {   // une lecture qui échoue (Google surchargé, réseau qui saute) : un second essai, un peu plus tard
+    if (essais > 0 && /^eval_(liste|ouvrir|pdf|pdf_morceau)$/.test(action)) {   // une lecture qui échoue (Google surchargé, réseau qui saute) : un second essai, un peu plus tard
       await new Promise(ok => setTimeout(ok, 1500 + Math.random() * 1500));
       return appel(action, donnees, essais - 1);
     }
@@ -333,6 +340,7 @@ async function charger() {
     $('#etat-service').hidden = false; $('#etat-service').textContent = r.message || 'Le service des évaluations ne répond pas comme prévu (le script Google est-il à jour ?).';
     return;
   }
+  S.dossiersOk = r.dossiers === true;   // un ancien script ne sait pas recevoir de dossier PDF
   S.liste = r.evaluations.slice().sort((a, b) => RANG[a.etat] - RANG[b.etat] || (a.etat === 'terminee' ? (b.fermetureMs || 0) - (a.fermetureMs || 0) : (a.ouvertureMs || 0) - (b.ouvertureMs || 0)));
   rendreListe();
   const att = S.attente && S.liste.find(e => e.id === S.attente);
@@ -366,14 +374,15 @@ function rendreListe() {
 }
 function panneauAdmin(e) {
   const nom = 'dates-' + e.id, zone = h('div', { classe: 'admin' });
-  const msg = h('p', { classe: 'msg', role: 'alert' });
+  const msg = h('p', { classe: 'msg', role: 'alert' }), retenuDates = S.messages.get('dates:' + e.id);
+  if (retenuDates) { S.messages.delete('dates:' + e.id); msg.textContent = retenuDates; msg.classList.add('ok'); }
   const ouv = h('input', { id: nom + '-o', type: 'datetime-local', value: (e.ouverture || '').replace(' ', 'T') });
   const fer = h('input', { id: nom + '-f', type: 'datetime-local', value: (e.fermeture || '').replace(' ', 'T') });
-  const form = h('form', { hidden: true, autocomplete: 'off', surSubmit: async ev => {
+  const form = h('form', { hidden: !retenuDates, autocomplete: 'off', surSubmit: async ev => {
       ev.preventDefault(); msg.textContent = '…'; msg.classList.add('ok');
       const r = await appel('eval_dates', avecCode({ id: e.id, ouverture: ouv.value, fermeture: fer.value }));
       if (!r.ok) { msg.classList.remove('ok'); msg.textContent = r.message || 'Refusé.'; refusCode(r); return; }
-      msg.textContent = 'Dates enregistrées ✓'; await charger();
+      S.messages.set('dates:' + e.id, 'Dates enregistrées ✓'); await charger();
     } },
     h('div', { classe: 'champs' }, h('div', { classe: 'champ' }, h('label', { for: nom + '-o' }, 'Ouverture (heure de Paris)'), ouv), h('div', { classe: 'champ' }, h('label', { for: nom + '-f' }, 'Fermeture (facultative)'), fer)),
     h('p', { classe: 'avis', style: 'margin:0' }, 'Videz l’ouverture pour remettre l’évaluation en brouillon.'),
@@ -386,8 +395,21 @@ function panneauAdmin(e) {
       if (!r.ok) { msg.classList.remove('ok'); msg.textContent = r.message || 'Refusé.'; refusCode(r); form.hidden = false; return; }
       await charger();
     } }, 'Supprimer');
-  const datesBtn = h('button', { classe: 'btn btn--petit', type: 'button', 'aria-expanded': 'false', surClick: () => { form.hidden = !form.hidden; datesBtn.setAttribute('aria-expanded', String(!form.hidden)); } }, 'Changer les dates');
-  zone.append(h('div', { classe: 'lignes' }, datesBtn, sup, h('span', { classe: 'avis' }, e.nbQuestions + ' question' + (e.nbQuestions > 1 ? 's' : '') + (e.pdf ? ' · ' + e.pdf : ''))), form);
+  const datesBtn = h('button', { classe: 'btn btn--petit', type: 'button', 'aria-expanded': String(!!retenuDates), surClick: () => { form.hidden = !form.hidden; datesBtn.setAttribute('aria-expanded', String(!form.hidden)); } }, 'Changer les dates');
+  const pdfFichier = h('input', { type: 'file', accept: '.pdf,application/pdf', id: nom + '-pdf', disabled: !S.dossiersOk, 'aria-label': 'Dossier de plans (PDF) de « ' + e.titre + ' »' });
+  const pdfMsg = h('p', { classe: 'msg', role: 'status' }), retenuPdf = S.messages.get('pdf:' + e.id);
+  if (retenuPdf) { S.messages.delete('pdf:' + e.id); pdfMsg.textContent = retenuPdf; pdfMsg.classList.add('ok'); }
+  const pdfBtn = h('button', { classe: 'btn btn--petit', type: 'button', disabled: !S.dossiersOk, surClick: async () => {
+      const f = pdfFichier.files[0]; pdfMsg.classList.remove('ok');
+      if (!f) { pdfMsg.textContent = 'Choisissez d’abord un fichier PDF.'; return; }
+      pdfBtn.disabled = true; pdfMsg.classList.add('ok');
+      const r = await envoyerDossier(e.id, f, t => { pdfMsg.textContent = t; });
+      pdfBtn.disabled = false;
+      if (!r.ok) { pdfMsg.classList.remove('ok'); pdfMsg.textContent = r.message || 'Refusé.'; refusCode(r); return; }
+      S.messages.set('pdf:' + e.id, 'Dossier PDF déposé et vérifié ✓'); await charger();
+    } }, e.document ? 'Remplacer le dossier PDF' : 'Déposer un dossier PDF');
+  const dossier = h('div', { classe: 'dossier-admin' }, h('span', { classe: 'avis' }, !S.dossiersOk ? 'Dossier PDF : le script Google doit être mis à jour (mode d’emploi, § 1).' : e.document ? 'Dossier PDF : ' + e.document.nom + ' (' + mo(e.document.octets) + ')' : 'Pas de dossier PDF déposé' + (e.pdf ? ' (le sujet renvoie au fichier public du site : ' + e.pdf + ')' : '')), pdfFichier, pdfBtn);
+  zone.append(h('div', { classe: 'lignes' }, datesBtn, sup, h('span', { classe: 'avis' }, e.nbQuestions + ' question' + (e.nbQuestions > 1 ? 's' : '') + (e.pdf && !e.document ? ' · ' + e.pdf : ''))), form, dossier, pdfMsg);
   return zone;
 }
 
@@ -427,7 +449,7 @@ $('#form-code').addEventListener('submit', async ev => {
   await charger(); if (location.hash.length > 1) suivreAdresse();   // une évaluation demandée par l'adresse s'ouvre alors avec son corrigé
 });
 function deconnecter(manuel) {
-  S.code = ''; $('#form-code').hidden = false; $('#panneau-ens').hidden = true;
+  S.code = ''; S.dossiers.clear(); $('#form-code').hidden = false; $('#panneau-ens').hidden = true;
   if (!manuel && !$('#msg-code').textContent) $('#msg-code').textContent = 'Vous avez été déconnecté.';
   if (S.courante && S.courante.ens) {   // le corrigé ne reste pas à l'écran
     vider($('#form-eval')); S.courante = null; montrerListe(); if (location.hash.length > 1) location.hash = '';
@@ -438,35 +460,261 @@ $('#sortir').addEventListener('click', () => { deconnecter(true); $('#code').foc
 ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(t => addEventListener(t, () => { S.derniere = Date.now(); }, { capture: true, passive: true }));
 setInterval(() => { if (S.code && Date.now() - S.derniere > INACTIVITE_MS) { $('#msg-code').textContent = 'Déconnexion automatique : 20 minutes sans activité.'; deconnecter(false); } }, 15000);
 
+/* ---------- la lecture d'un fichier d'évaluation déposé : du JSON, ou une évaluation « interactive » en HTML ---------- */
+/*import:début*/
+// Rien du fichier n'est exécuté : la liste de questions d'une page HTML est lue par un petit lecteur de littéraux (tableaux, objets, textes, nombres).
+function lireLitteral(src, debut) {
+  let i = debut;
+  const erreur = msg => { throw new Error(msg + ' (caractère ' + i + ')'); };
+  const blancs = () => {
+    for (;;) {
+      while (i < src.length && /\s/.test(src[i])) i++;
+      if (src.startsWith('//', i)) { while (i < src.length && src[i] !== '\n') i++; }
+      else if (src.startsWith('/*', i)) { const j = src.indexOf('*/', i + 2); if (j < 0) erreur('commentaire non fermé'); i = j + 2; }
+      else return;
+    }
+  };
+  const chaine = () => {
+    const q = src[i++]; let s = '';
+    for (;;) {
+      if (i >= src.length) erreur('texte non terminé');
+      const c = src[i++];
+      if (c === q) return s;
+      if (q === '`' && c === '$' && src[i] === '{') erreur('texte calculé (${…}) non pris en charge');
+      if (c === '\\') {
+        const d = src[i++];
+        if (d === 'n') s += '\n'; else if (d === 't') s += '\t'; else if (d === 'r') s += '\r'; else if (d === 'b') s += '\b'; else if (d === 'f') s += '\f'; else if (d === 'v') s += '\v'; else if (d === '0') s += '\0';
+        else if (d === 'u') { const h4 = src.slice(i, i + 4); if (!/^[0-9a-fA-F]{4}$/.test(h4)) erreur('séquence \\u illisible'); s += String.fromCharCode(parseInt(h4, 16)); i += 4; }
+        else if (d === 'x') { const h2 = src.slice(i, i + 2); if (!/^[0-9a-fA-F]{2}$/.test(h2)) erreur('séquence \\x illisible'); s += String.fromCharCode(parseInt(h2, 16)); i += 2; }
+        else if (d === '\n') { /* ligne continuée */ } else if (d === '\r') { if (src[i] === '\n') i++; }
+        else s += d;
+      } else if ((c === '\n' || c === '\r') && q !== '`') erreur('texte coupé par un retour à la ligne');
+      else s += c;
+    }
+  };
+  const valeur = () => {
+    blancs();
+    const c = src[i];
+    if (c === '[') {
+      i++; const tab = [];
+      for (;;) {
+        blancs(); if (src[i] === ']') { i++; return tab; }
+        tab.push(valeur()); blancs();
+        if (src[i] === ',') i++; else if (src[i] !== ']') erreur('« , » ou « ] » attendu');
+      }
+    }
+    if (c === '{') {
+      i++; const obj = {};
+      for (;;) {
+        blancs(); if (src[i] === '}') { i++; return obj; }
+        let cle;
+        if (src[i] === '"' || src[i] === "'") cle = chaine();
+        else { const m = /^[A-Za-z_$][A-Za-z0-9_$]*|^\d+/.exec(src.slice(i, i + 80)); if (!m) erreur('nom de champ attendu'); cle = m[0]; i += cle.length; }
+        blancs(); if (src[i] !== ':') erreur('« : » attendu'); i++;
+        const v = valeur(); if (cle !== '__proto__') obj[cle] = v;
+        blancs(); if (src[i] === ',') i++; else if (src[i] !== '}') erreur('« , » ou « } » attendu');
+      }
+    }
+    if (c === '"' || c === "'" || c === '`') return chaine();
+    const nb = /^-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/.exec(src.slice(i, i + 40));
+    if (nb) { i += nb[0].length; return Number(nb[0]); }
+    const mot = /^(true|false|null|undefined)\b/.exec(src.slice(i, i + 12));
+    if (mot) { i += mot[0].length; return mot[1] === 'true' ? true : mot[1] === 'false' ? false : null; }
+    return erreur('valeur non prise en charge (ici, seuls les textes, nombres, listes et objets sont lus)');
+  };
+  const v = valeur();
+  return { valeur: v, fin: i };
+}
+const decoderEntites = t => String(t).replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0*39;|&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&amp;/g, '&');
+const texteBrut = t => decoderEntites(String(t).replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+const TYPES_LUS = { radio: 'choix', choix: 'choix', qcm: 'choix', select: 'choix', checkbox: 'choix', text: 'texte', texte: 'texte', input: 'texte', short: 'texte', textarea: 'long', long: 'long', paragraph: 'long' };
+const premier = (o, ...noms) => { for (const n of noms) if (o[n] !== undefined && o[n] !== null && o[n] !== '') return o[n]; return ''; };
+function trouverBonne(options, attendu) {   // la bonne réponse parmi les options, d'après le corrigé (« ACT (Assistance…) » → l'option « ACT ») ; sinon rien
+  const cible = String(attendu === undefined || attendu === null ? '' : attendu).trim();
+  if (!cible) return undefined;
+  const exactes = options.map((o, k) => (cible === o ? k : -1)).filter(k => k >= 0);
+  if (exactes.length === 1) return exactes[0];   // une option identique au corrigé l'emporte sur les options qui n'en sont que le début
+  const trouvees = options.map((o, k) => (cible === o || cible.startsWith(o) || o.startsWith(cible.split(' (')[0]) ? k : -1)).filter(k => k >= 0);
+  return trouvees.length === 1 ? trouvees[0] : undefined;
+}
+function resumer(ev, format, pdfMentionne) {   // ce que la page annonce avant le dépôt : tailles, bonnes réponses repérées, corrigés à compléter
+  const qs = ev.sections.flatMap(s => (s && s.questions) || []), choix = qs.filter(q => q.type === 'choix');
+  const aCompleter = [], sansCorrige = [];
+  qs.forEach((q, k) => { if (!q.corrige) sansCorrige.push(k + 1); else if (/à relever|a relever|à compléter|a compléter|à définir|todo|\?\?\?/i.test(q.corrige)) aCompleter.push(k + 1); });
+  return { evaluation: ev, infos: { format, nbSections: ev.sections.length, nbQuestions: qs.length, nbChoix: choix.length, nbBonnes: choix.filter(q => q.bonne !== undefined).length, aCompleter, sansCorrige, pdfMentionne: pdfMentionne || '' } };
+}
+function trouverListe(html) {   // la liste de questions de la page : « const questionsData = [ … ] » (ou un nom voisin)
+  const re = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*\[/g, candidats = []; let m;
+  while ((m = re.exec(html))) candidats.push({ nom: m[1], debut: m.index + m[0].length - 1 });
+  candidats.sort((a, b) => (/question/i.test(b.nom) ? 1 : 0) - (/question/i.test(a.nom) ? 1 : 0));
+  let derniere = '';
+  for (const c of candidats) {
+    try {
+      const lue = lireLitteral(html, c.debut);
+      if (Array.isArray(lue.valeur) && lue.valeur.some(x => x && typeof x === 'object' && premier(x, 'text', 'texte', 'question', 'enonce'))) return { liste: lue.valeur };
+    } catch (e) { if (/question/i.test(c.nom)) derniere = e.message; }
+  }
+  return { erreur: derniere };
+}
+function lireEvaluationHtml(html) {
+  const t = trouverListe(html);
+  if (!t.liste) throw new Error(t.erreur ? 'Impossible de lire la liste des questions de cette page : ' + t.erreur + '.' : 'Je ne reconnais pas ce fichier : je cherche, dans la page, une liste de questions nommée « questionsData » comme dans vos évaluations interactives. Envoyez-le-moi si c’est un autre format : je l’ajoute.');
+  const h1 = /<h1[^>]*>([\s\S]*?)<\/h1>/i.exec(html), balise = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
+  const titre = texteBrut(h1 ? h1[1] : balise ? balise[1] : '') || 'Évaluation';
+  let sousTitre = '';
+  if (h1) { const apres = html.slice(h1.index + h1[0].length, h1.index + h1[0].length + 600), p = /<p[^>]*>([\s\S]*?)<\/p>/i.exec(apres); if (p && !/^consigne/i.test(texteBrut(p[1]))) sousTitre = texteBrut(p[1]); }
+  const cons = /<strong[^>]*>\s*Consigne\s*:?\s*<\/strong>([\s\S]*?)<\/p>/i.exec(html);
+  const ref = /(?:src|href)\s*=\s*["']([^"'#?]*\.pdf)/i.exec(html);
+  let pdfMentionne = ''; if (ref) { try { pdfMentionne = decodeURIComponent(ref[1]); } catch (e) { pdfMentionne = ref[1]; } pdfMentionne = pdfMentionne.split('/').pop(); }
+  const evaluation = { titre, sousTitre, consigne: cons ? texteBrut(cons[1]) : '', pdf: '', sections: [] };
+  let section = null, n = 0; const vus = {};
+  t.liste.forEach(item => {
+    if (!item || typeof item !== 'object') return;
+    const titreSection = premier(item, 'section', 'partie'), texte = premier(item, 'text', 'texte', 'question', 'enonce');
+    if (titreSection && !texte) { section = { titre: String(titreSection), questions: [] }; evaluation.sections.push(section); return; }
+    if (!texte) return;
+    if (!section) { section = { titre: '', questions: [] }; evaluation.sections.push(section); }
+    n++;
+    let id = String(premier(item, 'id') || 'q' + n); if (!/^[A-Za-z][A-Za-z0-9_]{0,17}$/.test(id)) id = 'q' + n; while (vus[id]) id += '_'; vus[id] = true;
+    const options = premier(item, 'options', 'choices', 'choix'), typeLu = TYPES_LUS[String(premier(item, 'type')).toLowerCase()];
+    const aDesOptions = Array.isArray(options) && options.length >= 2;
+    const type = typeLu === 'choix' ? (aDesOptions ? 'choix' : 'texte') : typeLu || (aDesOptions ? 'choix' : 'texte');
+    const q = { id, type, texte: String(texte) };
+    const attendu = premier(item, 'expected', 'corrige', 'reponse', 'answer', 'correct');
+    if (type === 'choix') { q.options = options.map(String); const b = trouverBonne(q.options, attendu); if (b !== undefined) q.bonne = b; }
+    if (attendu !== '') q.corrige = Array.isArray(attendu) ? attendu.join(' ; ') : String(attendu);
+    const note = premier(item, 'note', 'remarque', 'explication'); if (note) q.note = String(note);
+    section.questions.push(q);
+  });
+  if (!evaluation.sections.length) throw new Error('Aucune question n’a été trouvée dans cette page.');
+  return resumer(evaluation, 'html', pdfMentionne);
+}
+function lireEvaluationJson(texte) {
+  let ev; try { ev = JSON.parse(texte); } catch (e) { throw new Error('Ce fichier n’est pas du JSON valide : ' + e.message); }
+  if (!ev || typeof ev !== 'object' || Array.isArray(ev) || !Array.isArray(ev.sections) || !ev.titre) throw new Error('Il faut au moins un « titre » et des « sections » (téléchargez le modèle pour voir la forme).');
+  return resumer(ev, 'json', typeof ev.pdf === 'string' ? ev.pdf : '');
+}
+function lireFichierEvaluation(nom, texte) {   // → { evaluation, infos } ou { erreur }
+  const t = String(texte).replace(/^﻿/, '');
+  try { return (/\.json$/i.test(nom) || /^\s*[\[{]/.test(t)) ? lireEvaluationJson(t) : lireEvaluationHtml(t); }
+  catch (e) { return { erreur: e instanceof RangeError ? 'Ce fichier est trop imbriqué pour être lu.' : (e.message || String(e)) }; }
+}
+/*import:fin*/
+
+/* ---------- le dossier PDF : envoi par blocs, relecture de contrôle, affichage ---------- */
+const DOC_MAX_OCTETS = 8 * 1024 * 1024;
+const mo = o => (o / 1048576).toFixed(1).replace('.', ',') + ' Mo';
+function octetsVersBase64(buf) { const u = new Uint8Array(buf); let s = ''; for (let k = 0; k < u.length; k += 0x8000) s += String.fromCharCode.apply(null, u.subarray(k, k + 0x8000)); return btoa(s); }
+function base64VersOctets(b64) { const bin = atob(b64), u = new Uint8Array(bin.length); for (let k = 0; k < bin.length; k++) u[k] = bin.charCodeAt(k); return u; }
+async function sha256Hex(buf) { if (!(window.crypto && crypto.subtle)) return ''; return [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))].map(b => b.toString(16).padStart(2, '0')).join(''); }
+async function verifierPdf(f) {
+  if (!/\.pdf$/i.test(f.name)) return { ok: false, message: 'Ce fichier n’est pas un PDF (son nom doit finir par .pdf).' };
+  if (f.size > DOC_MAX_OCTETS) return { ok: false, message: 'Ce PDF fait ' + mo(f.size) + ' : 8 Mo au plus. Réduisez-le (exportez-le en qualité « web ») ou coupez-le en deux.' };
+  if (String.fromCharCode(...new Uint8Array(await f.slice(0, 5).arrayBuffer())) !== '%PDF-') return { ok: false, message: 'Ce fichier ne ressemble pas à un PDF (il ne commence pas par « %PDF »).' };
+  return { ok: true };
+}
+async function lireDossier(id, doc, progres) {   // les blocs, un à un, puis le PDF entier ; l'empreinte est contrôlée
+  const morceaux = [];
+  for (let n = 0; n < doc.blocs; n++) {
+    if (progres) progres(n, doc.blocs);
+    const r = await appel('eval_pdf', avecCode({ id, n }));
+    if (!r.ok) throw new Error(r.message || 'Le dossier n’a pas pu être lu.');
+    morceaux.push(base64VersOctets(r.donnees));
+  }
+  const blob = new Blob(morceaux, { type: 'application/pdf' });
+  if (doc.sha) { const empreinte = await sha256Hex(await blob.arrayBuffer()); if (empreinte && empreinte !== doc.sha) throw new Error('Le dossier reçu est abîmé (son empreinte ne correspond pas) : rechargez la page.'); }
+  return blob;
+}
+async function envoyerDossier(id, fichier, progres) {   // début, blocs de 900 000 caractères, fin, puis relecture de contrôle → { ok, document } ou l'erreur du service
+  const v = await verifierPdf(fichier); if (!v.ok) return v;
+  const buf = await fichier.arrayBuffer(), sha = await sha256Hex(buf), b64 = octetsVersBase64(buf);
+  let r = await appel('eval_pdf_debut', avecCode({ id, nom: fichier.name, octets: fichier.size, sha }));
+  if (!r.ok) return r;
+  const blocs = r.blocs, taille = r.bloc;
+  for (let n = 0; n < blocs; n++) {
+    progres('Envoi du dossier PDF : ' + (n + 1) + ' sur ' + blocs);
+    r = await appel('eval_pdf_morceau', avecCode({ id, n, donnees: b64.slice(n * taille, (n + 1) * taille) }));
+    if (!r.ok) return r;
+  }
+  progres('Finalisation du dossier PDF…');
+  r = await appel('eval_pdf_fin', avecCode({ id }));
+  if (!r.ok) return r;
+  const doc = r.document;
+  try { await lireDossier(id, doc, (n, t) => progres('Vérification du dossier PDF : ' + (n + 1) + ' sur ' + t)); }
+  catch (e) { return { ok: false, message: 'Le dossier a été envoyé, mais sa relecture de contrôle a échoué : ' + e.message }; }
+  return { ok: true, document: doc };
+}
+
 /* ---------- le dépôt d'une évaluation ---------- */
-let depot = null;
+let depot = null, dossierChoisi = null;
 const msgDepot = (t, ok, details) => { const m = $('#msg-depot'); m.className = 'msg' + (ok ? ' ok' : ''); vider(m); m.append(t); if (details && details.length) m.append(h('ul', {}, details.map(d => h('li', {}, d)))); };
+const ELEMENTS_DEPOT = ['#resume-depot', '#alertes-depot', '#champ-pdf', '#champs-depot', '#aide-dates', '#deposer', '#renvoyer'];
+const cacherDepot = () => ELEMENTS_DEPOT.forEach(s => { $(s).hidden = true; });
+function reinitialiserDepot() { $('#form-depot').reset(); depot = null; dossierChoisi = null; $('#aide-pdf').textContent = ''; cacherDepot(); }
+const aideDossier = () => {
+  $('#fichier-pdf').disabled = !S.dossiersOk;
+  $('#aide-pdf').textContent = !S.dossiersOk ? 'Pour déposer un PDF, mettez d’abord le script Google à jour (voir le mode d’emploi, § 1).' : depot && depot.infos.pdfMentionne ? 'Le fichier annonce « ' + depot.infos.pdfMentionne + ' » : choisissez ce PDF.' : '';
+};
+const pluriel = (n, un, plusieurs) => n + ' ' + (n > 1 ? plusieurs : un);
 $('#fichier').addEventListener('change', async () => {
-  const f = $('#fichier').files[0]; depot = null; $('#resume-depot').hidden = $('#champs-depot').hidden = $('#deposer').hidden = $('#aide-dates').hidden = true; msgDepot('');
+  const f = $('#fichier').files[0]; depot = null; dossierChoisi = null; $('#fichier-pdf').value = ''; cacherDepot(); msgDepot('');
   if (!f) return;
-  let ev;
-  try { ev = JSON.parse(await f.text()); } catch (e) { msgDepot('Ce fichier n’est pas du JSON valide : ' + e.message); return; }
-  if (!ev || !Array.isArray(ev.sections) || !ev.titre) { msgDepot('Il faut au moins un « titre » et des « sections » (téléchargez le modèle pour voir la forme).'); return; }
-  const nq = ev.sections.reduce((n, s) => n + ((s && s.questions) || []).length, 0);
-  depot = ev;
-  $('#dep-id').value = slug(ev.id || ev.titre);
-  vider($('#resume-depot')).append(h('b', {}, ev.titre), ' : ' + ev.sections.length + ' partie' + (ev.sections.length > 1 ? 's' : '') + ', ' + nq + ' question' + (nq > 1 ? 's' : '') + (ev.pdf ? ', dossier ' + ev.pdf : '') + '.');
-  $('#resume-depot').hidden = $('#champs-depot').hidden = $('#deposer').hidden = $('#aide-dates').hidden = false;
+  if (f.size > 3 * 1024 * 1024) { msgDepot('Ce fichier fait ' + mo(f.size) + ' : une évaluation en demande bien moins (3 Mo au plus). S’il s’agit du dossier de plans (PDF), il se choisit plus bas, une fois l’évaluation lue.'); return; }
+  let texte; try { texte = await f.text(); } catch (e) { msgDepot('Ce fichier n’a pas pu être lu.'); return; }
+  const lu = lireFichierEvaluation(f.name, texte);
+  if (lu.erreur) { msgDepot(lu.erreur); return; }
+  depot = lu;
+  const ev = lu.evaluation, i = lu.infos;
+  $('#dep-id').value = slug(ev.id || ev.titre); $('#dep-titre').value = ev.titre;
+  vider($('#resume-depot')).append(h('b', {}, ev.titre), ' : ' + pluriel(i.nbSections, 'partie', 'parties') + ', ' + pluriel(i.nbQuestions, 'question', 'questions')
+    + (i.nbChoix ? ' (dont ' + pluriel(i.nbChoix, 'à choix', 'à choix') + ', ' + pluriel(i.nbBonnes, 'bonne réponse repérée', 'bonnes réponses repérées') + ')' : '') + (i.format === 'html' ? ' · évaluation interactive lue telle quelle.' : '.'));
+  const al = vider($('#alertes-depot'));
+  if (i.aCompleter.length) al.append(h('li', {}, pluriel(i.aCompleter.length, 'corrigé est', 'corrigés sont') + ' à compléter (« à relever sur le plan »…) : ' + (i.aCompleter.length > 1 ? 'questions ' : 'question ') + i.aCompleter.join(', ') + '. Vous pouvez déposer ainsi : redéposer le fichier corrigé remplacera l’évaluation.'));
+  if (i.sansCorrige.length) al.append(h('li', {}, 'Sans corrigé : ' + (i.sansCorrige.length > 1 ? 'questions ' : 'question ') + i.sansCorrige.join(', ') + '.'));
+  if (i.nbChoix > i.nbBonnes) al.append(h('li', {}, pluriel(i.nbChoix - i.nbBonnes, 'question à choix sans bonne réponse repérée', 'questions à choix sans bonne réponse repérée') + ' : le corrigé s’affichera en texte seulement.'));
+  al.hidden = !al.children.length;
+  aideDossier();
+  ['#resume-depot', '#champ-pdf', '#champs-depot', '#aide-dates', '#deposer'].forEach(s => { $(s).hidden = false; });
   majBoutonDepot();
+});
+$('#fichier-pdf').addEventListener('change', async () => {
+  const f = $('#fichier-pdf').files[0]; dossierChoisi = null; aideDossier();
+  if (!f) return;
+  const v = await verifierPdf(f);
+  if (!v.ok) { msgDepot(v.message); $('#fichier-pdf').value = ''; return; }
+  msgDepot(''); dossierChoisi = f; $('#aide-pdf').textContent = f.name + ' · ' + mo(f.size) + ' · il sera envoyé avec l’évaluation.';
 });
 function majBoutonDepot() { const id = $('#dep-id').value.trim().toLowerCase(), existe = S.liste.some(e => e.id === id); $('#deposer').textContent = existe ? 'Remplacer l’évaluation « ' + id + ' »' : 'Déposer'; }
 $('#dep-id').addEventListener('input', majBoutonDepot);
+async function envoyerDossierDepot(id, debutMessage) {   // l'envoi du PDF choisi dans le formulaire ; en cas d'échec le bouton « Renvoyer » reste là
+  const r = await envoyerDossier(id, dossierChoisi, t => msgDepot(debutMessage + t, true));
+  if (!r.ok) { msgDepot(debutMessage.replace(/ · $/, '') + ', mais le dossier PDF n’est pas passé : ' + (r.message || 'refusé') + ' Vous pouvez le renvoyer.', false, r.details); $('#renvoyer').hidden = false; refusCode(r); }
+  return r;
+}
 $('#form-depot').addEventListener('submit', async ev => {
   ev.preventDefault(); if (!depot) return;
   const id = $('#dep-id').value.trim().toLowerCase();
-  msgDepot('Dépôt en cours…', true); $('#deposer').disabled = true;
-  const donnees = { id, evaluation: depot };
+  const evaluation = Object.assign({}, depot.evaluation, { titre: $('#dep-titre').value.trim() || depot.evaluation.titre });
+  msgDepot('Dépôt de l’évaluation…', true); $('#deposer').disabled = true; $('#renvoyer').hidden = true;
+  const donnees = { id, evaluation };
   if ($('#dep-ouv').value || $('#dep-fer').value || !S.liste.some(e => e.id === id)) { donnees.ouverture = $('#dep-ouv').value; donnees.fermeture = $('#dep-fer').value; }   // sans date saisie, un remplacement garde les dates d'avant
   const r = await appel('eval_deposer', avecCode(donnees));
+  if (!r.ok) { $('#deposer').disabled = false; msgDepot(r.message || 'Refusé.', false, r.details); refusCode(r); return; }
+  const debut = (r.remplace ? 'Évaluation remplacée ✓' : 'Évaluation déposée ✓'), suite = donnees.ouverture ? ' Elle s’ouvrira à l’heure choisie.' : ' C’est un brouillon : donnez-lui une date d’ouverture pour que les élèves la voient.';
+  if (dossierChoisi) {
+    const rd = await envoyerDossierDepot(id, debut + ' · ');
+    $('#deposer').disabled = false;
+    if (!rd.ok) { await charger(); return; }
+    msgDepot(debut + ' Dossier PDF déposé et vérifié ✓' + suite, true);
+  } else { $('#deposer').disabled = false; msgDepot(debut + suite, true); }
+  reinitialiserDepot(); await charger();
+});
+$('#renvoyer').addEventListener('click', async () => {
+  const id = $('#dep-id').value.trim().toLowerCase(); if (!dossierChoisi) return;
+  $('#renvoyer').hidden = true; $('#deposer').disabled = true;
+  const rd = await envoyerDossierDepot(id, 'Évaluation déposée ✓ · ');
   $('#deposer').disabled = false;
-  if (!r.ok) { msgDepot(r.message || 'Refusé.', false, r.details); refusCode(r); return; }
-  msgDepot((r.remplace ? 'Évaluation remplacée ✓ ' : 'Évaluation déposée ✓ ') + (donnees.ouverture ? 'Elle s’ouvrira à l’heure choisie.' : 'C’est un brouillon : donnez-lui une date d’ouverture pour que les élèves la voient.'), true);
-  $('#form-depot').reset(); depot = null; $('#resume-depot').hidden = $('#champs-depot').hidden = $('#deposer').hidden = $('#aide-dates').hidden = true;
+  if (rd.ok) { msgDepot('Évaluation déposée ✓ Dossier PDF déposé et vérifié ✓', true); reinitialiserDepot(); }
   await charger();
 });
 $('#modele').addEventListener('click', () => telecharger('modele-evaluation.json', 'application/json', JSON.stringify(MODELE, null, 2) + '\n'));
@@ -482,6 +730,7 @@ function lienRetour(versListe) {   // en haut à droite : « Accueil du carnet �
 function montrerListe() {
   $('#vue-eval').hidden = true; $('#vue-liste').hidden = false; lienRetour(false);
   document.title = 'Évaluations · 2EMNB'; S.courante = null; $('#cadre-pdf').removeAttribute('src'); $('#bandeau-eval').hidden = true;
+  if (S.urlDossier) { URL.revokeObjectURL(S.urlDossier); S.urlDossier = ''; }
 }
 async function ouvrirEval(id) {
   const al = $('#alerte-liste'); al.hidden = true;
@@ -499,6 +748,30 @@ async function ouvrirEval(id) {
   S.attente = ''; S.annonces = new Set();
   rendreEval(r);
 }
+async function chargerDossierEval(r, bouton) {
+  const doc = r.document, id = r.id, cadre = $('#cadre-pdf'), titre = $('#nom-pdf'), encore = () => S.courante && S.courante.id === id;
+  const cle = id + ':' + (doc.sha || doc.nom + doc.octets);
+  titre.textContent = 'Dossier : ' + doc.nom + ' · chargement…';
+  try {
+    let blob = S.dossiers.get(cle);
+    if (!blob) {
+      blob = await lireDossier(id, doc, (n, t) => { if (encore()) titre.textContent = 'Dossier : ' + doc.nom + ' · chargement ' + (n + 1) + ' sur ' + t; });
+      S.dossiers.set(cle, blob);
+    }
+    if (!encore()) return;
+    if (S.urlDossier) URL.revokeObjectURL(S.urlDossier);
+    S.urlDossier = URL.createObjectURL(blob);
+    cadre.src = S.urlDossier + '#navpanes=0&view=FitH'; titre.textContent = 'Dossier : ' + doc.nom + ' · ' + mo(doc.octets);
+    bouton.href = S.urlDossier; bouton.target = '_blank'; bouton.rel = 'noopener'; bouton.removeAttribute('aria-disabled'); bouton.onclick = null;
+    vider(bouton).append('Ouvrir le dossier de plans', h('span', { classe: 'sr' }, ' (nouvel onglet)'));
+  } catch (e) {
+    if (!encore()) return;
+    titre.textContent = 'Dossier : ' + doc.nom + ' · ' + e.message;
+    bouton.href = '#'; bouton.removeAttribute('target'); bouton.removeAttribute('aria-disabled');
+    bouton.onclick = ev => { ev.preventDefault(); bouton.onclick = null; vider(bouton).append('Dossier en cours de chargement…'); bouton.setAttribute('aria-disabled', 'true'); chargerDossierEval(r, bouton); };
+    vider(bouton).append('Réessayer le chargement du dossier');
+  }
+}
 const cleStockage = id => 'carnet-eval-' + id;
 function rendreEval(r) {
   const ev = r.evaluation, ens = !!r.enseignant;
@@ -509,9 +782,12 @@ function rendreEval(r) {
   $('#t-eval').textContent = ev.titre; $('#sous-eval').textContent = ev.sousTitre || '';
   const act = vider($('#actions-eval'));
   const pdf = $('#col-pdf'), cadre = $('#cadre-pdf');
-  pdf.hidden = !ev.pdf;
-  if (ev.pdf) { $('#nom-pdf').textContent = 'Aperçu du document : ' + ev.pdf; cadre.src = ev.pdf + '#navpanes=0&view=FitH'; act.append(h('a', { classe: 'btn', href: ev.pdf, target: '_blank', rel: 'noopener' }, 'Ouvrir le dossier de plans', h('span', { classe: 'sr' }, ' (nouvel onglet)'))); }
-  else cadre.removeAttribute('src');
+  pdf.hidden = !(ev.pdf || r.document);
+  cadre.removeAttribute('src');
+  if (r.document) {   // le dossier déposé : il arrive par le script Google, bloc par bloc, et seulement quand l'évaluation est ouverte
+    const bouton = h('a', { classe: 'btn', href: '#', 'aria-disabled': 'true', surClick: e => { if (bouton.getAttribute('aria-disabled')) e.preventDefault(); } }, 'Dossier en cours de chargement…');
+    act.append(bouton); chargerDossierEval(r, bouton);
+  } else if (ev.pdf) { $('#nom-pdf').textContent = 'Aperçu du document : ' + ev.pdf; cadre.src = ev.pdf + '#navpanes=0&view=FitH'; act.append(h('a', { classe: 'btn', href: ev.pdf, target: '_blank', rel: 'noopener' }, 'Ouvrir le dossier de plans', h('span', { classe: 'sr' }, ' (nouvel onglet)'))); }
   const cons = $('#consigne'); cons.hidden = !ev.consigne; cons.textContent = ev.consigne || '';
   $('#identite').hidden = ens;
   const form = vider($('#form-eval')), col = $('#col-form'); col.classList.remove('montre-corrige');
