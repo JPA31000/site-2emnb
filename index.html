@@ -200,7 +200,7 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .chemin path{fill:none;stroke:var(--rouge2);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:3 9;filter:url(#crayon)}
 .chemin circle{fill:var(--papier);stroke:var(--rouge2);stroke-width:2}
 .chemin text{font:400 15px var(--main);fill:var(--rouge);text-anchor:middle}
-.page{--pc:var(--bleu);position:relative;display:grid;grid-template-columns:minmax(240px,330px) minmax(0,1fr);gap:clamp(22px,3vw,44px);padding:34px 34px 34px 104px;
+.page{--pc:var(--bleu);position:relative;display:block;padding:34px 34px 34px 104px;
   background-color:var(--fiche);
   background-image:linear-gradient(90deg,transparent var(--marge,78px),rgba(214,69,58,.55) var(--marge,78px) calc(var(--marge,78px) + 2px),transparent calc(var(--marge,78px) + 2px)),repeating-linear-gradient(transparent 0 31px,rgba(47,111,214,.32) 31px 32px),repeating-linear-gradient(transparent 0 7px,rgba(47,111,214,.12) 7px 8px),repeating-linear-gradient(90deg,transparent 0 31px,rgba(160,120,200,.1) 31px 32px);
   box-shadow:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);transform:rotate(var(--r,0deg))}
@@ -227,7 +227,7 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .seq__pb::before{content:"?";position:absolute;left:0;top:1px;display:grid;place-items:center;width:26px;height:26px;font:400 19px/1 var(--main);font-style:normal;color:var(--rouge);border:1.8px solid var(--rouge);border-radius:50% 46% 52% 48%/55% 50% 50% 45%}
 .seq__pbt{padding:0 3px;background:linear-gradient(100deg,transparent 1%,var(--jaune) 3%,var(--jaune) 97%,transparent 99%) 0 90%/100% 48% no-repeat;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .acts{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:30px}
-.act{position:relative;padding:0}
+.act{position:relative;padding:0;scroll-margin-top:calc(var(--nav) + 40px)}   /* une adresse #act-… amène l'activité sous la barre du haut, pas dessous */
 .act + .act{padding-top:28px;border-top:1.6px dashed rgba(42,42,42,.2)}   /* un pointillé au crayon sépare deux activités */
 .act__nom{margin:0;font:inherit}
 .act__n{display:block;font:400 17px/1.3 var(--main);letter-spacing:.03em;color:var(--rouge)}   /* « Activité 1 » : un simple repère, ce n'est pas un lien */
@@ -245,6 +245,39 @@ mark{color:inherit;background:linear-gradient(100deg,transparent 2%,var(--jaune)
 .postit--bientot{cursor:default}   /* l'étiquette est posée mais n'a pas encore de page : ni lien, ni soulèvement */
 .postit--bientot:hover{transform:rotate(var(--r,-1deg));box-shadow:0 7px 10px -7px rgba(0,0,0,.45);z-index:auto}
 .postit--bientot::before{content:"bientôt";position:absolute;right:3px;bottom:-11px;padding:0 5px;font:400 12.5px/1.4 var(--main);color:var(--rouge);background:var(--fiche);border:1px solid rgba(201,59,49,.4);border-radius:3px;transform:rotate(-3deg)}
+/* ---------- Plier / déplier : les pages du chapitre 01 (une séquence par page), le chapitre 04 et ses sous-chapitres ---------- */
+.pli__zone{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s var(--e-out),padding-bottom .55s var(--e-out)}
+.pli__zone.ouvert{grid-template-rows:1fr}
+.pli__int{min-height:0;overflow:clip;visibility:hidden;transition:visibility 0s linear .55s}   /* plié : rien n'est lisible ni atteignable au clavier, une fois la page refermée */
+.pli__zone.ouvert > .pli__int{visibility:visible;transition-delay:0s}
+.pli__zone.ouvert.fini > .pli__int{overflow:visible}   /* ouvert pour de bon : les post-it et leurs ombres peuvent déborder, la colonne collante retrouve son rôle */
+.pli__zone.sans-anim,.pli__zone.sans-anim > .pli__int{transition:none}
+.pli{display:inline-flex;align-items:center;gap:12px;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.pli__chev{flex:none;width:26px;height:26px;color:var(--rouge);transition:transform .5s var(--e-ressort)}
+.pli__chev path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pli[aria-expanded="true"] .pli__chev{transform:rotate(180deg)}
+[data-pli-clic]{cursor:pointer}
+.page__tete{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px 24px}
+.page__tete h3{margin:6px 0 4px}
+.page__apercu{margin:0;font:400 17px/1.4 var(--main);color:var(--gr2)}
+.page__etq{padding-bottom:6px;font:400 19px var(--main);color:var(--bleu);white-space:nowrap;transition:color .3s}
+.page__tete:hover .page__etq{color:var(--rouge)}
+.page__contenu{display:grid;grid-template-columns:minmax(240px,330px) minmax(0,1fr);gap:clamp(22px,3vw,44px);padding-top:30px}
+.page__bas{margin:34px 0 0;text-align:right}
+.pli--bas,.pli--chap{font:400 19px var(--main);color:var(--bleu);transition:color .3s}
+.pli--bas:hover,.pli--chap:hover,.pli-btn:hover{color:var(--rouge)}
+.pli-barre{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;margin-top:26px}
+.pli-btn{font:400 19px var(--main);color:var(--bleu);cursor:pointer;transition:color .3s}
+.pli-btn,.pli--chap,.pli--bas{padding:8px 4px}   /* une cible assez large pour le doigt comme pour la souris */
+@media (pointer:coarse){.pli,.pli-btn{min-height:44px}}
+.index__n{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 6px;font:400 16px var(--main);color:var(--rouge);border:1.6px solid var(--rouge);border-radius:52% 48% 55% 45%/48% 55% 45% 52%}
+.index__grp .pli__zone.ouvert{padding-bottom:34px}
+@media print{
+  .pli__zone,.pli__int{transition:none!important}
+  .pli__zone{grid-template-rows:1fr!important}
+  .pli__int{visibility:visible!important;overflow:visible!important}
+  .pli__chev,.pli-barre,.page__etq,.page__bas{display:none!important}
+}
 .synth{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:clamp(20px,4vw,50px);margin-top:56px;padding:28px 34px;background:var(--fiche);box-shadow:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);transform:rotate(-.6deg)}
 .synth::before{content:"";position:absolute;top:-12px;left:42%;width:110px;height:26px;background:rgba(255,222,40,.55);transform:rotate(-3deg)}
 .fiches{position:relative;width:120px;height:104px}
@@ -350,8 +383,8 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .corde.statique .linge{flex:1 1 280px;max-width:380px;height:440px}
 
 /* ---------- Découvrir : sommaire du carnet ---------- */
-.index{display:grid;gap:46px;margin-top:56px}
-.index__gt{display:flex;align-items:center;gap:14px;margin:0 0 4px;font:400 22px var(--main);color:var(--rouge)}
+.index{display:grid;gap:14px;padding-top:46px}
+.index__gt{display:flex;align-items:center;gap:14px;margin:0;padding:8px 0;font:400 22px var(--main);color:var(--rouge)}
 .index__gt::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--gr3) 0 8px,transparent 8px 13px)}
 .ligne-i{position:relative;isolation:isolate;display:grid;grid-template-columns:54px minmax(0,1.1fr) minmax(0,1fr) 54px;align-items:center;gap:20px;padding:16px 6px;border-bottom:1px dashed var(--gr3)}
 .ligne-i__n{display:grid;place-items:center;width:38px;height:38px;font:400 17px var(--main);color:var(--rouge);border:1.8px solid var(--rouge2);border-radius:52% 48% 55% 45%/48% 55% 45% 52%}
@@ -408,7 +441,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 
 /* ---------- Écrans moyens et petits ---------- */
 @media (max-width:1180px){
-  .page{grid-template-columns:1fr}
+  .page__contenu{grid-template-columns:1fr}
   .page__cote{position:static}
   .page__dessin{max-width:420px}
   .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -539,6 +572,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     </header>
     <div class="batons" id="batons"></div>
     <div class="legende rv"><span><i></i>World café</span><span><i class="sup"></i>support de cours</span><span><i class="td"></i>TD</span><span id="legende-cadenas"></span></div>
+    <div class="pli-barre" role="group" aria-label="Plier ou déplier toutes les séquences"><button class="pli-btn" type="button" data-pli-tout="deplier" data-pli-g="projets">Tout déplier</button><button class="pli-btn" type="button" data-pli-tout="replier" data-pli-g="projets">Tout replier</button></div>
     <div class="projets" id="projets-liste"></div>
     <div id="synth"></div>
   </section>
@@ -580,8 +614,9 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
     <header class="entete">
       <p class="sur rv"><svg viewBox="0 0 34 20" aria-hidden="true"><path d="M2 12C9 6 18 16 30 8M24 4l6 4-5 6"/></svg>04 · découvrir</p>
       <h2 class="titre" id="t-decouvrir" data-ecrit>Pour aller <span class="souligne">plus loin.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 5C60 9 140 3 197 8"/></svg></span></h2>
+      <div class="pli-barre" role="group" aria-label="Plier ou déplier ce chapitre et ses sous-chapitres"><button class="pli pli--chap" type="button" data-pli="chap4" aria-expanded="true" aria-controls="chap4"><span data-pli-etq="chap4" data-ferme="Déplier le chapitre" data-ouvert="Replier le chapitre">Replier le chapitre</span><svg class="pli__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 9.5l6.5 6 6.5-6"/></svg></button><button class="pli-btn" type="button" data-pli-tout="deplier" data-pli-g="decouvrir">Tout déplier</button><button class="pli-btn" type="button" data-pli-tout="replier" data-pli-g="decouvrir">Tout replier</button></div>
     </header>
-    <div class="index" id="index"></div>
+    <div class="pli__zone ouvert fini" id="chap4"><div class="pli__int"><div class="index" id="index"></div></div></div>
   </section>
 </main>
 
@@ -1176,20 +1211,38 @@ function construirePage() {
         <p class="act__pb"><span class="sr">Problématique : </span>${typoFr(a.pb)}</p>
         ${a.ateliers ? postits(a.ateliers) : ''}</li>`).join('')}</ol></div>`;
   };
-  $('#projets-liste').innerHTML = '<svg class="chemin" id="chemin" aria-hidden="true"></svg>' + P.map((p, i) => `
+  const nbEtiq = s => (s.ateliers ? s.ateliers.length : 0) + s.activites.reduce((t, a) => t + (a.ateliers ? a.ateliers.length : 0), 0);
+  const CHEV = '<svg class="pli__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 9.5l6.5 6 6.5-6"/></svg>';
+  // une page par projet, donc par séquence : le bandeau reste visible, le reste se plie (au départ, tout est plié)
+  $('#projets-liste').innerHTML = '<svg class="chemin" id="chemin" aria-hidden="true"></svg>' + P.map((p, i) => {
+    const nAct = p.sequences.reduce((t, s) => t + s.activites.length, 0), nEt = p.sequences.reduce((t, s) => t + nbEtiq(s), 0);
+    const apercu = p.sequences.map(s => esc(s.nom) + (s.titre ? NB + ': ' + typoFr(s.titre) : '')).join(' · ') + ` · ${nAct} activité${nAct > 1 ? 's' : ''}` + (nEt ? ` · ${nEt} étiquette${nEt > 1 ? 's' : ''}` : '');
+    return `
     <article class="page rv" style="--r:${[-.5, .4, -.3, .5][i % 4]}deg" aria-labelledby="pj-${i}">
       <span class="page__marge" aria-hidden="true">${p.num}</span>
-      <div class="page__cote">
-        <div class="page__dessin">${elevation(p.modele)}</div>
-        <h3 id="pj-${i}">${esc(p.nom)}</h3>
-        <p class="page__resume">${esc(p.resume)}</p>
-        <a class="lien" ${ext(p.url)}>Ouvrir le projet ${FL}${GRIB}${NO}</a>
+      <div class="page__tete" data-pli-clic="pc-${i}">
+        <div>
+          <h3 id="pj-${i}"><button class="pli" type="button" data-pli="pc-${i}" aria-expanded="false" aria-controls="pc-${i}"><span class="pli__nom">${esc(p.nom)}</span>${CHEV}</button></h3>
+          <p class="page__apercu">${apercu}</p>
+        </div>
+        <span class="page__etq" aria-hidden="true" data-pli-etq="pc-${i}" data-ferme="Déplier la séquence" data-ouvert="Replier la séquence">Déplier la séquence</span>
       </div>
-      <div class="page__corps">
-        ${p.ateliers ? `<div class="seq"><div class="seq__tete"><span class="seq__code">WC${CERCLE}</span><span class="seq__nom">World cafés du projet</span></div>${postits(p.ateliers)}</div>` : ''}
-        ${p.sequences.map(sequence).join('')}
-      </div>
-    </article>`).join('');
+      <div class="pli__zone" id="pc-${i}" data-pli-g="projets"><div class="pli__int">
+        <div class="page__contenu">
+          <div class="page__cote">
+            <div class="page__dessin">${elevation(p.modele)}</div>
+            <p class="page__resume">${esc(p.resume)}</p>
+            <a class="lien" ${ext(p.url)}>Ouvrir le projet ${FL}${GRIB}${NO}</a>
+          </div>
+          <div class="page__corps">
+            ${p.ateliers ? `<div class="seq"><div class="seq__tete"><span class="seq__code">WC${CERCLE}</span><span class="seq__nom">World cafés du projet</span></div>${postits(p.ateliers)}</div>` : ''}
+            ${p.sequences.map(sequence).join('')}
+          </div>
+        </div>
+        <p class="page__bas"><button class="pli pli--bas" type="button" data-pli="pc-${i}" aria-expanded="false" aria-controls="pc-${i}">Replier la séquence ${CHEV}</button></p>
+      </div></div>
+    </article>`;
+  }).join('');
   const S = DONNEES.syntheses;
   $('#synth').innerHTML = `<a class="synth rv" href="${esc(S.url)}"><div class="fiches" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div><span class="main" style="font-size:18px;color:var(--bleu)">révisions</span><h3>Synthèses de cours</h3><p>${esc(S.resume)}</p></div>${FLECHE_RONDE}</a>`;
@@ -1214,8 +1267,10 @@ function construirePage() {
 
   // --- Découvrir : sommaire du carnet
   let k = 0;
-  $('#index').innerHTML = DONNEES.decouvrir.map(g => `<div class="index__grp"><h3 class="index__gt rv">${esc(g.groupe)}</h3>
-    ${g.items.map(it => `<a class="ligne-i rv" ${interne(it.url) ? `href="${esc(it.url)}"` : ext(it.url)} data-apercu="${it.icone}" data-groupe="${esc(g.groupe)}"><span class="ligne-i__n">${++k}</span><span class="ligne-i__t">${esc(it.nom)}</span><span class="ligne-i__d">${esc(it.resume)}</span>${FLECHE_RONDE}${interne(it.url) ? '' : NO}</a>`).join('')}</div>`).join('');
+  $('#index').innerHTML = DONNEES.decouvrir.map((g, gi) => `<div class="index__grp"><h3 class="index__gt rv" data-pli-clic="gc-${gi}"><button class="pli" type="button" data-pli="gc-${gi}" aria-expanded="false" aria-controls="gc-${gi}">${CHEV}<span class="pli__nom">${esc(g.groupe)}</span><span class="index__n">${g.items.length}<span class="sr"> page${g.items.length > 1 ? 's' : ''}</span></span></button></h3>
+    <div class="pli__zone" id="gc-${gi}" data-pli-g="decouvrir"><div class="pli__int">
+    ${g.items.map(it => `<a class="ligne-i rv" ${interne(it.url) ? `href="${esc(it.url)}"` : ext(it.url)} data-apercu="${it.icone}" data-groupe="${esc(g.groupe)}"><span class="ligne-i__n">${++k}</span><span class="ligne-i__t">${esc(it.nom)}</span><span class="ligne-i__d">${esc(it.resume)}</span>${FLECHE_RONDE}${interne(it.url) ? '' : NO}</a>`).join('')}
+    </div></div></div>`).join('');
 
   // --- Pied de page : raccourcis
   const rac = ['ENT', 'Cahier de texte', 'Portfolio'].map(nom => DONNEES.outils.find(o => o.nom === nom)).filter(Boolean);
@@ -1760,7 +1815,7 @@ function initRecherche() {
     const e = res[i]; if (!e) return;
     if (e.url[0] === '#') {   // une activité : on referme la recherche et on la montre dans la page
       fermer(); const cible = document.querySelector(e.url);
-      if (cible) setTimeout(() => cible.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'center' }), 320);
+      if (cible) { deplierPour(cible); setTimeout(() => cible.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'center' }), 320); }   // l'activité peut être dans une page pliée
       return;
     }
     if (interne(e.url)) { location.href = e.url; return; } window.open(e.url, '_blank', 'noopener'); fermer();
@@ -1796,9 +1851,79 @@ function initRecherche() {
 }
 
 /* =====================================================================
+   10 bis. PLIER / DÉPLIER : les pages du chapitre 01 (une séquence par page), le chapitre 04 et ses sous-chapitres
+   Au départ tout est plié (le chapitre 04 reste ouvert : on y lit la liste de ses sous-chapitres, pliés eux aussi).
+   ===================================================================== */
+const PLI_CLE = 'carnet-plis';
+function sauverPlis() {   // la mémoire de l'onglet : pour retrouver les pages ouvertes en revenant d'un cours (bouton « précédent »)
+  try { const o = {}; $$('.pli__zone').forEach(z => { o[z.id] = z.classList.contains('ouvert'); }); sessionStorage.setItem(PLI_CLE, JSON.stringify(o)); } catch (e) { /* stockage refusé : tant pis */ }
+}
+function poserPli(id, ouvert, anim = true) {   // ouvre ou ferme une zone ; vrai si elle a changé d'état
+  const z = document.getElementById(id);
+  if (!z || !z.classList.contains('pli__zone') || z.classList.contains('ouvert') === ouvert) return false;
+  clearTimeout(z._fin);
+  z.classList.remove('fini');
+  if (!anim) z.classList.add('sans-anim');
+  z.classList.toggle('ouvert', ouvert);
+  if (!anim) { void z.offsetHeight; z.classList.remove('sans-anim'); }   // le changement se fait d'un coup ; les transitions reviennent ensuite
+  const page = z.closest('.page'); if (page) page.classList.toggle('ouverte', ouvert);
+  $$(`[data-pli="${id}"]`).forEach(b => b.setAttribute('aria-expanded', String(ouvert)));
+  $$(`[data-pli-etq="${id}"]`).forEach(e => { e.textContent = ouvert ? e.dataset.ouvert : e.dataset.ferme; });
+  // « fini » : la zone ouverte laisse de nouveau déborder son contenu (post-it, ombres, colonne collante), mais seulement quand la transition est vraiment
+  // terminée — même si le premier affichage a tardé (appareil lent, onglet en arrière-plan) : sinon le contenu déborderait de la boîte encore à moitié ouverte
+  const fin = () => {
+    if (!z.classList.contains('ouvert')) return;
+    const enCours = typeof z.getAnimations === 'function' ? z.getAnimations().filter(a => a.playState !== 'finished') : [];
+    if (enCours.length) { Promise.allSettled(enCours.map(a => a.finished)).then(() => { clearTimeout(z._fin); z._fin = setTimeout(fin, 30); }); return; }
+    z.classList.add('fini'); tracerChemin();
+  };
+  if (anim) z._fin = setTimeout(fin, 650); else fin();
+  tracerChemin(); sauverPlis();
+  return true;
+}
+function deplierPour(el) {   // déplie, sans animation, tout ce qui cache cet élément ; vrai si quelque chose a bougé
+  let bouge = false, z = el && el.closest ? el.closest('.pli__zone') : null;
+  while (z) { if (poserPli(z.id, true, false)) bouge = true; z = z.parentElement ? z.parentElement.closest('.pli__zone') : null; }
+  return bouge;
+}
+function toutPli(groupe, ouvert) {   // « Tout déplier » / « Tout replier » d'un chapitre
+  if (ouvert && groupe === 'decouvrir') poserPli('chap4', true);   // les sous-chapitres ne se lisent que si le chapitre est ouvert
+  $$(`.pli__zone[data-pli-g="${groupe}"]`).forEach(z => poserPli(z.id, ouvert));
+}
+function initPlis() {
+  document.addEventListener('click', e => {
+    const tout = e.target.closest('[data-pli-tout]');
+    if (tout) { toutPli(tout.dataset.pliG, tout.dataset.pliTout === 'deplier'); return; }
+    const bouton = e.target.closest('[data-pli]');
+    let id = bouton && bouton.dataset.pli;
+    if (!id) { const c = e.target.closest('[data-pli-clic]'); if (c && !e.target.closest('a')) id = c.dataset.pliClic; }   // toute la ligne du titre est cliquable, sauf ses liens
+    const z = id && document.getElementById(id);
+    if (!z) return;
+    const ouvrir = !z.classList.contains('ouvert'), depuisLeBas = !!bouton && z.contains(bouton);
+    poserPli(id, ouvrir);
+    if (!ouvrir && depuisLeBas) { const tete = $$(`[data-pli="${id}"]`).find(x => !z.contains(x)); if (tete) tete.focus(); }   // le bouton du bas vient de disparaître : le focus remonte au titre
+  });
+  const entree = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  if (entree && entree.type === 'back_forward') {   // en revenant d'une page du carnet, on retrouve ce qu'on avait ouvert ; sinon (nouvelle visite, rechargement) tout est plié
+    try { const o = JSON.parse(sessionStorage.getItem(PLI_CLE) || '{}'); Object.keys(o).forEach(id => poserPli(id, !!o[id], false)); } catch (e) { /* rien */ }
+  }
+  const suivre = defiler => {   // une adresse qui désigne une activité (#act-sq01-3) déplie ce qui la cache
+    let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch (x) { return; }
+    const t = id && document.getElementById(id);
+    if (t && deplierPour(t) && defiler) requestAnimationFrame(() => t.scrollIntoView({ block: 'center' }));   // au chargement, c'est le navigateur qui défile vers l'adresse (une fois la page dépliée) ; sur un changement d'adresse, on défile nous-mêmes
+  };
+  addEventListener('hashchange', () => suivre(true)); suivre(false);
+  if ('ResizeObserver' in window) {   // le pointillé rouge suit les pages pendant qu'elles se plient
+    let raf = 0;
+    new ResizeObserver(() => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; tracerChemin(); }); }).observe(liste);
+  }
+}
+
+/* =====================================================================
    11. BOUCLE D'ANIMATION ET DÉMARRAGE
    ===================================================================== */
 construirePage();
+initPlis();
 ecrire();
 preparerCitation();
 const CROQUIS = initCroquis(), TRACE = initTrace(), APERCU = initApercu();
@@ -1826,7 +1951,7 @@ function boucle(now) {
   requestAnimationFrame(boucle);
 }
 requestAnimationFrame(boucle);
-window.CARNET = { CROQUIS, TRACE, mesurer, tailleCorde, tracerChemin, majDefilement };   // vérifications
+window.CARNET = { CROQUIS, TRACE, mesurer, tailleCorde, tracerChemin, majDefilement, poserPli, deplierPour, toutPli };   // vérifications
 let pretFait = false;
 const pret = () => {
   if (pretFait) return; pretFait = true;
