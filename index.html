@@ -331,6 +331,9 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .il--bim .lay__lbl{opacity:0}
 :is(.objet,.linge):hover .il--bim .lay__lbl{opacity:1}
 :is(.objet,.linge):hover .lay--toit{transform:translateY(-20px)}:is(.objet,.linge):hover .lay--res{transform:translateY(-7px)}:is(.objet,.linge):hover .lay--str{transform:translateY(7px)}:is(.objet,.linge):hover .lay--fon{transform:translateY(20px)}
+.il--cloud .surf,.il--cloud .mesh{opacity:0}
+:is(.objet,.linge):hover .il--cloud .surf{opacity:1}:is(.objet,.linge):hover .il--cloud .mesh{opacity:.8}:is(.objet,.linge):hover .il--cloud .pts{opacity:.45}
+:is(.objet,.linge):hover .il--cloud .cam{transform:translate(var(--dx),var(--dy))}
 .il--livret .flip{transform-origin:120px 90px;transition:transform 1.1s var(--e-io)}
 :is(.objet,.linge):hover .il--livret .flip{transform:scaleX(-1)}
 .il--pfmp .casque{transform-origin:120px 116px}
@@ -829,6 +832,8 @@ const DONNEES = {
   espace: [
     { nom: 'BIM Éducation', etiq: 'Maquette numérique', taille: 'xl', visuel: 'bim', couleur: 'cyan', url: 'bim-education.html',   // page du carnet
       resume: 'Une application pour toi, où tu pourras créer tes premières maquettes numériques, modéliser en 3D avec des informations techniques associées… les premiers pas vers la méthode de travail dénommée BIM (Building Information Model).' },
+    { nom: 'Cloud Educ', etiq: 'Photos → 3D', taille: 'xl', visuel: 'cloud', couleur: 'orange', url: 'https://jpa31000.github.io/Cloud_Educ/',   // visionneuse en ligne (dépôt Cloud_Educ)
+      resume: 'Une application pour comprendre la photogrammétrie : des photos au nuage de points, au modèle 3D puis au gaussian splatting. Ouvre deux projets déjà calculés, tourne autour, mesure, regarde la vidéo et lis le cours. Un outil pédagogique, pas un logiciel professionnel.' },
     { nom: 'Pas à pas', etiq: 'À garder sous la main', taille: 'large', visuel: 'livret', couleur: 'violet', url: 'pas-a-pas.html',   // page du carnet
       resume: 'Votre livret de seconde EMNB.' },
     { nom: 'PFMP', etiq: 'Stages 2026-2027', visuel: 'pfmp', couleur: 'orange', url: 'pfmp.html',   // page du carnet (le dossier Drive des PFMP s’ouvre depuis la page)
@@ -1016,8 +1021,35 @@ const ILLUS = {
     }
     return `<svg class="il il--bim" viewBox="0 0 280 170" aria-hidden="true">${s}</svg>`;
   },
+  cloud() {
+    // un pavillon vu en isométrie, fait de points (le nuage) ; au survol, le maillage et ses faces apparaissent ; trois appareils le photographient
+    const r = alea(7), p = ISO(140, 68, 84, 40), H = 44;
+    const L = (s, t) => [56 + 84 * s, 112 + 40 * s - 44 * t], R = (s, t) => [140 + 84 * s, 152 - 40 * s - 44 * t];
+    const seg = (a, b) => 'M' + a.join(' ') + 'L' + b.join(' '), dot = ([x, y]) => `M${x.toFixed(1)} ${y.toFixed(1)}h.1`, jit = () => (r() - .5) * .06;
+    let pts = '', mesh = '';
+    for (let i = 0; i < 9; i++) for (let j = 0; j < 9; j++) pts += dot(p(-0.94 + 0.235 * i + jit(), -0.94 + 0.235 * j + jit()));
+    for (let i = 0; i < 10; i++) for (let j = 0; j < 7; j++) {
+      const s = (i + .5) / 10 + jit(), t = (j + .5) / 7 + jit();
+      if (!(s > .28 && s < .5 && t > .42 && t < .76)) pts += dot(L(s, t));                // une fenêtre sans points
+      if (!(s > .52 && s < .78 && t < .6)) pts += dot(R(s, t));                           // une porte sans points
+    }
+    for (const s of [0, .25, .5, .75, 1]) mesh += seg(L(s, 0), L(s, 1)) + seg(R(s, 0), R(s, 1));
+    for (const t of [0, .33, .66, 1]) mesh += seg(L(0, t), L(1, t)) + seg(R(0, t), R(1, t));
+    for (const k of [-1, -.5, 0, .5, 1]) mesh += seg(p(k, -1), p(k, 1)) + seg(p(-1, k), p(1, k));
+    mesh += seg(p(-1, -1), p(1, 1));
+    const cam = (x, y, dx, dy) => {
+      const a = Math.atan2(100 - y, 140 - x), c = Math.cos(a), s = Math.sin(a), P = (d, b) => [+(x + d * c - b * s).toFixed(1), +(y + d * s + b * c).toFixed(1)];
+      return `<g class="cam" style="--dx:${dx}px;--dy:${dy}px"><path class="c-orange f-orange" d="${chemin([[x, y], P(26, -11), P(26, 11)], true)}"/><path class="c-dim" d="${seg(P(30, 0), P(54, 0))}" stroke-dasharray="3 4"/></g>`;
+    };
+    return `<svg class="il il--cloud" viewBox="0 0 280 170" aria-hidden="true">
+      <path class="surf f-cyan" d="${chemin([p(-1, -1), p(1, -1), p(1, 1), p(-1, 1)], true)}${chemin([L(0, 0), L(1, 0), L(1, 1), L(0, 1)], true)}${chemin([R(0, 0), R(1, 0), R(1, 1), R(0, 1)], true)}"/>
+      <path class="c-cyan mesh" d="${mesh}"/>
+      <path class="c-cyan pts" d="${pts}" stroke-width="3"/>
+      ${cam(14, 42, 8, 3)}${cam(266, 50, -8, 3)}${cam(30, 142, 7, -3)}
+      <text x="22" y="166">PHOTOS · NUAGE · MODÈLE 3D</text></svg>`;
+  },
   livret() {
-    const lignesG = [56, 72, 88, 104].map(y => `M56 ${y}c18-2 36 0 52 6`).join('');
+    const lignesG =[56, 72, 88, 104].map(y => `M56 ${y}c18-2 36 0 52 6`).join('');
     const lignesD = [62, 78, 94].map(y => `M132 ${y}c16-6 34-8 52-6`).join('');
     return `<svg class="il il--livret" viewBox="0 0 240 170" aria-hidden="true">
       <path class="c-dim f-blanc" d="M120 44c-18-12-46-16-78-12v96c32-4 60 0 78 12z"/><path class="c-dim" d="${lignesG}"/>
