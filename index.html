@@ -337,6 +337,9 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .il--model .cou{opacity:0}
 :is(.objet,.linge):hover .il--model .cou{opacity:1;transition-delay:calc(var(--i)*.14s)}
 :is(.objet,.linge):hover .il--model .buse{transform:translateY(-40px)}
+.il--studio .hach{opacity:.25;transition:opacity .5s var(--e-io)}.il--studio .croix{transition:transform .7s var(--e-io)}
+:is(.objet,.linge):hover .il--studio .hach{opacity:1}
+:is(.objet,.linge):hover .il--studio .croix{transform:translate(-10px,6px)}
 .il--livret .flip{transform-origin:120px 90px;transition:transform 1.1s var(--e-io)}
 :is(.objet,.linge):hover .il--livret .flip{transform:scaleX(-1)}
 .il--pfmp .casque{transform-origin:120px 116px}
@@ -839,6 +842,8 @@ const DONNEES = {
       resume: 'Une application pour comprendre la photogrammétrie : des photos au nuage de points, au modèle 3D puis au gaussian splatting. Ouvre deux projets déjà calculés, tourne autour, mesure, regarde la vidéo et lis le cours. Un outil pédagogique, pas un logiciel professionnel.' },
     { nom: 'Model Educ', etiq: 'Impression 3D', taille: 'xl', visuel: 'model', couleur: 'vert', url: 'https://jpa31000.github.io/Model_Educ/',   // appli en ligne (dépôt Model_Educ)
       resume: 'Une application pour essayer sept façons de modéliser en 3D : courbes, subdivision, surfaces implicites, voxels, solides, maillage, paramétrique. Vérifie si ta pièce est imprimable, regarde ses couches et exporte-la en STL. Un outil pédagogique, pas un logiciel professionnel.' },
+    { nom: 'Model Educ Studio', etiq: 'Modélisation 3D', taille: 'xl', visuel: 'studio', couleur: 'orange', url: 'https://jpa31000.github.io/3DModel_Educ/',   // appli en ligne (dépôt 3DModel_Educ)
+      resume: 'Un atelier de modélisation 3D avec ruban d’outils, fenêtre Propriétés et arborescence. Pose des solides, des courbes, des voxels sur le plateau, perce, fusionne, et regarde ta pièce dans une à quatre fenêtres : 3D, plan, face, côté, section. Contrôle d’impression et export STL. Un outil pédagogique, pas un logiciel professionnel.' },
     { nom: 'Pas à pas', etiq: 'À garder sous la main', taille: 'large', visuel: 'livret', couleur: 'violet', url: 'pas-a-pas.html',   // page du carnet
       resume: 'Votre livret de seconde EMNB.' },
     { nom: 'PFMP', etiq: 'Stages 2026-2027', visuel: 'pfmp', couleur: 'orange', url: 'pfmp.html',   // page du carnet (le dossier Drive des PFMP s’ouvre depuis la page)
@@ -1065,6 +1070,21 @@ const ILLUS = {
     return `<svg class="il il--model" viewBox="0 0 280 170" aria-hidden="true">${s}
       <g class="buse"><path class="c-dim" d="M52 62H228"/><path class="c-orange f-orange" d="M131 64h18v14l-9 12l-9-12z"/></g>
       <text x="22" y="166">MODÉLISER · VÉRIFIER · IMPRIMER</text></svg>`;
+  },
+  studio() {
+    // la fenêtre de l'atelier : ruban, quatre vues (3D, plan, face, section) ; au survol, la section se hachure et les séparateurs glissent
+    const c = ISO(88, 70, 34, 18), h = [];
+    for (let i = 0; i < 7; i++) h.push(`M${160 + i * 9} 132l12-12`);
+    return `<svg class="il il--studio" viewBox="0 0 280 170" aria-hidden="true">
+      <rect class="c-dim f-fond" x="34" y="14" width="212" height="134" rx="4"/>
+      <path class="c-dim" d="M34 26H246M34 40H246"/><path class="c-orange f-orange" d="M34 18a4 4 0 0 1 4-4h26v12H34z"/>
+      <path class="c-dim" d="M44 33h10M60 33h10M76 33h10M92 33h10M118 33h10M134 33h10" stroke-width="4"/>
+      <g class="croix"><path class="c-orange" d="M140 40V148M34 96H246"/><circle class="c-orange f-fond" cx="140" cy="96" r="4"/></g>
+      <path class="c-orange f-orange" d="${chemin([c(-1, -1), c(1, -1), c(1, 1), c(-1, 1)], true)}"/><path class="c-orange" d="M${c(-1, -1).join(' ')}v16L${c(-1, 1)[0]} ${c(-1, 1)[1] + 16}L${c(1, 1)[0]} ${c(1, 1)[1] + 16}V${c(1, 1)[1]}M${c(-1, 1).join(' ')}v16"/>
+      <rect class="c-orange f-orange" x="164" y="54" width="58" height="30"/><circle class="c-orange f-fond" cx="178" cy="69" r="5"/><circle class="c-orange f-fond" cx="208" cy="69" r="5"/>
+      <path class="c-orange f-orange" d="M58 132h60v-10H94v-16H82v16H58z"/>
+      <path class="c-orange" d="M162 132h60v-10h-24v-16h-12v16h-24z"/><path class="c-orange hach" d="${h.join('')}" stroke-width="1.2"/>
+      <text x="22" y="166">RUBAN · PROPRIÉTÉS · 4 VUES</text></svg>`;
   },
   livret() {
     const lignesG =[56, 72, 88, 104].map(y => `M56 ${y}c18-2 36 0 52 6`).join('');
