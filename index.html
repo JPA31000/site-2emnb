@@ -322,12 +322,21 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .objet--large{grid-column:span 2;flex-direction:row;align-items:flex-end;gap:18px}
 .objet--large .objet__vis{order:2;align-self:stretch;margin:16px 0 0}
 .objet--large .objet__corps{max-width:56%}
-/* premier rang : les quatre applications, en cartes plus petites */
-.bento--applis{grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:auto;gap:22px}
+/* premier rang : à gauche, la grande carte BIM Éducation et, dessous, sur la même largeur, son Pas à pas ;
+   à droite, les trois autres applications, en cartes hautes et étroites */
+.bento--applis{grid-template-columns:minmax(0,2.2fr) repeat(3,minmax(0,1fr));grid-template-rows:auto auto;grid-auto-rows:auto;gap:26px}
 .bento--applis .objet{padding:22px 20px 20px}
-.bento--applis .objet__vis{flex:none;height:130px;min-height:0;margin:0 -2px 12px}
+.bento--applis .objet__vis{flex:1 1 auto;min-height:130px;margin:0 -2px 12px}
 .bento--applis .objet h3{font-size:clamp(1.45rem,1.9vw,1.9rem)}
 .bento--applis .objet p{font-size:14.5px}
+.bento--applis .objet:nth-child(1){grid-column:1;grid-row:1;padding:28px 28px 24px}
+.bento--applis .objet:nth-child(1) .objet__vis{min-height:230px;margin:14px 10px 16px}
+.bento--applis .objet:nth-child(1) h3{font-size:clamp(2.1rem,3.1vw,3rem)}
+.bento--applis .objet:nth-child(1) p{font-size:15.5px;max-width:52ch}
+.bento--applis .objet:nth-child(2){grid-column:1;grid-row:2;flex-direction:row;align-items:flex-end;gap:18px;padding:22px 28px}
+.bento--applis .objet:nth-child(2) .objet__vis{order:2;align-self:stretch;min-height:120px;margin:0}
+.bento--applis .objet:nth-child(2) .objet__corps{max-width:56%}
+.bento--applis .objet:nth-child(n+3){grid-row:1 / span 2}
 .entete--suite{margin-top:clamp(64px,9vw,110px)}
 /* les dessins repris du site, en version crayon et lavis */
 .il{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:url(#crayon)}
@@ -461,7 +470,9 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .page__cote{position:static}
   .page__dessin{max-width:420px}
   .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .bento--applis{gap:30px}
+  .bento--applis{grid-template-rows:none;gap:30px}
+  .bento--applis .objet:nth-child(n){grid-column:auto;grid-row:auto}
+  .bento--applis .objet:nth-child(1),.bento--applis .objet:nth-child(2){grid-column:span 2}
   .pied__cols{grid-template-columns:1fr 1fr}
 }
 @media (max-width:900px){
@@ -493,6 +504,10 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .objet--large{flex-direction:column;align-items:stretch;min-height:330px}
   .objet--large .objet__vis{order:0;margin:0 -4px 14px}
   .objet--large .objet__corps{max-width:none}
+  .bento--applis .objet:nth-child(1),.bento--applis .objet:nth-child(2){grid-column:auto}
+  .bento--applis .objet:nth-child(2){flex-direction:column;align-items:stretch}
+  .bento--applis .objet:nth-child(2) .objet__vis{order:0;margin:0 -2px 12px}
+  .bento--applis .objet:nth-child(2) .objet__corps{max-width:none}
   .seq__meta{display:none}
   .pied__cols{grid-template-columns:1fr}
 }
