@@ -323,7 +323,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .objet--large .objet__vis{order:2;align-self:stretch;margin:16px 0 0}
 .objet--large .objet__corps{max-width:56%}
 /* premier rang : les quatre applications, en cartes plus petites */
-.bento--applis{grid-auto-rows:auto}
+.bento--applis{grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:auto;gap:22px}
 .bento--applis .objet{padding:22px 20px 20px}
 .bento--applis .objet__vis{flex:none;height:130px;min-height:0;margin:0 -2px 12px}
 .bento--applis .objet h3{font-size:clamp(1.45rem,1.9vw,1.9rem)}
@@ -461,6 +461,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .page__cote{position:static}
   .page__dessin{max-width:420px}
   .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bento--applis{gap:30px}
   .pied__cols{grid-template-columns:1fr 1fr}
 }
 @media (max-width:900px){
@@ -849,14 +850,14 @@ const DONNEES = {
   espace: [
     { nom: 'BIM Éducation', etiq: 'Maquette numérique', groupe: 'applis', visuel: 'bim', couleur: 'cyan', url: 'bim-education.html',   // page du carnet
       resume: 'Une application pour toi, où tu pourras créer tes premières maquettes numériques, modéliser en 3D avec des informations techniques associées… les premiers pas vers la méthode de travail dénommée BIM (Building Information Model).' },
+    { nom: 'Pas à pas', etiq: 'À garder sous la main', groupe: 'applis', visuel: 'livret', couleur: 'violet', url: 'pas-a-pas.html',   // page du carnet ; le pas à pas accompagne BIM Éducation : il reste juste après
+      resume: 'Votre livret de seconde EMNB.' },
     { nom: 'Cloud Educ', etiq: 'Photos → 3D', groupe: 'applis', visuel: 'cloud', couleur: 'orange', url: 'https://jpa31000.github.io/Cloud_Educ/',   // visionneuse en ligne (dépôt Cloud_Educ)
       resume: 'Une application pour comprendre la photogrammétrie : des photos au nuage de points, au modèle 3D puis au gaussian splatting. Ouvre deux projets déjà calculés, tourne autour, mesure, regarde la vidéo et lis le cours. Un outil pédagogique, pas un logiciel professionnel.' },
     { nom: 'Model Educ', etiq: 'Impression 3D', groupe: 'applis', visuel: 'model', couleur: 'vert', url: 'https://jpa31000.github.io/Model_Educ/',   // appli en ligne (dépôt Model_Educ)
       resume: 'Une application pour essayer sept façons de modéliser en 3D : courbes, subdivision, surfaces implicites, voxels, solides, maillage, paramétrique. Vérifie si ta pièce est imprimable, regarde ses couches et exporte-la en STL. Un outil pédagogique, pas un logiciel professionnel.' },
     { nom: 'Model Educ Studio', etiq: 'Modélisation 3D', groupe: 'applis', visuel: 'studio', couleur: 'orange', url: 'https://jpa31000.github.io/3DModel_Educ/',   // appli en ligne (dépôt 3DModel_Educ)
       resume: 'Un atelier de modélisation 3D avec ruban d’outils, fenêtre Propriétés et arborescence. Pose des solides, des courbes, des voxels sur le plateau, perce, fusionne, et regarde ta pièce dans une à quatre fenêtres : 3D, plan, face, côté, section. Contrôle d’impression et export STL. Un outil pédagogique, pas un logiciel professionnel.' },
-    { nom: 'Pas à pas', etiq: 'À garder sous la main', taille: 'large', visuel: 'livret', couleur: 'violet', url: 'pas-a-pas.html',   // page du carnet
-      resume: 'Votre livret de seconde EMNB.' },
     { nom: 'PFMP', etiq: 'Stages 2026-2027', visuel: 'pfmp', couleur: 'orange', url: 'pfmp.html',   // page du carnet (le dossier Drive des PFMP s’ouvre depuis la page)
       resume: 'Dates, CV, mail à l’entreprise, convention : tout pour préparer vos deux PFMP.' },
     { nom: 'Rendu', etiq: 'Dossier Drive', visuel: 'rendu', couleur: 'violet', url: 'https://drive.google.com/drive/folders/1nXNi4qjC1mdMxLex89h6b1lY2WjYfryr?usp=sharing',
