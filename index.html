@@ -60,6 +60,14 @@ main,.pied{position:relative;z-index:1}
 .nav.solide{background:rgba(247,244,236,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .nav.solide::after{opacity:1}
 .nav.cachee{transform:translateY(-112%)}   /* 112 % : la ligne de crédit dépasse le bas de la barre, elle doit disparaître aussi */
+/* ---------- l'aiguillage de niveau : 2EMNB | 1AA, à côté du logo ---------- */
+.nav--niv .logo{margin-right:0}
+.niveaux{display:flex;align-items:center;gap:7px;margin:0 auto 0 4px;font:400 17px/1 var(--main)}
+.niveaux a{padding:5px 12px 6px;color:var(--gr2);border:1.6px dashed var(--gr3);border-radius:8px 11px 7px 10px;transition:color .2s,border-color .2s,background .2s}
+.niveaux a:hover{color:var(--gr);border-color:var(--gr2)}
+.niveaux a[aria-current="page"]{color:var(--rouge);border:1.8px solid var(--rouge);background:rgba(255,222,40,.3);pointer-events:none}
+@media (max-width:1100px){.niveaux{display:none}}
+.code-lisible{font-family:var(--texte)!important;font-weight:700}   /* « 1AA » : la police d'écriture dessine le 1 comme un I */
 .logo{display:flex;align-items:center;gap:10px;margin-right:auto;line-height:1}
 .logo b{font:400 30px/1 var(--main)}
 .logo small{display:block;margin-top:3px;font:400 13px var(--texte);color:var(--gr2)}
@@ -548,11 +556,12 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 <canvas class="trace" id="trace" aria-hidden="true"></canvas>
 <svg class="progres" viewBox="0 0 1000 8" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 4C160 2 320 6 500 4S840 3 998 5"/></svg>
 
-<header class="nav" id="nav">
+<header class="nav nav--niv" id="nav">
   <a class="logo" href="#accueil" aria-label="2EMNB, retour en haut de page">
     <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l2.6-8.4L21.5 4.7l5.8 5.8L13.4 24.4z" fill="#f2c14e" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l2.6-8.4 5.8 5.8z" fill="#f1dfc0" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l1.2-3.9 2.7 2.7z" fill="#2a2a2a"/><path d="M18.6 7.6l5.8 5.8" stroke="#2a2a2a" stroke-width="1.4"/></svg>
     <span><b>2EMNB</b><small>le carnet de la seconde</small></span>
   </a>
+  <div class="niveaux" role="group" aria-label="Choisir le niveau"><a href="index.html" aria-current="page">2EMNB</a><a href="1aa.html"><span class="code-lisible">1AA</span></a></div>
   <nav class="nav__liens" aria-label="Sections du site">
     <a href="#projets">Projets</a><a href="#espace">Mon espace</a><a href="#ateliers">Ateliers</a><a href="#decouvrir">Découvrir</a>
     <a id="nav-synth" href="syntheses.html">Synthèses</a>
@@ -574,6 +583,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   <a href="#ateliers" style="--i:2"><span>03</span>Ateliers</a>
   <a href="#decouvrir" style="--i:3"><span>04</span>Découvrir</a>
   <a href="syntheses.html" style="--i:4"><span>→</span>Synthèses</a>
+  <a href="1aa.html" style="--i:5"><span>→</span>Niveau 1AA</a>
   <p class="mmenu__credit">Sur une idée de&nbsp;: <b>Jean-Philippe Amat</b> <i>|</i> Créateur&nbsp;: <b>Claude</b> <i>|</i> <a href="licence.html">Licence CC BY-NC-SA 4.0</a></p>
 </div>
 
