@@ -927,6 +927,26 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .portable__barre .btn{padding:8px 12px;font-size:16px}
 }
 
+/* ---------- le sommaire : un menu déroulant des vidéos, chacune avec son lien direct vers l'écran du portable ---------- */
+.portable__barre{position:relative}
+.sommaire-btn .chev{transition:transform .35s var(--e-out)}
+.sommaire-btn[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.sommaire{position:absolute;left:50%;top:calc(100% + 10px);z-index:60;box-sizing:border-box;width:min(620px,100%);max-height:min(64vh,500px);overflow:auto;transform:translateX(-50%);padding:12px 10px 14px;text-align:left;background:var(--fiche);border:1.6px dashed var(--gr3);border-radius:10px 14px 9px 12px;box-shadow:var(--ombre);overscroll-behavior:contain}
+.sommaire[hidden]{display:none}
+.sommaire__titre{margin:0 8px 8px;font:400 15.5px/1.4 var(--main);color:var(--gr2)}
+.sommaire ol{list-style:none;margin:0;padding:0}
+.sommaire li{border-top:1px dashed var(--gr3)}
+.sommaire li:first-child{border-top:0}
+.sommaire a{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 8px;border-radius:7px;font:400 16px/1.3 var(--texte);color:var(--gr)}
+.sommaire a:hover,.sommaire a:focus-visible{background:rgba(255,222,40,.3)}
+.sommaire a[aria-current="true"]{background:rgba(201,59,49,.1);box-shadow:inset 3px 0 0 var(--rouge)}
+.sommaire .n{font:400 18px/1 var(--main);color:var(--rouge);text-align:right}
+.sommaire .d{font-size:14px;color:var(--gr2);white-space:nowrap}
+.portable__encours{max-width:62ch;margin:6px auto 0;text-align:center;font:400 16px/1.4 var(--main);color:var(--gr)}
+.portable__encours:empty{display:none}
+@media (max-width:700px){.sommaire a{font-size:15px;gap:8px}}
+@media (pointer:coarse){.sommaire a{padding-top:11px;padding-bottom:11px}}   /* une ligne assez haute pour le doigt */
+
 /* ---------- liens du carnet et de YouTube (partie 2) ---------- */
 .liens-ext{list-style:none;margin:0;max-width:880px;padding:22px 30px;display:grid;gap:10px}
 .liens-ext a{font:400 19px/1.3 var(--main);color:var(--bleu);text-decoration:underline;text-underline-offset:4px}
@@ -1008,11 +1028,14 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
         </div>
       </div>
       <div class="portable__barre" role="group" aria-label="Commandes du portable">
+        <button class="btn sommaire-btn" type="button" id="sommaire-btn" aria-expanded="false" aria-controls="sommaire"><svg class="lect" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5h12M3 9h12M3 13.5h8"/></svg><span>Sommaire</span><svg class="lect chev" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7l4.5 4.5L13.5 7"/></svg></button>
         <button class="btn" type="button" id="portable-plein" aria-pressed="false"><svg class="lect" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V3h4M11 3h4v4M15 11v4h-4M7 15H3v-4"/></svg><span>Plein écran</span></button>
         <button class="btn" type="button" id="portable-tourner"><svg class="lect" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9a6 6 0 0 1 10.4-4M15 2.8V6h-3.2M15 9a6 6 0 0 1-10.4 4M3 15.2V12h3.2"/></svg><span>Vue de face</span></button>
         <a class="btn" id="portable-yt" href="https://www.youtube.com/playlist?list=PLAeZ6nKskh178qFTH1fpRH9w9aYbwhqH-" target="_blank" rel="noopener">Ouvrir sur YouTube<span aria-hidden="true"> ↗</span><span class="sr"> (nouvel onglet)</span></a>
+        <div class="sommaire" id="sommaire" role="region" aria-label="Sommaire de la playlist : choisir une vidéo" hidden></div>
       </div>
-      <p class="note portable__note" id="portable-note">↔ Cliquez sur l’écran pour lancer la playlist. Rien n’est chargé depuis YouTube avant ce clic.</p>
+      <p class="note portable__note" id="portable-note">↔ Cliquez sur l’écran pour lancer la playlist, ou choisissez une vidéo dans le sommaire. Rien n’est chargé depuis YouTube avant ce clic.</p>
+      <p class="portable__encours" id="portable-encours" aria-live="polite"></p>
     </figure>
   </section>
 
@@ -1084,7 +1107,7 @@ const DONNEES = {
 
   titre: 'Autour de Revit',
   motEntoure: 'Revit',
-  chapo: '**Comment apprendre Revit à son rythme ?** Avec une playlist de vidéos pas à pas. Cliquez sur l’écran du portable pour la lancer, passez en plein écran si vous le souhaitez, puis faites une pause et refaites chaque geste dans le logiciel.',
+  chapo: '**Comment apprendre Revit à son rythme ?** Avec une playlist de vidéos pas à pas. Cliquez sur l’écran du portable pour la lancer, ou choisissez une vidéo dans le sommaire, passez en plein écran si vous le souhaitez, puis faites une pause et refaites chaque geste dans le logiciel.',
   parcoursTitre: 'Deux parties, une playlist',
   pied: 'La playlist « Autour de Revit » de la chaîne « Petites notes utiles », présentée dans un portable dessiné, avec des conseils pour bien la suivre.',
   total: '<b>2 parties</b> courtes : bien regarder les vidéos, puis s’entraîner avec les TD Revit du carnet.',
@@ -1104,6 +1127,9 @@ const DONNEES = {
         { titre: 'Revit ouvert à côté', picto: 'portable', texte: 'Faites une pause après chaque geste et refaites-le dans le logiciel : on apprend un outil avec les mains autant qu’avec les yeux.' },
         { titre: 'Revenir en arrière', picto: 'horloge', texte: 'Un passage vous a échappé ? Reculez de 5 secondes avec la flèche gauche, ou ralentissez la lecture avec la roue dentée du lecteur.' },
       ] },
+      { type: 'texte', titre: 'Aller directement à une vidéo', textes: [
+        'Le bouton **Sommaire**, sous le portable, déroule la liste des vidéos de la playlist, dans l’ordre de lecture. Un clic sur une ligne la lance sur l’écran du portable, et la suite de la playlist suit.',
+        'Chaque ligne a son **lien direct** : faites un clic droit puis « Copier l’adresse du lien » pour le donner à un camarade ou le coller dans un TD.'] },
       { type: 'tableau', titre: 'Les touches du lecteur', entetes: ['Touche', 'Effet'], lignes: [
         ['Espace ou K', 'Pause et reprise de la lecture'],
         ['Flèche gauche · flèche droite', 'Reculer ou avancer de 5 secondes'],
@@ -1576,6 +1602,44 @@ PLUS_INITS.push(() => {
    ===================================================================== */
 const YT_LISTE = 'PLAeZ6nKskh178qFTH1fpRH9w9aYbwhqH-';
 const YT_LECTEUR = 'https://www.youtube-nocookie.com/embed/videoseries?list=' + YT_LISTE + '&autoplay=1&rel=0&hl=fr&cc_lang_pref=fr&playsinline=1';
+// le sommaire : les vidéos de la playlist, dans l'ordre de lecture [identifiant YouTube, titre, durée] — relevé le 2026-11-16 (voir _sources\revit)
+/*videos:début*/
+const VIDEOS = [
+  ["AqCzgqvgYiY", "01 Rvt Maquette numérique", "2:19"],
+  ["iBC2IFKQZRw", "02 Rvt Interface", "1:26"],
+  ["zRB6gMmhtG8", "03 Rvt Niveau de détail", "2:42"],
+  ["fFCvaqf7lCY", "04 Rvt Démarrer", "2:32"],
+  ["CvKkDjGG7zQ", "05 Rvt Modifier l’interface", "1:23"],
+  ["nhiqkvq0UFQ", "06-1 Rvt Arborescence", "2:32"],
+  ["mTW5fnmHtpI", "06-2 Rvt Niveaux", "2:47"],
+  ["IoDR-hv-6Rc", "07 Rvt insérer un plan DWG", "3:55"],
+  ["6HnzoWHT4jE", "08 Rvt Files", "3:33"],
+  ["2ZrLeuFU4lI", "09 Rvt Murs", "4:54"],
+  ["kATSQrLlR04", "Rvt 16 Nord géographique", "6:02"],
+  ["1aUW92PaFic", "Rvt 19 Copier multiple", "1:32"],
+  ["43S4xqd1AWk", "Rvt 15 Insérer un IFC", "1:16"],
+  ["6wvExGb1GjY", "Rvt 18 Côtes", "9:00"],
+  ["CNI6mUWGpzw", "Rvt 09 Modéliser un mur", "0:07"],
+  ["Clt2iSly7Y8", "Rvt 16 Nord géographique", "6:02"],
+  ["Ey54sADFCoI", "Rvt 17 Insérer un dwg", "8:11"],
+  ["G9ZU0rLaJnc", "Rvt 10 Insérer image ou pdf", "21:13"],
+  ["IzZWrkjU9fs", "Rvt 06 Arborescence et niveaux", "9:18"],
+  ["Jn_rOGT3XOs", "Rvt 08 Files", "10:47"],
+  ["Ka_YmB6MUeU", "Rvt 22 Feuille", "3:08"],
+  ["OyPx9bldvVo", "Arborescence et niveaux", "9:18"],
+  ["ZnJ9aB1I7i4", "Rvt 14 Créer une toiture", "9:52"],
+  ["cOn6USlT3kc", "Rvt 11 Semelles filantes", "9:10"],
+  ["hvCgdKqOei4", "Rvt 07 Insérer un dwg", "3:37"],
+  ["i7XBj0EoQOI", "Rvt 13 Modifier", "7:01"],
+  ["khcWxqsFyhw", "Insérer un dwg", "3:37"],
+  ["op_k5eqK2ag", "Rvt 22 Murs et contraintes", "3:58"],
+  ["sDABulQmR34", "Rvt 12 Créer un type de mur", "12:44"],
+  ["UFCo4PdphW8", "Twinmotion to Unreal Engine workflow | Twinmotion Tutorial", "1:59"],
+  ["OSSNIaeX_64", "Cotes revit", "0:38"],
+];
+/*videos:fin*/
+const ytSrc = id => (id ? 'https://www.youtube-nocookie.com/embed/' + id + '?list=' + YT_LISTE + '&autoplay=1&rel=0&hl=fr&cc_lang_pref=fr&playsinline=1' : YT_LECTEUR);   // une vidéo précise, la suite de la playlist derrière
+const IDS_VIDEOS = new Set(VIDEOS.map(v => v[0]));
 
 /* ---------- traits à main levée : un rectangle dont chaque côté est un peu courbé ---------- */
 const ptAlea = alea(11);
@@ -1639,22 +1703,32 @@ function initPortable() {
   void affiche.getBoundingClientRect(); $('#affiche-dessin', affiche).classList.add('go');
 
   const vue = v => { fig.dataset.vue = v; $('span', tourner).textContent = v === 'face' ? 'Vue de côté' : 'Vue de face'; };
-  let lance = false;
-  function lire() {   // le lecteur YouTube n'est créé qu'ici, après un geste de l'utilisateur
-    if (lance) return; lance = true;
+  let lance = false, courant = null, lecteur = null;
+  const encours = $('#portable-encours');
+  function marquer() {   // la vidéo lancée est repérée dans le sommaire et annoncée sous le portable
+    $$('#sommaire a[data-video]').forEach(a => { if (a.dataset.video === courant) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+    const i = VIDEOS.findIndex(v => v[0] === courant);
+    encours.textContent = i < 0 ? '' : `Vidéo ${i + 1} sur ${VIDEOS.length} : ${VIDEOS[i][1]} (la suite de la playlist suit).`;
+  }
+  function lire(id) {   // le lecteur YouTube n'est créé qu'ici, après un geste de l'utilisateur ; avec un identifiant, c'est cette vidéo qui démarre
+    if (lance) {
+      if (id && id !== courant) { courant = id; lecteur.classList.remove('ok'); lecteur.addEventListener('load', () => lecteur.classList.add('ok'), { once: true }); lecteur.src = ytSrc(id); marquer(); }
+      return;
+    }
+    lance = true; courant = id || null;
     fig.classList.add('lance'); lancer.classList.add('charge'); vue('face');
     $('.indice', affiche).textContent = 'Chargement du lecteur…';
     const f = document.createElement('iframe');
-    f.src = YT_LECTEUR; f.title = 'Playlist « Autour de Revit » (lecteur YouTube)';
+    f.src = ytSrc(id); f.title = id ? 'Vidéo de la playlist « Autour de Revit » (lecteur YouTube)' : 'Playlist « Autour de Revit » (lecteur YouTube)';
     f.allow = 'autoplay; encrypted-media; picture-in-picture'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
     f.addEventListener('load', () => { f.classList.add('ok'); lancer.remove(); }, { once: true });
-    ecran.appendChild(f); f.focus();
+    lecteur = f; ecran.appendChild(f); f.focus(); marquer();
     note.textContent = location.protocol === 'file:'
       ? 'Ouverte depuis un fichier local, la page ne peut pas toujours faire démarrer le lecteur YouTube : utilisez « Ouvrir sur YouTube », ou la version en ligne.'
       : 'Lecture assurée par le lecteur YouTube (youtube-nocookie.com). Échap quitte le plein écran. Rien ne démarre ? Utilisez « Ouvrir sur YouTube ».';
     setTimeout(() => { if (lancer.isConnected) note.textContent = 'Le lecteur met du temps à répondre : vous pouvez ouvrir la playlist directement sur YouTube.'; }, 8000);
   }
-  lancer.addEventListener('click', lire);
+  lancer.addEventListener('click', () => lire());
   $$('[data-lancer]').forEach(b => b.addEventListener('click', () => { lire(); fig.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'nearest' }); }));
   tourner.addEventListener('click', () => vue(fig.dataset.vue === 'face' ? 'cote' : 'face'));
   // plein écran : l'écran seul (la vidéo) ; l'iPhone ne sait pas le faire pour un bloc → on masque le bouton (le lecteur a le sien)
@@ -1665,6 +1739,38 @@ function initPortable() {
     ecran.requestFullscreen({ navigationUI: 'hide' }).catch(() => { /* refusé : on reste dans la page */ });
   });
   document.addEventListener('fullscreenchange', () => plein.setAttribute('aria-pressed', String(document.fullscreenElement === ecran)));
+  // le sommaire : un menu déroulant des vidéos ; chaque ligne est un vrai lien (#video=identifiant) qui lance la vidéo sur l'écran du portable
+  const bouton = $('#sommaire-btn'), panneau = $('#sommaire');
+  panneau.innerHTML = `<p class="sommaire__titre">${VIDEOS.length} vidéos, dans l’ordre de la playlist. Un clic lance la vidéo sur l’écran du portable ; la suite de la playlist suit.</p><ol>${VIDEOS.map(([id, titre, duree], i) => `<li><a href="autour-de-revit.html#video=${id}" data-video="${id}"><span class="n">${i + 1}</span><span class="t">${esc(titre)}</span><span class="d"><span class="sr">durée </span>${esc(duree)}</span></a></li>`).join('')}</ol>`;
+  const liens = () => $$('a[data-video]', panneau);
+  const ouvrir = (o, focus) => {
+    panneau.hidden = !o; bouton.setAttribute('aria-expanded', String(o));
+    if (!o) return;
+    const exces = panneau.getBoundingClientRect().bottom - (innerHeight - 16);   // le menu s'ouvre sous le portable : la page défile pour qu'on le voie en entier
+    if (exces > 0) scrollBy({ top: exces, behavior: REDUIT ? 'auto' : 'smooth' });
+    if (focus) { const a = $('a[aria-current="true"]', panneau) || liens()[0]; a.focus({ preventScroll: true }); panneau.scrollTop = Math.max(0, a.offsetTop - panneau.clientHeight / 2 + a.offsetHeight / 2); }
+  };
+  bouton.addEventListener('click', () => ouvrir(panneau.hidden, true));
+  document.addEventListener('click', e => { if (!panneau.hidden && !panneau.contains(e.target) && !bouton.contains(e.target)) ouvrir(false); });
+  panneau.addEventListener('click', e => {
+    const a = e.target.closest('a[data-video]'); if (!a) return;
+    e.preventDefault(); ouvrir(false);
+    lire(a.dataset.video); if (lecteur) lecteur.focus();
+    try { history.replaceState(null, '', '#video=' + a.dataset.video); } catch (x) { /* adresse non modifiable : tant pis */ }
+    fig.scrollIntoView({ behavior: REDUIT ? 'auto' : 'smooth', block: 'nearest' });
+  });
+  fig.addEventListener('keydown', e => {   // Échap referme le menu ; les flèches parcourent les lignes
+    if (panneau.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); ouvrir(false); bouton.focus(); return; }
+    const l = liens(), i = l.indexOf(document.activeElement), vers = { ArrowDown: Math.min(i + 1, l.length - 1), ArrowUp: Math.max(i - 1, 0), Home: 0, End: l.length - 1 }[e.key];
+    if (vers !== undefined && i >= 0) { e.preventDefault(); l[vers].focus(); }
+  });
+  const depuisAdresse = () => {   // une adresse …#video=identifiant lance cette vidéo (le sommaire de l'accueil du carnet y mène)
+    const m = /^#video=([\w-]{11})$/.exec(location.hash);
+    if (!m || !IDS_VIDEOS.has(m[1])) return;
+    lire(m[1]); fig.scrollIntoView({ behavior: 'auto', block: 'center' });
+  };
+  depuisAdresse(); addEventListener('hashchange', depuisAdresse);
 }
 function initHero() {
   initPortable();
