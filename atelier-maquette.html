@@ -492,7 +492,7 @@ dialog.dlg-accueil .note-dlg{text-align:center}
   <div id="attente-voile"></div>
   <div id="attente-bas">
     <p id="attente-titre">Atelier Maquette Numérique</p>
-    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.86</span></p>
+    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.88</span></p>
     <div id="attente-licence" role="note">
       <p class="al-titre">Licence Creative Commons <b>CC BY-NC-SA 4.0</b></p>
       <p class="al-texte">Libre pour enseigner et apprendre, à trois conditions : citer l’auteur · pas d’usage commercial · partager les adaptations dans les mêmes conditions.</p>
@@ -31673,7 +31673,6 @@ majTout = function(){
    temps du dessin — `annotsVue` filtre sur la vue, elle ne les verra pas. */
 var _dessinerAvantCalques = dessiner;
 dessiner = function(){
-  try { majPanneauCalques(); } catch(_e){}   // le panneau suit le rendu, à coup sûr
   if(vue.mode !== "table") return _dessinerAvantCalques.apply(this, arguments);
   let caches = [];
   try {
@@ -31713,7 +31712,6 @@ try {
   var _majToutCq2 = majTout;
   majTout = function(){
     const r = _majToutCq2.apply(this, arguments);
-    try { majPanneauCalques(); } catch(_e){}
     return r;
   };
 } catch(_e){}
@@ -54213,7 +54211,7 @@ document.head.insertAdjacentHTML("beforeend", '<style>' +
   'body .cap-retenir{background:#fdf8ec; border:1px solid #e8d5a8; border-radius:5px;' +
     'padding:9px 14px; margin:7px 0 4px; font-size:12.5px; line-height:1.55;' +
     'color:var(--texte)}' +
-  'body .cap-retenir span{display:block; font:600 10px "Segoe UI",sans-serif;' +
+  'body .cap-retenir > span:first-child{display:block; font:600 10px "Segoe UI",sans-serif;' +
     'text-transform:uppercase; letter-spacing:.09em; color:var(--ambre-sombre);' +
     'margin-bottom:3px}' +
 
@@ -81620,7 +81618,9 @@ function rbxTrianguler(pts2, trous2){
   var tri = [], V = R.slice(), garde = V.length * V.length + 10;
   var dedans = function(p, a, b, c){
     var s = function(u, v, w){ return (v[0] - u[0]) * (w[1] - u[1]) - (v[1] - u[1]) * (w[0] - u[0]); };
-    return s(a, b, p) > 1e-12 && s(b, c, p) > 1e-12 && s(c, a, p) > 1e-12;
+    /* (9.88) un sommet SUR le bord de l'oreille l'invalide aussi : un plancher en L dont le sommet rentrant tombait
+       exactement sur la diagonale d'une oreille voyait son encoche remplie (24 m² au lieu de 18) */
+    return s(a, b, p) > -1e-12 && s(b, c, p) > -1e-12 && s(c, a, p) > -1e-12;
   };
   while(V.length > 3 && garde-- > 0){
     var coupe = false;
@@ -88197,7 +88197,8 @@ majPanneau = function(){
           majPanneau();
         });
       });
-      s.querySelector("[data-accr-grille]").addEventListener("click", function(){
+      var bg = s.querySelector("[data-accr-grille]");   // 9.87 : bouton retiré en 9.34, on ne suppose plus sa présence
+      if(bg) bg.addEventListener("click", function(){
         accrRegler({grille:vue.accrocheGrille === false});
         majPanneau();
       });
@@ -111034,6 +111035,1276 @@ if(typeof AUTOTESTS !== "undefined" && AUTOTESTS.push){
       if(document.getElementById("fen-plans-pdf")) r.push("la fenêtre du dossier PDF s'ouvre encore");
       if(typeof lpOuvrir !== "undefined" || typeof LPDF !== "undefined") r.push("le code du module 82 est encore là");
       return r.length ? r.join(" · ") : null;
+    }});
+}
+
+/* =====================================================================
+   MODULE 111 (v9.87) — OUVERTURE SÛRE D'UN PROJET
+   ---------------------------------------------------------------------
+   Analyse de la 9.86 (10/11/2026) : sur 35 fichiers ouverts par
+   Fichier → Ouvrir, 7 laissaient l'atelier CASSÉ. Le message disait
+   « Fichier illisible », mais le projet en cours avait déjà été remplacé
+   par le fichier abîmé : plus aucune vue ne se dessinait (mur sans
+   coordonnées, type de mur inconnu, percements absents, pièce sans
+   contour…), et un mur aux coordonnées démesurées figeait la fenêtre.
+   La reprise de la sauvegarde automatique passait par le même chemin.
+
+   Trois défenses, dans l'ordre :
+   1. ASSAINIR — toute ouverture passe par `migrerProjet` : on y répare ce
+      qui se répare (percements manquants, type de mur inconnu ramené au
+      premier du catalogue, nombres écrits en texte) et l'on écarte ce qui
+      ne se dessinerait pas (ouvrage sans coordonnées, contour illisible,
+      cote à plus de 10 km). On le DIT : rien n'est écarté en silence.
+   2. ÉPROUVER — le projet ouvert est dessiné une fois dans chaque vue
+      avant d'être tenu pour bon.
+   3. REVENIR — au moindre échec, le projet en cours est remis exactement
+      comme il était (modèle, numérotation, historique, vue).
+   Le message d'un fichier refusé dit aussi POURQUOI (fichier vide,
+   maquette IFC à importer par son menu, fichier d'un autre logiciel).
+   ===================================================================== */
+var OS_LIM = 10000;                       // m : au-delà, ce n'est plus un bâtiment
+var OS_CLES = ["x", "y", "x1", "y1", "x2", "y2", "x0", "y0"];
+var OS_LISTES_NIVEAU = ["murs", "cotes", "escaliers", "tremies", "poteaux", "poutres",
+                        "gardecorps", "planchers", "pieces"];
+var OS_LISTES_PROJET = ["toitures", "files", "soubassements", "fondations", "coupes"];
+var OS_NOMS = {murs:"mur", cotes:"cote", escaliers:"escalier", tremies:"trémie", poteaux:"poteau",
+               poutres:"poutre", gardecorps:"garde-corps", planchers:"plancher", pieces:"pièce",
+               toitures:"toiture", files:"file", soubassements:"soubassement",
+               fondations:"fondation", coupes:"coupe", niveaux:"niveau", ouvertures:"baie"};
+var OS_REM = {ecartes:{}, repares:{}};
+
+function osNote(sorte, quoi){
+  var T = OS_REM[sorte];
+  T[quoi] = (T[quoi] || 0) + 1;
+}
+function osBilan(){
+  function phrase(T){
+    return Object.keys(T).map(function(k){ return T[k] + " " + k + (T[k] > 1 && !/s$/.test(k) ? "s" : ""); }).join(", ");
+  }
+  var e = phrase(OS_REM.ecartes), r = phrase(OS_REM.repares);
+  return {ecartes:e, repares:r, vide:!e && !r};
+}
+/* un nombre, même écrit en texte ; NaN pour tout le reste */
+function osNombre(v){
+  if(typeof v === "number") return isFinite(v) ? v : NaN;
+  if(typeof v === "string" && v.trim() !== "" && isFinite(+v)) return +v;
+  return NaN;
+}
+function osPoint(pt){
+  var a, b;
+  if(typeof pt === "number") return isFinite(pt) && Math.abs(pt) <= OS_LIM;
+  if(Array.isArray(pt)){
+    a = osNombre(pt[0]); b = osNombre(pt[1]);
+    if(isNaN(a) || isNaN(b) || Math.abs(a) > OS_LIM || Math.abs(b) > OS_LIM) return false;
+    pt[0] = a; pt[1] = b; return true;
+  }
+  if(pt && typeof pt === "object"){
+    a = osNombre(pt.x); b = osNombre(pt.y);
+    if(isNaN(a) || isNaN(b) || Math.abs(a) > OS_LIM || Math.abs(b) > OS_LIM) return false;
+    pt.x = a; pt.y = b; return true;
+  }
+  return false;
+}
+/* l'objet peut-il se dessiner ? Les nombres écrits en texte sont convertis au passage. */
+function osObjetSain(o, exige, minPoints){
+  var i, k, n;
+  if(!o || typeof o !== "object" || Array.isArray(o)) return false;
+  for(i = 0; i < OS_CLES.length; i++){
+    k = OS_CLES[i];
+    if(o[k] == null) continue;
+    n = osNombre(o[k]);
+    if(isNaN(n) || Math.abs(n) > OS_LIM) return false;
+    if(o[k] !== n){ o[k] = n; osNote("repares", "nombre écrit en texte"); }
+  }
+  if(exige) for(i = 0; i < exige.length; i++) if(typeof o[exige[i]] !== "number") return false;
+  if(o.points != null || minPoints){
+    if(!Array.isArray(o.points) || o.points.length < (minPoints || 0)) return false;
+    for(i = 0; i < o.points.length; i++) if(!osPoint(o.points[i])) return false;
+  }
+  return true;
+}
+function osFiltrer(hote, cle){
+  var L = hote[cle];
+  if(!Array.isArray(L)) return;
+  var exige = cle === "murs" ? ["x1", "y1", "x2", "y2"] : null;
+  var minPoints = (cle === "planchers" || cle === "pieces") ? 3 : 0;
+  var garde = L.filter(function(o){
+    var bon = osObjetSain(o, exige, minPoints);
+    if(!bon) osNote("ecartes", OS_NOMS[cle] || cle);
+    return bon;
+  });
+  if(garde.length !== L.length) hote[cle] = garde;
+}
+function osMur(m){
+  if(!Array.isArray(m.ouvertures)){ m.ouvertures = []; osNote("repares", "mur sans liste de baies"); }
+  var bonnes = m.ouvertures.filter(function(o){
+    if(!o || typeof o !== "object") return false;
+    var pos = osNombre(o.pos), l = osNombre(o.l);
+    if(isNaN(pos) || isNaN(l) || l <= 0 || Math.abs(pos) > OS_LIM || l > OS_LIM) return false;
+    o.pos = pos; o.l = l; return true;
+  });
+  if(bonnes.length !== m.ouvertures.length){
+    for(var i = bonnes.length; i < m.ouvertures.length; i++) osNote("ecartes", "baie");
+    m.ouvertures = bonnes;
+  }
+  if(m.cat !== "porteur" && m.cat !== "cloison" && m.cat !== "banche"){
+    m.cat = "cloison"; osNote("repares", "catégorie de mur inconnue");
+  }
+}
+/* AVANT la chaîne des migrations : ce qu'elle suppose sans le vérifier */
+function osAssainir(p){
+  OS_REM.ecartes = {}; OS_REM.repares = {};
+  if(!p || typeof p !== "object" || Array.isArray(p)) throw new Error("format");
+  if(typeof p.nom !== "string" || !p.nom.trim()) p.nom = "sans titre";
+  if(Array.isArray(p.murs)){                       // format v1 : murs à la racine
+    osFiltrer(p, "murs");
+    p.murs.forEach(osMur);
+  }
+  if(Array.isArray(p.niveaux)){
+    var bons = p.niveaux.filter(function(n){
+      var bon = !!n && typeof n === "object" && !Array.isArray(n);
+      if(!bon) osNote("ecartes", "niveau");
+      return bon;
+    });
+    if(bons.length !== p.niveaux.length) p.niveaux = bons;
+    p.niveaux.forEach(function(n){
+      OS_LISTES_NIVEAU.forEach(function(cle){ osFiltrer(n, cle); });
+      if(Array.isArray(n.murs)) n.murs.forEach(osMur);
+    });
+  }
+  OS_LISTES_PROJET.forEach(function(cle){ osFiltrer(p, cle); });
+  return p;
+}
+/* APRÈS la chaîne : un type de mur doit exister dans le catalogue (types du
+   logiciel + types composés du projet), sinon chaque vue lit hors tableau */
+function osTypes(p){
+  if(!p || !Array.isArray(p.niveaux)) return p;
+  var perso = Array.isArray(p.mursPerso) ? p.mursPerso : [];
+  var nC = N_CLOISONS + perso.filter(function(t){ return t && t.cat === "cloison"; }).length;
+  var nP = N_PORTEURS + perso.filter(function(t){ return t && t.cat !== "cloison"; }).length;
+  p.niveaux.forEach(function(n){
+    if(!n || !Array.isArray(n.murs)) return;
+    n.murs.forEach(function(m){
+      if(!m.id) m.id = uid();
+      var max = m.cat === "porteur" ? nP : nC;
+      if(typeof m.type !== "number" || m.type % 1 !== 0 || m.type < 0 || (m.cat !== "banche" && m.type >= max)){
+        m.type = 0; osNote("repares", "type de mur inconnu");
+      }
+    });
+  });
+  return p;
+}
+var _migrerProjetAvantOS = migrerProjet;
+migrerProjet = function(p){
+  osAssainir(p);
+  var r = _migrerProjetAvantOS.apply(this, arguments);
+  osTypes(r || p);
+  return r;
+};
+
+/* le projet se dessine-t-il dans chaque vue ? (lève une exception sinon) */
+function osEprouver(){
+  var mode0 = vue.mode, modes = ["plan", "coupe", "facade", "3d"], i;
+  try {
+    for(i = 0; i < modes.length; i++){ vue.mode = modes[i]; dessiner(); }
+  } finally {
+    vue.mode = mode0;
+  }
+  dessiner();
+  instantaneProjet();
+}
+/* pourquoi ce fichier n'est pas un projet */
+function osMotif(txt, nom){
+  var t = String(txt || "").replace(/^﻿/, "").trim();
+  if(!t) return "Ce fichier est vide.";
+  if(/^ISO-10303-21/.test(t) || /\.ifc$/i.test(nom || ""))
+    return "Ce fichier est une maquette IFC, pas un projet de l’atelier.\n\n" +
+           "Pour la lire : menu Fichier → « Importer une maquette IFC… ».";
+  if(/^</.test(t)) return "Ce fichier est une page ou un dessin (HTML, SVG, XML), pas un projet de l’atelier.";
+  if(t.charAt(0) !== "{")
+    return "Ce fichier n’est pas un projet Atelier Maquette.\n\n" +
+           "Un projet s’enregistre par Fichier → Enregistrer : c’est un fichier « .json ».";
+  return "Ce fichier « .json » ne vient pas de l’Atelier Maquette, ou il est incomplet : il n’a pas pu être ouvert.";
+}
+var OS_INTACT = "\n\nVotre projet en cours est resté tel qu’il était.";
+
+function osOuvrirTexte(txt, nomFichier){
+  var d = null;
+  try { d = JSON.parse(String(txt).replace(/^﻿/, "")); } catch(_e){ d = null; }
+  if(!d || typeof d !== "object" || !d.projet || typeof d.projet !== "object" || Array.isArray(d.projet)){
+    alert(osMotif(txt, nomFichier) + OS_INTACT);
+    return false;
+  }
+  var avant = instantaneProjet(), idc0 = idc, pile = undoStack.length, refaire = redoStack.slice(),
+      modifie0 = modifie, mode0 = vue.mode, bilan;
+  try {
+    pousserHistorique();
+    idc = Math.max(idc, osNombre(d.idc) || 1);
+    S = migrerProjet(d.projet);
+    bilan = osBilan();
+    if(S.parcours) S.parcours.actif = false;    // projet enregistré : parcours retiré
+    if(S.defis) S.defis.actif = false;          // … et les défis, comme à l’accueil
+    capturerAcquis();
+    viderSel();
+    majPillProjet();
+    cadrer(); majTout();
+    osEprouver();
+  } catch(err){
+    try {
+      S = rendreSrcFonds(JSON.parse(avant));
+      idc = idc0;
+      undoStack.length = Math.min(undoStack.length, pile);
+      redoStack.length = 0; refaire.forEach(function(x){ redoStack.push(x); });
+      modifie = modifie0; vue.mode = mode0;
+      viderSel(); majPillProjet(); majMenusEdition(); majTout();
+    } catch(_e2){}
+    alert("Ce fichier ne peut pas être ouvert : c’est un projet de l’atelier, mais il est trop abîmé pour être dessiné." + OS_INTACT);
+    return false;
+  }
+  var base = "Projet « " + S.nom + " » chargé (" + S.niveaux.length + " niveau" +
+             (S.niveaux.length > 1 ? "x" : "") + ", " + S.toitures.length + " toiture" +
+             (S.toitures.length > 1 ? "s" : "") + ").";
+  if(bilan.vide){ statut(base); return true; }
+  statut(base + " Fichier abîmé : voir le message.");
+  alert("Le projet « " + S.nom + " » est ouvert, mais son fichier était abîmé.\n\n" +
+        (bilan.ecartes ? "Écarté, car impossible à dessiner : " + bilan.ecartes + ".\n" : "") +
+        (bilan.repares ? "Réparé : " + bilan.repares + ".\n" : "") +
+        "\nLe reste du projet est là. Enregistrez-le sous un autre nom pour garder le fichier d’origine.");
+  return true;
+}
+/* Fichier → Ouvrir : ce module prend la main avant l'ancien gestionnaire */
+document.addEventListener("change", function(e){
+  var c = e.target;
+  if(!c || c.id !== "fichier-input") return;
+  e.stopImmediatePropagation();
+  var f = c.files && c.files[0];
+  if(!f) return;
+  var lecteur = new FileReader();
+  lecteur.onload = function(){ osOuvrirTexte(lecteur.result, f.name); };
+  lecteur.onerror = function(){ alert("Le fichier n’a pas pu être lu." + OS_INTACT); };
+  lecteur.readAsText(f);
+  c.value = "";
+}, true);
+
+if(typeof AUTOTESTS !== "undefined" && AUTOTESTS.push){
+  /* un fichier de projet tiré du pavillon d'exemple, abîmé par `f` */
+  var osFichierEssai = function(f){
+    var P = migrerProjet(JSON.parse(JSON.stringify(PAVILLON_EXEMPLE)));
+    P = JSON.parse(JSON.stringify(P));
+    if(f) f(P);
+    return JSON.stringify({app:"atelier-maquette", version:4, idc:900, projet:P});
+  };
+  var osSansAlerte = function(f){
+    var vraie = window.alert, dits = [];
+    window.alert = function(m){ dits.push(String(m)); };
+    try { f(dits); } finally { window.alert = vraie; }
+    return dits;
+  };
+  AUTOTESTS.push({nom:"9.87 · Ouverture sûre : un projet sain s’ouvre entier, sans une remarque",
+    f:function(){
+      var r = [], avant, apres;
+      var P = migrerProjet(JSON.parse(JSON.stringify(PAVILLON_EXEMPLE)));
+      avant = JSON.stringify(P);
+      osAssainir(P); osTypes(P);
+      apres = JSON.stringify(P);
+      if(avant !== apres) r.push("l'assainissement modifie le pavillon d'exemple");
+      if(!osBilan().vide) r.push("remarques sur un projet sain : " + JSON.stringify(OS_REM));
+      var dits = osSansAlerte(function(){
+        if(!osOuvrirTexte(osFichierEssai(), "essai.json")) r.push("le pavillon ré-enregistré est refusé");
+      });
+      if(dits.length) r.push("un message s'affiche pour un projet sain : " + dits[0].slice(0, 60));
+      if(S.nom !== "pavillon-exemple" || S.niveaux.length !== 2) r.push("le projet ouvert n'est pas le pavillon");
+      return r;
+    }});
+  AUTOTESTS.push({nom:"9.87 · Ouverture sûre : un fichier abîmé s’ouvre réparé, se dessine dans chaque vue, et le message dit ce qui a été écarté",
+    f:function(){
+      var r = [];
+      var n0 = PAVILLON_EXEMPLE.niveaux[0].murs.length;
+      var txt = osFichierEssai(function(P){
+        var M = P.niveaux[0].murs;
+        delete M[0].ouvertures;                    // réparé
+        M[1].type = 999;                           // réparé
+        M[2].cat = "zzz";                          // réparé
+        M[3].x1 = "abc";                           // écarté
+        delete M[4].x2;                            // écarté
+        M[5].x2 = 1e9;                             // écarté
+        M[6].x1 = String(M[6].x1);                 // nombre en texte : converti
+        P.niveaux[0].planchers.push({id:"p-faux", type:1, points:[[0, 0], [1, 1]]});
+        (P.niveaux[0].pieces = P.niveaux[0].pieces || []).push({id:"pc-faux", nom:"?"});
+        P.niveaux.push(null);
+        delete P.nom;
+      });
+      var ok, dits = osSansAlerte(function(){ ok = osOuvrirTexte(txt, "essai.json"); });
+      if(!ok) return ["le fichier abîmé est refusé au lieu d'être réparé"];
+      var M = S.niveaux[0].murs;
+      if(M.length !== n0 - 3) r.push((n0 - M.length) + " murs écartés au lieu de 3");
+      if(S.niveaux.length !== 2) r.push("le niveau nul n'est pas écarté");
+      if(S.nom !== "sans titre") r.push("le nom manquant n'est pas remplacé");
+      if(M.some(function(m){ return !Array.isArray(m.ouvertures) || !catalogueMur(m); })) r.push("un mur reste sans baies ou sans type");
+      if(M.some(function(m){ return typeof m.x1 !== "number"; })) r.push("une coordonnée reste en texte");
+      if(S.niveaux[0].planchers.some(function(p){ return p.id === "p-faux"; })) r.push("le plancher à 2 points est gardé");
+      if(S.niveaux[0].pieces.some(function(p){ return p.id === "pc-faux"; })) r.push("la pièce sans contour est gardée");
+      if(dits.length !== 1 || !/3 murs/.test(dits[0]) || !/Réparé/.test(dits[0])) r.push("le message ne dit pas ce qui a été écarté et réparé : " + (dits[0] || "aucun").slice(0, 120));
+      ["plan", "coupe", "facade", "3d", "cartouche"].forEach(function(m){
+        var m0 = vue.mode;
+        try { vue.mode = m; dessiner(); } catch(e){ r.push("la vue " + m + " ne se dessine pas : " + e.message.slice(0, 50)); }
+        finally { vue.mode = m0; }
+      });
+      return r;
+    }});
+  AUTOTESTS.push({nom:"9.87 · Ouverture sûre : un fichier refusé laisse le projet en cours exactement comme il était, et dit pourquoi",
+    f:function(){
+      var r = [];
+      var cas = [["", /vide/], ["bonjour", /n’est pas un projet/], ["{}", /ne vient pas/], ["[]", /n’est pas un projet/],
+                 ["null", /n’est pas un projet/], ['{"projet":"x"}', /ne vient pas/], ['{"projet":{}}', /abîmé|ne vient pas/],
+                 ['{"projet":{"niveaux":[null]}}', /abîmé|ne vient pas/],
+                 ["ISO-10303-21;\nHEADER;", /Importer une maquette IFC/], ["<svg></svg>", /page ou un dessin/]];
+      cas.forEach(function(c){
+        var avant = instantaneProjet(), pile = undoStack.length, idc0 = idc, mode0 = vue.mode, ok;
+        var dits = osSansAlerte(function(){ ok = osOuvrirTexte(c[0], "essai.json"); });
+        var nom = JSON.stringify(c[0]).slice(0, 30);
+        if(ok) r.push(nom + " est accepté");
+        if(instantaneProjet() !== avant) r.push(nom + " change le projet en cours");
+        if(undoStack.length !== pile) r.push(nom + " laisse une étape dans l'historique");
+        if(idc !== idc0) r.push(nom + " change la numérotation");
+        if(vue.mode !== mode0) r.push(nom + " change la vue");
+        if(dits.length !== 1 || !c[1].test(dits[0])) r.push(nom + " : message inattendu « " + (dits[0] || "aucun").slice(0, 60) + " »");
+        else if(!/resté tel qu’il était/.test(dits[0])) r.push(nom + " : le message ne rassure pas sur le projet en cours");
+      });
+      return r;
+    }});
+  AUTOTESTS.push({nom:"9.87 · Ménage : plus d’appel à une fonction qui n’existe pas à chaque dessin, et « À retenir » ne met plus le glossaire en capitales",
+    f:function(){
+      var r = [];
+      var appels = 0;
+      window.majPanneauCalques = function(){ appels++; };
+      try { dessiner(); majTout(); } finally { delete window.majPanneauCalques; }
+      if(appels) r.push("une fonction disparue est encore appelée " + appels + " fois par dessin");
+      var d = document.createElement("div");
+      d.className = "cap-retenir";
+      d.innerHTML = "<span>À retenir</span>texte <span class=\"essai-mot\">mot</span>";
+      document.body.appendChild(d);
+      try {
+        var S2 = d.querySelectorAll("span");
+        if(getComputedStyle(S2[0]).textTransform !== "uppercase") r.push("le titre « À retenir » n'est plus en capitales");
+        if(getComputedStyle(S2[1]).textTransform === "uppercase" || getComputedStyle(S2[1]).display === "block")
+          r.push("un mot du texte est encore traité comme le titre");
+      } finally { d.remove(); }
+      return r;
+    }});
+}
+
+/* =====================================================================
+   MODULE 112 (v9.88) — L'EXPORT EN STL : IMPRIMER LA MAQUETTE
+   ---------------------------------------------------------------------
+   Demande de JP (16/11/2026) : « pouvoir exporter en fichier STL ».
+
+   Le STL est le format que lisent tous les trancheurs (Cura, PrusaSlicer,
+   Bambu Studio) et Model Educ Studio, que JP vient de doter d'une insertion
+   de STL : la maquette de l'atelier peut donc se IMPRIMER, ou se tailler
+   ensuite dans Model Educ Studio.
+
+   D'OÙ VIENNENT LES TRIANGLES. L'atelier sait déjà fabriquer le maillage de
+   son bâtiment : murs percés de leurs baies, dalles trouées de leurs trémies,
+   toitures, escaliers, structure — c'est celui de l'export Roblox et de la 3D
+   temps réel (`rbxConstruire`). Ses facettes sont orientées vers l'extérieur,
+   ce que demande le STL. La maquette IFC jointe (modules 106-107) a le sien.
+   Aucun maillage n'est refait : on choisit, on met à l'échelle, on écrit.
+
+   REPÈRE ET UNITÉ. Le STL est en MILLIMÈTRES, x vers l'est, y vers le NORD,
+   z vers le haut (main droite) — comme l'IFC. Le plan de l'atelier a son y vers
+   le sud : passer à (x, −y, z) est un miroir ; le maillage de sortie est en
+   (x, haut, y) et passe à (x, −z, y), une rotation : l'ordre des sommets reste
+   celui des facettes. Vérifié par le volume signé (positif = facettes vers
+   l'extérieur) et par un plan en L dont l'encoche est au sud-est.
+
+   CE QU'ON PEUT IMPRIMER, ET CE QU'ON NE PEUT PAS. À 1/100, un mur de 20 cm
+   fait 2 mm — bon ; une cloison de 7 cm fait 0,7 mm — la buse de 0,4 mm ne la
+   trace pas. Un vitrage de 4 cm fait 0,04 mm. La fenêtre dit donc ce que
+   chaque échelle donne, et par défaut laisse les menuiseries et les vitrages :
+   les baies restent des trous. Un contrôle de COUCHES dit si le maillage se
+   découpe en contours fermés (c'est ce que fait un trancheur) — l'étanchéité
+   « arête par arête » ne dit rien ici : les murs sont faits de bandes qui se
+   raccordent par des sommets en T, que tout trancheur recolle.
+   ===================================================================== */
+
+var STL_ECHELLES = [1, 10, 20, 25, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 5000];
+var STL_OPTIONS = {contenu:"projet", echelle:0, plateau:200, socle:2, menuiseries:false, vitrages:false, toitures:true,
+                   charpente:false, escaliers:true, structure:true, infra:false, terrain:false, exclus:[], exclusIfc:[]};
+var STL_MARGE = 5;               /* mm de socle qui dépassent du bâti, de chaque côté */
+var STL_MAX_STUDIO = 60000;      /* triangles que Model Educ Studio accepte (limite lue dans son code) */
+var STL_BUSE = 0.4;              /* mm : la buse courante ; une paroi se trace en trois passages, soit 1,2 mm */
+var STL_MIN_PAROI = 1.2;
+
+/* ---------------------------------------------------------------------
+   112.1 · LES TRIANGLES
+   --------------------------------------------------------------------- */
+function stlNomNiveau(niv, i){ return niv.nom || nomNiveauDefaut(i); }
+function stlNomsNiveaux(){ return S.niveaux.map(stlNomNiveau); }
+
+/* un groupe du maillage de l'atelier est-il à imprimer ? */
+function stlGardeGroupe(g, O, noms){
+  var mat = String(g.mat).split("~")[0];
+  if(mat === "verre") return !!O.vitrages;
+  var ch = g.chemin || [], k = ch[0] === "Projet" ? 1 : 0;
+  if(ch[k + 1] === "Menuiseries" && !O.menuiseries) return false;
+  if(noms.indexOf(ch[k]) >= 0 && (O.exclus || []).indexOf(ch[k]) >= 0) return false;
+  return true;
+}
+/* le maillage de sortie (x, haut, y sud) → STL (x, −y sud, haut) = (X, −Z, Y) : une rotation, l'ordre des sommets est gardé.
+   Les coordonnées sont rendues relatives au premier sommet : un quartier s'étend sur des centaines de mètres,
+   et un nombre à 32 bits n'y garderait pas le centième de millimètre. */
+function stlDepuisRbx(maillages, garde){
+  var total = 0, nul = 0, o = 0, org = null;
+  maillages.forEach(function(g){ if(garde(g)) total += g.nTri; });
+  var out = new Float32Array(total*9);
+  maillages.forEach(function(g){
+    if(!garde(g)) return;
+    for(var t = 0; t < g.nTri; t++){
+      var a = g.idx[t*3]*3, b = g.idx[t*3 + 1]*3, c = g.idx[t*3 + 2]*3;
+      var ax = g.pos[a], ay = -g.pos[a + 2], az = g.pos[a + 1];
+      var bx = g.pos[b], by = -g.pos[b + 2], bz = g.pos[b + 1];
+      var cx = g.pos[c], cy = -g.pos[c + 2], cz = g.pos[c + 1];
+      var ux = bx - ax, uy = by - ay, uz = bz - az, vx = cx - ax, vy = cy - ay, vz = cz - az;
+      var nx = uy*vz - uz*vy, ny = uz*vx - ux*vz, nz = ux*vy - uy*vx;
+      if(nx*nx + ny*ny + nz*nz < 1e-18){ nul++; continue; }
+      if(!org) org = [ax, ay, az];
+      out[o++] = ax - org[0]; out[o++] = ay - org[1]; out[o++] = az - org[2];
+      out[o++] = bx - org[0]; out[o++] = by - org[1]; out[o++] = bz - org[2];
+      out[o++] = cx - org[0]; out[o++] = cy - org[1]; out[o++] = cz - org[2];
+    }
+  });
+  return {tri:out.subarray(0, o), nul:nul, ouverts:0, sol:0};
+}
+/* la maquette IFC jointe : triangles de l'atelier (x, y sud, z) → STL (x, −y, z), un miroir : deux sommets échangés */
+function stlDepuisIfc(O){
+  var G = igRef();
+  if(!G) return null;
+  var R = igRotDe(G), pieces = [], total = 0;
+  G.objets.forEach(function(o){
+    if(o.sol && !O.terrain) return;
+    if(o.toit && !O.toitures) return;
+    if(!o.sol && (O.exclusIfc || []).indexOf(o.t) >= 0) return;
+    o.p.forEach(function(p){
+      if(p.a !== undefined && p.a < 0.5 && !O.vitrages) return;
+      var t = igTriTournes(p, R);
+      pieces.push({t:t, ferme:!!p.f, sol:!!o.sol});
+      total += t.length/9;
+    });
+  });
+  var out = new Float32Array(total*9), k = 0, nul = 0, ouverts = 0, sol = 0, org = null;
+  pieces.forEach(function(P){
+    var t = P.t;
+    for(var j = 0; j < t.length; j += 9){
+      var ax = t[j], ay = -t[j + 1], az = t[j + 2];
+      var bx = t[j + 6], by = -t[j + 7], bz = t[j + 8];       /* le troisième sommet passe en deuxième */
+      var cx = t[j + 3], cy = -t[j + 4], cz = t[j + 5];
+      var ux = bx - ax, uy = by - ay, uz = bz - az, vx = cx - ax, vy = cy - ay, vz = cz - az;
+      var nx = uy*vz - uz*vy, ny = uz*vx - ux*vz, nz = ux*vy - uy*vx;
+      if(nx*nx + ny*ny + nz*nz < 1e-18){ nul++; continue; }
+      if(!org) org = [ax, ay, az];
+      out[k++] = ax - org[0]; out[k++] = ay - org[1]; out[k++] = az - org[2];
+      out[k++] = bx - org[0]; out[k++] = by - org[1]; out[k++] = bz - org[2];
+      out[k++] = cx - org[0]; out[k++] = cy - org[1]; out[k++] = cz - org[2];
+      if(!P.ferme) ouverts++;
+      if(P.sol) sol++;
+    }
+  });
+  return {tri:out.subarray(0, k), nul:nul, ouverts:ouverts, sol:sol};
+}
+/* tout ce que l'export retient, en mètres */
+function stlCollecter(O){
+  var r;
+  if(O.contenu === "ifc") r = stlDepuisIfc(O);
+  else {
+    var noms = stlNomsNiveaux();
+    var sc = rbxConstruire({contenu:O.contenu, brut:O.contenu === "projet", unite:"m",
+      menuiseries:!!(O.menuiseries || O.vitrages), toitures:!!O.toitures, charpente:!!O.charpente,
+      escaliers:!!O.escaliers, structure:!!O.structure, infra:!!O.infra});
+    r = stlDepuisRbx(sc.maillages, function(g){ return stlGardeGroupe(g, O, noms); });
+  }
+  if(!r) r = {tri:new Float32Array(0), nul:0, ouverts:0, sol:0};
+  r.n = r.tri.length/9;
+  r.cle = stlCleCollecte(O);
+  return r;
+}
+function stlCleCollecte(O){
+  return [O.contenu, +!!O.menuiseries, +!!O.vitrages, +!!O.toitures, +!!O.charpente, +!!O.escaliers, +!!O.structure, +!!O.infra,
+          +!!O.terrain, (O.exclus || []).join("|"), (O.exclusIfc || []).join("|")].join("/");
+}
+/* les classes d'objets de la maquette IFC jointe (hors terrain), regroupées par nom — « Mur » réunit IfcWall et IfcWallStandardCase —,
+   de la plus nombreuse à la plus rare */
+function stlNomClasseIfc(t){
+  return (typeof IG_CLASSE_FR !== "undefined" && IG_CLASSE_FR[t]) || ifcNomClasse(t);
+}
+function stlClassesIfc(){
+  var G = igRef(), gr = {};
+  if(!G) return [];
+  G.objets.forEach(function(o){
+    if(o.sol) return;
+    var lib = stlNomClasseIfc(o.t), c = gr[lib] || (gr[lib] = {lib:lib, types:[], n:0});
+    if(c.types.indexOf(o.t) < 0) c.types.push(o.t);
+    c.n++;
+  });
+  return Object.keys(gr).map(function(k){ return gr[k]; }).sort(function(x, y){ return y.n - x.n || (x.lib < y.lib ? -1 : 1); });
+}
+
+/* ---------------------------------------------------------------------
+   112.2b · L'APERÇU : CE QUI SERA IMPRIMÉ
+   Une vue en projection parallèle, rendue facette par facette avec un
+   tampon de profondeur et un éclairage de Lambert (les deux faces d'une
+   surface ouverte sont éclairées) : l'élève voit l'effet de chaque case
+   cochée, même sur les 400 000 triangles d'une maquette IFC.
+   --------------------------------------------------------------------- */
+function stlApercu(cv, tri, az){
+  var W = cv.width, H = cv.height, g = cv.getContext("2d"), n = tri.length/9, i, s;
+  var img = g.createImageData(W, H), px = img.data;
+  for(i = 0; i < px.length; i += 4){ px[i] = 244; px[i + 1] = 246; px[i + 2] = 248; px[i + 3] = 255; }
+  if(!n){ g.putImageData(img, 0, 0); return true; }
+  var B = stlBoite(tri), cx = (B.mn[0] + B.mx[0])/2, cy = (B.mn[1] + B.mx[1])/2, cz = (B.mn[2] + B.mx[2])/2;
+  var a = (az === undefined ? 35 : az)*Math.PI/180, ca = Math.cos(a), sa = Math.sin(a), el = 28*Math.PI/180, ce = Math.cos(el), se = Math.sin(el);
+  var Pr = new Float32Array(n*9), lum = new Float32Array(n);
+  var L = [-0.5, -0.6, 0.8], lL = Math.hypot(L[0], L[1], L[2]);
+  var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for(i = 0; i < n; i++){
+    var o = i*9, xs = [0, 0, 0], ys = [0, 0, 0], zs = [0, 0, 0];
+    for(s = 0; s < 3; s++){
+      var x = tri[o + s*3] - cx, y = tri[o + s*3 + 1] - cy, z = tri[o + s*3 + 2] - cz;
+      var xr = x*ca - y*sa, yr = x*sa + y*ca;
+      var sx = xr, sy = -(z*ce + yr*se);                  /* l'écran : x vers la droite, y vers le bas */
+      Pr[o + s*3] = sx; Pr[o + s*3 + 1] = sy; Pr[o + s*3 + 2] = yr*ce - z*se;     /* profondeur : plus grand = plus loin */
+      if(sx < x0) x0 = sx; if(sx > x1) x1 = sx; if(sy < y0) y0 = sy; if(sy > y1) y1 = sy;
+      xs[s] = xr; ys[s] = yr; zs[s] = z;
+    }
+    var ux = xs[1] - xs[0], uy = ys[1] - ys[0], uz = zs[1] - zs[0], vx = xs[2] - xs[0], vy = ys[2] - ys[0], vz = zs[2] - zs[0];
+    var nx = uy*vz - uz*vy, ny = uz*vx - ux*vz, nz = ux*vy - uy*vx, ln = Math.hypot(nx, ny, nz) || 1;
+    /* la normale se retourne vers l'œil : l'œil est du côté −y, un peu au-dessus (direction de vue : (0, ce, −se)) */
+    var vis = ny*ce - nz*se;
+    if(vis > 0){ nx = -nx; ny = -ny; nz = -nz; }
+    lum[i] = Math.max(0, (nx*L[0] + ny*L[1] + nz*L[2])/(ln*lL));
+  }
+  var m = 12, k = Math.min((W - 2*m)/Math.max(1e-9, x1 - x0), (H - 2*m)/Math.max(1e-9, y1 - y0));
+  var ox = (W - (x1 - x0)*k)/2 - x0*k, oy = (H - (y1 - y0)*k)/2 - y0*k;
+  var zb = new Float32Array(W*H); zb.fill(Infinity);
+  for(i = 0; i < n; i++){
+    var q = i*9;
+    var ax = Pr[q]*k + ox, ay = Pr[q + 1]*k + oy, az2 = Pr[q + 2], bx = Pr[q + 3]*k + ox, by = Pr[q + 4]*k + oy, bz = Pr[q + 5];
+    var ccx = Pr[q + 6]*k + ox, ccy = Pr[q + 7]*k + oy, cz2 = Pr[q + 8];
+    var aire = (bx - ax)*(ccy - ay) - (by - ay)*(ccx - ax);
+    if(Math.abs(aire) < 1e-6) continue;
+    var mnx = Math.max(0, Math.floor(Math.min(ax, bx, ccx))), mxx = Math.min(W - 1, Math.ceil(Math.max(ax, bx, ccx)));
+    var mny = Math.max(0, Math.floor(Math.min(ay, by, ccy))), mxy = Math.min(H - 1, Math.ceil(Math.max(ay, by, ccy)));
+    var inv = 1/aire, c = Math.round(110 + 125*(0.40 + 0.60*lum[i])), r8 = c - 10, g8 = c - 3, b8 = Math.min(255, c + 9);
+    for(var yy = mny; yy <= mxy; yy++){
+      var py = yy + 0.5;
+      for(var xx = mnx; xx <= mxx; xx++){
+        var pxx = xx + 0.5;
+        var w0 = ((bx - pxx)*(ccy - py) - (by - py)*(ccx - pxx))*inv;
+        var w1 = ((ccx - pxx)*(ay - py) - (ccy - py)*(ax - pxx))*inv;
+        var w2 = 1 - w0 - w1;
+        if(w0 < -0.02 || w1 < -0.02 || w2 < -0.02) continue;
+        var z = w0*az2 + w1*bz + w2*cz2, id = yy*W + xx;
+        if(z < zb[id]){ zb[id] = z; var p4 = id*4; px[p4] = r8; px[p4 + 1] = g8; px[p4 + 2] = b8; }
+      }
+    }
+  }
+  g.putImageData(img, 0, 0);
+  return true;
+}
+
+/* ---------------------------------------------------------------------
+   112.2 · MESURES, ÉCHELLE, SOCLE
+   --------------------------------------------------------------------- */
+function stlBoite(tri){
+  var mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity], vol = 0, i, n = tri.length;
+  for(i = 0; i < n; i += 9){
+    var ax = tri[i], ay = tri[i+1], az = tri[i+2], bx = tri[i+3], by = tri[i+4], bz = tri[i+5], cx = tri[i+6], cy = tri[i+7], cz = tri[i+8];
+    vol += (ax*(by*cz - bz*cy) - ay*(bx*cz - bz*cx) + az*(bx*cy - by*cx))/6;
+  }
+  for(i = 0; i < n; i += 3){
+    if(tri[i] < mn[0]) mn[0] = tri[i]; if(tri[i] > mx[0]) mx[0] = tri[i];
+    if(tri[i+1] < mn[1]) mn[1] = tri[i+1]; if(tri[i+1] > mx[1]) mx[1] = tri[i+1];
+    if(tri[i+2] < mn[2]) mn[2] = tri[i+2]; if(tri[i+2] > mx[2]) mx[2] = tri[i+2];
+  }
+  return {mn:mn, mx:mx, vol:vol};
+}
+/* l'échelle la plus grande qui tienne sur le plateau (socle compris) */
+function stlEchelleAuto(dim, plateau, socle){
+  var marge = socle > 0 ? STL_MARGE : 0, t = socle > 0 ? socle : 0;
+  for(var q = 0; q < STL_ECHELLES.length; q++){
+    var N = STL_ECHELLES[q];
+    if(Math.max(dim[0], dim[1])*1000/N + 2*marge <= plateau && dim[2]*1000/N + t <= plateau) return N;
+  }
+  return STL_ECHELLES[STL_ECHELLES.length - 1];
+}
+/* une boîte fermée, facettes vers l'extérieur (le socle) */
+function stlBoiteTri(out, o, x0, y0, z0, x1, y1, z1){
+  var Q = [
+    [[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],       /* dessus */
+    [[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[x1,y0,z0]],       /* dessous */
+    [[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]],       /* sud */
+    [[x1,y1,z0],[x0,y1,z0],[x0,y1,z1],[x1,y1,z1]],       /* nord */
+    [[x0,y1,z0],[x0,y0,z0],[x0,y0,z1],[x0,y1,z1]],       /* ouest */
+    [[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]]        /* est */
+  ];
+  Q.forEach(function(q){
+    [[0,1,2],[0,2,3]].forEach(function(t){
+      t.forEach(function(s){ out[o++] = q[s][0]; out[o++] = q[s][1]; out[o++] = q[s][2]; });
+    });
+  });
+  return o;
+}
+/* le maillage à l'échelle, en millimètres, posé à plat, coin au zéro, avec son socle */
+function stlAssembler(C, O){
+  var B = C.boite || (C.boite = stlBoite(C.tri));
+  var dimM = [B.mx[0] - B.mn[0], B.mx[1] - B.mn[1], B.mx[2] - B.mn[2]];
+  var N = +O.echelle > 0 ? +O.echelle : stlEchelleAuto(dimM, +O.plateau || 200, +O.socle || 0);
+  var k = 1000/N, socle = +O.socle > 0 ? +O.socle : 0, marge = socle ? STL_MARGE : 0, rec = socle ? Math.min(0.2, socle/3) : 0;
+  var W = dimM[0]*k, D = dimM[1]*k, H = dimM[2]*k;
+  var ox = marge - B.mn[0]*k, oy = marge - B.mn[1]*k, oz = (socle - rec) - B.mn[2]*k;
+  var n = C.n, extra = socle ? 12 : 0, out = new Float32Array((n + extra)*9), src = C.tri, i;
+  for(i = 0; i < src.length; i += 3){
+    out[i] = src[i]*k + ox; out[i + 1] = src[i + 1]*k + oy; out[i + 2] = src[i + 2]*k + oz;
+  }
+  if(socle) stlBoiteTri(out, n*9, 0, 0, 0, W + 2*marge, D + 2*marge, socle);
+  /* le volume se lit sur le maillage final : pour une maquette dont des surfaces sont ouvertes, le « volume signé » dépend de l'origine */
+  return {tri:out, n:n + extra, N:N, k:k, socle:socle, marge:marge,
+          dim:[W + 2*marge, D + 2*marge, H + (socle ? socle - rec : 0)],
+          volCm3:Math.abs(stlBoite(out).vol)/1000};
+}
+
+/* ---------------------------------------------------------------------
+   112.3 · LE FICHIER STL BINAIRE
+   --------------------------------------------------------------------- */
+function stlOctets(tri, titre){
+  var n = tri.length/9, buf = new ArrayBuffer(84 + 50*n), dv = new DataView(buf), u = new Uint8Array(buf);
+  var t = String(titre || "Atelier Maquette Numerique - STL binaire - unites : mm").replace(/[^\x20-\x7e]/g, "?");
+  if(/^solid/i.test(t)) t = "STL " + t;                        /* « solid » en tête ferait lire le fichier comme du texte */
+  t = t.slice(0, 79);
+  for(var h = 0; h < t.length; h++) u[h] = t.charCodeAt(h);
+  dv.setUint32(80, n, true);
+  var o = 84;
+  for(var i = 0; i < n; i++){
+    var a = i*9;
+    var ux = tri[a + 3] - tri[a], uy = tri[a + 4] - tri[a + 1], uz = tri[a + 5] - tri[a + 2];
+    var vx = tri[a + 6] - tri[a], vy = tri[a + 7] - tri[a + 1], vz = tri[a + 8] - tri[a + 2];
+    var nx = uy*vz - uz*vy, ny = uz*vx - ux*vz, nz = ux*vy - uy*vx, L = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+    dv.setFloat32(o, nx/L, true); dv.setFloat32(o + 4, ny/L, true); dv.setFloat32(o + 8, nz/L, true);
+    for(var s = 0; s < 9; s++) dv.setFloat32(o + 12 + s*4, tri[a + s], true);
+    dv.setUint16(o + 48, 0, true);
+    o += 50;
+  }
+  return u;
+}
+
+/* ---------------------------------------------------------------------
+   112.4 · LES COUCHES : CE QUE VERRAIT UN TRANCHEUR
+   À chaque hauteur, les triangles qui la traversent donnent des segments ; une
+   extrémité qui n'apparaît qu'un nombre IMPAIR de fois est un contour ouvert. Les
+   sommets en T des murs (bandes qui se raccordent par des sommets en T) ne comptent
+   pas : le plan de coupe ne les rencontre pas.
+   --------------------------------------------------------------------- */
+function stlCouches(tri, nPlans, tol){
+  var n = tri.length/9, zmin = Infinity, zmax = -Infinity, i;
+  for(i = 2; i < tri.length; i += 3){ if(tri[i] < zmin) zmin = tri[i]; if(tri[i] > zmax) zmax = tri[i]; }
+  var res = {plans:[], ouverts:0, segments:0, limite:false};
+  if(!(zmax > zmin)) return res;
+  var q = 1/(tol || 1e-5);
+  for(var p = 0; p < nPlans; p++){
+    var z = zmin + (zmax - zmin)*(p + 0.5)/nPlans, ext = new Map(), nSeg = 0;
+    for(i = 0; i < n; i++){
+      var a = i*9, z0 = tri[a + 2], z1 = tri[a + 5], z2 = tri[a + 8];
+      var lo = z0 < z1 ? (z0 < z2 ? z0 : z2) : (z1 < z2 ? z1 : z2), hi = z0 > z1 ? (z0 > z2 ? z0 : z2) : (z1 > z2 ? z1 : z2);
+      if(z <= lo || z >= hi) continue;
+      var px = [], py = [];
+      for(var e = 0; e < 3; e++){
+        var b = a + e*3, c = a + ((e + 1)%3)*3, za = tri[b + 2], zb = tri[c + 2];
+        if((za < z && zb > z) || (za > z && zb < z)){
+          var t = (z - za)/(zb - za);
+          px.push(tri[b] + (tri[c] - tri[b])*t); py.push(tri[b + 1] + (tri[c + 1] - tri[b + 1])*t);
+        }
+      }
+      if(px.length !== 2) continue;
+      var k0 = Math.round(px[0]*q) + "," + Math.round(py[0]*q), k1 = Math.round(px[1]*q) + "," + Math.round(py[1]*q);
+      if(k0 === k1) continue;
+      ext.set(k0, (ext.get(k0) || 0) + 1); ext.set(k1, (ext.get(k1) || 0) + 1);
+      nSeg++;
+    }
+    var impairs = 0;
+    ext.forEach(function(v){ if(v % 2) impairs++; });
+    res.plans.push({z:z, ouverts:impairs, segments:nSeg});
+    res.ouverts += impairs; res.segments += nSeg;
+  }
+  return res;
+}
+
+/* ---------------------------------------------------------------------
+   112.5 · LA PLUS MINCE DES PAROIS (le projet seulement : le catalogue dit leur épaisseur)
+   --------------------------------------------------------------------- */
+function stlPlusMince(){
+  var m = null;
+  var voir = function(ep, nom){ if(ep > 0.009 && (!m || ep < m.ep)) m = {ep:ep, nom:nom}; };
+  try {
+    S.niveaux.forEach(function(niv){
+      (niv.murs || []).forEach(function(w){ var c = catalogueMur(w); if(c) voir(+c.ep, c.nom || (w.cat === "cloison" ? "Cloison" : "Mur")); });
+      (niv.planchers || []).forEach(function(p){ var c = PLANCHERS[p.type]; if(c) voir(+c.ep, "Plancher — " + (c.nom || "")); });
+    });
+  } catch(_e){}
+  return m;
+}
+
+
+/* ---------------------------------------------------------------------
+   112.6 · LA FENÊTRE « EXPORTER EN STL »
+   --------------------------------------------------------------------- */
+function stlFmt(v, d){ return Number(v).toFixed(d === undefined ? 1 : d).replace(".", ","); }
+function stlNomFichier(O, N){
+  var base, suffixe = "";
+  if(O.contenu === "ifc"){
+    var G = igRef();
+    base = rbxNomFichier(String((G && G.nom) || "maquette").replace(/\.ifc$/i, ""));
+    suffixe = "-ifc";
+  } else {
+    base = rbxNomFichier(S.nom && S.nom !== "sans titre" ? S.nom : "maquette");
+    if(O.contenu === "quartier") suffixe = "-quartier";
+    else if(O.contenu === "ensemble") suffixe = "-dans-son-quartier";
+  }
+  return base + suffixe + "-1-" + N + ".stl";
+}
+function stlBilanHtml(C, R, O){
+  var h = '<b>' + R.n.toLocaleString("fr-FR") + '</b> triangles · <b>' + stlFmt(R.dim[0]) + ' × ' + stlFmt(R.dim[1]) + ' × ' + stlFmt(R.dim[2]) +
+    ' mm</b> à l’échelle <b>1/' + R.N + '</b> · ' + stlFmt(R.volCm3, R.volCm3 < 10 ? 2 : 1) + ' cm³ de matière pleine';
+  var l = [], P = +O.plateau || 200;
+  if(Math.max(R.dim[0], R.dim[1]) > P || R.dim[2] > P)
+    l.push(["⚠", "Dépasse le plateau de " + P + " mm : choisir une échelle plus petite, ou « Adaptée au plateau »."]);
+  else l.push(["✓", "Tient sur un plateau de " + P + " mm."]);
+  var m = (O.contenu === "projet" || O.contenu === "ensemble") ? stlPlusMince() : null;
+  if(m){
+    var e = m.ep*1000/R.N, Nmax = Math.floor(m.ep*1000/STL_MIN_PAROI);
+    var nom = "« " + echap(m.nom) + " » (" + stlFmt(m.ep*100, 1) + " cm)";
+    if(e >= STL_MIN_PAROI) l.push(["✓", "La plus mince paroi, " + nom + ", fait " + stlFmt(e, 2) + " mm : assez épaisse pour une buse de 0,4 mm."]);
+    else l.push(["⚠", "La plus mince paroi, " + nom + ", ne ferait que " + stlFmt(e, 2) + " mm. Une buse de 0,4 mm trace au mieux 1,2 mm (trois passages) : " +
+      "elle demande l’échelle 1/" + Math.max(1, Nmax) + " ou plus grande — sinon elle sera fragile ou absente."]);
+  }
+  if(O.contenu === "ifc" && C.sol && C.ouverts)
+    l.push(["⚠", "Le terrain du fichier est une surface sans épaisseur : décocher « Terrain », ou garder le socle."]);
+  var co = C.couches;
+  if(co){
+    var bouts = 2*co.segments, fr = function(v){ return v.toLocaleString("fr-FR"); };
+    if(!co.ouverts) l.push(["✓", "Découpe en couches : " + co.plans.length + " hauteurs testées, aucun contour ouvert."]);
+    else if(co.ouverts <= 0.01*bouts)
+      l.push(["✓", "Découpe en couches : presque fermée — " + fr(co.ouverts) + " extrémité(s) ouvertes sur " + fr(bouts) + " (" + co.plans.length +
+        " hauteurs testées) : de petites fentes à la jonction de deux pièces, que le trancheur referme."]);
+    else
+      l.push(["⚠", "Découpe en couches : " + fr(co.ouverts) + " extrémités de contour ouvertes sur " + fr(bouts) + " (" + co.plans.length + " hauteurs testées). " +
+        "Des surfaces sans épaisseur — vitrage, terrain, toiture à une face ? Le trancheur ne sait pas les remplir : vérifier son aperçu des couches."]);
+  } else l.push(["·", "Découpe en couches non contrôlée (maillage trop lourd)."]);
+  if(R.n > STL_MAX_STUDIO)
+    l.push(["⚠", "Model Educ Studio n’accepte que " + STL_MAX_STUDIO.toLocaleString("fr-FR") + " triangles : ce fichier en compte " + R.n.toLocaleString("fr-FR") +
+      ". Les trancheurs n’ont pas cette limite."]);
+  return '<p class="stl-bilan-t">' + h + '.</p><ul class="stl-ctl">' + l.map(function(x){
+    return '<li class="stl-' + (x[0] === "✓" ? "ok" : x[0] === "⚠" ? "att" : "n") + '"><span>' + x[0] + '</span> ' + x[1] + '</li>';
+  }).join("") + '</ul>';
+}
+function stlOuvrir(contenu){
+  contenu = contenu || "projet";
+  var U = null, ifc = !!igRef(), vide = false;
+  try { U = urbEtat(); } catch(_e){}
+  try { vide = projetEstVide(); } catch(_e2){}
+  if((contenu === "quartier" || contenu === "ensemble") && !U){
+    statut("Aucun quartier : Maquette blanche quartier → Importer un plan… (à activer dans Vue → Modules)."); return;
+  }
+  if(contenu === "ifc" && !ifc){ statut("Aucune maquette IFC jointe au projet : Fichier → Importer une maquette IFC…"); return; }
+  if(contenu === "projet" && vide){
+    statut("La maquette est vide : il n’y a rien à exporter en STL." + (ifc ? " La maquette IFC jointe, elle, s’exporte : Fichier → Exporter → STL." : "")); return;
+  }
+  var anc = document.getElementById("dlg-stl");
+  if(anc) anc.remove();
+  var d = document.createElement("dialog");
+  d.id = "dlg-stl"; d.className = "dlg-suivi";
+  document.body.appendChild(d);
+  d.addEventListener("close", function(){ d.remove(); });
+  var O = Object.assign({}, STL_OPTIONS, {contenu:contenu, exclus:[], exclusIfc:[]});
+  var C = null, Rcourant = null, graine = 0;
+  var noms = stlNomsNiveaux();
+  var coche = function(cle, lib, pour){
+    return '<label class="rbx-coche stl-pour" data-pour="' + pour + '"><input type="checkbox" data-stl="' + cle + '"' + (O[cle] ? " checked" : "") + '> ' + echap(lib) + '</label>';
+  };
+  var options = function(liste, val){
+    return liste.map(function(x){ return '<option value="' + x[0] + '"' + (String(val) === String(x[0]) ? " selected" : "") + (x[2] ? " disabled" : "") + '>' + echap(x[1]) + '</option>'; }).join("");
+  };
+  d.innerHTML =
+    '<h3>Exporter en STL — impression 3D</h3>' +
+    '<p class="note">La maquette part en <b>un seul maillage</b> : fichier STL binaire, en <b>millimètres</b>, posé à plat et mis à l’échelle. ' +
+      'Les trancheurs (Cura, PrusaSlicer, Bambu Studio…) le lisent tel quel, ainsi que <b>Model Educ Studio</b> (Créer › Importer › Fichier STL).</p>' +
+    '<div class="rbx-grille">' +
+      '<div class="ligne-prop"><label>Contenu</label><select data-stl="contenu">' + options([
+        ["projet", "Le projet seul"], ["ifc", "La maquette IFC jointe", !ifc],
+        ["quartier", "Le quartier seul — maquette blanche", !U], ["ensemble", "Le projet dans son quartier", !U]], contenu) + '</select></div>' +
+      '<div class="ligne-prop"><label>Échelle</label><select data-stl="echelle">' +
+        '<option value="0">Adaptée au plateau (la plus grande qui tienne)</option>' +
+        STL_ECHELLES.map(function(N){ return '<option value="' + N + '">1/' + N + (N === 1 ? " — grandeur nature" : "") + '</option>'; }).join("") + '</select></div>' +
+      '<div class="ligne-prop"><label>Plateau</label><span class="stl-plateau"><input type="number" data-stl="plateau" min="20" max="2000" step="10" value="' + (+O.plateau || 200) + '"> mm de côté</span></div>' +
+      '<div class="ligne-prop"><label>Socle</label><select data-stl="socle">' + options([[0, "Aucun"], [1.5, "Plaque de 1,5 mm"], [2, "Plaque de 2 mm"], [3, "Plaque de 3 mm"], [5, "Plaque de 5 mm"]], O.socle) +
+        '</select></div>' +
+    '</div>' +
+    '<div class="rbx-coches">' +
+      coche("menuiseries", "Menuiseries (cadres, portes)", "projet ensemble") +
+      coche("vitrages", "Vitrages", "projet ensemble ifc") +
+      coche("toitures", "Toitures", "projet ensemble ifc") +
+      coche("charpente", "Charpente", "projet ensemble") +
+      coche("escaliers", "Escaliers", "projet ensemble") +
+      coche("structure", "Poteaux, poutres, garde-corps", "projet ensemble") +
+      coche("infra", "Fondations et soubassement (sous le sol)", "projet ensemble") +
+      coche("terrain", "Terrain du fichier (bloc ou surface)", "ifc") +
+    '</div>' +
+    '<div class="stl-niveaux stl-pour" data-pour="projet ensemble" id="stl-niveaux"></div>' +
+    '<div class="stl-niveaux stl-pour" data-pour="ifc" id="stl-classes"></div>' +
+    '<div class="stl-apercu-z"><canvas id="stl-apercu" width="1100" height="340" aria-label="Aperçu de ce qui sera imprimé"></canvas>' +
+      '<button type="button" class="btn-plein stl-mini" data-stlb="tourner" title="Tourner l’aperçu d’un huitième de tour">↻ Tourner</button></div>' +
+    '<div id="stl-bilan" class="note">…</div>' +
+    '<details class="rbx-aide"><summary>Pour imprimer</summary><ol>' +
+      '<li>Ouvrir le fichier dans le trancheur : il le lit en <b>millimètres</b>, à la taille annoncée ci-dessus.</li>' +
+      '<li>Hauteur de couche 0,2 mm, buse de 0,4 mm : une paroi doit faire au moins <b>1,2 mm</b> (trois passages). À petite échelle, les cloisons, les cadres et les garde-corps disparaissent : c’est la règle du jeu, pas une erreur.</li>' +
+      '<li>Les baies restent des <b>trous</b> (menuiseries et vitrages sont décochés d’office). Le socle colle au plateau et relie les murs entre eux.</li>' +
+      '<li>Pour retoucher la pièce — couper, percer, assembler — l’insérer dans Model Educ Studio : <i>Créer › Importer › Fichier STL</i>.</li>' +
+    '</ol></details>' +
+    '<div class="mob-pied"><button type="button" class="btn-plein" data-stlb="exporter">Exporter en STL</button>' +
+      '<button type="button" class="btn-plein" data-stlb="fermer">Fermer</button></div>';
+  var sel = d.querySelector('[data-stl="echelle"]');
+  sel.value = String(+O.echelle > 0 ? +O.echelle : 0);
+  /* les niveaux à imprimer */
+  var zn = d.querySelector("#stl-niveaux");
+  if(noms.length > 1){
+    zn.innerHTML = '<div class="stl-niv-t">Niveaux à imprimer</div>' + noms.map(function(n, i){
+      return '<label class="rbx-coche"><input type="checkbox" data-stlniv="' + i + '" checked> ' + echap(n) + '</label>';
+    }).join("");
+  } else zn.style.display = "none";
+  /* les classes d'objets de la maquette IFC : on retire l'échafaudage, le mobilier, les arbres */
+  var classes = ifc ? stlClassesIfc() : [], zc = d.querySelector("#stl-classes");
+  if(classes.length){
+    zc.innerHTML = '<div class="stl-niv-t">Ce que la maquette IFC contient</div>' + classes.map(function(c){
+      return '<label class="rbx-coche"><input type="checkbox" data-stlcl="' + echap(c.types.join(" ")) + '" checked> ' + echap(c.lib) + ' <span class="stl-n">(' + c.n + ')</span></label>';
+    }).join("");
+  } else zc.style.display = "none";
+  var azimut = 35;
+  var visibilites = function(){
+    d.querySelectorAll(".stl-pour").forEach(function(el){
+      var ok = el.dataset.pour.split(" ").indexOf(O.contenu) >= 0;
+      el.style.display = ok && !(el.id === "stl-niveaux" && noms.length < 2) && !(el.id === "stl-classes" && !classes.length) ? "" : "none";
+    });
+  };
+  var maj = function(){
+    visibilites();
+    var el = d.querySelector("#stl-bilan"), mon = ++graine;
+    el.textContent = "Calcul du maillage…";
+    d.querySelector('[data-stlb="exporter"]').disabled = true;
+    setTimeout(function(){
+      if(mon !== graine || !d.isConnected) return;
+      try {
+        var cle = stlCleCollecte(O);
+        if(!C || C.cle !== cle){ C = stlCollecter(O); }
+        if(!C.n){
+          el.innerHTML = '<p class="stl-bilan-t">Rien à imprimer avec ces réglages : cocher au moins un élément.</p>';
+          Rcourant = null;
+          stlApercu(d.querySelector("#stl-apercu"), new Float32Array(0), azimut);
+          return;
+        }
+        if(C.couches === undefined) C.couches = C.n <= 1500000 ? stlCouches(C.tri, 8, 1e-5) : null;
+        var R = stlAssembler(C, O);
+        Rcourant = R;
+        el.innerHTML = stlBilanHtml(C, R, O);
+        d.querySelector('[data-stlb="exporter"]').disabled = false;
+        stlApercu(d.querySelector("#stl-apercu"), R.tri, azimut);
+      } catch(err){
+        Rcourant = null;
+        el.textContent = "Calcul impossible : " + err.message;
+      }
+    }, 20);
+  };
+  d.querySelectorAll("[data-stl]").forEach(function(el){
+    el.addEventListener("change", function(){
+      var cle = el.dataset.stl;
+      if(el.type === "checkbox") O[cle] = el.checked;
+      else if(cle === "contenu"){ O.contenu = el.value; O.echelle = 0; sel.value = "0"; }
+      else O[cle] = +el.value;
+      maj();
+    });
+  });
+  d.querySelectorAll("[data-stlniv]").forEach(function(el){
+    el.addEventListener("change", function(){
+      O.exclus = [];
+      d.querySelectorAll("[data-stlniv]").forEach(function(x){ if(!x.checked) O.exclus.push(noms[+x.dataset.stlniv]); });
+      maj();
+    });
+  });
+  d.querySelectorAll("[data-stlcl]").forEach(function(el){
+    el.addEventListener("change", function(){
+      O.exclusIfc = [];
+      d.querySelectorAll("[data-stlcl]").forEach(function(x){ if(!x.checked) x.dataset.stlcl.split(" ").forEach(function(t){ O.exclusIfc.push(t); }); });
+      maj();
+    });
+  });
+  d.querySelectorAll("[data-stlb]").forEach(function(b){
+    b.addEventListener("click", function(){
+      if(b.dataset.stlb === "fermer"){ d.close(); d.remove(); return; }
+      if(b.dataset.stlb === "tourner"){
+        azimut = (azimut + 45) % 360;
+        if(Rcourant) stlApercu(d.querySelector("#stl-apercu"), Rcourant.tri, azimut);
+        return;
+      }
+      if(!Rcourant) return;
+      var R = Rcourant;
+      var nom = stlNomFichier(O, R.N);
+      var titre = "Atelier Maquette Numerique - STL binaire - unites : mm - echelle 1:" + R.N + " - " + nom.replace(/\.stl$/, "");
+      rbxTelecharger(stlOctets(R.tri, titre), nom, "model/stl");
+      /* les réglages d'échelle, de plateau, de socle et de cases se retrouvent à la prochaine ouverture ; pas les niveaux ni les classes */
+      STL_OPTIONS = Object.assign({}, STL_OPTIONS, O, {contenu:"projet", exclus:[], exclusIfc:[], echelle:0});
+      statut("Export STL : " + nom + " — " + R.n.toLocaleString("fr-FR") + " triangles, " + stlFmt(R.dim[0]) + " × " + stlFmt(R.dim[1]) + " × " + stlFmt(R.dim[2]) +
+             " mm (échelle 1/" + R.N + ").");
+      var el = d.querySelector("#stl-bilan");
+      if(el) el.innerHTML += '<p class="stl-fait"><b>Fichier téléchargé : ' + echap(nom) + '</b> (' + Math.round((84 + 50*R.n)/1024).toLocaleString("fr-FR") + ' Ko)</p>';
+    });
+  });
+  d.showModal();
+  maj();
+}
+
+/* ---------------------------------------------------------------------
+   112.7 · LE MENU FICHIER › EXPORTER › STL
+   --------------------------------------------------------------------- */
+function stlPoserMenu(){
+  try { if(typeof urbPoserMenuExport === "function") urbPoserMenuExport(); } catch(_e){}
+  var ss = document.querySelector('.menu[data-menu="fichier"] .ss-menu[data-ss="export"]');
+  if(!ss || ss.querySelector('.ss-menu[data-ss="stl"]')) return;
+  var liste = ss.querySelector(":scope > .ss-liste");
+  if(!liste) return;
+  var bouton = function(action, texte, aide, quartier){
+    return '<button type="button" data-action="' + action + '"' + (quartier ? ' data-urb-requis="1"' : '') + ' title="' + echap(aide) + '">' + echap(texte) + '</button>';
+  };
+  var sous = document.createElement("div");
+  sous.className = "ss-menu"; sous.dataset.ss = "stl";
+  sous.innerHTML = '<button type="button" class="ss-titre">STL — impression 3D<span class="ss-fl">▸</span></button><div class="ss-liste">' +
+    bouton("exp-stl-projet", "Projet seul…", "Le bâtiment en un seul maillage STL (millimètres), à l’échelle choisie, prêt pour un trancheur ou Model Educ Studio") +
+    bouton("exp-stl-ifc", "Maquette IFC jointe…", "Les volumes de la maquette IFC jointe au projet, en STL") +
+    bouton("exp-stl-quartier-seul", "Quartier seul — maquette blanche…", "Les bâtiments, la voirie et le terrain du quartier, en STL", true) +
+    bouton("exp-stl-ensemble", "Projet dans son quartier…", "Le projet posé dans son quartier, en un seul STL", true) + '</div>';
+  var dxf = liste.querySelector('.ss-menu[data-ss="dxf"]');
+  if(dxf) liste.insertBefore(sous, dxf); else liste.appendChild(sous);
+  sous.querySelectorAll("button[data-action]").forEach(function(b){
+    b.addEventListener("click", function(){ executer(b.dataset.action); });
+  });
+  sous.querySelector(".ss-titre").addEventListener("click", function(e){
+    e.stopPropagation();
+    var ouvert = sous.classList.contains("ouvert");
+    sous.parentNode.querySelectorAll(":scope > .ss-menu").forEach(function(x){ x.classList.remove("ouvert"); });
+    if(!ouvert) sous.classList.add("ouvert");
+  });
+  /* à l'ouverture du menu : la maquette IFC et le quartier ne sont proposés que s'ils existent */
+  var fichier = document.querySelector('.menu[data-menu="fichier"] > button');
+  if(fichier) fichier.addEventListener("click", function(){
+    var b = sous.querySelector('[data-action="exp-stl-ifc"]'), G = null;
+    try { G = igRef(); } catch(_e){}
+    if(b){
+      b.classList.toggle("inactif", !G);
+      b.title = G ? "Les volumes de la maquette IFC jointe (« " + (G.nom || "") + " »), en STL" : "Aucune maquette IFC jointe : Fichier → Importer une maquette IFC…";
+    }
+  });
+}
+if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", stlPoserMenu);
+else stlPoserMenu();
+try {
+  var _executerAvantStl = executer;
+  executer = function(action){
+    if(action === "exp-stl-projet"){ stlOuvrir("projet"); return; }
+    if(action === "exp-stl-ifc"){ stlOuvrir("ifc"); return; }
+    if(action === "exp-stl-quartier-seul"){ stlOuvrir("quartier"); return; }
+    if(action === "exp-stl-ensemble"){ stlOuvrir("ensemble"); return; }
+    return _executerAvantStl.apply(this, arguments);
+  };
+} catch(_eStl){}
+(function(){
+  var st = document.createElement("style");
+  st.textContent = "#dlg-stl{max-width:780px; width:92vw; max-height:90vh; overflow:auto}" +
+    "#dlg-stl .rbx-coches{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:4px 14px; margin:10px 0}" +
+    "#dlg-stl .rbx-coche{display:flex; gap:6px; align-items:center; font-size:13px}" +
+    "#dlg-stl .stl-plateau input{width:80px; padding:3px 5px}" +
+    "#dlg-stl .stl-niveaux{display:flex; flex-wrap:wrap; gap:4px 16px; align-items:center; margin:6px 0; padding:6px 8px; border:1px solid var(--bord, #ccc); border-radius:3px}" +
+    "#dlg-stl .stl-niv-t{font-weight:600; font-size:12.5px; flex:0 0 100%}" +
+    "#dlg-stl .stl-n{color:var(--texte-doux, #666); font-size:12px}" +
+    "#dlg-stl .stl-apercu-z{position:relative; margin:8px 0}" +
+    "#dlg-stl #stl-apercu{width:100%; height:auto; display:block; border:1px solid var(--bord, #ccc); border-radius:3px; background:#f4f6f8}" +
+    "#dlg-stl .stl-mini{position:absolute; right:8px; bottom:8px; width:auto; padding:3px 10px; font-size:12px}" +
+    "#dlg-stl #stl-bilan{margin:10px 0}" +
+    "#dlg-stl .stl-bilan-t{margin:0 0 6px; font-size:13px}" +
+    "#dlg-stl .stl-ctl{list-style:none; margin:0; padding:0; font-size:12.5px}" +
+    "#dlg-stl .stl-ctl li{display:flex; gap:7px; margin:3px 0; line-height:1.4}" +
+    "#dlg-stl .stl-ctl li > span{flex:0 0 16px; text-align:center; font-weight:700}" +
+    "#dlg-stl .stl-ok > span{color:#2e7d32}" +
+    "#dlg-stl .stl-att > span{color:#b26a00}" +
+    "#dlg-stl .stl-fait{margin:8px 0 0}" +
+    "#dlg-stl .rbx-aide{margin:8px 0; font-size:13px}" +
+    "#dlg-stl .rbx-aide summary{cursor:pointer; font-weight:600}" +
+    "#dlg-stl .rbx-aide li{margin:4px 0}";
+  document.head.appendChild(st);
+})();
+
+
+/* ---------------------------------------------------------------------
+   112.8 · LES ESSAIS INTÉGRÉS (menu Fichier › Vérifier l'application…)
+   --------------------------------------------------------------------- */
+function stlLire(octets){
+  var dv = new DataView(octets.buffer, octets.byteOffset, octets.byteLength);
+  var n = dv.getUint32(80, true), tri = new Float32Array(n*9), normales = new Float32Array(n*3);
+  for(var i = 0; i < n; i++){
+    var o = 84 + 50*i;
+    for(var s = 0; s < 3; s++) normales[i*3 + s] = dv.getFloat32(o + s*4, true);
+    for(var q = 0; q < 9; q++) tri[i*9 + q] = dv.getFloat32(o + 12 + q*4, true);
+  }
+  var t = ""; for(var h = 0; h < 80; h++) t += String.fromCharCode(octets[h]);
+  return {n:n, tri:tri, normales:normales, entete:t, octets:octets.byteLength};
+}
+function stlOptionsEssai(plus){
+  return Object.assign({}, STL_OPTIONS, {contenu:"projet", echelle:100, socle:0, menuiseries:false, vitrages:false, toitures:true,
+    charpente:false, escaliers:true, structure:true, infra:false, terrain:true, exclus:[]}, plus || {});
+}
+if(typeof AUTOTESTS !== "undefined"){
+  AUTOTESTS.push({
+    nom:"Triangulation : un plan en L, en U, en T ou en peigne garde ses encoches, même quand un sommet rentrant tombe sur une diagonale",
+    f:function(){
+      var r = [];
+      var formes = {
+        "L":[[0,0],[6,0],[6,2],[3,2],[3,4],[0,4]],
+        "U":[[0,0],[6,0],[6,4],[4,4],[4,2],[2,2],[2,4],[0,4]],
+        "T":[[0,0],[6,0],[6,2],[4,2],[4,6],[2,6],[2,2],[0,2]],
+        "peigne":[[0,0],[8,0],[8,4],[6,4],[6,1],[5,1],[5,4],[3,4],[3,1],[2,1],[2,4],[0,4]],
+        "escalier":[[0,0],[6,0],[6,1],[5,1],[5,2],[4,2],[4,3],[3,3],[3,4],[0,4]]
+      };
+      var dedans = function(p, P){
+        var c = false;
+        for(var i = 0, j = P.length - 1; i < P.length; j = i++)
+          if(((P[i][1] > p[1]) !== (P[j][1] > p[1])) && (p[0] < (P[j][0] - P[i][0])*(p[1] - P[i][1])/(P[j][1] - P[i][1]) + P[i][0])) c = !c;
+        return c;
+      };
+      Object.keys(formes).forEach(function(nom){
+        [false, true].forEach(function(inverse){
+          var P = formes[nom].map(function(p){ return p.slice(); });
+          if(inverse) P.reverse();
+          var res = rbxTrianguler(P, []), aire = 0, dehors = 0;
+          res.tri.forEach(function(t){
+            var a = res.pts[t[0]], b = res.pts[t[1]], c = res.pts[t[2]];
+            aire += Math.abs((b[0] - a[0])*(c[1] - a[1]) - (b[1] - a[1])*(c[0] - a[0]))/2;
+            if(!dedans([(a[0] + b[0] + c[0])/3, (a[1] + b[1] + c[1])/3], P)) dehors++;
+          });
+          var vrai = Math.abs(rbxAire2(P));
+          if(Math.abs(aire - vrai) > 1e-9) r.push("plan en " + nom + (inverse ? " (sens inverse)" : "") + " : " + aire + " m² triangulés pour " + vrai);
+          else if(dehors) r.push("plan en " + nom + " : " + dehors + " triangle(s) hors du plan");
+        });
+      });
+      return r.length ? r.join(" · ") : null;
+    }});
+
+  AUTOTESTS.push({
+    nom:"Export STL : le fichier binaire est conforme (en-tête, nombre, 50 octets par triangle, normales unitaires, volume positif)",
+    f:function(){
+      var r = [], cube = new Float32Array(12*9);
+      stlBoiteTri(cube, 0, 0, 0, 0, 10, 20, 30);
+      var B = stlBoite(cube);
+      if(Math.abs(B.vol - 6000) > 1e-3) r.push("volume signé de la boîte de 10 × 20 × 30 : " + B.vol + " au lieu de 6000 (facettes vers l'intérieur si négatif)");
+      var o = stlOctets(cube, "solid piège accentué é");
+      if(/^solid/i.test(stlLire(o).entete)) r.push("l'en-tête commence par « solid » : un lecteur prendrait le fichier pour du texte");
+      if(o.byteLength !== 84 + 50*12) r.push("taille " + o.byteLength + " au lieu de " + (84 + 50*12));
+      var L = stlLire(o);
+      if(L.n !== 12) r.push(L.n + " triangles lus au lieu de 12");
+      for(var i = 0; i < L.n; i++){
+        var nx = L.normales[i*3], ny = L.normales[i*3 + 1], nz = L.normales[i*3 + 2];
+        if(Math.abs(Math.hypot(nx, ny, nz) - 1) > 1e-5){ r.push("normale " + i + " non unitaire"); break; }
+        var cx = (L.tri[i*9] + L.tri[i*9 + 3] + L.tri[i*9 + 6])/3 - 5, cy = (L.tri[i*9 + 1] + L.tri[i*9 + 4] + L.tri[i*9 + 7])/3 - 10, cz = (L.tri[i*9 + 2] + L.tri[i*9 + 5] + L.tri[i*9 + 8])/3 - 15;
+        if(nx*cx + ny*cy + nz*cz <= 0){ r.push("la normale " + i + " ne pointe pas vers l'extérieur"); break; }
+      }
+      for(var j = 0; j < cube.length; j++) if(Math.abs(L.tri[j] - cube[j]) > 1e-6){ r.push("les sommets ne survivent pas à l'écriture"); break; }
+      return r.length ? r.join(" · ") : null;
+    }});
+
+  AUTOTESTS.push({
+    nom:"Export STL : un plan en L sort posé à plat, l'encoche au sud-est, le nord vers +Y, le volume exact et les facettes vers l'extérieur",
+    f:function(){
+      var r = [], avant = S;
+      try {
+        S = migrerProjet(projetVide());
+        S.niveaux[0].planchers.push({id:uid(), type:1, decalage:0, points:[[0, 0], [6, 0], [6, 2], [3, 2], [3, 4], [0, 4]]});
+        var O = stlOptionsEssai({echelle:1000});                    /* 1/1000 : 1 m = 1 mm, les nombres restent lisibles */
+        var C = stlCollecter(O);
+        if(!C.n) return "le plancher ne donne aucun triangle";
+        var R = stlAssembler(C, O), B = stlBoite(R.tri), ep = PLANCHERS[1].ep;
+        if(Math.abs(B.vol - 18*ep) > 1e-3) r.push("volume " + B.vol.toFixed(4) + " au lieu de " + (18*ep).toFixed(4) + " (18 m² × " + ep + " m)");
+        if(Math.abs(R.dim[0] - 6) > 1e-3 || Math.abs(R.dim[1] - 4) > 1e-3) r.push("emprise " + R.dim[0].toFixed(3) + " × " + R.dim[1].toFixed(3) + " au lieu de 6 × 4");
+        if(Math.abs(B.mn[0]) > 1e-4 || Math.abs(B.mn[1]) > 1e-4 || Math.abs(B.mn[2]) > 1e-4) r.push("la pièce n'est pas posée au zéro : " + B.mn.map(function(v){ return v.toFixed(3); }).join(", "));
+        /* le plan de l'atelier a son y vers le SUD ; l'encoche (x de 3 à 6, y de 2 à 4) est au sud-est : en STL, x' grand et y' PETIT */
+        var plein = {sudEst:0, sudOuest:0, nordEst:0};
+        for(var i = 0; i < R.tri.length; i += 9){
+          var cx = (R.tri[i] + R.tri[i + 3] + R.tri[i + 6])/3, cy = (R.tri[i + 1] + R.tri[i + 4] + R.tri[i + 7])/3;
+          if(cx > 3.3 && cy < 1.7) plein.sudEst++;
+          if(cx < 2.7 && cy < 1.7) plein.sudOuest++;
+          if(cx > 3.3 && cy > 2.3) plein.nordEst++;
+        }
+        if(plein.sudEst) r.push("l'encoche n'est pas au sud-est (" + plein.sudEst + " facettes dans l'encoche) : le repère est retourné");
+        if(!plein.sudOuest || !plein.nordEst) r.push("le plan est incomplet : sud-ouest " + plein.sudOuest + ", nord-est " + plein.nordEst);
+      } finally { S = avant; }
+      return r.length ? r.join(" · ") : null;
+    }});
+
+  AUTOTESTS.push({
+    nom:"Export STL : menuiseries, vitrages, niveaux, toitures, échelle et socle changent ce qu'ils doivent changer",
+    f:function(){
+      var r = [], avant = S;
+      try {
+        S = migrerProjet(JSON.parse(JSON.stringify(PAVILLON_EXEMPLE)));
+        var n = function(plus){ return stlCollecter(stlOptionsEssai(plus)).n; };
+        var n0 = n({}), n1 = n({menuiseries:true}), n2 = n({menuiseries:true, vitrages:true}), n3 = n({vitrages:true});
+        if(!(n0 > 500)) r.push("le pavillon donne " + n0 + " triangles");
+        if(!(n1 > n0)) r.push("les menuiseries n'ajoutent rien (" + n0 + " → " + n1 + ")");
+        if(!(n2 > n1)) r.push("les vitrages n'ajoutent rien (" + n1 + " → " + n2 + ")");
+        if(n2 - n1 !== n3 - n0) r.push("le verre n'est pas le même avec et sans les menuiseries : " + (n2 - n1) + " contre " + (n3 - n0));
+        var noms = stlNomsNiveaux();
+        if(noms.length < 2) r.push("le pavillon n'a pas deux niveaux");
+        else {
+          var nr = n({exclus:[noms[noms.length - 1]]});
+          if(!(nr < n0)) r.push("exclure le dernier niveau ne retire rien (" + n0 + " → " + nr + ")");
+        }
+        if(!(n({toitures:false}) < n0)) r.push("sans toitures : même nombre de triangles");
+        /* l'échelle et le socle */
+        var O = stlOptionsEssai({echelle:100}), C = stlCollecter(O);
+        var R1 = stlAssembler(C, O), R2 = stlAssembler(C, Object.assign({}, O, {echelle:200}));
+        for(var a = 0; a < 3; a++) if(Math.abs(R1.dim[a]/R2.dim[a] - 2) > 1e-3) r.push("deux fois plus petit : l'axe " + a + " passe de " + R1.dim[a].toFixed(2) + " à " + R2.dim[a].toFixed(2));
+        var Rs = stlAssembler(C, Object.assign({}, O, {socle:2}));
+        if(Rs.n !== R1.n + 12) r.push("le socle devrait ajouter 12 triangles (" + R1.n + " → " + Rs.n + ")");
+        if(Math.abs(Rs.dim[0] - R1.dim[0] - 2*STL_MARGE) > 1e-3) r.push("le socle dépasse de " + ((Rs.dim[0] - R1.dim[0])/2).toFixed(2) + " mm au lieu de " + STL_MARGE);
+        if(Math.abs(Rs.dim[2] - R1.dim[2] - 1.8) > 1e-3) r.push("hauteur avec socle : +" + (Rs.dim[2] - R1.dim[2]).toFixed(3) + " mm au lieu de +1,8 (2 mm moins 0,2 de recouvrement)");
+        var Bs = stlBoite(Rs.tri);
+        if(Math.abs(Bs.mn[0]) > 1e-4 || Math.abs(Bs.mn[1]) > 1e-4 || Math.abs(Bs.mn[2]) > 1e-4) r.push("le socle n'est pas posé au zéro");
+        if(Bs.vol <= 0) r.push("volume signé négatif avec socle : " + Bs.vol);
+        var B1 = stlBoite(R1.tri);
+        if(Math.abs(R1.volCm3 - Math.abs(B1.vol)/1000) > 1e-6*Math.abs(B1.vol)) r.push("volume annoncé " + R1.volCm3 + " cm³ pour " + (Math.abs(B1.vol)/1000));
+        /* l'échelle automatique tient sur le plateau */
+        var Ra = stlAssembler(C, Object.assign({}, O, {echelle:0, plateau:150, socle:2}));
+        if(Math.max(Ra.dim[0], Ra.dim[1], Ra.dim[2]) > 150 + 1e-6) r.push("échelle automatique 1/" + Ra.N + " : " + Ra.dim.map(function(v){ return v.toFixed(0); }).join(" × ") + " dépasse le plateau de 150 mm");
+        if(Ra.N > 1 && STL_ECHELLES[STL_ECHELLES.indexOf(Ra.N) - 1] !== undefined){
+          var Rp = stlAssembler(C, Object.assign({}, O, {echelle:STL_ECHELLES[STL_ECHELLES.indexOf(Ra.N) - 1], socle:2}));
+          if(Math.max(Rp.dim[0], Rp.dim[1], Rp.dim[2]) <= 150) r.push("l'échelle automatique 1/" + Ra.N + " n'est pas la plus grande qui tienne");
+        }
+        var m = stlPlusMince();
+        if(!m || !(m.ep > 0.01 && m.ep < 0.5)) r.push("la plus mince paroi : " + JSON.stringify(m));
+      } finally { S = avant; }
+      return r.length ? r.slice(0, 4).join(" · ") : null;
+    }});
+
+  AUTOTESTS.push({
+    nom:"Export STL : le contrôle des couches voit un contour ouvert, et ne s'inquiète pas d'un mur fait de bandes",
+    f:function(){
+      var r = [], cube = new Float32Array(12*9);
+      stlBoiteTri(cube, 0, 0, 0, 0, 10, 10, 10);
+      var ferme = stlCouches(cube, 6, 1e-4);
+      if(ferme.ouverts) r.push("un cube fermé a " + ferme.ouverts + " extrémités ouvertes");
+      if(!ferme.segments) r.push("aucun segment : les plans ne coupent rien");
+      /* les triangles de la boîte vont deux par deux : dessus, dessous, sud, nord, ouest, est */
+      var sansDessus = new Float32Array(10*9);
+      sansDessus.set(cube.subarray(9*2, 9*12));
+      var s = stlCouches(sansDessus, 6, 1e-4);
+      if(stlBoite(cube).vol <= 0) r.push("le cube d'essai est à l'envers");
+      /* sans le dessus (z = 10), les couches restent fermées : seules les faces latérales les coupent… */
+      if(s.ouverts) r.push("un cube sans dessus ne devrait pas ouvrir les couches (" + s.ouverts + ")");
+      /* … mais sans une face latérale (l'ouest), elles s'ouvrent */
+      var sansCote = new Float32Array(10*9);
+      sansCote.set(cube.subarray(0, 9*8)); sansCote.set(cube.subarray(9*10, 9*12), 9*8);
+      var c = stlCouches(sansCote, 6, 1e-4);
+      if(!c.ouverts) r.push("un cube sans une face latérale devrait ouvrir les couches");
+      /* un mur fait de bandes qui se raccordent par des sommets en T : fermé pour un trancheur */
+      var avant = S;
+      try {
+        S = migrerProjet(projetVide());
+        S.niveaux[0].murs.push({id:uid(), x1:0, y1:0, x2:6, y2:0, cat:"porteur", type:1, ouvertures:[{id:uid(), type:"fenetre", pos:1.2, l:1.2, h:1.2, allege:0.9, mat:"PVC"}, {id:uid(), type:"porte", pos:3.5, l:0.9, h:2.04, allege:0, mat:"Bois"}]});
+        var Ci = stlCollecter(stlOptionsEssai({echelle:1}));
+        var cm = stlCouches(Ci.tri, 8, 1e-5);
+        if(!Ci.n) r.push("le mur percé ne donne aucun triangle");
+        else if(cm.ouverts) r.push("un mur percé de deux baies a " + cm.ouverts + " extrémités ouvertes aux couches");
+      } finally { S = avant; }
+      return r.length ? r.slice(0, 4).join(" · ") : null;
+    }});
+
+  AUTOTESTS.push({
+    nom:"Export STL : la maquette IFC jointe s'exporte avec son volume, et le terrain ou les vitrages se retirent",
+    f:function(){
+      var r = [], avant = S;
+      try {
+        var D = ifcConvertir(igTexteEssai()), ref = igReference(D, "essai.ifc");
+        if(!ref) return "la maquette d'essai ne se lit pas";
+        S = migrerProjet(projetVide());
+        S.ifcGeo = ref;
+        var O = stlOptionsEssai({contenu:"ifc", echelle:1000});
+        var C = stlCollecter(O);
+        var B = stlBoite(C.tri);
+        /* 1,76 (mur percé) + 0,5 (bloc coupé) + 1 (objet référencé à l'échelle 2) */
+        if(Math.abs(B.vol - 3.26) > 0.02) r.push("volume de la maquette IFC : " + B.vol.toFixed(3) + " m³ au lieu de 3,26 (négatif : facettes vers l'intérieur)");
+        var R = stlAssembler(C, O), Bf = stlBoite(R.tri);
+        if(Bf.vol <= 0) r.push("volume signé négatif après mise à l'échelle");
+        if(Math.abs(Bf.mn[0]) > 1e-4 || Math.abs(Bf.mn[2]) > 1e-4) r.push("la maquette n'est pas posée au zéro");
+        /* les classes se retirent : sans le mobilier, il manque exactement son mètre cube */
+        var cls = [];
+        stlClassesIfc().forEach(function(c){ cls = cls.concat(c.types); });
+        if(cls.indexOf("IFCFURNISHINGELEMENT") < 0) r.push("la classe du mobilier manque dans la liste : " + cls.join(","));
+        else {
+          var sansMeuble = stlBoite(stlCollecter(stlOptionsEssai({contenu:"ifc", echelle:1000, exclusIfc:["IFCFURNISHINGELEMENT"]})).tri).vol;
+          if(Math.abs(B.vol - sansMeuble - 1) > 0.02) r.push("sans le mobilier : " + sansMeuble.toFixed(3) + " m³ au lieu de " + (B.vol - 1).toFixed(3));
+        }
+        /* l'aperçu se dessine */
+        var cvE = document.createElement("canvas"); cvE.width = 200; cvE.height = 120;
+        if(stlApercu(cvE, R.tri, 35) !== true) r.push("l'aperçu ne se dessine pas");
+        else {
+          var px = cvE.getContext("2d").getImageData(0, 0, 200, 120).data, vus = 0;
+          for(var pi = 0; pi < px.length; pi += 4) if(Math.abs(px[pi] - 244) > 12 || Math.abs(px[pi + 2] - 248) > 12) vus++;
+          if(vus < 50) r.push("l'aperçu est vide (" + vus + " pixels)");
+        }
+        /* le nom du fichier dit ce que c'est et à quelle échelle */
+        if(!/-ifc-1-1000\.stl$/.test(stlNomFichier(O, 1000))) r.push("nom du fichier : " + stlNomFichier(O, 1000));
+        if(stlCollecter(stlOptionsEssai({contenu:"projet"})).n !== 0) r.push("le projet vide n'est pas vide : " + stlCollecter(stlOptionsEssai({contenu:"projet"})).n + " triangles");
+      } finally { S = avant; }
+      return r.length ? r.slice(0, 4).join(" · ") : null;
+    }});
+
+  AUTOTESTS.push({
+    nom:"Export STL : une entrée du menu Fichier › Exporter › STL, et une fenêtre qui annonce taille, parois et couches",
+    f:function(){
+      var r = [], avant = S, d = null;
+      try {
+        var bt = document.querySelector('.menu[data-menu="fichier"] .ss-menu[data-ss="stl"] [data-action="exp-stl-projet"]');
+        if(!bt) return "l'entrée « STL — impression 3D » manque dans Fichier › Exporter";
+        if(!document.querySelector('.menu[data-menu="fichier"] .ss-menu[data-ss="stl"] [data-action="exp-stl-ifc"]')) r.push("l'entrée de la maquette IFC manque");
+        if(document.querySelector('.menu[data-menu="fichier"] > .deroulant > [data-action^="exp-stl"]')) r.push("une entrée STL reste au premier niveau du menu");
+        S = migrerProjet(JSON.parse(JSON.stringify(PAVILLON_EXEMPLE)));
+        executer("exp-stl-projet");
+        d = document.getElementById("dlg-stl");
+        if(!d) return "la fenêtre « Exporter en STL » ne s'ouvre pas";
+        if(!d.querySelector('[data-stl="echelle"]') || !d.querySelector('[data-stl="socle"]') || !d.querySelector('[data-stl="plateau"]')) r.push("échelle, plateau ou socle manquent");
+        if(!d.querySelector('[data-stlniv]')) r.push("le choix des niveaux manque");
+        var ok = d.querySelector('[data-stl="contenu"] option[value="ifc"]');
+        if(!ok || !ok.disabled) r.push("la maquette IFC devrait être grisée sans IFC joint");
+        /* le bilan se calcule : la fenêtre est modale, on lit son texte après un tour d'horloge si l'on peut, sinon on calcule comme elle */
+        var C = stlCollecter(stlOptionsEssai({echelle:0, socle:2}));
+        var R = stlAssembler(C, stlOptionsEssai({echelle:0, socle:2}));
+        C.couches = stlCouches(C.tri, 8, 1e-5);
+        var h = stlBilanHtml(C, R, stlOptionsEssai({echelle:0, socle:2}));
+        if(!/triangles/.test(h) || !/mm/.test(h)) r.push("le bilan ne donne ni triangles ni dimensions");
+        if(!/paroi/.test(h)) r.push("le bilan ne parle pas de la plus mince paroi");
+        if(!/couches/.test(h)) r.push("le bilan ne parle pas des couches");
+        /* une échelle trop petite pour la plus mince cloison : l'avertissement, avec l'échelle conseillée */
+        var h2 = stlBilanHtml(C, stlAssembler(C, stlOptionsEssai({echelle:500})), stlOptionsEssai({echelle:500}));
+        if(!/1\/\d+ ou plus grande/.test(h2)) r.push("à 1/500, le bilan ne conseille aucune échelle pour les parois minces");
+      } finally {
+        if(d){ try { d.close(); } catch(_e){} d.remove(); }
+        S = avant;
+      }
+      return r.length ? r.slice(0, 4).join(" · ") : null;
     }});
 }
 
