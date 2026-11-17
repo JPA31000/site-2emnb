@@ -419,6 +419,7 @@ a.puce__texte{color:var(--bleu);text-decoration:underline;text-decoration-style:
    - jours fériés : calendrier.api.gouv.fr (Ascension jeudi 6 mai 2027) et « Pont de l'Ascension » (vendredi 7 mai, calendrier officiel) ;
    - PFMP : « CALENDRIER STAGES, PFMP… V4 » du lycée, ligne « 2ème BAC · Métiers des études et de la modélisation numérique du bâtiment » (3 + 3 semaines)
      et ligne « 1ère BAC · Technicien d'Études du Bâtiment option B Assistant en Architecture » (4 + 4 semaines) ; « Prépa PFMP » = semaines 42 et 45 pour la seconde ;
+   - créneaux de la 1AA : donnés par l'enseignant le 17/11/2026 (le lundi de 9 h 10 à 12 h 10, le jeudi de 8 h 15 à 10 h 05) ;
    - créneaux de la 2EMNB : donnés par l'enseignant (mardi, jeudi, vendredi) ; salle 13.11 INFO et organisation « un groupe par semaine entière » : PDF « 2EMNB1 & 2EMNB2 — Classes, groupes et emplois du temps » (nouvelle organisation) ;
      l'ORDRE du tourniquet et son point de départ viennent de l'enseignant (17/11/2026) : « j'ai le groupe 3 cette semaine (du 16 au 20 novembre), la semaine prochaine le groupe 1 » → G1 → G2 → G3
      (le PDF notait G1 → G3 → G2 mais précisait : « si c'est l'inverse qui est voulu, le tableau du cycle est à inverser »).
@@ -448,7 +449,7 @@ const NIVEAUX = {
   },
   '1aa': {
     nom: '1AA', sous: 'le carnet de la première', accueil: '1aa.html', classe: 'Première Bac Pro TEB option B, assistant en architecture',
-    creneaux: [],
+    creneaux: [{ j: 1, debut: '09:10', fin: '12:10' }, { j: 4, debut: '08:15', fin: '10:05' }],
     salle: '',
     groupes: null,
     pfmp: [{ nom: 'PFMP 1', du: '2027-01-11', au: '2027-02-05' }, { nom: 'PFMP 2', du: '2027-06-07', au: '2027-07-02' }],
