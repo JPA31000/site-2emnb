@@ -529,6 +529,9 @@ const decoderEntites = t => String(t).replace(/&nbsp;/g, ' ').replace(/&lt;/g, 
 const texteBrut = t => decoderEntites(String(t).replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 const TYPES_LUS = { radio: 'choix', choix: 'choix', qcm: 'choix', select: 'choix', checkbox: 'choix', text: 'texte', texte: 'texte', input: 'texte', short: 'texte', textarea: 'long', long: 'long', paragraph: 'long' };
 const premier = (o, ...noms) => { for (const n of noms) if (o[n] !== undefined && o[n] !== null && o[n] !== '') return o[n]; return ''; };
+const LETTRE = /^([A-Ha-h])\s*[).:]?$/;   // « B », « B) », « b. » : la lettre d'une option
+const nomOption = o => (o !== null && typeof o === 'object' ? String(premier(o, 'text', 'texte', 'label', 'libelle', 'content', 'title', 'value')) : String(o));   // une option est un texte, ou un objet { key: "A", text: "…" }
+const cleOption = o => (o !== null && typeof o === 'object' ? String(premier(o, 'key', 'letter', 'lettre', 'id', 'code')) : '');
 function trouverBonne(options, attendu) {   // la bonne réponse parmi les options, d'après le corrigé (« ACT (Assistance…) » → l'option « ACT ») ; sinon rien
   const cible = String(attendu === undefined || attendu === null ? '' : attendu).trim();
   if (!cible) return undefined;
@@ -567,23 +570,37 @@ function lireEvaluationHtml(html) {
   const ref = /(?:src|href)\s*=\s*["']([^"'#?]*\.pdf)/i.exec(html);
   let pdfMentionne = ''; if (ref) { try { pdfMentionne = decodeURIComponent(ref[1]); } catch (e) { pdfMentionne = ref[1]; } pdfMentionne = pdfMentionne.split('/').pop(); }
   const evaluation = { titre, sousTitre, consigne: cons ? texteBrut(cons[1]) : '', pdf: '', sections: [] };
-  let section = null, n = 0; const vus = {};
+  let section = null, n = 0, themeCourant = ''; const vus = {};
   t.liste.forEach(item => {
     if (!item || typeof item !== 'object') return;
     const titreSection = premier(item, 'section', 'partie'), texte = premier(item, 'text', 'texte', 'question', 'enonce');
-    if (titreSection && !texte) { section = { titre: String(titreSection), questions: [] }; evaluation.sections.push(section); return; }
+    if (titreSection && !texte) { section = { titre: String(titreSection), questions: [] }; themeCourant = ''; evaluation.sections.push(section); return; }
     if (!texte) return;
+    const theme = String(premier(item, 'theme', 'categorie', 'rubrique'));   // un thème par question (« ACTEURS ET RÔLES ») : une partie par thème, tant qu'il ne change pas
+    if (theme && theme !== themeCourant) { themeCourant = theme; section = { titre: theme, questions: [] }; evaluation.sections.push(section); }
     if (!section) { section = { titre: '', questions: [] }; evaluation.sections.push(section); }
     n++;
     let id = String(premier(item, 'id') || 'q' + n); if (!/^[A-Za-z][A-Za-z0-9_]{0,17}$/.test(id)) id = 'q' + n; while (vus[id]) id += '_'; vus[id] = true;
     const options = premier(item, 'options', 'choices', 'choix'), typeLu = TYPES_LUS[String(premier(item, 'type')).toLowerCase()];
-    const aDesOptions = Array.isArray(options) && options.length >= 2;
+    const brutes = Array.isArray(options) ? options : [];
+    const aDesOptions = brutes.length >= 2;
     const type = typeLu === 'choix' ? (aDesOptions ? 'choix' : 'texte') : typeLu || (aDesOptions ? 'choix' : 'texte');
-    const q = { id, type, texte: String(texte) };
-    const attendu = premier(item, 'expected', 'corrige', 'reponse', 'answer', 'correct');
-    if (type === 'choix') { q.options = options.map(String); const b = trouverBonne(q.options, attendu); if (b !== undefined) q.bonne = b; }
-    if (attendu !== '') q.corrige = Array.isArray(attendu) ? attendu.join(' ; ') : String(attendu);
-    const note = premier(item, 'note', 'remarque', 'explication'); if (note) q.note = String(note);
+    const q = { id, type, texte: /^\s*\d+\s*[.)]/.test(String(texte)) ? String(texte) : n + '. ' + String(texte) };   // l'élève voit des questions numérotées (« 12. … ») : on numérote celles qui ne le sont pas
+    const attendu = premier(item, 'expected', 'corrige', 'reponse', 'answer', 'correct', 'correctAnswer', 'bonneReponse');
+    let corrige;
+    if (type === 'choix') {
+      q.options = brutes.map(nomOption);
+      const cles = brutes.map(cleOption), lettre = LETTRE.exec(String(attendu).trim());   // « B » : la lettre d'une option, ou son rang (A = la 1ʳᵉ) quand les options n'ont pas de lettre
+      let b;
+      if (lettre) { const L = lettre[1].toUpperCase(), k = cles.findIndex(c => c.trim().toUpperCase() === L), rang = L.charCodeAt(0) - 65; b = k >= 0 ? k : (cles.every(c => !c) && rang < q.options.length ? rang : undefined); }
+      if (b === undefined) b = trouverBonne(q.options, attendu);
+      if (b === undefined) { const rang = premier(item, 'correctIndex', 'answerIndex', 'indexBonne'); if (Number.isInteger(rang) && rang >= 0 && rang < q.options.length) b = rang; }
+      if (b !== undefined) q.bonne = b;
+      if (lettre && b !== undefined) corrige = (cles[b] || String.fromCharCode(65 + b)) + ') ' + q.options[b];   // « B) Le maître d'ouvrage (MOA) » plutôt que la seule lettre
+    }
+    if (corrige === undefined && attendu !== '') corrige = Array.isArray(attendu) ? attendu.join(' ; ') : String(attendu);
+    if (corrige) q.corrige = corrige;
+    const note = premier(item, 'note', 'remarque', 'explication', 'explanation'); if (note) q.note = String(note);
     section.questions.push(q);
   });
   if (!evaluation.sections.length) throw new Error('Aucune question n’a été trouvée dans cette page.');
