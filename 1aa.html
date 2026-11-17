@@ -60,13 +60,18 @@ main,.pied{position:relative;z-index:1}
 .nav.solide{background:rgba(247,244,236,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .nav.solide::after{opacity:1}
 .nav.cachee{transform:translateY(-112%)}   /* 112 % : la ligne de crédit dépasse le bas de la barre, elle doit disparaître aussi */
-/* ---------- l'aiguillage de niveau : 2EMNB | 1AA, à côté du logo ---------- */
+/* ---------- le choix du niveau : en survolant le logo (crayon + nom), une fenêtre propose 2EMNB ou 1AA ---------- */
 .nav--niv .logo{margin-right:0}
-.niveaux{display:flex;align-items:center;gap:7px;margin:0 auto 0 4px;font:400 17px/1 var(--main)}
-.niveaux a{padding:5px 12px 6px;color:var(--gr2);border:1.6px dashed var(--gr3);border-radius:8px 11px 7px 10px;transition:color .2s,border-color .2s,background .2s}
-.niveaux a:hover{color:var(--gr);border-color:var(--gr2)}
-.niveaux a[aria-current="page"]{color:var(--rouge);border:1.8px solid var(--rouge);background:rgba(255,222,40,.3);pointer-events:none}
-@media (max-width:1100px){.niveaux{display:none}}
+.logo-zone{position:relative;margin-right:auto}
+.niveaux-pop{position:absolute;left:-14px;top:100%;z-index:130;padding-top:10px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .25s,transform .35s var(--e-out),visibility 0s linear .25s}   /* le haut transparent (padding) relie le logo à la fenêtre : la souris peut y descendre sans la perdre */
+.logo-zone.ouvert .niveaux-pop{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+@media (hover:hover){.logo-zone:hover .niveaux-pop,.logo-zone:focus-within .niveaux-pop{opacity:1;visibility:visible;transform:none;transition-delay:0s}}   /* au doigt, ni survol ni focus « collants » : seul l'appui ouvre et referme */
+.logo-zone.replie .niveaux-pop{opacity:0;visibility:hidden}   /* Échap : fermée jusqu'à ce qu'on sorte du logo */
+.niveaux-pop__carte{display:grid;gap:7px;min-width:200px;padding:12px 14px 14px;background:var(--fiche);border:1.6px dashed var(--gr3);border-radius:10px 14px 9px 12px;box-shadow:var(--ombre)}
+.niveaux-pop__titre{margin:0 2px 1px;font:400 14px/1.2 var(--texte);color:var(--gr2)}
+.niveaux-pop a{display:block;padding:7px 14px 8px;font:400 23px/1.1 var(--main);color:var(--gr);border:1.6px dashed var(--gr3);border-radius:8px 11px 7px 10px;transition:color .2s,border-color .2s,background .2s}
+.niveaux-pop a:hover,.niveaux-pop a:focus-visible{border-color:var(--gr2);background:rgba(255,222,40,.3)}
+.niveaux-pop a[aria-current="page"]{color:var(--rouge);border:1.8px solid var(--rouge);background:rgba(255,222,40,.3)}
 .code-lisible{font-family:var(--texte)!important;font-weight:700}   /* « 1AA » : la police d'écriture dessine le 1 comme un I */
 .logo{display:flex;align-items:center;gap:10px;margin-right:auto;line-height:1}
 .logo b{font:400 30px/1 var(--main)}
@@ -557,11 +562,13 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 <svg class="progres" viewBox="0 0 1000 8" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 4C160 2 320 6 500 4S840 3 998 5"/></svg>
 
 <header class="nav nav--niv" id="nav">
+  <div class="logo-zone">
   <a class="logo" href="#accueil" aria-label="1AA, retour en haut de page">
     <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l2.6-8.4L21.5 4.7l5.8 5.8L13.4 24.4z" fill="#f2c14e" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l2.6-8.4 5.8 5.8z" fill="#f1dfc0" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l1.2-3.9 2.7 2.7z" fill="#2a2a2a"/><path d="M18.6 7.6l5.8 5.8" stroke="#2a2a2a" stroke-width="1.4"/></svg>
     <span><b class="code-lisible">1AA</b><small>le carnet de la première</small></span>
   </a>
-  <div class="niveaux" role="group" aria-label="Choisir le niveau"><a href="index.html">2EMNB</a><a href="1aa.html" aria-current="page"><span class="code-lisible">1AA</span></a></div>
+  <nav class="niveaux-pop" aria-label="Choisir le niveau"><div class="niveaux-pop__carte"><p class="niveaux-pop__titre">Choisir le niveau</p><a href="index.html">2EMNB</a><a href="1aa.html" aria-current="page"><span class="code-lisible">1AA</span></a></div></nav>
+  </div>
   <nav class="nav__liens" aria-label="Sections du site">
     <a href="#projets">Chapitres</a><a href="jean-zay.html">Le projet</a><a href="u22-jean-zay.html">Sujet U22</a>
   </nav>
@@ -1698,6 +1705,23 @@ function indexer() {
     }
   }
 }
+function initNiveaux() {   // en survolant le logo, une fenêtre propose 2EMNB ou 1AA ; au doigt (pas de survol), un appui sur le logo l'ouvre et un second remonte en haut de page
+  const zone = $('.logo-zone'); if (!zone) return;
+  const logo = $('.logo', zone), sansSurvol = matchMedia('(hover: none)');
+  logo.addEventListener('click', e => {
+    if (!sansSurvol.matches) return;   // à la souris : le survol suffit, le clic remonte en haut de page
+    if (zone.classList.contains('ouvert')) { zone.classList.remove('ouvert'); return; }   // second appui : le logo fait son travail habituel
+    e.preventDefault(); zone.classList.add('ouvert');
+  });
+  document.addEventListener('click', e => { if (!zone.contains(e.target)) zone.classList.remove('ouvert'); });
+  zone.addEventListener('keydown', e => {   // Échap referme la fenêtre ; elle reste fermée jusqu'à ce qu'on sorte du logo
+    if (e.key !== 'Escape') return;
+    zone.classList.remove('ouvert'); zone.classList.add('replie'); logo.focus({ preventScroll: true });
+  });
+  const rouvrir = () => zone.classList.remove('replie');
+  zone.addEventListener('pointerleave', rouvrir);
+  zone.addEventListener('focusout', e => { if (!zone.contains(e.relatedTarget)) rouvrir(); });
+}
 function initRecherche() {
   indexer();
   const pal = $('#palette'), champ = $('#pal-champ'), liste = $('#pal-liste'), compte = $('#pal-compte');
@@ -1844,6 +1868,7 @@ function initPlis() {
    ===================================================================== */
 construirePage();
 initPlis();
+initNiveaux();
 ecrire();
 preparerCitation();
 const CROQUIS = initCroquis(), TRACE = initTrace(), APERCU = initApercu();
