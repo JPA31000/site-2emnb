@@ -492,7 +492,7 @@ dialog.dlg-accueil .note-dlg{text-align:center}
   <div id="attente-voile"></div>
   <div id="attente-bas">
     <p id="attente-titre">Atelier Maquette Numérique</p>
-    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.88</span></p>
+    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.89</span></p>
     <div id="attente-licence" role="note">
       <p class="al-titre">Licence Creative Commons <b>CC BY-NC-SA 4.0</b></p>
       <p class="al-texte">Libre pour enseigner et apprendre, à trois conditions : citer l’auteur · pas d’usage commercial · partager les adaptations dans les mêmes conditions.</p>
@@ -2505,6 +2505,7 @@ function devisEnCours(shift){
     const f = fam("toiture", 0);
     const t = choix.toit;
     const r = {titre:"Toiture \u00b7 " + (TOITURES.find(o => o.id === t.type) || {nom:""}).nom, pu:f.pu, un:f.un};
+    if(choix.toit.mode === "contour") return ctDevis(r);
     if(!traceT){ r.detail = "cliquer le premier coin de l\u2019emprise"; return r; }
     const dx = Math.abs(survol.x - traceT.x1) + 2*t.debord;
     const dy = Math.abs(survol.y - traceT.y1) + 2*t.debord;
@@ -3484,6 +3485,7 @@ function ancreTrace(){
   const der = t => (t && t.length) ? t[t.length-1] : null;
   if(typeof traceP  !== "undefined" && traceP  && traceP.points)  return der(traceP.points);
   if(typeof traceTr !== "undefined" && traceTr && traceTr.points) return der(traceTr.points);
+  if(typeof traceT !== "undefined" && traceT && traceT.pts) return der(traceT.pts);
   if(typeof _traceAnnot !== "undefined" && _traceAnnot &&
      _traceAnnot.genre === "trait" && _traceAnnot.pts) return der(_traceAnnot.pts);
   return null;
@@ -3551,6 +3553,7 @@ function zRiveMur(m, iNiv){
       const g = geomToit(T);
       return g && isFinite(g.zb) ? g.zb : null;
     }
+    if(T.type === "contour"){ const zc = ctZRiveMur(m, T); return isFinite(zc) ? zc : null; }
     /* la pente varie suivant y quand le faîtage court suivant x */
     const pentSurY = T.sens === "x";
     const w0 = pentSurY ? T.y0 : T.x0, w1 = pentSurY ? T.y1 : T.x1;
@@ -3710,9 +3713,10 @@ function toitureDuMur(m, iNiv){
     const d = t.debord;
     const x0 = t.x0-d, x1 = t.x1+d, y0 = t.y0-d, y1 = t.y1+d;
     const cx = (m.x1+m.x2)/2, cy = (m.y1+m.y2)/2;
-    const dedans = cx >= x0-0.01 && cx <= x1+0.01 && cy >= y0-0.01 && cy <= y1+0.01;
+    const dedans = t.type === "contour" ? toitContient(t, cx, cy, 0.01)
+                 : (cx >= x0-0.01 && cx <= x1+0.01 && cy >= y0-0.01 && cy <= y1+0.01);
     if(!dedans) continue;
-    const A = (x1-x0)*(y1-y0);
+    const A = t.type === "contour" ? Math.abs(ctAire(t.pts)) : (x1-x0)*(y1-y0);
     if(A > aire){ aire = A; best = t; }
   }
   return best;
@@ -4227,6 +4231,7 @@ function accrocher(x, y){
     for(const p of niv.planchers) for(const pt of p.points) essai(pt[0],pt[1],"ext",0.8);
   }
   if(traceP && traceP.points.length) essai(traceP.points[0][0], traceP.points[0][1], "ext", 0.8);
+  if(traceT && traceT.pts && traceT.pts.length) essai(traceT.pts[0][0], traceT.pts[0][1], "ext", 0.8);
   /* Les FILES d'implantation attirent à leur tour : on construit sur les
      axes. Elles ne s'appliquent que si aucun point remarquable n'a été
      pris — elles déplaçaient jusqu'ici l'abscisse d'un angle de mur
@@ -4468,7 +4473,8 @@ function poigneesDe(s){
     if(p) p.points.forEach((pt, i) => res.push({sel:s, type:"pv", idx:i, x:pt[0], y:pt[1]}));
   } else if(s.toitureId){
     const t = toitureParId(s.toitureId);
-    if(t) res.push({sel:s, type:"t0", x:t.x0, y:t.y0}, {sel:s, type:"t1", x:t.x1, y:t.y1});
+    if(t && t.pts) t.pts.forEach((pt, i) => res.push({sel:s, type:"tv", idx:i, x:pt[0], y:pt[1]}));
+    else if(t) res.push({sel:s, type:"t0", x:t.x0, y:t.y0}, {sel:s, type:"t1", x:t.x1, y:t.y1});
   } else if(s.tremieId){
     const t = NIV().tremies.find(t2 => t2.id === s.tremieId);
     if(t && tremiePoly(t))
@@ -4516,6 +4522,8 @@ function appliquerPoignee(g, x, y){
   } else if(g.type === "pv"){
     const p = plancherParId(s.plancherId); if(!p) return;
     p.points[g.idx] = [x, y];
+  } else if(g.type === "tv"){
+    const t = toitureParId(s.toitureId); if(t && t.pts) ctDeplacerSommet(t, g.idx, x, y);
   } else if(g.type === "t0" || g.type === "t1"){
     const t = toitureParId(s.toitureId); if(!t) return;
     if(g.type === "t0"){ t.x0 = x; t.y0 = y; } else { t.x1 = x; t.y1 = y; }
@@ -4544,7 +4552,7 @@ function bougerSelection(dx, dy){
     else if(s.coteId){ const c = coteParId(s.coteId);
       if(c){ c.x1 += dx; c.y1 += dy; c.x2 += dx; c.y2 += dy; } }
     else if(s.toitureId){ const t = toitureParId(s.toitureId);
-      if(t){ t.x0 += dx; t.x1 += dx; t.y0 += dy; t.y1 += dy; } }
+      if(t){ if(t.pts) ctBouger(t, dx, dy); else { t.x0 += dx; t.x1 += dx; t.y0 += dy; t.y1 += dy; } } }
     else if(s.tremieId){ const t = NIV().tremies.find(t2 => t2.id === s.tremieId);
       if(t && tremiePoly(t)) t.points = t.points.map(q => [q[0]+dx, q[1]+dy]);
       else if(t){ t.x0 += dx; t.x1 += dx; t.y0 += dy; t.y1 += dy; } }
@@ -4956,8 +4964,7 @@ function chercherSousCurseurTous(x, y){
   }
   for(const t of S.toitures){
     if(t.niveau !== S.nivActif) continue;
-    const d = t.debord;
-    const pts = [[t.x0-d,t.y0-d],[t.x1+d,t.y0-d],[t.x1+d,t.y1+d],[t.x0-d,t.y1+d]];
+    const pts = empriseToit(t);
     if(pointDansPoly(x, y, pts) || bordPoly(pts) < tol) pousse({toitureId:t.id});
   }
   // intérieur des pièces en dernier
@@ -5036,8 +5043,7 @@ function chercherSousCurseur(x, y){
     if(pointDansPoly(x,y,p.points)) return {plancherId:p.id};
   // 5. toitures posées sur le niveau actif
   for(const t of S.toitures)
-    if(t.niveau === S.nivActif &&
-       x >= t.x0-0.2 && x <= t.x1+0.2 && y >= t.y0-0.2 && y <= t.y1+0.2)
+    if(t.niveau === S.nivActif && toitContient(t, x, y, 0.2))
       return {toitureId:t.id};
   // 6. intérieur d'une pièce (en dernier : ne masque aucun objet construit)
   for(const p of piecesDuNiveau())
@@ -5174,6 +5180,7 @@ function rotationSelection(){
       t.x0 = Math.min(p0[0],p1[0]); t.x1 = Math.max(p0[0],p1[0]);
       t.y0 = Math.min(p0[1],p1[1]); t.y1 = Math.max(p0[1],p1[1]);
       t.sens = t.sens === "x" ? "y" : "x";
+      if(t.pts) ctTourner90(t, cx, cy);
     }
     for(const c of S.coupes){
       if(c.axis === "y"){ c.axis = "x"; c.pos = cx + (c.pos - cy); }
@@ -5232,6 +5239,7 @@ function symetrieSelection(verticale){
     for(const t of S.toitures){
       if(verticale){ const a2 = 2*cy-t.y1, b2 = 2*cy-t.y0; t.y0 = a2; t.y1 = b2; }
       else { const a2 = 2*cx-t.x1, b2 = 2*cx-t.x0; t.x0 = a2; t.x1 = b2; }
+      if(t.pts) ctMiroir(t, verticale, verticale ? cy : cx);
     }
     for(const c of S.coupes){
       if(verticale && c.axis === "y") c.pos = 2*cy - c.pos;
@@ -6218,6 +6226,7 @@ function dessinerPlan(w, h){
     if(t.niveau !== S.nivActif) continue;
     const sel = selToit(t.id);
     const hov = !sel && hovToit(t.id);
+    if(t.type === "contour"){ ctDessinerPlan(t, sel, hov); continue; }
     const d = t.debord;
     ctx.setLineDash([9,5]);
     ctx.strokeStyle = sel ? "#c8501e" : hov ? COL_PRE : "#a05a40"; ctx.lineWidth = sel ? 2.4 : hov ? 2.2 : 1.5;
@@ -6429,7 +6438,8 @@ function dessinerPlan(w, h){
     ctx.arc(mx(traceP.points[0][0]), my(traceP.points[0][1]), 6, 0, Math.PI*2);
     ctx.stroke();
   }
-  if(traceT){
+  if(traceT && traceT.pts){ ctApercu(); }
+  else if(traceT){
     ctx.setLineDash([9,5]); ctx.strokeStyle = "#a05a40"; ctx.lineWidth = 2;
     ctx.strokeRect(mx(Math.min(traceT.x1,survol.x)), my(Math.min(traceT.y1,survol.y)),
                    Math.abs(survol.x-traceT.x1)*vue.zoom, Math.abs(survol.y-traceT.y1)*vue.zoom);
@@ -7231,6 +7241,7 @@ function dessinerCoupe(w, h){
 
   // toitures traversées par le plan de coupe
   for(const t of S.toitures){
+    if(t.type === "contour"){ ctCoupeToit(t, surY, X, Y, selToit(t.id)); continue; }
     const d = t.debord;
     const perpPos = surY ? [t.y0-d, t.y1+d] : [t.x0-d, t.x1+d];
     if(CP().pos < perpPos[0] || CP().pos > perpPos[1]) continue;
@@ -9433,7 +9444,7 @@ function majPanneau(){
   }
   if(outil === "toiture"){
     const t = choix.toit;
-    html += '<div class="section"><h3>Toiture à tracer (sur ' + echap(NIV().nom) + ')</h3>' +
+    html += ctHtmlOutil(); if(false) html += '<div class="section"><h3>Toiture à tracer (sur ' + echap(NIV().nom) + ')</h3>' +
       '<div class="ligne-prop"><label>Forme</label><select id="t-type">' +
         TOITURES.map(o=>'<option value="'+o.id+'"'+(t.type===o.id?" selected":"")+'>'+o.nom+'</option>').join("") + '</select></div>' +
       '<div class="ligne-prop"><label>Pente</label><input type="range" id="t-pente" min="1" max="175" step="1" value="'+pctDeDeg(t.pente)+'" title="Pente en pourcentage : 58 % = 30°, 100 % = 45°"><b id="t-pente-v">'+penteTexte(t)+'</b></div>' +
@@ -10316,6 +10327,7 @@ function htmlProprietes(){
     const t = toitureParId(selection.toitureId);
     if(!t){ viderSel(); return ""; }
     const g = geomToit(t);
+    if(t.type === "contour") return ctHtmlProprietes(t, g);
     /* LA FORME NE SE DÉCIDE PLUS ICI (v6.73). Elle se choisissait dans une
        liste déroulante — deux pans, monopente, terrasse — pendant qu'une
        autre section, « Pans du toit », proposait deux, trois ou quatre
@@ -11909,7 +11921,7 @@ cv.addEventListener("mousedown", e => {
           if(pl) drag.groupe.push({plancherId:pl.id, pts0: JSON.parse(JSON.stringify(pl.points))});
         } else if(s.toitureId){
           const t = toitureParId(s.toitureId);
-          if(t) drag.groupe.push({toitureId:t.id, o:{x0:t.x0,y0:t.y0,x1:t.x1,y1:t.y1}});
+          if(t) drag.groupe.push({toitureId:t.id, o:{x0:t.x0,y0:t.y0,x1:t.x1,y1:t.y1}, pts0: t.pts ? JSON.parse(JSON.stringify(t.pts)) : null});
         } else if(s.coteId){
           const c2 = coteParId(s.coteId);
           if(c2) drag.groupe.push({coteId:c2.id, o:{x1:c2.x1,y1:c2.y1,x2:c2.x2,y2:c2.y2}});
@@ -12039,6 +12051,7 @@ cv.addEventListener("mousedown", e => {
     if(dist(pc.x,pc.y,der[0],der[1]) > 0.12) traceP.points.push([pc.x,pc.y]);
     dessiner();
   }
+  else if(outil === "toiture" && choix.toit.mode === "contour"){ ctCliquer(p, e); }
   else if(outil === "toiture"){
     if(!traceT){ traceT = {x1:p.x, y1:p.y}; dessiner(); return; }
     const x0 = Math.min(traceT.x1, p.x), x1 = Math.max(traceT.x1, p.x);
@@ -12392,7 +12405,8 @@ cv.addEventListener("mousemove", e => {
             if(pl) pl.points = g.pts0.map(pt => [pt[0]+dx, pt[1]+dy]);
           } else if(g.toitureId){
             const t = toitureParId(g.toitureId);
-            if(t){ t.x0 = g.o.x0+dx; t.y0 = g.o.y0+dy; t.x1 = g.o.x1+dx; t.y1 = g.o.y1+dy; }
+            if(t){ t.x0 = g.o.x0+dx; t.y0 = g.o.y0+dy; t.x1 = g.o.x1+dx; t.y1 = g.o.y1+dy;
+                   if(g.pts0) t.pts = g.pts0.map(q => [q[0]+dx, q[1]+dy]); }
           } else if(g.coteId){
             const c = coteParId(g.coteId);
             if(c){ c.x1 = g.o.x1+dx; c.y1 = g.o.y1+dy; c.x2 = g.o.x2+dx; c.y2 = g.o.y2+dy; }
@@ -12567,6 +12581,7 @@ window.addEventListener("mouseup", (e) => {
    ne valait que pour le plan ; il est remplacé, non doublé. ---- */
 
 cv.addEventListener("dblclick", () => {
+  if(traceT && traceT.pts){ ctFermer(); return; }
   if(traceP && traceP.piece) fermerPiecePolygone();
   else if(traceTr && traceTr.points) fermerTremiePolygone();
   else if(traceP) fermerPlancher();
@@ -12773,6 +12788,8 @@ window.addEventListener("keydown", e => {
   else if(ctrl && e.key.toLowerCase() === "o"){ e.preventDefault(); executer("ouvrir"); }
   else if(ctrl && e.key.toLowerCase() === "n"){ e.preventDefault(); executer("nouveau"); }
   else if(e.key === "Delete" || e.key === "Backspace"){ e.preventDefault(); effacerSelection(); }
+  else if(e.key === "Enter" && traceT && traceT.pts){ e.preventDefault(); ctFermer(); }
+  else if((e.key === "b" || e.key === "B") && !ctrl && outil === "toiture" && choix.toit.mode === "contour"){ e.preventDefault(); ctBasculerBp(); }
   else if(e.key === "Enter" && traceP){ e.preventDefault(); fermerPlancher(); }
   else if(e.key === "Escape" && axoCycle){ axoCycle = null; survolSel = null; dessiner(); statut("Cycle Tab terminé."); }
   else if(e.key === "Escape"){
@@ -13394,9 +13411,11 @@ function ifcDuProjet(){
       const gT = geomToit(t), dT = t.debord, eT = gT.epT;
       const X0 = t.x0 - dT, X1 = t.x1 + dT, Y0 = t.y0 - dT, Y1 = t.y1 + dT;
       const zAt = (px, py) => t.type === "terrasse" ? gT.zb
+                            : t.type === "contour" ? ctZ(t, px, py)
                             : hauteurToit(t, t.sens === "x" ? py : px);
       let pans;
-      if(t.type === "deuxpans"){
+      if(t.type === "contour"){ pans = pansToit(t).map(pn => pn.pts); }
+      else if(t.type === "deuxpans"){
         if(gT.long){ const ym = (Y0+Y1)/2;
           pans = [[[X0,Y0],[X1,Y0],[X1,ym],[X0,ym]], [[X0,ym],[X1,ym],[X1,Y1],[X0,Y1]]]; }
         else { const xm = (X0+X1)/2;
@@ -13415,8 +13434,8 @@ function ifcDuProjet(){
         const haut = pan.map(c => pt3(c[0], -c[1], zAt(c[0], c[1]) + eT - zNiveau(i)));
         boucle(bas.slice().reverse());
         boucle(haut);
-        for(let k2 = 0; k2 < 4; k2++){
-          const k3 = (k2 + 1) % 4;
+        for(let k2 = 0; k2 < pan.length; k2++){
+          const k3 = (k2 + 1) % pan.length;
           boucle([bas[k2], bas[k3], haut[k3], haut[k2]]);
         }
       }
@@ -13429,7 +13448,7 @@ function ifcDuProjet(){
       contenus.push(E("IFCROOF('" + guidIFC() + "',#" + oh + "," + T("Toiture " + nomT) +
                       ",'Toiture',$,#" + place(lpEt, ax3(pt3(0,0,0))) + ",#" + pdsT + ",$," +
                       (t.type === "terrasse" ? ".FLAT_ROOF."
-                       : t.type === "monopente" ? ".SHED_ROOF." : ".GABLE_ROOF.") + ")"));
+                       : t.type === "monopente" ? ".SHED_ROOF." : t.type === "contour" ? ".FREEFORM." : ".GABLE_ROOF.") + ")"));
     }
 
     // -- files d'implantation : IfcGrid, le quadrillage normalise du BIM --
@@ -16615,6 +16634,7 @@ function dessinerAxo(w, h, zoomForce, nu){
   /* la silhouette des murs pignons qui précèdent une toiture donnée */
   function silhouettesDevantToiture(t, iN){
     const niv = S.niveaux[iN]; if(!niv) return [];
+    if(t.type === "contour") return [];
     const pT = prof((t.x0 + t.x1)/2, (t.y0 + t.y1)/2);
     const out = [];
     for(const m of niv.murs){
@@ -16915,7 +16935,7 @@ function dessinerAxo(w, h, zoomForce, nu){
            peau intérieure, pas même sous le débord. */
         const dOk = !!clip && (t.debord || 0) > 0.02;
         if(dOk){
-          const emp = [[t.x0, t.y0], [t.x1, t.y0], [t.x1, t.y1], [t.x0, t.y1]]
+          const emp = (t.pts || [[t.x0, t.y0], [t.x1, t.y0], [t.x1, t.y1], [t.x0, t.y1]])
                         .map(q2 => P(q2[0], q2[1], zAt(q2[0], q2[1])));
           ctx.save();
           ctx.beginPath();
@@ -16939,10 +16959,22 @@ function dessinerAxo(w, h, zoomForce, nu){
       if(toitVuDeDessus){
         /* chaque rive a son orientation : bande() la connaît déjà,
            c'est la normale qu'elle reçoit en second argument */
+        if(t.type === "contour"){
+          const Rct = clip ? null : ctCalc(t);
+          if(Rct){
+            const Qc = Rct.contour;
+            for(let ic = 0; ic < Qc.length; ic++){
+              const Ac = Qc[ic], Bc = Qc[(ic + 1) % Qc.length], Lc = Math.hypot(Bc[0] - Ac[0], Bc[1] - Ac[1]) || 1;
+              const nxc = (Bc[1] - Ac[1])/Lc, nyc = -(Bc[0] - Ac[0])/Lc;
+              bande(mids(Ac, Bc), nxc, nyc, teinter(bois, LUM(nxc, nyc, 0)));
+            }
+          }
+        } else {
         bande(mids([x0,y0],[x1,y0]), 0,-1, teinter(bois, LUM(0,-1,0)));
         bande(mids([x1,y0],[x1,y1]), 1,0, teinter(bois, LUM(1,0,0)));
         bande(mids([x0,y1],[x1,y1]), 0,1, teinter(bois, LUM(0,1,0)));
         bande(mids([x0,y0],[x0,y1]), -1,0, teinter(bois, LUM(-1,0,0)));
+        }
       }
 
       /* L'OSSATURE EN TRANSPARENCE (v6.89).
@@ -17706,7 +17738,7 @@ const TUTO_OUTILS = {
     defi:"pieces3"},
   toiture: {titre:"Toiture", etapes:[
       "Tracer l\u2019emprise en deux coins (d\u00e9bord compris).",
-      "Choisir la forme : deux pans, monopente, terrasse.",
+      "Choisir la forme : deux pans, monopente, terrasse — ou, avec « Toit contour », dire trait par trait lequel est un <b>bas de pente</b> (touche B) et à quelle pente en %.",
       "R\u00e9gler pente, sens du fa\u00eetage, \u00e9paisseurs chevrons + couverture."],
     astuce:"En tuiles courantes, la pente tourne autour de <b>58 \u00e0 100 %</b> selon la r\u00e9gion et le mod\u00e8le \u2014 une pente se donne en POURCENTAGE : 58 %, c\u2019est 58 cm de mont\u00e9e par m\u00e8tre parcouru.",
     defi:"toit"},
@@ -18120,6 +18152,7 @@ function quantiteElement(e){
       return catSoub(o).ep * (g.haut - g.bas) * g.long;
     }
     case "toiture": {
+      if(o.type === "contour") return ctSurface(o);
       const g = geomToit(o), d = o.debord;
       const A = (o.x1-o.x0+2*d) * (o.y1-o.y0+2*d);
       // surface de rampant : l'emprise divisée par le cosinus de la pente
@@ -70855,7 +70888,7 @@ function toitureCourante3D(){
 }
 function nomToiture(t, i){
   var F = {deuxpans:"deux pans", troispans:"trois pans", quatrepans:"quatre pans",
-           monopente:"monopente", terrasse:"terrasse"};
+           monopente:"monopente", terrasse:"terrasse", contour:"au contour"};
   var n = "Toit " + (i + 1) + " — " + (F[t.type] || t.type);
   try { n += " · niveau " + (S.niveaux[t.niveau] ? S.niveaux[t.niveau].nom : (t.niveau + 1)); }
   catch(_e){}
@@ -80864,7 +80897,7 @@ function eclInfos(c){
     } else if(c.fam === "toiture"){
       var T = S.toitures || [], sT = 0, pentes = {};
       T.forEach(function(t){
-        var d = +t.debord || 0, plan = Math.abs(t.x1 - t.x0 + 2 * d) * Math.abs(t.y1 - t.y0 + 2 * d);
+        var d = +t.debord || 0, plan = t.pts ? ctSurfacePlan(t) : Math.abs(t.x1 - t.x0 + 2 * d) * Math.abs(t.y1 - t.y0 + 2 * d);
         var p = t.type === "terrasse" ? 0 : (+t.pente || 0);
         sT += plan / Math.max(0.2, Math.cos(p * Math.PI / 180));
         if(t.type !== "terrasse" && p) pentes[Math.round(p) + "°"] = 1;
@@ -110742,6 +110775,7 @@ function facadePansVus109(t, F){
 
 /* une toiture dans la façade (remplace le bandeau rectangulaire) */
 function dessinerToitFacade109(t, F, X, Y, z){
+  if(t.type === "contour") return ctDessinerToitFacade(t, F, X, Y, z);
   var g = geomToit(t), d = t.debord || 0;
   var a = F.axeU === "x" ? t.x0 : t.y0, c = F.axeU === "x" ? t.x1 : t.y1;
   var versant = (t.sens === "x") === (F.axeU === "x");
@@ -112306,6 +112340,1434 @@ if(typeof AUTOTESTS !== "undefined"){
       }
       return r.length ? r.slice(0, 4).join(" · ") : null;
     }});
+}
+
+
+/* =====================================================================
+   MODULE 113 (v9.89) — LA TOITURE AU CONTOUR
+   ---------------------------------------------------------------------
+   Demande de JP (17/11/2026) : « revenir sur l'outil toiture : pouvoir indiquer
+   les limites du toit par des traits ou des polygones, indiquer si le trait est
+   un bas de pente, et demander la pente en pourcentage ».
+
+   Jusqu'ici une toiture était un RECTANGLE (deux coins) à deux pans, croupes ou
+   monopente ; un bâtiment en L demandait deux toitures et leur noue. On trace
+   maintenant le CONTOUR du toit, trait après trait : chaque trait est soit un
+   BAS DE PENTE — le toit monte à partir de lui, à la pente donnée en % — soit un
+   PIGNON, trait sans pente que ferme un mur. Le toit en sort tout seul : pans,
+   faîtage, arêtiers, noues.
+
+   113.1 · LE CALCUL. Chaque bas de pente porte un plan qui monte vers l'intérieur
+   (z = pente × distance au trait). Là où deux plans se rencontrent naît une arête.
+   Sur un contour convexe, le toit est l'enveloppe inférieure des plans ; sur un
+   contour rentrant (L, T, U) il ne l'est plus — une noue se creuse au droit du
+   sommet rentrant. On le calcule donc comme un SQUELETTE DROIT PONDÉRÉ : le contour
+   se resserre vers l'intérieur à la vitesse de chaque trait (1 / pente), et les
+   événements (une arête qui s'éteint, un sommet rentrant qui en percute une autre)
+   sont traités l'un après l'autre. Un pignon est un trait qui ne bouge pas.
+   Les contours symétriques (un L aux bras égaux) font coïncider plusieurs
+   événements : un bruit de 6 µm les sépare, puis les nœuds à moins de 0,4 mm sont
+   fondus — c'est invisible, et cela évite tout cas particulier.
+   ===================================================================== */
+var CT_SNAP = 4e-4;     // m : deux nœuds plus proches que cela n'en font qu'un
+var CT_JIT = 3e-6;      // m : bruit déterministe qui sépare les événements simultanés
+var CT_PENTE_MIN = 1, CT_PENTE_MAX = 400;   // en %
+
+function ctPseudo(i, k, g){
+  var s = Math.sin((i + 1)*12.9898 + (k + 1)*78.233 + (g || 0)*37.719)*43758.5453;
+  return (s - Math.floor(s)) - 0.5;
+}
+function ctAire(P){
+  var A = 0;
+  for(var i = 0, j = P.length - 1; i < P.length; j = i++) A += P[j][0]*P[i][1] - P[i][0]*P[j][1];
+  return A/2;
+}
+function ctBorne(v, a, b){ v = +v; if(!(v === v)) v = a; return Math.max(a, Math.min(b, v)); }
+
+/* un contour propre : antihoraire, sans point double, sans trait aligné avec son voisin.
+   Retourne {P, B, C} (points, bas de pente par trait, pente % par trait) ou null. */
+function ctNormaliser(pts, bp, pc){
+  var P = [], B = [], C = [], i;
+  for(i = 0; i < pts.length; i++){
+    var q = [+pts[i][0], +pts[i][1]];
+    if(!(q[0] === q[0]) || !(q[1] === q[1])) return null;
+    if(P.length && Math.hypot(q[0] - P[P.length-1][0], q[1] - P[P.length-1][1]) < 1e-4) continue;   // point double
+    P.push(q); B.push(bp ? bp[i] !== false : true); C.push(pc && pc[i] > 0 ? +pc[i] : 35);
+  }
+  if(P.length > 1 && Math.hypot(P[0][0] - P[P.length-1][0], P[0][1] - P[P.length-1][1]) < 1e-4){ P.pop(); B.pop(); C.pop(); }
+  if(P.length < 3) return null;
+  /* le trait i va du point i au point i+1 */
+  if(ctAire(P) < 0){
+    var n = P.length, P2 = P.slice().reverse(), B2 = [], C2 = [];
+    for(i = 0; i < n; i++){ B2.push(B[(n - 2 - i + 2*n) % n]); C2.push(C[(n - 2 - i + 2*n) % n]); }
+    P = P2; B = B2; C = C2;
+  }
+  /* un point au milieu d'un trait droit : les deux moitiés n'en font qu'un (on garde le plus long) */
+  var change = true;
+  while(change && P.length > 3){
+    change = false;
+    for(i = 0; i < P.length; i++){
+      var a = P[(i + P.length - 1) % P.length], b = P[i], c = P[(i + 1) % P.length];
+      var ux = b[0] - a[0], uy = b[1] - a[1], vx = c[0] - b[0], vy = c[1] - b[1];
+      var cr = ux*vy - uy*vx, dt = ux*vx + uy*vy;
+      if(Math.abs(cr) < 1e-7*(Math.hypot(ux, uy)*Math.hypot(vx, vy) + 1e-12) && dt > 0){
+        var ia = (i + P.length - 1) % P.length;
+        var garde = Math.hypot(ux, uy) >= Math.hypot(vx, vy) ? ia : i;
+        B[ia] = B[garde]; C[ia] = C[garde];
+        P.splice(i, 1); B.splice(i, 1); C.splice(i, 1);
+        change = true; break;
+      }
+    }
+  }
+  /* un trait qui repart en arrière sur lui-même : contour inutilisable */
+  for(i = 0; i < P.length; i++){
+    var a2 = P[(i + P.length - 1) % P.length], b2 = P[i], c2 = P[(i + 1) % P.length];
+    var ux2 = b2[0] - a2[0], uy2 = b2[1] - a2[1], vx2 = c2[0] - b2[0], vy2 = c2[1] - b2[1];
+    var cr2 = ux2*vy2 - uy2*vx2, dt2 = ux2*vx2 + uy2*vy2;
+    if(Math.abs(cr2) < 1e-7*(Math.hypot(ux2, uy2)*Math.hypot(vx2, vy2) + 1e-12) && dt2 < 0) return null;
+  }
+  return {P:P, B:B, C:C};
+}
+
+/* deux segments [a,b] et [c,d] se croisent-ils (hors extrémités communes) ? */
+function ctSeg(a, b, c, d){
+  var o = function(p, q, r){ return (q[0]-p[0])*(r[1]-p[1]) - (q[1]-p[1])*(r[0]-p[0]); };
+  var d1 = o(a, b, c), d2 = o(a, b, d), d3 = o(c, d, a), d4 = o(c, d, b);
+  return ((d1 > 1e-9 && d2 < -1e-9) || (d1 < -1e-9 && d2 > 1e-9)) && ((d3 > 1e-9 && d4 < -1e-9) || (d3 < -1e-9 && d4 > 1e-9));
+}
+function ctSimple(P){
+  var n = P.length;
+  for(var i = 0; i < n; i++)
+    for(var j = i + 2; j < n; j++){
+      if(i === 0 && j === n - 1) continue;
+      if(ctSeg(P[i], P[(i+1)%n], P[j], P[(j+1)%n])) return false;
+    }
+  return true;
+}
+/* le contour reculé de d (m) vers l'extérieur — le débord. Retourne null s'il se
+   replie sur lui-même ; l'appelant réduit alors le débord. */
+function ctDecaler(P, d){
+  var n = P.length, out = [], i;
+  if(!(d > 1e-9)) return P.map(function(p){ return [p[0], p[1]]; });
+  var N = [];
+  for(i = 0; i < n; i++){
+    var A = P[i], B = P[(i+1)%n], dx = B[0]-A[0], dy = B[1]-A[1], L = Math.hypot(dx, dy) || 1e-12;
+    N.push([-dy/L, dx/L]);
+  }
+  for(i = 0; i < n; i++){
+    var a = N[(i + n - 1) % n], b = N[i];
+    var det = a[0]*b[1] - a[1]*b[0];
+    if(Math.abs(det) < 1e-9) return null;
+    /* le sommet recule de d suivant la vitesse unitaire de l'angle */
+    var vx = (b[1] - a[1])/det, vy = (a[0] - b[0])/det;
+    out.push([P[i][0] - d*vx, P[i][1] - d*vy]);
+  }
+  if(ctAire(out) <= 0 || !ctSimple(out)) return null;
+  for(i = 0; i < n; i++){      // chaque trait garde son sens
+    var u = [P[(i+1)%n][0] - P[i][0], P[(i+1)%n][1] - P[i][1]];
+    var v = [out[(i+1)%n][0] - out[i][0], out[(i+1)%n][1] - out[i][1]];
+    if(u[0]*v[0] + u[1]*v[1] <= 0) return null;
+  }
+  return out;
+}
+
+/* vitesse d'un sommet de la ligne de front : il reste sur ses deux traits en mouvement */
+function ctVitesse(a, b, E){
+  var na = E[a], nb = E[b], det = na.nx*nb.ny - na.ny*nb.nx;
+  if(Math.abs(det) < 1e-12) return [(na.w*na.nx + nb.w*nb.nx)/2, (na.w*na.ny + nb.w*nb.ny)/2];
+  return [(na.w*nb.ny - nb.w*na.ny)/det, (na.nx*nb.w - nb.nx*na.w)/det];
+}
+
+/* LE SQUELETTE DROIT PONDÉRÉ.
+   P : contour antihoraire (déjà reculé du débord) ; w[i] : vitesse du trait i en m de plan
+   par m de hauteur (1/pente), 0 pour un pignon.
+   Retourne {noeuds:[{x,y,t}], arcs:[{a,b,L,R}], orig:[indice de nœud de chaque sommet]} ou null. */
+function ctSquelette(P0, w, graine){
+  var n = P0.length, J = [], E = [], i;
+  for(i = 0; i < n; i++) J.push([P0[i][0] + 2*CT_JIT*ctPseudo(i, 0, graine), P0[i][1] + 2*CT_JIT*ctPseudo(i, 1, graine)]);
+  for(i = 0; i < n; i++){
+    var A = J[i], B = J[(i+1)%n], dx = B[0]-A[0], dy = B[1]-A[1], L = Math.hypot(dx, dy) || 1e-12;
+    E.push({dx:dx/L, dy:dy/L, nx:-dy/L, ny:dx/L, c:(-dy/L)*A[0] + (dx/L)*A[1], w: w[i] > 0 ? w[i]*(1 + 1e-7*ctPseudo(i, 2, graine)) : 0});
+  }
+  var noeuds = [], arcs = [], V = [];
+  for(i = 0; i < n; i++) noeuds.push({x:J[i][0], y:J[i][1], t:0});
+  for(i = 0; i < n; i++){
+    var v0 = ctVitesse((i + n - 1) % n, i, E);
+    V.push({x:J[i][0], y:J[i][1], vx:v0[0], vy:v0[1], eL:(i + n - 1) % n, eR:i, prev:(i + n - 1) % n, next:(i + 1) % n,
+            vivant:true, noeud:i, anneau:0});
+  }
+  var T = 0, nAnneau = 1, garde = 60*n + 300;
+  var vivants = function(r){ var l = []; for(var q = 0; q < V.length; q++) if(V[q].vivant && (r === undefined || V[q].anneau === r)) l.push(q); return l; };
+  var nouveauSommet = function(x, y, eL, eR, noeud, anneau){
+    var vv = ctVitesse(eL, eR, E);
+    V.push({x:x, y:y, vx:vv[0], vy:vv[1], eL:eL, eR:eR, prev:-1, next:-1, vivant:true, noeud:noeud, anneau:anneau});
+    return V.length - 1;
+  };
+  var nouveauNoeud = function(x, y){ noeuds.push({x:x, y:y, t:T}); return noeuds.length - 1; };
+  /* un anneau réduit à deux sommets (ou un) se referme : c'est la dernière arête du squelette */
+  var clore = function(r){
+    var L = vivants(r);
+    if(!L.length) return;
+    var N = [];
+    for(var q = 0; q < L.length; q++){
+      var Vq = V[L[q]];
+      var nn = nouveauNoeud(Vq.x, Vq.y);
+      arcs.push({a:Vq.noeud, b:nn, L:Vq.eL, R:Vq.eR});
+      Vq.vivant = false; N.push(nn);
+    }
+    if(L.length === 2){
+      arcs.push({a:N[0], b:N[1], L:V[L[0]].eR, R:V[L[1]].eR});
+    }
+  };
+  var tailleAnneau = function(r){ return vivants(r).length; };
+  /* un anneau dont tous les sommets sont au même point s'est éteint d'un coup (le centre d'une croix) */
+  var effondre = function(r){
+    var L = vivants(r);
+    if(L.length < 3) return;
+    var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    L.forEach(function(q){ x0 = Math.min(x0, V[q].x); x1 = Math.max(x1, V[q].x); y0 = Math.min(y0, V[q].y); y1 = Math.max(y1, V[q].y); });
+    if(Math.max(x1 - x0, y1 - y0) < 1e-3) clore(r);
+  };
+  var bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
+  J.forEach(function(p){ bx0 = Math.min(bx0, p[0]); bx1 = Math.max(bx1, p[0]); by0 = Math.min(by0, p[1]); by1 = Math.max(by1, p[1]); });
+  var hors = function(x, y){ return x < bx0 - 1e-3 || x > bx1 + 1e-3 || y < by0 - 1e-3 || y > by1 + 1e-3; };
+  while(garde-- > 0){
+    var meilleur = null, a, c;
+    for(a = 0; a < V.length; a++){
+      var Va = V[a]; if(!Va.vivant) continue;
+      var Wb = V[Va.next], e = E[Va.eR];
+      /* l'arête Va → Wb s'éteint-elle ? */
+      var rV = e.dx*Va.vx + e.dy*Va.vy, rW = e.dx*Wb.vx + e.dy*Wb.vy;
+      if(rV - rW > 1e-12){
+        var gap = (e.dx*Wb.x + e.dy*Wb.y) - (e.dx*Va.x + e.dy*Va.y);
+        var tau = gap/(rV - rW);
+        if(tau > -1e-9 && (!meilleur || tau < meilleur.tau - 1e-13 || (Math.abs(tau - meilleur.tau) <= 1e-13 && meilleur.type === "scission")))
+          meilleur = {type:"arete", tau:Math.max(0, tau), a:a, b:Va.next};
+      }
+      /* un sommet rentrant percute-t-il une arête ? */
+      var cr = E[Va.eL].dx*E[Va.eR].dy - E[Va.eL].dy*E[Va.eR].dx;
+      if(cr >= -1e-12) continue;
+      for(c = 0; c < V.length; c++){
+        var Vc = V[c]; if(!Vc.vivant || Vc.anneau !== Va.anneau) continue;
+        if(c === a || Vc.next === a) continue;
+        if(Vc.eR === Va.eL || Vc.eR === Va.eR) continue;
+        var Vd = V[Vc.next], f = E[Vc.eR];
+        var d0 = f.nx*Va.x + f.ny*Va.y - (f.c + f.w*T);
+        var rate = f.nx*Va.vx + f.ny*Va.vy - f.w;
+        if(d0 < -1e-7 || rate > -1e-12) continue;
+        var tau2 = Math.max(0, d0/(-rate));
+        if(meilleur && tau2 > meilleur.tau + 1e-13) continue;
+        var X = Va.x + Va.vx*tau2, Y = Va.y + Va.vy*tau2;
+        var sA = f.dx*(Vc.x + Vc.vx*tau2) + f.dy*(Vc.y + Vc.vy*tau2);
+        var sB = f.dx*(Vd.x + Vd.vx*tau2) + f.dy*(Vd.y + Vd.vy*tau2);
+        var sX = f.dx*X + f.dy*Y;
+        if(sX < sA - 1e-7 || sX > sB + 1e-7) continue;
+        if(!meilleur || tau2 < meilleur.tau - 1e-13) meilleur = {type:"scission", tau:tau2, a:a, c:c};
+      }
+    }
+    if(!meilleur) break;
+    /* on avance toute la ligne de front jusqu'à l'événement */
+    var tp = meilleur.tau;
+    T += tp;
+    for(a = 0; a < V.length; a++) if(V[a].vivant){ V[a].x += V[a].vx*tp; V[a].y += V[a].vy*tp; }
+    if(meilleur.type === "arete"){
+      var V1 = V[meilleur.a], V2 = V[meilleur.b];
+      var X1 = (V1.x + V2.x)/2, Y1 = (V1.y + V2.y)/2;
+      if(hors(X1, Y1)) return null;               // l'événement sort du contour : le calcul a dérapé
+      var N1 = nouveauNoeud(X1, Y1);
+      arcs.push({a:V1.noeud, b:N1, L:V1.eL, R:V1.eR});
+      arcs.push({a:V2.noeud, b:N1, L:V2.eL, R:V2.eR});
+      V1.vivant = false; V2.vivant = false;
+      var Z = nouveauSommet(X1, Y1, V1.eL, V2.eR, N1, V1.anneau);
+      V[Z].prev = V1.prev; V[Z].next = V2.next;
+      V[V[Z].prev].next = Z; V[V[Z].next].prev = Z;
+      if(tailleAnneau(V1.anneau) <= 2) clore(V1.anneau); else effondre(V1.anneau);
+    } else {
+      var R = V[meilleur.a], Vc2 = V[meilleur.c], Vd2 = V[Vc2.next];
+      if(hors(R.x, R.y)) return null;
+      var N2 = nouveauNoeud(R.x, R.y);
+      arcs.push({a:R.noeud, b:N2, L:R.eL, R:R.eR});
+      R.vivant = false;
+      var Ec = Vc2.eR, r1 = R.anneau, r2 = nAnneau++;
+      var S1 = nouveauSommet(R.x, R.y, R.eL, Ec, N2, r1);
+      var S2 = nouveauSommet(R.x, R.y, Ec, R.eR, N2, r2);
+      var rp = R.prev, rn = R.next, ia = meilleur.c, ib = Vc2.next;
+      /* anneau 1 : R.prev → S1 → Vd → … ; anneau 2 : Vc → S2 → R.next → … */
+      V[S1].prev = rp; V[S1].next = ib; V[rp].next = S1; V[ib].prev = S1;
+      V[S2].prev = ia; V[S2].next = rn; V[ia].next = S2; V[rn].prev = S2;
+      /* les sommets de l'anneau 2 changent de numéro d'anneau */
+      var cur = S2, k2 = 0;
+      do { V[cur].anneau = r2; cur = V[cur].next; k2++; } while(cur !== S2 && k2 < V.length + 2);
+      if(tailleAnneau(r1) <= 2) clore(r1); else effondre(r1);
+      if(tailleAnneau(r2) <= 2) clore(r2); else effondre(r2);
+    }
+  }
+  if(vivants().length) return null;          // un anneau qui ne se referme pas : calcul impossible
+  var orig = []; for(i = 0; i < n; i++) orig.push(i);
+  return {noeuds:noeuds, arcs:arcs, orig:orig, n:n};
+}
+
+/* Les pans, les arêtes et le sommet à partir du squelette.
+   Q : contour reculé (antihoraire), pente[i] : hauteur par mètre (0 = pignon), zb : altitude de l'égout.
+   Retourne {pans:[{pts, plan:{a,b,c,k}, role, nom, arete}], aretes:[…], hf} ou null. */
+function ctToitDe(Q, pente, zb){
+  var n = Q.length, w = [], i;
+  for(i = 0; i < n; i++) w.push(pente[i] > 0 ? 1/pente[i] : 0);
+  /* le bruit qui sépare les événements simultanés : si une graine échoue, on en essaie une autre */
+  var sq = null;
+  for(var g = 0; g < 5 && !sq; g++) sq = ctSquelette(Q, w, g);
+  if(!sq) return null;
+  var nn = sq.noeuds.length, rep = [], k;
+  for(k = 0; k < nn; k++) rep.push(k);
+  var trouve = function(x){ while(rep[x] !== x){ rep[x] = rep[rep[x]]; x = rep[x]; } return x; };
+  /* les sommets d'origine gardent leur place exacte */
+  for(k = 0; k < nn; k++)
+    for(var m = 0; m < k; m++){
+      var dd = Math.hypot(sq.noeuds[k].x - sq.noeuds[m].x, sq.noeuds[k].y - sq.noeuds[m].y);
+      if(dd < CT_SNAP){ var ra = trouve(k), rb = trouve(m); if(ra !== rb) rep[Math.max(ra, rb)] = Math.min(ra, rb); }
+    }
+  var xy = [], tt = [];
+  for(k = 0; k < nn; k++){ xy.push(null); tt.push(0); }
+  var amas = {};
+  for(k = 0; k < nn; k++){ var r = trouve(k); (amas[r] = amas[r] || []).push(k); }
+  for(var r2 in amas){
+    var L = amas[r2], sx = 0, sy = 0, st = 0, exact = null;
+    for(var q = 0; q < L.length; q++){
+      sx += sq.noeuds[L[q]].x; sy += sq.noeuds[L[q]].y; st = Math.max(st, sq.noeuds[L[q]].t);
+      if(L[q] < n) exact = Q[L[q]];
+    }
+    var pos = exact ? [exact[0], exact[1]] : [sx/L.length, sy/L.length];
+    for(q = 0; q < L.length; q++){ xy[L[q]] = pos; tt[L[q]] = st; }
+  }
+  var id = function(k2){ return trouve(k2); };
+  /* les arcs, sans ceux qui se sont réduits à un point */
+  var arcs = [];
+  sq.arcs.forEach(function(a){
+    var A = id(a.a), B = id(a.b);
+    if(A === B) return;
+    arcs.push({a:A, b:B, L:a.L, R:a.R});
+  });
+  /* le plan de chaque bas de pente */
+  var plans = [];
+  for(i = 0; i < n; i++){
+    if(!(pente[i] > 0)){ plans.push(null); continue; }
+    var A0 = Q[i], B0 = Q[(i+1)%n], dx = B0[0]-A0[0], dy = B0[1]-A0[1], Ln = Math.hypot(dx, dy) || 1e-12;
+    var nx = -dy/Ln, ny = dx/Ln, s = pente[i];
+    plans.push({a:s*nx, b:s*ny, c:zb - s*(nx*A0[0] + ny*A0[1]), k:s});
+  }
+  /* un pan par bas de pente : le contour de ses arcs, fermé par le trait d'origine */
+  var pans = [];
+  var cleArc = function(u, v){ return u < v ? u + "|" + v : v + "|" + u; };
+  for(i = 0; i < n; i++){
+    if(!plans[i]) continue;
+    var u0 = id(i), v0b = id((i+1)%n);
+    if(u0 === v0b) continue;
+    var adj = {};
+    var lier = function(a2, b2){ (adj[a2] = adj[a2] || []).push(b2); (adj[b2] = adj[b2] || []).push(a2); };
+    lier(u0, v0b);
+    for(var q2 = 0; q2 < arcs.length; q2++) if(arcs[q2].L === i || arcs[q2].R === i) lier(arcs[q2].a, arcs[q2].b);
+    var cyc = [u0], prec = null, cur = u0, nxt = v0b, ok = true, garde2 = 4*nn + 8;
+    while(garde2-- > 0){
+      prec = cur; cur = nxt;
+      if(cur === u0) break;
+      cyc.push(cur);
+      var voisins = (adj[cur] || []).filter(function(z){ return z !== prec; });
+      if(!voisins.length){ ok = false; break; }
+      if(voisins.length === 1) nxt = voisins[0];
+      else {
+        /* plusieurs sorties : on prend celle qui tourne le plus à gauche, la face restant à gauche */
+        var best = null, bestA = Infinity;
+        var a0 = Math.atan2(xy[prec][1] - xy[cur][1], xy[prec][0] - xy[cur][0]);
+        voisins.forEach(function(z){
+          var az = Math.atan2(xy[z][1] - xy[cur][1], xy[z][0] - xy[cur][0]);
+          var da = a0 - az; while(da <= 1e-12) da += 2*Math.PI; while(da > 2*Math.PI + 1e-12) da -= 2*Math.PI;
+          if(da < bestA){ bestA = da; best = z; }
+        });
+        nxt = best;
+      }
+    }
+    if(!ok || garde2 <= 0 || cyc.length < 3) continue;
+    var pts = cyc.map(function(z){ return [xy[z][0], xy[z][1]]; });
+    if(Math.abs(ctAire(pts)) < 1e-6) continue;
+    if(ctAire(pts) < 0) pts.reverse();
+    pans.push({pts:pts, plan:plans[i], role:"versant", nom:"versant " + (i + 1), arete:i});
+  }
+  /* les arêtes : un arc entre deux pans de pente ; faîtage, arêtier ou noue suivant le pli */
+  var zEn = function(x, y){
+    var best = null, bd = Infinity;
+    for(var p = 0; p < pans.length; p++){
+      var P2 = pans[p].pts, dedans = false, dmin = Infinity;
+      for(var a3 = 0, b3 = P2.length - 1; a3 < P2.length; b3 = a3++){
+        if(((P2[a3][1] > y) !== (P2[b3][1] > y)) && (x < (P2[b3][0] - P2[a3][0])*(y - P2[a3][1])/((P2[b3][1] - P2[a3][1]) || 1e-12) + P2[a3][0])) dedans = !dedans;
+        var ex = P2[b3][0] - P2[a3][0], ey = P2[b3][1] - P2[a3][1], l2 = ex*ex + ey*ey || 1e-12;
+        var tq = Math.max(0, Math.min(1, ((x - P2[a3][0])*ex + (y - P2[a3][1])*ey)/l2));
+        dmin = Math.min(dmin, Math.hypot(x - P2[a3][0] - tq*ex, y - P2[a3][1] - tq*ey));
+      }
+      if(dedans){ dmin = 0; }
+      if(dmin < bd){ bd = dmin; best = pans[p]; }
+    }
+    return best ? best.plan.c + best.plan.a*x + best.plan.b*y : zb;
+  };
+  var aretes = [], vues = {};
+  arcs.forEach(function(a){
+    if(!plans[a.L] || !plans[a.R]) return;                  // l'arc court le long d'un pignon
+    var ck = cleArc(a.a, a.b); if(vues[ck]) return; vues[ck] = 1;
+    var A = xy[a.a], B = xy[a.b], dx = B[0] - A[0], dy = B[1] - A[1], Ln = Math.hypot(dx, dy);
+    if(Ln < 0.02) return;
+    var mx = (A[0] + B[0])/2, my = (A[1] + B[1])/2, nx = -dy/Ln, ny = dx/Ln, e = 0.03;
+    var z0 = zEn(mx, my), zp = zEn(mx + nx*e, my + ny*e), zm = zEn(mx - nx*e, my - ny*e);
+    var zA = zEn(A[0], A[1]), zB = zEn(B[0], B[1]);
+    var pli = z0 - (zp + zm)/2;
+    var horiz = Math.abs(zB - zA) < 0.02;
+    var nature = pli > 1e-4 ? (horiz ? "faîtage" : "arêtier") : pli < -1e-4 ? "noue" : null;
+    if(!nature) return;
+    aretes.push({A:[A[0], A[1]], B:[B[0], B[1]], zA:zA, zB:zB, longueur:Ln, nature:nature});
+  });
+  /* le sommet du toit : le point le plus haut d'un pan, lu sur le plan de CE pan */
+  var hf = zb;
+  pans.forEach(function(p){
+    p.pts.forEach(function(q){ var zz = p.plan.c + p.plan.a*q[0] + p.plan.b*q[1]; if(zz > hf) hf = zz; });
+  });
+  return {pans:pans, aretes:aretes, hf:hf};
+}
+
+
+/* ---------------------------------------------------------------------
+   113.2 · LA TOITURE AU CONTOUR DANS LE RESTE DE L'ATELIER
+   Une toiture au contour vit dans S.toitures comme les autres, avec
+   type:"contour", ses points `pts` (antihoraires), un drapeau `bp` et une pente
+   `pc` (en %) par trait — le trait i va du point i au point i+1 — et le
+   rectangle d'emprise x0…y1 tenu à jour pour tout le code qui ne regarde que lui.
+   Les fonctions centrales (geomToit, plansToit, pansToit, zToit, aretesToit,
+   empriseToit) lui répondent : la 3D, la façade, la coupe, les murs sous le toit
+   n'ont rien à savoir de sa forme.
+   --------------------------------------------------------------------- */
+try { if(!TOITURES.some(function(o){ return o.id === "contour"; })) TOITURES.push({id:"contour", nom:"Au contour"}); } catch(_e){}
+
+function ctEstContour(t){ return !!t && t.type === "contour" && Array.isArray(t.pts) && t.pts.length >= 3; }
+function ctLongTrait(t, i){
+  var A = t.pts[i], B = t.pts[(i + 1) % t.pts.length];
+  return Math.hypot(B[0] - A[0], B[1] - A[1]);
+}
+function ctFmt(v, d){ return Number(v).toFixed(d === undefined ? 2 : d).replace(".", ","); }
+
+/* le contour est remis en forme (antihoraire, sans point double) ; les tableaux suivent */
+function ctMettreEnForme(t){
+  if(!t || !Array.isArray(t.pts)) return false;
+  var N = ctNormaliser(t.pts, t.bp, t.pc);
+  if(!N) return false;
+  t.pts = N.P; t.bp = N.B; t.pc = N.C;
+  ctSync(t);
+  return true;
+}
+/* rectangle d'emprise, pente moyenne (en degrés, pour le code ancien), sens par défaut */
+function ctSync(t){
+  if(!t || !Array.isArray(t.pts) || !t.pts.length) return;
+  var xs = t.pts.map(function(p){ return p[0]; }), ys = t.pts.map(function(p){ return p[1]; });
+  t.x0 = Math.min.apply(null, xs); t.x1 = Math.max.apply(null, xs);
+  t.y0 = Math.min.apply(null, ys); t.y1 = Math.max.apply(null, ys);
+  if(t.sens !== "x" && t.sens !== "y") t.sens = "x";
+  var sL = 0, sP = 0;
+  for(var i = 0; i < t.pts.length; i++){
+    if(t.bp && t.bp[i] === false) continue;
+    var L = ctLongTrait(t, i);
+    sL += L; sP += L*ctBorne(t.pc && t.pc[i], CT_PENTE_MIN, CT_PENTE_MAX);
+  }
+  if(sL > 0) t.pente = degDePct(sP/sL);
+  else if(!(t.pente > 0)) t.pente = 18;
+}
+
+/* --- le calcul, mis en mémoire tant que le toit ne change pas --- */
+var CT_CACHE = (typeof WeakMap === "function") ? new WeakMap() : null;
+function ctCle(t){
+  return [t.pts.map(function(p){ return p[0].toFixed(4) + "," + p[1].toFixed(4); }).join(";"),
+          (t.bp || []).map(function(b){ return b === false ? 0 : 1; }).join(""), (t.pc || []).join(","),
+          (+t.debord || 0), (typeof zHaut === "function" ? zHaut(t.niveau) : 0) + (+t.decalage || 0)].join("|");
+}
+function ctCalcul(t){
+  var N = ctNormaliser(t.pts, t.bp, t.pc);
+  if(!N) return null;
+  var d = Math.max(0, +t.debord || 0), Q = null, k;
+  for(k = 0; k < 8 && !Q; k++){
+    Q = ctDecaler(N.P, d);
+    if(!Q){ d = d/2; if(d < 1e-3){ Q = ctDecaler(N.P, 0); d = 0; break; } }
+  }
+  if(!Q) return null;
+  var zb = zHaut(t.niveau) + (+t.decalage || 0);
+  var pente = N.P.map(function(_p, i){ return N.B[i] ? ctBorne(N.C[i], CT_PENTE_MIN, CT_PENTE_MAX)/100 : 0; });
+  if(!pente.some(function(s){ return s > 0; })) return null;
+  var R = ctToitDe(Q, pente, zb);
+  if(!R || !R.pans.length) return null;
+  R.contour = Q; R.exact = N; R.zb = zb; R.debordEff = d;
+  return R;
+}
+function ctCalc(t){
+  if(!ctEstContour(t)) return null;
+  var cle = ctCle(t), c = CT_CACHE ? CT_CACHE.get(t) : t.__ctc;
+  if(c && c.cle === cle) return c.res;
+  var res = null;
+  try { res = ctCalcul(t); } catch(_e){ res = null; }
+  if(CT_CACHE) CT_CACHE.set(t, {cle:cle, res:res});
+  return res;
+}
+
+/* l'altitude de la sous-face en un point : le pan qui le contient, ou le plus proche */
+function ctZ(t, x, y){
+  var R = ctCalc(t);
+  if(!R) return zHaut(t.niveau) + (+t.decalage || 0);
+  var best = null, bd = Infinity, p, a, b;
+  for(p = 0; p < R.pans.length; p++){
+    var P = R.pans[p].pts, dedans = false, dmin = Infinity;
+    for(a = 0, b = P.length - 1; a < P.length; b = a++){
+      if(((P[a][1] > y) !== (P[b][1] > y)) && (x < (P[b][0] - P[a][0])*(y - P[a][1])/((P[b][1] - P[a][1]) || 1e-12) + P[a][0])) dedans = !dedans;
+      var ex = P[b][0] - P[a][0], ey = P[b][1] - P[a][1], l2 = ex*ex + ey*ey || 1e-12;
+      var tq = Math.max(0, Math.min(1, ((x - P[a][0])*ex + (y - P[a][1])*ey)/l2));
+      var dd = Math.hypot(x - P[a][0] - tq*ex, y - P[a][1] - tq*ey);
+      if(dd < dmin) dmin = dd;
+    }
+    if(dedans){ best = R.pans[p]; bd = 0; break; }
+    if(dmin < bd){ bd = dmin; best = R.pans[p]; }
+  }
+  var pl = best.plan;
+  return pl.c + pl.a*x + pl.b*y;
+}
+/* surface de couverture : l'aire de chaque pan en plan, divisée par le cosinus de sa pente */
+function ctSurface(t){
+  var R = ctCalc(t), S2 = 0;
+  if(!R) return 0;
+  R.pans.forEach(function(p){ S2 += Math.abs(ctAire(p.pts))*Math.sqrt(1 + p.plan.k*p.plan.k); });
+  return S2;
+}
+function ctSurfacePlan(t){ var R = ctCalc(t); return R ? Math.abs(ctAire(R.contour)) : 0; }
+function ctCompte(t){
+  var R = ctCalc(t), o = {pans:0, faitage:0, aretier:0, noue:0, pignons:0, bas:0};
+  if(!R) return o;
+  o.pans = R.pans.length;
+  R.aretes.forEach(function(a){ if(a.nature === "faîtage") o.faitage++; else if(a.nature === "arêtier") o.aretier++; else if(a.nature === "noue") o.noue++; });
+  (t.bp || []).forEach(function(b){ if(b === false) o.pignons++; else o.bas++; });
+  return o;
+}
+
+/* --- les fonctions centrales répondent au contour --- */
+var _ctGeomToit = geomToit;
+geomToit = function(t){
+  if(!ctEstContour(t)) return _ctGeomToit(t);
+  var R = ctCalc(t), zb = zHaut(t.niveau) + (+t.decalage || 0), d = +t.debord || 0;
+  var epT = (t.epChev || 0.12) + (t.epCouv || 0.05);
+  var w = (t.x1 - t.x0) + 2*d, h = (t.y1 - t.y0) + 2*d;
+  return {zb:zb, hf:R ? R.hf : zb, larg:Math.min(w, h), epT:epT, long:w >= h};
+};
+var _ctEmpriseToit = empriseToit;
+empriseToit = function(t){
+  if(!ctEstContour(t)) return _ctEmpriseToit(t);
+  var R = ctCalc(t);
+  if(R) return R.contour.map(function(p){ return [p[0], p[1]]; });
+  var d = +t.debord || 0;
+  return [[t.x0 - d, t.y0 - d], [t.x1 + d, t.y0 - d], [t.x1 + d, t.y1 + d], [t.x0 - d, t.y1 + d]];
+};
+var _ctPlansToit = plansToit;
+plansToit = function(t){
+  if(!ctEstContour(t)) return _ctPlansToit(t);
+  var R = ctCalc(t);
+  return R ? R.pans.map(function(p){ return {nom:p.nom, role:p.role, a:p.plan.a, b:p.plan.b, c:p.plan.c, k:p.plan.k}; }) : [];
+};
+var _ctPansToit = pansToit;
+pansToit = function(t){
+  if(!ctEstContour(t)) return _ctPansToit(t);
+  var R = ctCalc(t);
+  return R ? R.pans : [];
+};
+var _ctZToit = zToit;
+zToit = function(t, x, y){
+  if(!ctEstContour(t)) return _ctZToit(t, x, y);
+  return ctZ(t, x, y);
+};
+var _ctAretesToit = aretesToit;
+aretesToit = function(t){
+  if(!ctEstContour(t)) return _ctAretesToit(t);
+  var R = ctCalc(t);
+  return R ? R.aretes.map(function(a){ return {A:a.A, B:a.B, zA:a.zA, zB:a.zB, longueur:a.longueur, nature:a.nature}; }) : [];
+};
+var _ctToituresVoisines = toituresVoisines;
+toituresVoisines = function(t){
+  if(ctEstContour(t)) return [];
+  return _ctToituresVoisines(t).filter(function(o){ return !ctEstContour(o); });
+};
+/* l'ancien profil à une dimension n'a pas de sens pour un contour : on donne un repli inoffensif */
+var _ctHauteurToit = hauteurToit;
+hauteurToit = function(t, v){
+  if(!ctEstContour(t)) return _ctHauteurToit(t, v);
+  var g = geomToit(t);
+  return g.zb + 0*v;
+};
+var _ctProfilToit = profilToit;
+profilToit = function(t){
+  if(!ctEstContour(t)) return _ctProfilToit(t);
+  var g = geomToit(t), d = +t.debord || 0, a = (t.sens === "x" ? t.y0 : t.x0) - d, c = (t.sens === "x" ? t.y1 : t.x1) + d;
+  return [[a, g.zb], [(a + c)/2, g.hf], [c, g.zb]];
+};
+var _ctFormeToit = formeToit;
+formeToit = function(t){ return ctEstContour(t) ? "contour" + (ctCompte(t).pans) : _ctFormeToit(t); };
+var _ctNomFormeToit = nomFormeToit;
+nomFormeToit = function(t){
+  if(!ctEstContour(t)) return _ctNomFormeToit(t);
+  var c = ctCompte(t);
+  return "Toiture au contour — " + c.pans + " pan" + (c.pans > 1 ? "s" : "") + (c.pignons ? ", " + c.pignons + " pignon" + (c.pignons > 1 ? "s" : "") : "");
+};
+/* la charpente se règle sur un rectangle : un contour n'en reçoit pas (pour l'instant) */
+(function(){
+  try {
+    var _cm = charpenteMontree;
+    charpenteMontree = function(t){ return ctEstContour(t) ? false : _cm(t); };
+    var _bc = barresCharpente;
+    barresCharpente = function(t){ return ctEstContour(t) ? [] : _bc(t); };
+  } catch(_e){}
+})();
+
+/* un point est-il sur le toit (clic, survol) ? */
+function toitContient(t, x, y, marge){
+  var m = marge || 0;
+  if(!ctEstContour(t)) return x >= t.x0 - m && x <= t.x1 + m && y >= t.y0 - m && y <= t.y1 + m;
+  var pts = empriseToit(t);
+  if(pointDansPoly(x, y, pts)) return true;
+  for(var i = 0, j = pts.length - 1; i < pts.length; j = i++){
+    var ex = pts[i][0] - pts[j][0], ey = pts[i][1] - pts[j][1], l2 = ex*ex + ey*ey || 1e-12;
+    var tq = Math.max(0, Math.min(1, ((x - pts[j][0])*ex + (y - pts[j][1])*ey)/l2));
+    if(Math.hypot(x - pts[j][0] - tq*ex, y - pts[j][1] - tq*ey) <= m) return true;
+  }
+  return false;
+}
+/* la rive d'un mur sous un toit au contour : le plus bas du toit le long du mur */
+function ctZRiveMur(m, T){
+  var z = Infinity;
+  for(var k = 0; k <= 8; k++){
+    var u = k/8, x = m.x1 + (m.x2 - m.x1)*u, y = m.y1 + (m.y2 - m.y1)*u;
+    z = Math.min(z, ctZ(T, x, y));
+  }
+  return z;
+}
+
+/* --- les opérations d'édition : déplacer, tourner, retourner --- */
+function ctBouger(t, dx, dy){
+  if(!Array.isArray(t.pts)){ t.x0 += dx; t.x1 += dx; t.y0 += dy; t.y1 += dy; return; }
+  t.pts = t.pts.map(function(p){ return [p[0] + dx, p[1] + dy]; });
+  ctSync(t);
+}
+function ctTourner90(t, cx, cy){
+  if(!Array.isArray(t.pts)) return;
+  t.pts = t.pts.map(function(p){ return [cx + (p[1] - cy), cy - (p[0] - cx)]; });
+  ctSync(t);
+}
+function ctMiroir(t, verticale, c){
+  if(!Array.isArray(t.pts)) return;
+  /* un miroir inverse le sens du contour : on le remet antihoraire, les traits suivent */
+  t.pts = t.pts.map(function(p){ return verticale ? [p[0], 2*c - p[1]] : [2*c - p[0], p[1]]; });
+  ctMettreEnForme(t);
+}
+
+/* une poignée tire un sommet : le contour doit rester simple et le toit calculable, sinon le sommet ne bouge pas */
+function ctDeplacerSommet(t, idx, x, y){
+  if(!Array.isArray(t.pts) || !t.pts[idx]) return false;
+  x = Math.round(x*100)/100; y = Math.round(y*100)/100;
+  var pts = t.pts.map(function(p, i){ return i === idx ? [x, y] : [p[0], p[1]]; });
+  if(ctAire(pts) <= 1e-6) return false;
+  var N = ctNormaliser(pts, t.bp, t.pc);
+  if(!N || N.P.length !== pts.length || !ctSimple(N.P)) return false;
+  var essai = {id:t.id, type:"contour", pts:pts, bp:t.bp.slice(), pc:t.pc.slice(), debord:t.debord, decalage:t.decalage, niveau:t.niveau};
+  if(!ctCalcul(essai)) return false;
+  t.pts = pts;
+  ctSync(t);
+  return true;
+}
+
+/* un projet enregistré : le contour est remis d'aplomb à l'ouverture */
+(function(){
+  try {
+    var _mp = migrerProjet;
+    migrerProjet = function(p){
+      var r = _mp.apply(this, arguments);
+      try {
+        var q = r || p;
+        (q.toitures || []).forEach(function(t){
+          if(t && t.type === "contour"){
+            if(!Array.isArray(t.pts) || t.pts.length < 3){ t.type = "deuxpans"; return; }
+            if(!Array.isArray(t.bp)) t.bp = t.pts.map(function(){ return true; });
+            if(!Array.isArray(t.pc)) t.pc = t.pts.map(function(){ return pctDeDeg(t.pente || 18) || 35; });
+            ctMettreEnForme(t);
+          }
+        });
+      } catch(_e){}
+      return r;
+    };
+  } catch(_e){}
+})();
+
+
+/* ---------------------------------------------------------------------
+   113.3 · L'OUTIL : TRACER LE CONTOUR, DIRE QUEL TRAIT EST UN BAS DE PENTE,
+           DEMANDER LA PENTE EN POURCENTAGE
+   --------------------------------------------------------------------- */
+(function(){
+  if(!choix.toit.mode) choix.toit.mode = "rect";     // le rectangle reste l'usage de départ (TwinQuest, tutoriels) : « Contour » est à un clic
+  if(!(choix.toit.pcent > 0)) choix.toit.pcent = 35;      // la pente courante en Occitanie : 30 à 35 %
+  if(choix.toit.bp === undefined) choix.toit.bp = true;
+})();
+var CT_TRAIT_SURVOL = -1;       // le trait qu'on survole dans le tableau des propriétés
+
+/* le panneau de l'outil « Toiture » */
+function ctHtmlOutil(){
+  var t = choix.toit, niv = echap(NIV().nom), contour = t.mode === "contour";
+  var h = '<div class="section"><h3>Toiture à tracer (sur ' + niv + ')</h3>' +
+    '<div class="ligne-prop"><label>Tracé</label><span class="ct-modes">' +
+      '<button type="button" class="ct-mode' + (contour ? " actif" : "") + '" data-ct-mode="contour" title="Les limites du toit : trait après trait, ou polygone">Contour</button>' +
+      '<button type="button" class="ct-mode' + (!contour ? " actif" : "") + '" data-ct-mode="rect" title="Deux coins opposés : deux pans, monopente ou terrasse">Rectangle</button>' +
+    '</span></div>';
+  if(contour){
+    h += '<div class="ligne-prop"><label>Pente</label>' +
+        '<input type="range" id="ct-o-pente" min="1" max="175" step="1" value="' + Math.min(175, t.pcent) + '" title="Pente en pourcentage : 35 % ≈ 19°, 58 % = 30°, 100 % = 45°">' +
+        '<input type="number" id="ct-o-pente-n" min="1" max="400" step="1" value="' + t.pcent + '" style="width:58px"> %</div>' +
+      '<div class="ligne-prop"><label>Prochain trait</label>' +
+        '<label class="pl-case" style="flex:1;gap:5px;font-weight:400"><input type="checkbox" id="ct-o-bp"' + (t.bp !== false ? " checked" : "") + '> <b>bas de pente</b> : le toit monte à partir de lui</label></div>' +
+      '<p class="note" style="margin-top:0">Décoché, le trait est un <b>pignon</b> : il ne monte pas, un mur le ferme. Touche <b>B</b> pour passer de l’un à l’autre en traçant.</p>';
+  } else {
+    h += '<div class="ligne-prop"><label>Forme</label><select id="t-type">' +
+        TOITURES.filter(function(o){ return o.id !== "contour"; }).map(function(o){ return '<option value="' + o.id + '"' + (t.type === o.id ? " selected" : "") + '>' + o.nom + '</option>'; }).join("") + '</select></div>' +
+      '<div class="ligne-prop"><label>Pente</label><input type="range" id="t-pente" min="1" max="175" step="1" value="' + pctDeDeg(t.pente) + '" title="Pente en pourcentage : 58 % = 30°, 100 % = 45°"><b id="t-pente-v">' + penteTexte(t) + '</b></div>' +
+      '<div class="ligne-prop"><label>Faîtage</label><select id="t-sens"><option value="x"' + (t.sens === "x" ? " selected" : "") + '>Est–Ouest</option><option value="y"' + (t.sens === "y" ? " selected" : "") + '>Nord–Sud</option></select></div>';
+  }
+  h += '<div class="ligne-prop"><label>Débord de toit</label>' + selectHtml("t-debord", [0, 0.2, 0.4, 0.6, 0.8], t.debord, fmtM) + '</div>' +
+    '<div class="ligne-prop"><label>Décalage (base)</label><input type="range" id="t-dec" min="-1" max="1.5" step="0.05" value="' + t.decalage + '"><b id="t-dec-v">' + fmtDelta(t.decalage) + '</b></div>' +
+    '<div class="ligne-prop"><label>Ép. chevrons</label>' + selectHtml("t-chev", EPS_CHEVRONS, t.epChev, fmtCm) + '</div>' +
+    '<div class="ligne-prop"><label>Ép. couverture</label>' + selectHtml("t-couv", EPS_COUVERTURE, t.epCouv, fmtCm) + '</div>';
+  if(contour){
+    h += '<p class="note"><b>Tracer le contour</b> : cliquer les sommets, trait après trait (Maj garde l’angle). ' +
+      'Refermer en cliquant sur le point de départ — ou double-clic, ou Entrée. ' +
+      '<b>B</b> change le trait suivant : bas de pente ou pignon. <b>Échap</b> abandonne.</p>' +
+      '<p class="note">La toiture se pose sur le niveau actif ; les <b>pentes se règlent trait par trait</b> dans les propriétés une fois le toit posé. ' +
+      'Un bâtiment en L, en T ou à pans coupés se trace d’un seul contour : le faîtage, les arêtiers et les noues se calculent seuls.</p></div>';
+  } else {
+    h += '<p class="note"><b>Tracer l’emprise</b> : cliquer les deux coins opposés du rectangle. ' +
+      'La toiture se pose sur le niveau actif (décalage possible). Chevrons et couverture sont représentés ' +
+      'avec leur épaisseur en coupe, façade et axonométrie ; les <b>rives et égouts</b> (bords de toiture) sont figurés. ' +
+      'Plusieurs toitures possibles (corps principal, garage…). Pour un toit de forme libre : mode <b>Contour</b>.</p></div>';
+  }
+  return h;
+}
+function ctGarnirOutil(){
+  if(outil !== "toiture" || !panneau) return;
+  panneau.querySelectorAll("[data-ct-mode]").forEach(function(b){
+    b.onclick = function(e){
+      e.preventDefault();
+      choix.toit.mode = b.getAttribute("data-ct-mode");
+      traceT = null;
+      majPanneau(); dessiner();
+      statut(choix.toit.mode === "contour"
+        ? "Toiture au contour : cliquer les sommets du contour, trait après trait."
+        : "Toiture rectangulaire : cliquer les deux coins opposés.");
+    };
+  });
+  var r = document.getElementById("ct-o-pente"), n = document.getElementById("ct-o-pente-n"), c = document.getElementById("ct-o-bp");
+  var poser = function(v){
+    v = ctBorne(Math.round(v), CT_PENTE_MIN, CT_PENTE_MAX);
+    choix.toit.pcent = v;
+    if(r) r.value = Math.min(175, v);
+    if(n && document.activeElement !== n) n.value = v;
+    dessiner();
+  };
+  if(r) r.addEventListener("input", function(){ poser(+r.value); });
+  if(n){
+    n.addEventListener("input", function(){ if(n.value !== "") poser(+n.value); });
+    n.addEventListener("keydown", function(e){ e.stopPropagation(); });
+  }
+  if(c) c.addEventListener("change", function(){ choix.toit.bp = !!c.checked; dessiner(); });
+}
+
+/* --- le tracé --- */
+function ctOuvrirChapitres(){
+  try {
+    ["Propriétés", "Contour et pentes"].forEach(function(nom){
+      var cle = cleSection(nom);
+      panneauReplie[cle] = false;
+      if(nom === "Propriétés") panneauReplie[cle + "!sel"] = true;
+      if(typeof RT_VUS === "object" && RT_VUS) RT_VUS[cle] = true;
+    });
+  } catch(_e){}
+}
+function ctBasculerBp(){
+  choix.toit.bp = choix.toit.bp === false;
+  var c = document.getElementById("ct-o-bp"); if(c) c.checked = choix.toit.bp !== false;
+  dessiner();
+  statut("Le prochain trait sera " + (choix.toit.bp !== false ? "un bas de pente (" + choix.toit.pcent + " %)" : "un pignon") + " — B pour changer.");
+}
+function ctCliquer(p, e){
+  var c = choix.toit;
+  if(!traceT || !traceT.pts){
+    traceT = {contour:true, pts:[[p.x, p.y]], bp:[], pc:[]};
+    dessiner();
+    statut("Premier point posé : cliquer les points suivants. B : bas de pente / pignon. Refermer sur le premier point (Entrée, double-clic).");
+    return;
+  }
+  var pts = traceT.pts, prem = pts[0];
+  if(pts.length >= 3 && dist(p.x, p.y, prem[0], prem[1]) < 0.35){ ctFermer(); return; }
+  var pc = contraindreDepuisAncre(p.x, p.y, !!(e && e.shiftKey));
+  var der = pts[pts.length - 1];
+  if(dist(pc.x, pc.y, der[0], der[1]) > 0.12){
+    traceT.bp.push(c.bp !== false); traceT.pc.push(+c.pcent || 35);     // le trait qui vient d'être posé
+    pts.push([pc.x, pc.y]);
+  }
+  dessiner();
+}
+function ctFermer(){
+  if(!traceT || !traceT.pts) return;
+  var c = choix.toit, T = traceT;
+  if(T.pts.length < 3){ traceT = null; dessiner(); statut("Un contour demande au moins trois points."); return; }
+  var bp = T.bp.concat([c.bp !== false]), pc = T.pc.concat([+c.pcent || 35]);          // le trait de fermeture
+  var N = ctNormaliser(T.pts, bp, pc);
+  if(!N || !ctSimple(N.P)){ traceT = null; dessiner(); statut("Contour impossible : les traits se croisent ou se confondent. Recommencer le tracé."); return; }
+  var t = {id:uid(), type:"contour", pts:N.P, bp:N.B, pc:N.C, pente:degDePct(c.pcent), sens:"x", debord:c.debord, decalage:c.decalage,
+           epChev:c.epChev, epCouv:c.epCouv, niveau:S.nivActif};
+  ctSync(t);
+  if(!N.B.some(Boolean)){
+    traceT = null; dessiner();
+    statut("Aucun trait n’est un bas de pente : le toit n’aurait pas de pente. Recommencer en laissant « bas de pente » coché pour au moins un trait.");
+    return;
+  }
+  if(!ctCalc(t)){
+    traceT = null; dessiner();
+    statut("Le calcul du toit est impossible pour ce contour (trop de pignons ?). Recommencer, ou cocher davantage de bas de pente.");
+    return;
+  }
+  pousserHistorique();
+  S.toitures.push(t);
+  traceT = null;
+  selUnique({toitureId:t.id});
+  /* les chapitres « Propriétés » et « Contour et pentes », fermés au départ, s'ouvrent : c'est là qu'on demande la pente */
+  ctOuvrirChapitres();
+  majTout();
+  var k = ctCompte(t);
+  statut("Toiture au contour posée : " + k.pans + " pan" + (k.pans > 1 ? "s" : "") + ", " + k.bas + " bas de pente, " + k.pignons + " pignon" + (k.pignons > 1 ? "s" : "") +
+         ". Quelle pente ? Taper la valeur en % dans le panneau (Entrée), ou régler chaque trait.");
+  /* on DEMANDE la pente : le champ « pente de tous les bas de pente » prend la main */
+  setTimeout(function(){ var el = document.getElementById("ct-pente-tous"); if(el){ el.focus(); el.select(); } }, 40);
+}
+/* l'estimation du prix pendant le tracé */
+function ctDevis(r){
+  var T = traceT;
+  if(!T || !T.pts){ r.detail = "cliquer le premier point du contour"; return r; }
+  var pts = T.pts.concat([[survol.x, survol.y]]);
+  if(pts.length < 3){ r.detail = "cliquer le point suivant"; return r; }
+  var A = Math.abs(ctAire(pts)), s = (+choix.toit.pcent || 35)/100;
+  r.q = A*Math.sqrt(1 + s*s);
+  r.detail = pts.length + " points — " + ctFmt(A) + " m² en plan, rampant à " + ctFmt(choix.toit.pcent, 0) + " % = " + ctFmt(r.q) + " m²";
+  return r;
+}
+
+/* un trait du contour, dans le plan : tireté pour un bas de pente (avec sa flèche de montée et sa pente),
+   continu et fort pour un pignon */
+function ctTraitPlan(A, B, bas, pc, couleur, lw, texte, sens){
+  ctx.save();
+  var dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1e-9, sg = sens === -1 ? -1 : 1;
+  ctx.strokeStyle = bas ? couleur : "#3f6d94";
+  ctx.lineWidth = bas ? lw : lw*1.6;
+  ctx.setLineDash(bas ? [9, 5] : []);
+  ctx.beginPath(); ctx.moveTo(mx(A[0]), my(A[1])); ctx.lineTo(mx(B[0]), my(B[1])); ctx.stroke();
+  ctx.setLineDash([]);
+  if(L*vue.zoom > 46){
+    var mxs = mx((A[0] + B[0])/2), mys = my((A[1] + B[1])/2), nx = -dy/L*sg, ny = dx/L*sg;
+    if(bas){
+      /* la flèche monte vers l'intérieur : à gauche du trait, le contour étant antihoraire */
+      var tx = mxs + nx*16, ty = mys + ny*16;
+      ctx.beginPath(); ctx.moveTo(mxs, mys); ctx.lineTo(tx, ty);
+      ctx.moveTo(tx, ty); ctx.lineTo(tx - 4*nx + 3*ny, ty - 4*ny - 3*nx);
+      ctx.moveTo(tx, ty); ctx.lineTo(tx - 4*nx - 3*ny, ty - 4*ny + 3*nx);
+      ctx.stroke();
+      if(texte !== false){
+        ctx.fillStyle = couleur; ctx.font = "italic 10.5px Georgia, serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(ctFmt(pc, pc % 1 ? 1 : 0) + " %", tx + nx*11, ty + ny*9);
+      }
+    } else if(texte !== false){
+      ctx.fillStyle = "#3f6d94"; ctx.font = "italic 10.5px Georgia, serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("pignon", mxs + nx*10, mys + ny*10);
+    }
+  }
+  ctx.restore();
+}
+function ctApercu(){
+  var T = traceT;
+  if(!T || !T.pts || !T.pts.length) return;
+  var i, sc = survolContraint();
+  /* la flèche de montée est à gauche du trait quand le contour est antihoraire ; tracé dans l'autre sens, on la retourne */
+  var sens = ctAire(T.pts.concat([[sc.x, sc.y]])) < -1e-6 ? -1 : 1;
+  for(i = 0; i + 1 < T.pts.length; i++) ctTraitPlan(T.pts[i], T.pts[i + 1], T.bp[i], T.pc[i], "#c8501e", 2, true, sens);
+  var der = T.pts[T.pts.length - 1];
+  ctx.save(); ctx.globalAlpha = 0.75;
+  ctTraitPlan(der, [sc.x, sc.y], choix.toit.bp !== false, +choix.toit.pcent || 35, "#c8501e", 2, true, sens);
+  ctx.restore();
+  /* le premier sommet est la cible de fermeture */
+  var p0 = T.pts[0];
+  ctx.save();
+  ctx.strokeStyle = "#c8501e"; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.arc(mx(p0[0]), my(p0[1]), 6, 0, Math.PI*2); ctx.stroke();
+  ctx.fillStyle = "#8a4630"; ctx.font = "italic 11px Georgia, serif"; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+  ctx.fillText((choix.toit.bp !== false ? "bas de pente " + (+choix.toit.pcent || 35) + " %" : "pignon") + "  (B pour changer)", mx(sc.x) + 12, my(sc.y) - 10);
+  ctx.restore();
+}
+
+/* la toiture au contour dans le plan : contour, débord, traits avec leur pente, faîtage, arêtiers, noues */
+function ctDessinerPlan(t, sel, hov){
+  var R = ctCalc(t), n = t.pts.length, i;
+  var col = sel ? "#c8501e" : hov ? COL_PRE : "#a05a40";
+  var lw = sel ? 2.4 : hov ? 2.2 : 1.5;
+  ctx.save();
+  if(R && (+t.debord || 0) > 0.001){
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = col; ctx.lineWidth = 1;
+    ctx.beginPath();
+    R.contour.forEach(function(p, k){ if(k) ctx.lineTo(mx(p[0]), my(p[1])); else ctx.moveTo(mx(p[0]), my(p[1])); });
+    ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+  }
+  for(i = 0; i < n; i++){
+    var surT = (CT_TRAIT_SURVOL === i && sel);
+    ctTraitPlan(t.pts[i], t.pts[(i + 1) % n], t.bp[i] !== false, t.pc[i], surT ? "#0a9bd6" : col, surT ? lw + 1.6 : lw);
+  }
+  if(R){
+    var mixte = (typeof TRAIT === "object" && TRAIT && TRAIT.mixte) ? TRAIT.mixte : [14, 4, 3, 4];
+    var f = (typeof fLW === "function") ? fLW() : 1;
+    R.aretes.forEach(function(a){
+      ctx.strokeStyle = sel ? "#c8501e" : "#8a4630";
+      if(a.nature === "faîtage"){ ctx.lineWidth = 2*f; ctx.setLineDash(mixte); }
+      else if(a.nature === "arêtier"){ ctx.lineWidth = 1.3*f; ctx.setLineDash([]); }
+      else { ctx.lineWidth = 1.3*f; ctx.setLineDash([5, 3]); }
+      ctx.beginPath(); ctx.moveTo(mx(a.A[0]), my(a.A[1])); ctx.lineTo(mx(a.B[0]), my(a.B[1])); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+  }
+  ctx.fillStyle = sel ? "#c8501e" : "#8a4630"; ctx.font = "italic 10.5px Georgia, serif"; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+  ctx.fillText(R ? "toiture au contour · " + R.pans.length + " pans" : "toiture au contour · calcul impossible", mx(t.x0) + 5, my(t.y1) - 6);
+  ctx.restore();       /* les poignées des sommets sont celles de l'atelier (poigneesDe) : on tire un sommet à la souris */
+}
+
+/* --- les propriétés d'un toit au contour --- */
+function ctHtmlProprietes(t, g){
+  var R = ctCalc(t), k = ctCompte(t);
+  var lignes = t.pts.map(function(_p, i){
+    var bas = t.bp[i] !== false;
+    return '<tr data-ct-ligne="' + i + '"><td>' + (i + 1) + '</td><td>' + ctFmt(ctLongTrait(t, i)) + ' m</td>' +
+      '<td><input type="checkbox" data-ct-bp="' + i + '"' + (bas ? " checked" : "") + ' title="Bas de pente : le toit monte à partir de ce trait. Décoché : pignon, fermé par un mur."></td>' +
+      '<td>' + (bas ? '<input type="number" data-ct-pc="' + i + '" min="1" max="400" step="1" value="' + (Math.round(t.pc[i]*10)/10) + '" style="width:58px"> %' : '<i>pignon</i>') + '</td></tr>';
+  }).join("");
+  var moy = 0, nb = 0;
+  t.pts.forEach(function(_p, i){ if(t.bp[i] !== false){ moy += t.pc[i]; nb++; } });
+  moy = nb ? Math.round(moy/nb*10)/10 : 35;
+  return '<div class="ligne-prop"><label>Élément</label><b>Toiture au contour</b></div>' +
+    '<div class="ligne-prop"><label>Niveau support</label><select id="s-tniv">' +
+      S.niveaux.map(function(n2, i){ return '<option value="' + i + '"' + (t.niveau === i ? " selected" : "") + '>' + echap(n2.nom) + '</option>'; }).join("") + '</select></div>' +
+    '<div class="section" data-sect-ct="1"><h3>Contour et pentes</h3>' +
+      '<div class="ligne-prop"><label>Pente (%)</label><input type="number" id="ct-pente-tous" min="1" max="400" step="1" value="' + moy + '" style="width:70px"></div>' +
+      '<div class="ligne-prop"><button type="button" class="btn-plein" id="ct-pente-appl" style="flex:1" title="Applique cette pente à tous les bas de pente (Entrée dans le champ)">Appliquer à tous les bas de pente</button></div>' +
+      '<table class="ct-table"><thead><tr><th>Trait</th><th>Long.</th><th>Bas de pente</th><th>Pente</th></tr></thead><tbody>' + lignes + '</tbody></table>' +
+      '<p class="note" style="margin-top:4px">Un <b>bas de pente</b> est un trait d’où le toit monte, à la pente indiquée ; décoché, c’est un <b>pignon</b>. ' +
+      'Survoler une ligne la désigne sur le plan.</p>' +
+      (R
+        ? '<div class="ligne-prop"><label>Versants</label><b>' + k.pans + '</b><label style="flex:0 0 auto;margin-left:10px">faîtage</label><b>' + k.faitage +
+          '</b><label style="flex:0 0 auto;margin-left:10px">arêtiers</label><b>' + k.aretier + '</b><label style="flex:0 0 auto;margin-left:10px">noues</label><b>' + k.noue + '</b></div>' +
+          '<div class="ligne-prop"><label>Égout / sommet</label><b>' + fmtDelta(g.zb) + ' → ' + fmtDelta(g.hf + g.epT) + '</b></div>' +
+          '<div class="ligne-prop"><label>Couverture</label><b>' + ctFmt(ctSurface(t), 1) + ' m²</b></div>' +
+          '<p class="note" style="margin-top:0">Surface de rampant ; ' + ctFmt(ctSurfacePlan(t), 1) + ' m² en plan, débord compris.</p>'
+        : '<p class="note" style="color:#a03c20"><b>Calcul impossible</b> pour ce contour : revoir les pignons (un contour très creux n’a pas toujours de toit défini).</p>') +
+    '</div>' +
+    '<div class="ligne-prop"><label>Débord de toit</label>' + selectHtml("s-tdebord", [0, 0.2, 0.4, 0.6, 0.8], t.debord, fmtM) + '</div>' +
+    '<div class="ligne-prop"><label>Décalage (base)</label><input type="range" id="s-tdec" min="-1" max="1.5" step="0.05" value="' + (t.decalage || 0) + '"><b id="s-tdec-v">' + fmtDelta(t.decalage || 0) + '</b></div>' +
+    '<div class="ligne-prop"><label>Ép. chevrons</label>' + selectHtml("s-tchev", EPS_CHEVRONS, t.epChev, fmtCm) + '</div>' +
+    '<div class="ligne-prop"><label>Ép. couverture</label>' + selectHtml("s-tcouv", EPS_COUVERTURE, t.epCouv, fmtCm) + '</div>' +
+    '<p class="note">Emprise ' + ctFmt(t.x1 - t.x0) + ' × ' + ctFmt(t.y1 - t.y0) + ' m · égout ' + fmtDelta(g.zb) + ' · faîtage ' + fmtDelta(g.hf + g.epT) +
+      '. Glisser pour déplacer le toit entier.</p>' +
+    (function(){
+      var sous = NIV().murs.filter(function(m2){ return toitureDuMur(m2, S.nivActif) === t; });
+      var att = sous.filter(function(m2){ return murSousToit(m2); }).length;
+      return '<h3 style="margin-top:10px">Murs sous cette toiture</h3>' +
+        '<div class="ligne-prop"><label>Murs couverts</label><b>' + sous.length + '</b></div>' +
+        '<div class="ligne-prop"><label>Prolongés au toit</label><b>' + att + '</b></div>' +
+        '<p class="note">Chaque mur garde sa hauteur normale sous la toiture ; sous un rampant, la tête d’un mur qui le coupe suit la pente (pignon).</p>';
+    })() +
+    '<button class="btn-plein btn-danger" data-action="effacer">Supprimer la toiture</button>';
+}
+/* modifier un toit au contour sans jamais le laisser dans un état incalculable */
+function ctModifier(t, fn, message){
+  var essai = {id:t.id, type:"contour", pts:t.pts.map(function(p){ return [p[0], p[1]]; }), bp:t.bp.slice(), pc:t.pc.slice(),
+               debord:t.debord, decalage:t.decalage, niveau:t.niveau};
+  fn(essai);
+  if(!ctNormaliser(essai.pts, essai.bp, essai.pc) || !essai.bp.some(function(b){ return b !== false; }) || !ctCalcul(essai)){
+    statut("Ce réglage rend le toit incalculable : au moins un trait doit rester un bas de pente, et les pignons ne doivent pas tout enfermer.");
+    majTout();
+    return false;
+  }
+  pousserHistorique();
+  fn(t);
+  ctSync(t);
+  majTout();
+  if(message) statut(message);
+  return true;
+}
+function ctGarnirProps(){
+  var t = (typeof toitureSelectionnee === "function") ? toitureSelectionnee() : null;
+  if(!t || !ctEstContour(t) || !panneau) return;
+  panneau.querySelectorAll("[data-ct-bp]").forEach(function(el){
+    el.onchange = function(){
+      var i = +el.getAttribute("data-ct-bp"), tt = toitureSelectionnee(); if(!tt) return;
+      ctModifier(tt, function(o){ o.bp[i] = !!el.checked; }, "Trait " + (i + 1) + " : " + (el.checked ? "bas de pente" : "pignon") + ".");
+    };
+  });
+  panneau.querySelectorAll("[data-ct-pc]").forEach(function(el){
+    el.addEventListener("keydown", function(e){ e.stopPropagation(); });
+    el.onchange = function(){
+      var i = +el.getAttribute("data-ct-pc"), tt = toitureSelectionnee(); if(!tt) return;
+      var v = ctBorne(+el.value, CT_PENTE_MIN, CT_PENTE_MAX);
+      ctModifier(tt, function(o){ o.pc[i] = v; }, "Trait " + (i + 1) + " : pente " + ctFmt(v, v % 1 ? 1 : 0) + " %.");
+    };
+  });
+  panneau.querySelectorAll("tr[data-ct-ligne]").forEach(function(tr){
+    tr.onmouseenter = function(){ CT_TRAIT_SURVOL = +tr.getAttribute("data-ct-ligne"); dessiner(); };
+    tr.onmouseleave = function(){ CT_TRAIT_SURVOL = -1; dessiner(); };
+  });
+  var champ = document.getElementById("ct-pente-tous"), bouton = document.getElementById("ct-pente-appl");
+  if(champ){
+    champ.addEventListener("keydown", function(e){ e.stopPropagation(); if(e.key === "Enter"){ e.preventDefault(); if(bouton) bouton.click(); } });
+  }
+  if(bouton) bouton.onclick = function(){
+    var tt = toitureSelectionnee(); if(!tt) return;
+    var v = ctBorne(+champ.value, CT_PENTE_MIN, CT_PENTE_MAX);
+    ctModifier(tt, function(o){ o.pc = o.pc.map(function(p, i){ return o.bp[i] !== false ? v : p; }); },
+               "Pente de tous les bas de pente : " + ctFmt(v, v % 1 ? 1 : 0) + " %.");
+  };
+}
+CT_TRAIT_SURVOL = -1;
+
+/* LE RUBAN : « Toit » trace un rectangle, « Toit contour » trace les limites du toit trait après trait.
+   Le chapitre de l'outil, fermé au départ comme tous les chapitres, s'ouvre : la pente et le « bas de pente » s'y règlent. */
+function ctOuvrirChapitreOutil(){
+  try {
+    var cle = cleSection("Toiture à tracer (sur " + NIV().nom + ")");
+    panneauReplie[cle] = false;
+    if(typeof RT_VUS === "object" && RT_VUS) RT_VUS[cle] = true;
+  } catch(_e){}
+}
+function ctMarquerRuban(){
+  document.querySelectorAll('.outil[data-outil="toiture"]').forEach(function(b){
+    var c = b.getAttribute("data-ct-bouton") === "contour";
+    b.classList.toggle("actif", outil === "toiture" && c === (choix.toit.mode === "contour"));
+  });
+}
+(function(){
+  try {
+    var b0 = document.querySelector('#toolbar [data-outil="toiture"]');
+    if(!b0 || document.querySelector('[data-ct-bouton]')) return;
+    var b = document.createElement("button");
+    b.className = "rb outil"; b.setAttribute("data-outil", "toiture"); b.setAttribute("data-ct-bouton", "contour");
+    b.title = "Toit au contour : tracer les limites du toit trait après trait (ou en polygone), dire quel trait est un bas de pente, donner la pente en %";
+    b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 19V10l4-5h10l4 5v9z" stroke-dasharray="3 2"/><path d="M12 15v-5M9.5 12.5L12 10l2.5 2.5"/></svg><span>Toit contour</span>';
+    b0.parentNode.insertBefore(b, b0.nextSibling);
+    /* le code d'origine gère le clic de « Toit » ; « Toit contour » passe par lui, puis règle le mode */
+    b.addEventListener("click", function(){
+      choix.toit.mode = "contour";
+      b0.__ctInterne = true;
+      try { b0.click(); } finally { b0.__ctInterne = false; }
+      ctOuvrirChapitreOutil();
+      majPanneau(); ctMarquerRuban();
+      statut("Toiture au contour : cliquer les sommets du contour, trait après trait. B : bas de pente ou pignon. Refermer sur le premier point (ou Entrée).");
+    });
+    b0.addEventListener("click", function(){
+      if(b0.__ctInterne) return;
+      choix.toit.mode = "rect";
+      majPanneau(); ctMarquerRuban();
+    });
+  } catch(_e){}
+})();
+
+/* le panneau : l'outil, puis les propriétés ; la forme et la charpente d'un rectangle ne disent rien d'un contour */
+(function(){
+  try {
+    var _mp = majPanneau;
+    majPanneau = function(){
+      var r = _mp.apply(this, arguments);
+      try {
+        var t = (typeof toitureSelectionnee === "function") ? toitureSelectionnee() : null;
+        if(t && ctEstContour(t)){
+          var p = document.getElementById("palette") || panneau;
+          if(p) p.querySelectorAll("[data-sect-pans],[data-sect-charp]").forEach(function(x){ x.remove(); });
+        }
+        ctGarnirOutil();
+        ctGarnirProps();
+      } catch(_e){}
+      return r;
+    };
+    var _sp = sectionPansHTML;
+    sectionPansHTML = function(){
+      var t = (typeof toitureSelectionnee === "function") ? toitureSelectionnee() : null;
+      return ctEstContour(t) ? "" : _sp();
+    };
+    var _sc = sectionCharpenteHTML;
+    sectionCharpenteHTML = function(){
+      var t = (typeof toitureSelectionnee === "function") ? toitureSelectionnee() : null;
+      return ctEstContour(t)
+        ? '<div class="section" data-sect-charp="1"><h3>Charpente</h3><p class="note">La charpente se règle sur un toit rectangulaire (deux pans, croupes). ' +
+          'Pour un toit au contour, la couverture et les pans sont modélisés ; la charpente n’est pas encore dessinée.</p></div>'
+        : _sc();
+    };
+  } catch(_e){}
+})();
+document.head.insertAdjacentHTML("beforeend", '<style>' +
+  '.ct-modes{display:flex;gap:4px;flex:1}' +
+  '.ct-mode{flex:1;padding:4px 6px;border:1px solid var(--bord);border-radius:5px;background:#fff;cursor:pointer;font-size:11px;font-weight:600}' +
+  '.ct-mode.actif{background:#f3e3d3;border-color:#c8501e;color:#8a3410}' +
+  '.ct-table{width:100%;border-collapse:collapse;font-size:11px;margin:2px 0}' +
+  '.ct-table th{font-weight:600;text-align:left;padding:2px 3px;border-bottom:1px solid var(--bord)}' +
+  '.ct-table td{padding:2px 3px;border-bottom:1px dotted #ddd}' +
+  '.ct-table tr:hover td{background:#eaf5fb}' +
+  '</style>');
+
+
+/* ---------------------------------------------------------------------
+   113.4 · LES VUES : LA COUPE ET LA FAÇADE D'UN TOIT AU CONTOUR
+   --------------------------------------------------------------------- */
+/* La coupe : le plan de coupe traverse le contour en un ou plusieurs tronçons ; sur chacun, le profil
+   du toit se lit sur les pans (les plis, faîtage, arêtier ou noue, y sont des points de cassure). */
+function ctCoupeToit(t, surY, X, Y, sel){
+  var R = ctCalc(t), cp = CP();
+  if(!R) return;
+  var pos = cp.pos, Q = R.contour, n = Q.length, i, j, g = geomToit(t);
+  var uDe = function(x, y){ return surY ? x : y; };
+  var xs = [];
+  for(i = 0; i < n; i++){
+    var a = Q[i], b = Q[(i + 1) % n], va = surY ? a[1] : a[0], vb = surY ? b[1] : b[0];
+    if((va <= pos && vb > pos) || (vb <= pos && va > pos)){
+      var s = (pos - va)/(vb - va), x = a[0] + (b[0] - a[0])*s, y = a[1] + (b[1] - a[1])*s;
+      xs.push(uDe(x, y));
+    }
+  }
+  xs.sort(function(p, q){ return p - q; });
+  if(xs.length < 2) return;
+  var zMax = g.zb, premier = null;
+  for(var k = 0; k + 1 < xs.length; k += 2){
+    var ua = xs[k], ub = xs[k + 1];
+    if(ub - ua < 0.02) continue;
+    /* les cassures : là où la droite de coupe traverse une arête de pan à l'intérieur du tronçon */
+    var pts = [ua, ub];
+    R.pans.forEach(function(pn){
+      var P = pn.pts;
+      for(var e = 0; e < P.length; e++){
+        var A = P[e], B = P[(e + 1) % P.length], vA = surY ? A[1] : A[0], vB = surY ? B[1] : B[0];
+        if((vA <= pos && vB > pos) || (vB <= pos && vA > pos)){
+          var s2 = (pos - vA)/(vB - vA), u2 = uDe(A[0] + (B[0] - A[0])*s2, A[1] + (B[1] - A[1])*s2);
+          if(u2 > ua + 1e-3 && u2 < ub - 1e-3) pts.push(u2);
+        }
+      }
+    });
+    pts.sort(function(p, q){ return p - q; });
+    var prof = [];
+    for(j = 0; j < pts.length; j++){
+      if(j && pts[j] - pts[j - 1] < 1e-3) continue;
+      var u = pts[j], z = surY ? ctZ(t, u, pos) : ctZ(t, pos, u);
+      prof.push([u, z]);
+      if(z > zMax) zMax = z;
+    }
+    if(prof.length < 2) continue;
+    couchesToit(t, prof, X, Y, sel);
+    if(!premier) premier = ua;
+  }
+  if(premier !== null){
+    var kk = ctCompte(t);
+    etiquette(X(premier) + 6, Y(zMax + g.epT) - 8, "toit au contour · " + kk.pans + " pans · chevrons " + (t.epChev*100).toFixed(0) +
+              " cm + couverture " + (t.epCouv*100).toFixed(0) + " cm · débord " + (+t.debord || 0).toFixed(2).replace(".", ",") + " m");
+  }
+}
+
+/* La façade : chaque pan est projeté (le peintre les range du plus loin au plus proche) ; un pignon qui
+   regarde vers nous montre en plus la rive du toit, en profil. */
+function ctDessinerToitFacade(t, F, X, Y, z){
+  var R = ctCalc(t);
+  if(!R) return;
+  var g = geomToit(t), sel = selToit(t.id), d = +t.debord || 0;
+  var vus = [];
+  try { vus = facadePansVus109(t, F) || []; } catch(_e){ vus = []; }
+  var CV = null, op = 1;
+  try {
+    CV = (typeof couvertureDe === "function") ? couvertureDe(t) : null;
+    op = (typeof opaciteCouverture === "function") ? opaciteCouverture(t) : 1;
+  } catch(_ec){}
+  var M = CV ? COUVERTURES[CV.type] : null;
+  var zMax = g.zb, i, k;
+  vus.forEach(function(v){ v.Q.forEach(function(q){ zMax = Math.max(zMax, q[1]); }); });
+  for(i = 0; i < vus.length; i++){
+    var v = vus[i];
+    var pts = v.Q.map(function(q){ return [X(q[0]), Y(q[1] + g.epT)]; });
+    ctx.save();
+    if(op < 1) ctx.globalAlpha = op;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for(k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
+    ctx.closePath();
+    ctx.fillStyle = M ? M.coul : "#a05a40"; ctx.fill();
+    ctx.strokeStyle = sel ? "#c8501e" : "#4a2818"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.restore();
+    if(REG2D) REG2D({toitureId:t.id}, pts, t.niveau);
+  }
+  /* les pignons tournés vers nous : leur rive en profil, avec l'épaisseur du toit */
+  var V = F.axeU === "x" ? [0, F.sens] : [F.sens, 0];
+  var Q = R.contour, n = Q.length, B2 = R.exact.B;
+  for(i = 0; i < n; i++){
+    if(B2[i] !== false) continue;
+    var A = Q[i], B = Q[(i + 1) % n], dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1;
+    if((dy/L)*V[0] + (-dx/L)*V[1] < 0.5) continue;
+    var ss = [0, 1];
+    R.pans.forEach(function(pn){
+      pn.pts.forEach(function(q){
+        var sq = ((q[0] - A[0])*dx + (q[1] - A[1])*dy)/(L*L);
+        var dp = Math.abs((q[0] - A[0])*dy - (q[1] - A[1])*dx)/L;
+        if(dp < 2e-3 && sq > 1e-4 && sq < 1 - 1e-4) ss.push(sq);
+      });
+    });
+    ss.sort(function(p, q){ return p - q; });
+    var prof = [];
+    ss.forEach(function(sv, idx){
+      if(idx && sv - ss[idx - 1] < 1e-4) return;
+      var x = A[0] + dx*sv, y = A[1] + dy*sv, u = F.axeU === "x" ? x : y, zz = ctZ(t, x, y);
+      prof.push([u, zz]); if(zz > zMax) zMax = zz;
+    });
+    prof.sort(function(p, q){ return p[0] - q[0]; });
+    if(prof.length >= 2 && prof[prof.length - 1][0] - prof[0][0] > 0.02) couchesToit(t, prof, X, Y, sel);
+  }
+  var a = (F.axeU === "x" ? t.x0 : t.y0) - d;
+  var kc = ctCompte(t);
+  etiquette(X(a) + 6, Y(zMax + g.epT) - 8, "toit au contour · " + kc.pans + " pans · débord " + d.toFixed(2).replace(".", ",") + " m");
+}
+
+
+/* ---------------------------------------------------------------------
+   113.5 · LES ESSAIS INTÉGRÉS (menu Fichier › Vérifier l'application…)
+   --------------------------------------------------------------------- */
+if(typeof AUTOTESTS !== "undefined"){
+  (function(){
+    var essai = function(pts, bp, pc, extra){
+      var t = Object.assign({id:"ct-essai", type:"contour", pts:pts, bp:bp, pc:pc, debord:0, decalage:0, epChev:0.12, epCouv:0.05, niveau:0, sens:"x"}, extra || {});
+      ctMettreEnForme(t);
+      return t;
+    };
+    /* un toit posé dans le projet le temps d'un essai, puis retiré — le projet reste tel qu'il était */
+    var chez = function(t, fn){
+      var toits = S.toitures.slice(), sel = selection, sels = selections.slice(), pile = undoStack.length, mode = vue.mode, outil0 = outil;
+      S.toitures.push(t);
+      try { return fn(); }
+      finally {
+        S.toitures = toits; selection = sel; selections = sels; undoStack.length = pile; vue.mode = mode; traceT = null;
+        try { majTout(); } catch(_e){}
+      }
+    };
+    var L = [[0,0],[12,0],[12,6],[6,6],[6,12],[0,12]];
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : un rectangle dont les quatre traits sont des bas de pente a quatre pans, un faîtage, quatre arêtiers, à la pente demandée",
+      f:function(){
+        var r = [], t = essai([[0,0],[10,0],[10,6],[0,6]], [true,true,true,true], [35,35,35,35]);
+        var R = ctCalc(t), zb = zHaut(0);
+        if(!R) return "calcul impossible";
+        var k = ctCompte(t);
+        if(k.pans !== 4 || k.faitage !== 1 || k.aretier !== 4 || k.noue !== 0) r.push("formes " + JSON.stringify(k));
+        if(Math.abs((R.hf - zb) - 1.05) > 0.005) r.push("sommet à " + (R.hf - zb).toFixed(3) + " m au lieu de 1,050");
+        if(Math.abs(zToit(t, 5, 3) - zb - 1.05) > 0.005) r.push("zToit au faîtage : " + (zToit(t, 5, 3) - zb).toFixed(3));
+        if(Math.abs(zToit(t, 0.001, 0.001) - zb) > 0.005) r.push("l'égout n'est pas à l'altitude de base");
+        R.pans.forEach(function(p){ if(Math.abs(p.plan.k - 0.35) > 1e-9) r.push("pente d'un pan : " + p.plan.k); });
+        var aire = 0; R.pans.forEach(function(p){ aire += Math.abs(ctAire(p.pts)); });
+        if(Math.abs(aire - 60) > 0.01) r.push("les pans couvrent " + aire.toFixed(2) + " m² pour 60");
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : un trait qui n'est pas un bas de pente est un pignon — deux bas de pente et deux pignons font un toit à deux pans",
+      f:function(){
+        var r = [], t = essai([[0,0],[10,0],[10,6],[0,6]], [true,false,true,false], [35,35,35,35]);
+        var R = ctCalc(t); if(!R) return "calcul impossible";
+        var k = ctCompte(t), zb = zHaut(0);
+        if(k.pans !== 2 || k.faitage !== 1 || k.aretier !== 0 || k.pignons !== 2) r.push("formes " + JSON.stringify(k));
+        var f = R.aretes.filter(function(a){ return a.nature === "faîtage"; })[0];
+        if(!f || Math.abs(f.longueur - 10) > 0.01) r.push("le faîtage devrait courir sur toute la longueur : " + (f ? f.longueur.toFixed(2) : "absent"));
+        if(Math.abs(zToit(t, 0.01, 3) - zb - 1.05) > 0.01) r.push("au pignon, le toit atteint le faîtage : " + (zToit(t, 0.01, 3) - zb).toFixed(3));
+        var mono = essai([[0,0],[10,0],[10,6],[0,6]], [true,false,false,false], [35,35,35,35]);
+        var Rm = ctCalc(mono);
+        if(!Rm || Rm.pans.length !== 1 || Math.abs((Rm.hf - zb) - 2.1) > 0.01) r.push("monopente : " + (Rm ? Rm.pans.length + " pan(s), sommet " + (Rm.hf - zb).toFixed(3) : "impossible"));
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : un bâtiment en L se couvre d'un seul contour — six pans, deux faîtages, une noue ; débord et pentes par trait suivent",
+      f:function(){
+        var r = [], t = essai(L, [true,true,true,true,true,true], [35,35,35,35,35,35]);
+        var R = ctCalc(t); if(!R) return "calcul impossible";
+        var k = ctCompte(t), zb = zHaut(0);
+        if(k.pans !== 6 || k.faitage !== 2 || k.noue !== 1) r.push("formes " + JSON.stringify(k));
+        /* la noue relève le toit : en (5 ; 4), dans le carré commun aux deux ailes, le toit est celui de l'aile qui le monte le
+           plus haut (0,70 m) — l'enveloppe inférieure des plans ne donnerait que 0,35 m */
+        var z = zToit(t, 5, 4) - zb;
+        if(Math.abs(z - 0.7) > 0.01) r.push("la noue devrait relever le toit en (5 ; 4) à 0,70 m : " + z.toFixed(3));
+        var aire = 0; R.pans.forEach(function(p){ aire += Math.abs(ctAire(p.pts)); });
+        if(Math.abs(aire - 108) > 0.02) r.push("les pans couvrent " + aire.toFixed(2) + " m² pour 108");
+        var t2 = essai(L, [true,true,true,true,true,true], [35,35,80,35,35,35], {debord:0.4});
+        var R2 = ctCalc(t2);
+        if(!R2 || R2.pans.length !== 6) r.push("avec débord et pentes différentes : " + (R2 ? R2.pans.length + " pans" : "impossible"));
+        else {
+          var ks = R2.pans.map(function(p){ return Math.round(p.plan.k*100); }).sort().join(",");
+          if(ks !== "35,35,35,35,35,80") r.push("pentes des pans : " + ks);
+        }
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : le tracé au clic — le trait suivant est un bas de pente ou un pignon (touche B), on referme sur le premier point",
+      f:function(){
+        var r = [], n0 = S.toitures.length, pile = undoStack.length, c = choix.toit, m0 = c.mode, bp0 = c.bp, pc0 = c.pcent, sel0 = selection, outil0 = outil;
+        try {
+          c.mode = "contour"; c.bp = true; c.pcent = 40; outil = "toiture"; traceT = null;
+          var clic = function(x, y){ ctCliquer({x:x, y:y}, {shiftKey:false}); };
+          clic(0, 0); clic(8, 0);                // bas de pente
+          ctBasculerBp(); clic(8, 5);            // pignon
+          ctBasculerBp(); clic(0, 5);            // bas de pente
+          ctBasculerBp(); ctFermer();            // pignon (le trait de fermeture)
+          if(S.toitures.length !== n0 + 1) return "aucune toiture posée";
+          var t = S.toitures[S.toitures.length - 1];
+          if(t.type !== "contour" || t.pts.length !== 4) r.push("contour : " + t.type + ", " + (t.pts && t.pts.length) + " points");
+          if(JSON.stringify(t.bp) !== "[true,false,true,false]") r.push("drapeaux " + JSON.stringify(t.bp));
+          if(t.pc[0] !== 40 || t.pc[2] !== 40) r.push("pente demandée " + JSON.stringify(t.pc));
+          if(!selection || selection.toitureId !== t.id) r.push("le toit posé n'est pas sélectionné");
+          var R = ctCalc(t);
+          if(!R || R.pans.length !== 2) r.push("le toit devrait avoir deux pans");
+          if(traceT) r.push("le tracé n'est pas terminé");
+          /* un contour dont les traits se croisent est refusé */
+          var n1 = S.toitures.length;
+          traceT = {contour:true, pts:[[0,0],[6,6],[6,0],[0,6]], bp:[true,true,true], pc:[35,35,35]};
+          ctFermer();
+          if(S.toitures.length !== n1) r.push("un contour croisé a été accepté");
+          traceT = {contour:true, pts:[[0,0],[6,0],[6,6],[0,6]], bp:[false,false,false], pc:[35,35,35]};
+          c.bp = false; ctFermer();
+          if(S.toitures.length !== n1) r.push("un contour sans bas de pente a été accepté");
+        } finally {
+          S.toitures.length = n0; undoStack.length = pile; c.mode = m0; c.bp = bp0; c.pcent = pc0; selection = sel0; outil = outil0; traceT = null;
+          try { majTout(); } catch(_e){}
+        }
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : plan, coupe, façade et 3D se dessinent sans erreur, la 3D temps réel et le STL reprennent ses pans",
+      f:function(){
+        var r = [], iN = S.niveaux.length - 1, bb = bboxProjet();
+        var t = essai([[bb.x0 - 1, bb.y0 - 1], [bb.x1 + 1, bb.y0 - 1], [bb.x1 + 1, bb.y1 + 1], [bb.x0 - 1, bb.y1 + 1]], [true,true,true,true], [35,35,35,35], {niveau:iN, debord:0.3});
+        var vide = true;
+        try { vide = typeof stlCollecter !== "function"; } catch(_e){}
+        chez(t, function(){
+          ["plan", "coupe", "facade", "3d"].forEach(function(m){
+            try { vue.mode = m; selUnique({toitureId:t.id}); dessiner(); }
+            catch(e){ r.push("vue « " + m + " » : " + e.message); }
+          });
+          try { vue.mode = "plan"; selUnique({toitureId:t.id}); dessiner(); } catch(e){ r.push("plan sélectionné : " + e.message); }
+        });
+        /* le maillage de la 3D temps réel et du STL : seul, le toit au contour ajoute ses pans, sa sous-face et ses rives */
+        if(!vide){
+          var garde = S.toitures, sans = 0, avec = 0;
+          try {
+            S.toitures = [];
+            sans = stlCollecter(stlOptionsEssai({contenu:"projet", toitures:true})).n;
+            S.toitures = [t];
+            avec = stlCollecter(stlOptionsEssai({contenu:"projet", toitures:true})).n;
+          } catch(e){ r.push("maillage : " + e.message); }
+          finally { S.toitures = garde; }
+          if(!(avec > sans + 8)) r.push("le maillage ne reprend pas les pans du toit (" + sans + " → " + avec + " triangles)");
+        }
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : un mur sous le toit en prend la hauteur au droit de lui, et le toit se choisit au clic dans le plan",
+      f:function(){
+        var r = [], iN = S.niveaux.length - 1, bb = bboxProjet(), murs = S.niveaux[iN].murs;
+        if(!murs.length) return null;
+        var t = essai([[bb.x0 - 3, bb.y0 - 3], [bb.x1 + 3, bb.y0 - 3], [bb.x1 + 3, bb.y1 + 3], [bb.x0 - 3, bb.y1 + 3]], [true,true,true,true], [35,35,35,35], {niveau:iN});
+        chez(t, function(){
+          var m = murs[0];
+          if(toitureDuMur(m, iN) !== t) r.push("le toit le plus étendu n'est pas retenu pour le mur");
+          var z = zTeteMur(m, iN, lgMur(m)/2, t);
+          if(!isFinite(z) || z < zNiveau(iN)) r.push("tête de mur : " + z);
+          var zr = zRiveMur(m, iN);
+          if(zr !== null && !isFinite(zr)) r.push("rive : " + zr);
+          var c = {x:bb.x0 - 2.5, y:bb.y0 - 2.5};
+          var a0 = S.nivActif; S.nivActif = iN;
+          try {
+            var trouve = chercherSousCurseur(c.x, c.y);
+            if(!trouve || trouve.toitureId !== t.id) r.push("le clic dans le débord ne désigne pas le toit : " + JSON.stringify(trouve));
+          } finally { S.nivActif = a0; }
+        });
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : déplacer, tourner d'un quart de tour et retourner le toit gardent ses pans, ses pentes et son sommet",
+      f:function(){
+        var r = [], t = essai(L, [true,true,false,true,true,true], [35,40,35,50,35,35]), R0 = ctCalc(t), zb = zHaut(0);
+        if(!R0) return "calcul impossible";
+        var k0 = ctCompte(t), h0 = R0.hf - zb, a0 = ctSurface(t);
+        ctBouger(t, 2, 3);
+        if(Math.abs(t.x0 - 2) > 1e-9 || Math.abs(t.y0 - 3) > 1e-9) r.push("emprise après déplacement : " + t.x0 + ", " + t.y0);
+        ctTourner90(t, 5, 5);
+        var k1 = ctCompte(t);
+        if(k1.pans !== k0.pans || Math.abs((ctCalc(t).hf - zb) - h0) > 1e-3 || Math.abs(ctSurface(t) - a0) > 1e-3) r.push("quart de tour : " + JSON.stringify(k1));
+        ctMiroir(t, false, 4);
+        var R2 = ctCalc(t);
+        if(!R2 || ctCompte(t).pans !== k0.pans || Math.abs((R2.hf - zb) - h0) > 1e-3) r.push("retournement : " + (R2 ? ctCompte(t).pans + " pans" : "impossible"));
+        if(ctAire(t.pts) <= 0) r.push("le contour n'est plus antihoraire après le retournement");
+        if(t.bp.filter(function(b){ return b === false; }).length !== 1) r.push("le pignon n'a pas suivi : " + JSON.stringify(t.bp));
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : l'export IFC en fait un IfcRoof à pans réels (B-Rep), la surface de couverture se compte sur les pans",
+      f:function(){
+        var r = [], iN = S.niveaux.length - 1, t = essai(L, [true,true,true,true,true,true], [35,35,35,35,35,35], {niveau:iN, id:"ct-essai-ifc"});
+        var nf0 = (ifcDuProjet().match(/IFCFACE\(/g) || []).length;
+        var txt = chez(t, function(){ return ifcDuProjet(); });
+        var nf1 = (txt.match(/IFCFACE\(/g) || []).length, R = ctCalc(t), attendu = 0;
+        if(!R) return "calcul impossible";
+        R.pans.forEach(function(p){ attendu += 2 + p.pts.length; });
+        if(!/\.FREEFORM\./.test(txt)) r.push("l'IfcRoof libre est absent");
+        if(nf1 - nf0 !== attendu) r.push("faces du B-Rep : " + (nf1 - nf0) + " au lieu de " + attendu);
+        if(/NaN|Infinity|undefined/.test(txt)) r.push("valeur absurde dans l'IFC");
+        var surf = ctSurface(t), plan = 0; R.pans.forEach(function(p){ plan += Math.abs(ctAire(p.pts)); });
+        if(!(surf > plan) || surf > plan*1.2) r.push("surface de couverture " + surf.toFixed(2) + " m² pour " + plan.toFixed(2) + " m² en plan");
+        return r.length ? r.join(" · ") : null;
+      }});
+
+    AUTOTESTS.push({
+      nom:"Toiture au contour : les propriétés montrent le tableau des traits ; changer un trait ne laisse jamais le toit incalculable ; le projet l'enregistre et le relit",
+      f:function(){
+        var r = [], iN = S.niveaux.length - 1, t = essai([[0,0],[10,0],[10,6],[0,6]], [true,true,true,true], [35,35,35,35], {niveau:iN, id:"ct-essai-2"});
+        chez(t, function(){
+          selUnique({toitureId:t.id}); majTout();
+          var h = panneau.innerHTML;
+          if(h.indexOf("data-ct-bp") < 0 || h.indexOf("ct-pente-tous") < 0) r.push("le tableau des traits est absent des propriétés");
+          if(h.indexOf("data-sect-pans") >= 0) r.push("la section « Forme du toit » d'un rectangle ne devrait pas paraître");
+          if(ctModifier(t, function(o){ o.bp = o.bp.map(function(){ return false; }); })) r.push("un toit sans aucun bas de pente a été accepté");
+          if(!t.bp.every(function(b){ return b === true; })) r.push("le refus n'a pas laissé le toit intact");
+          var pile = undoStack.length;
+          if(!ctModifier(t, function(o){ o.bp[1] = false; o.bp[3] = false; })) r.push("le passage en deux pignons a été refusé");
+          else if(ctCompte(t).pans !== 2 || undoStack.length !== pile + 1) r.push("deux pignons : " + ctCompte(t).pans + " pans, " + (undoStack.length - pile) + " annulable(s)");
+          if(!ctModifier(t, function(o){ o.pc = o.pc.map(function(p, i){ return o.bp[i] !== false ? 60 : p; }); })) r.push("la pente de tous les bas de pente a été refusée");
+          if(Math.abs(t.pente - degDePct(60)) > 0.01) r.push("pente moyenne : " + t.pente);
+          /* enregistré, relu : le contour, ses pignons et ses pentes reviennent tels quels */
+          var q = migrerProjet(JSON.parse(instantaneProjet()));
+          var t2 = (q.toitures || []).filter(function(x){ return x.id === t.id; })[0];
+          if(!t2 || t2.type !== "contour" || JSON.stringify(t2.pts) !== JSON.stringify(t.pts) || JSON.stringify(t2.bp) !== JSON.stringify(t.bp) || JSON.stringify(t2.pc) !== JSON.stringify(t.pc))
+            r.push("le projet relu ne rend pas le toit tel quel");
+        });
+        return r.length ? r.join(" · ") : null;
+      }});
+  })();
 }
 
 /* =====================================================================
