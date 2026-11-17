@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cahier de texte · 2EMNB</title>
+<meta name="description" content="Le cahier de texte de la 2EMNB et de la 1AA : ce que l’on fait en cours, et le travail à faire pour la prochaine séance (révision, exercice), avec le calendrier de l’année (jours de cours, vacances, PFMP).">
+<meta name="theme-color" content="#f7f4ec">
+<link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f7f4ec'/%3E%3Cpath d='M6 25l2-7L21 5l5 5-13 13z' fill='%23f2c14e' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M6 25l2-7 5 5z' fill='%23f1dfc0' stroke='%232a2a2a' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* =====================================================================
+   2EMNB · 1AA — Le cahier de texte (style « carnet de croquis »)
+   ===================================================================== */
+:root{
+  --papier:#f7f4ec;--fiche:#fffdf7;
+  --gr:#2a2a2a;--gr2:rgba(42,42,42,.68);--gr3:rgba(42,42,42,.2);
+  --rouge:#c93b31;--rouge2:#d6453a;--bleu:#2f6fd6;--vert:#3d9a5f;--orange:#c77a1e;--jaune:rgba(255,222,40,.72);
+  --pj:#fff1a8;--pr:#ffd8cf;--pb:#d8e7ff;--pv:#d5f0da;
+  --g1:var(--rouge);--g2:var(--bleu);--g3:var(--vert);--g0:var(--orange);
+  --main:"Architects Daughter","Segoe Print","Comic Sans MS",cursive;
+  --texte:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --gut:clamp(14px,4vw,56px);--maxw:1100px;
+  --e-out:cubic-bezier(.16,1,.3,1);
+  --ombre:0 1px 1px rgba(0,0,0,.05),0 22px 40px -28px rgba(0,0,0,.55);
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;min-height:100vh;overflow-x:clip;color:var(--gr);font-family:var(--texte);font-size:17.5px;line-height:1.55;
+  background-color:var(--papier);background-image:linear-gradient(rgba(47,111,214,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(47,111,214,.085) 1px,transparent 1px);background-size:22px 22px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer}
+svg{display:block}
+::selection{background:var(--jaune)}
+:focus-visible{outline:2.5px dashed var(--bleu);outline-offset:3px;border-radius:6px}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+.evite{position:fixed;left:16px;top:-80px;z-index:1000;padding:12px 18px;border-radius:8px;background:var(--gr);color:var(--papier);font-weight:700;transition:top .3s}
+.evite:focus{top:16px}
+.code-lisible{font-family:var(--texte);font-weight:700;letter-spacing:.02em}
+
+/* ---------- en-tête, titre ---------- */
+.nav{display:flex;align-items:center;flex-wrap:wrap;gap:12px 22px;max-width:var(--maxw);margin:0 auto;padding:18px var(--gut)}
+.logo{display:flex;align-items:center;gap:10px;margin-right:auto;line-height:1}
+.logo b{font:400 30px/1 var(--main)}
+.logo b.code-lisible{font-size:27px}
+.logo small{display:block;margin-top:3px;font:400 13px var(--texte);color:var(--gr2)}
+.logo svg{width:34px;height:34px;transition:transform .8s cubic-bezier(.34,1.56,.64,1)}
+.logo:hover svg{transform:rotate(-14deg) translateY(-3px)}
+.retour{font:400 19px var(--main);color:var(--bleu)}
+.retour:hover{color:var(--rouge)}
+main{max-width:var(--maxw);margin:0 auto;padding:6px var(--gut) 40px}
+h1{margin:.1em 0 .25em;font:400 clamp(2.3rem,6.2vw,4.4rem)/1.05 var(--main)}
+.entoure{position:relative;display:inline-block;color:var(--rouge)}
+.entoure svg{position:absolute;left:-5%;top:-14%;width:110%;height:128%;overflow:visible;pointer-events:none}
+.entoure path{fill:none;stroke:var(--rouge2);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:1 2;stroke-dashoffset:1.01;animation:trace 1.3s .4s var(--e-out) forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+.chapo{max-width:64ch;margin:0 0 22px;font-size:clamp(16.5px,1.25vw,18.5px);line-height:1.62}
+h2{margin:0 0 10px;font:400 clamp(1.5rem,2.6vw,2.1rem)/1.15 var(--main)}
+h3{margin:0 0 8px;font:400 22px/1.2 var(--main)}
+h4{margin:0 0 4px;font:400 19px/1.2 var(--main)}
+.lead{max-width:64ch;margin:0 0 14px;color:var(--gr2)}
+.vide{margin:6px 0;color:var(--gr2);font:400 18px/1.35 var(--main)}
+
+/* ---------- boutons, champs ---------- */
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:10px 20px 11px;font:400 20px/1.1 var(--main);border:2px solid var(--gr);border-radius:11px 14px 10px 13px;background:var(--fiche);transition:background .25s,transform .35s cubic-bezier(.34,1.56,.64,1)}
+.btn:hover:not(:disabled){background:var(--jaune);transform:rotate(-1deg)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn--plein{color:var(--rouge);border-color:var(--rouge2)}
+.btn--petit{padding:6px 14px 7px;font-size:17px}
+.lien-bouton{margin-left:8px;font:400 15px var(--texte);color:var(--bleu);text-decoration:underline;text-underline-offset:3px}
+.msg{min-height:1.5em;margin:8px 0;font:400 19px/1.3 var(--main);color:var(--rouge)}
+#etat{min-height:0;margin:0}
+#etat:not(:empty){min-height:1.5em;margin:8px 0 12px}
+.msg.ok{color:var(--vert)}
+.champ{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 0}
+.champ--bloc{display:block}
+.champ--bloc label{display:block;margin-bottom:4px}
+label{font:400 19px var(--main)}
+input[type=text],input[type=password],input[type=date],input[type=time],select,textarea{padding:8px 12px;font:400 17px var(--texte);background:#fff;border:2px solid var(--gr);border-radius:9px 12px 8px 11px;max-width:100%}
+input[type=text]{min-width:0}
+textarea{width:100%;resize:vertical}
+.case{display:flex;align-items:center;gap:12px;font:400 19px/1.3 var(--main);cursor:pointer}
+.case input{flex:none;width:22px;height:22px;accent-color:var(--rouge2)}
+
+/* ---------- choix du niveau et du groupe ---------- */
+.selecteurs{display:flex;flex-wrap:wrap;align-items:center;gap:14px 34px;margin:0 0 18px}
+.selecteur{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.selecteur__titre{font:400 19px var(--main);color:var(--gr2)}
+.onglet{padding:8px 18px 9px;font:400 22px/1.1 var(--main);border:2px dashed var(--gr3);border-radius:10px 14px 9px 12px;background:transparent;color:var(--gr2);transition:background .2s,border-color .2s,color .2s}
+.onglet:hover{border-color:var(--gr2);color:var(--gr)}
+.onglet[aria-pressed="true"]{border:2px solid var(--gr);background:var(--jaune);color:var(--gr)}
+.onglet.code-lisible{font-family:var(--texte)}
+.onglet--g1[aria-pressed="true"]{border-color:var(--g1);color:var(--g1)}
+.onglet--g2[aria-pressed="true"]{border-color:var(--g2);color:var(--g2)}
+.onglet--g3[aria-pressed="true"]{border-color:var(--g3);color:var(--g3)}
+.onglet--petit{font-size:19px;padding:6px 14px 7px}
+.groupes-aide{flex-basis:100%;margin:-4px 0 0;font-size:15px;color:var(--gr2)}
+
+/* ---------- bandeaux d'information, résumé, travail à faire ---------- */
+.bandeau{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;max-width:760px;margin:0 0 14px;padding:12px 18px;box-shadow:var(--ombre);font:400 18px/1.35 var(--main)}
+.bandeau p{margin:0}
+.bandeau.info{background:var(--pb)}
+.bandeau.alerte{background:var(--pr)}
+.resume{max-width:760px;margin:0 0 22px;padding:14px 20px;background:var(--pj);box-shadow:var(--ombre);transform:rotate(-.4deg)}
+.resume:empty{display:none}
+.resume__ligne{margin:2px 0;font:400 19px/1.4 var(--main)}
+.etq-groupe{display:inline-block;padding:0 9px 1px;border:1.6px solid var(--gc,var(--gr));border-radius:8px 11px 7px 10px;font:400 16px/1.35 var(--main);color:var(--gc,var(--gr));background:var(--fiche)}
+.etq-groupe.g1,.seance.g1{--gc:var(--g1)}
+.etq-groupe.g2,.seance.g2{--gc:var(--g2)}
+.etq-groupe.g3,.seance.g3{--gc:var(--g3)}
+.etq-groupe.g0,.seance.g0{--gc:var(--g0)}
+.afaire{position:relative;max-width:900px;margin:0 0 34px;padding:22px 26px 18px;background:var(--fiche);box-shadow:var(--ombre);transform:rotate(.25deg)}
+.afaire::before{content:"";position:absolute;top:-12px;left:50%;width:100px;height:26px;margin-left:-50px;background:rgba(255,222,40,.55);transform:rotate(-3deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.afaire h2{margin-bottom:4px;color:var(--rouge)}
+.afaire__sous{margin:0 0 12px;color:var(--gr2)}
+.afaire__deux{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 34px}
+.afaire__bloc h3{display:inline-block;margin-bottom:6px;padding-bottom:1px;border-bottom:3px solid var(--vert)}
+.afaire__bloc--exo h3{border-bottom-color:var(--rouge2)}
+
+/* ---------- la liste des séances ---------- */
+.liste-entete{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 20px;margin:0 0 12px}
+.liste-entete h2{margin:0}
+#filtres{display:flex;flex-wrap:wrap;gap:8px}
+.barre-ens{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 18px;padding:10px 16px;background:var(--pv);box-shadow:var(--ombre);font:400 18px var(--main)}
+.barre-ens .espace{flex:1}
+.bloc-semaine{margin:0 0 6px}
+.semaine{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:24px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--gr);font:400 21px/1.2 var(--main)}
+.semaine__regle{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font:400 16px var(--texte);color:var(--gr2)}
+.semaine__regle label{font:400 17px var(--main)}
+.semaine__regle select{padding:3px 8px;font-size:15.5px}
+.periode{margin:18px 0;padding:10px 18px;border:1.8px dashed var(--gr2);font:400 19px/1.35 var(--main)}
+.periode--vacances{background:repeating-linear-gradient(-45deg,rgba(255,222,40,.4) 0 7px,rgba(255,222,40,.14) 7px 14px);border-color:#b99a00}
+.periode--pfmp{background:repeating-linear-gradient(-45deg,rgba(235,150,40,.36) 0 7px,rgba(235,150,40,.12) 7px 14px);border-color:var(--orange)}
+.periode--ferie{background:rgba(42,42,42,.07)}
+.periode--prepa{background:rgba(47,111,214,.1);border-color:var(--bleu)}
+.seance{position:relative;display:grid;grid-template-columns:86px minmax(0,1fr);gap:0 20px;margin:0 0 16px;padding:16px 22px 14px 18px;background:var(--fiche);box-shadow:var(--ombre);border-left:7px solid var(--gc,var(--gr3))}
+.seance.est-passee{background:#fbf9f2}
+.seance.est-aujourdhui{outline:2.5px solid var(--gc,var(--gr));outline-offset:2px}
+.seance.est-visee{animation:vise 2s ease-out}
+@keyframes vise{0%,40%{background:var(--pj)}100%{background:var(--fiche)}}
+.seance.est-annulee{background:repeating-linear-gradient(-45deg,rgba(42,42,42,.06) 0 8px,transparent 8px 16px),var(--fiche)}
+.seance__date{display:flex;flex-direction:column;align-items:center;gap:0;padding-right:16px;border-right:1.6px dashed var(--gr3);text-align:center;font-family:var(--main);color:var(--gc,var(--gr))}
+.seance__jour{font-size:19px;text-transform:capitalize}
+.seance__num{font-size:46px;line-height:1.05}
+.seance__mois{font-size:16px}
+.seance__meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin:0 0 8px;font:400 16px/1.4 var(--texte);color:var(--gr2)}
+.etq{padding:0 9px 1px;border:1.5px solid var(--gr3);border-radius:8px 11px 7px 10px;font:400 15px/1.35 var(--main);color:var(--gr)}
+.etq--auj{background:var(--jaune);border-color:var(--gr)}
+.etq--prepa{background:rgba(47,111,214,.12);border-color:var(--bleu)}
+.seance__annulee{margin:4px 0;font:400 19px var(--main);color:var(--rouge)}
+.seance__pour{margin:10px 0 2px;font:400 17px var(--main);color:var(--gr2)}
+.travail{margin:8px 0}
+.travail h4{display:inline-block;padding-bottom:0;border-bottom:3px solid var(--bleu)}
+.travail--revision h4{border-bottom-color:var(--vert)}
+.travail--exercice h4{border-bottom-color:var(--rouge2)}
+.seance__remarque{margin:10px 0 0;padding:8px 14px;background:var(--pj);font:400 17px/1.4 var(--texte);white-space:pre-line;overflow-wrap:anywhere}
+.seance__outils{margin:12px 0 0}
+.liste-travail{margin:4px 0 0;padding:0;list-style:none}
+.item{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin:3px 0;padding-left:20px;position:relative}
+.item::before{content:"";position:absolute;left:3px;top:.62em;width:8px;height:2px;background:var(--gr2);transform:rotate(-8deg)}
+.item--fait{flex-wrap:nowrap;align-items:flex-start;padding-left:0;gap:0}
+.item--fait::before{display:none}
+.item--fait input{flex:none;width:21px;height:21px;margin:3px 10px 0 0;accent-color:var(--vert)}
+.item__contenu{display:flex;flex:1 1 0;min-width:0;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font:400 17.5px/1.45 var(--texte);cursor:pointer}
+.item__texte{font:400 17.5px/1.45 var(--texte)}
+a.item__texte{color:var(--bleu);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+a.item__texte:hover{color:var(--rouge)}
+.item__etq{padding:0 7px;border:1.3px solid var(--gr3);border-radius:7px 9px 6px 8px;font:400 12.5px/1.5 var(--texte);color:var(--gr2)}
+.est-fait .item__texte{text-decoration:line-through;color:var(--gr2)}
+.suite{margin:18px 0 0;text-align:center}
+
+/* ---------- le calendrier de l'année ---------- */
+.calendrier-zone{margin-top:46px}
+.calendrier{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:22px 26px;margin:6px 0 14px}
+.mois h3{margin:0 0 6px;font-size:20px;text-transform:capitalize}
+.mois__grille{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+.mois__tete{text-align:center;font:400 13px var(--texte);color:var(--gr2)}
+.jour{display:grid;place-items:center;aspect-ratio:1;min-height:28px;position:relative;border:1.5px solid transparent;border-radius:6px 8px 5px 7px;font:400 14px var(--texte);color:var(--gr);background:transparent}
+.jour--vide{border:0}
+.jour--hors{opacity:.32}
+.jour--we{color:var(--gr2);opacity:.7}
+.jour--vac{background:repeating-linear-gradient(-45deg,rgba(255,222,40,.5) 0 4px,rgba(255,222,40,.16) 4px 8px)}
+.jour--pfmp{background:repeating-linear-gradient(-45deg,rgba(235,150,40,.5) 0 4px,rgba(235,150,40,.16) 4px 8px)}
+.jour--ferie{background:rgba(42,42,42,.12)}
+.jour--prepa{box-shadow:inset 0 -3px 0 rgba(47,111,214,.5)}
+.jour--cours{font-weight:700;color:var(--gc,var(--gr));cursor:default}
+button.jour--cours{cursor:pointer}
+.jour--cours.g1{--gc:var(--g1);background:rgba(201,59,49,.2)}
+.jour--cours.g2{--gc:var(--g2);background:rgba(47,111,214,.2)}
+.jour--cours.g3{--gc:var(--g3);background:rgba(61,154,95,.22)}
+.jour--cours.g0{--gc:var(--g0);background:rgba(199,122,30,.22)}
+.jour--cours{border-color:var(--gc)}
+.jour--autre{background:transparent!important;opacity:.55;font-weight:400;border-style:dashed}
+.jour--auj{box-shadow:0 0 0 2.5px var(--gr);z-index:1}
+.jour--rempli::after{content:"";position:absolute;bottom:3px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--gc,var(--gr))}
+button.jour:hover{filter:brightness(.95);transform:rotate(-2deg)}
+.legende{display:flex;flex-wrap:wrap;gap:6px 18px;margin:8px 0 0;padding:0;list-style:none;font:400 16px var(--main);color:var(--gr2)}
+.legende i{display:inline-block;width:16px;height:16px;margin-right:6px;vertical-align:-3px;border:1.5px solid var(--gr3);border-radius:4px}
+.legende .l-g1{background:rgba(201,59,49,.3);border-color:var(--g1)}.legende .l-g2{background:rgba(47,111,214,.3);border-color:var(--g2)}.legende .l-g3{background:rgba(61,154,95,.3);border-color:var(--g3)}.legende .l-g0{background:rgba(199,122,30,.3);border-color:var(--g0)}
+.legende .l-vac{background:repeating-linear-gradient(-45deg,rgba(255,222,40,.6) 0 3px,rgba(255,222,40,.2) 3px 6px)}.legende .l-pfmp{background:repeating-linear-gradient(-45deg,rgba(235,150,40,.6) 0 3px,rgba(235,150,40,.2) 3px 6px)}.legende .l-ferie{background:rgba(42,42,42,.14)}.legende .l-auj{box-shadow:0 0 0 2px var(--gr);border-color:transparent}
+
+/* ---------- fenêtres ---------- */
+dialog{width:min(720px,calc(100vw - 24px));max-height:calc(100vh - 28px);margin:auto;padding:0;overflow:auto;color:var(--gr);background:var(--fiche);border:2px solid var(--gr);border-radius:12px 16px 11px 14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(42,42,42,.5)}
+dialog.petite{width:min(460px,calc(100vw - 24px))}
+.dlg{padding:22px 26px 20px}
+.dlg h2{margin:0 0 2px;font-size:clamp(1.4rem,3vw,1.9rem)}
+.dlg__sous{margin:0 0 14px;color:var(--gr2)}
+.dlg__pied{position:sticky;bottom:-20px;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin:16px -26px -20px;padding:12px 26px 18px;background:var(--fiche);border-top:1.5px dashed var(--gr3)}
+.dlg__pied .espace{flex:1}
+.rubrique{margin:16px 0;padding:12px 16px 14px;border:1.6px dashed var(--gr3);border-radius:10px 13px 9px 12px;background:rgba(255,255,255,.55)}
+.rubrique.est-grise{opacity:.55}
+.rubrique h3{margin:0;color:var(--gr)}
+.rubrique[data-rub="enCours"] h3{border-bottom:3px solid var(--bleu);display:inline-block}
+.rubrique[data-rub="revision"] h3{border-bottom:3px solid var(--vert);display:inline-block}
+.rubrique[data-rub="exercice"] h3{border-bottom:3px solid var(--rouge2);display:inline-block}
+.rubrique__aide{margin:4px 0 8px;font-size:15px;color:var(--gr2)}
+.puces{margin:0 0 10px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 8px}
+.puce{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:3px 6px 3px 12px;background:#fff;border:1.6px solid var(--gr2);border-radius:9px 12px 8px 11px;font:400 16px/1.35 var(--texte)}
+.puce__texte{overflow-wrap:anywhere}
+a.puce__texte{color:var(--bleu);text-decoration:underline;text-decoration-style:dotted}
+.puce__x{flex:none;width:26px;height:26px;border-radius:50%;font:400 20px/1 var(--main);color:var(--rouge);border:1.5px solid transparent}
+.puce__x:hover{border-color:var(--rouge);background:var(--pr)}
+.puces .vide{margin:0}
+.ajout{display:flex;flex-wrap:wrap;gap:8px}
+.ajout__saisie{flex:1 1 240px}
+.propositions{margin-top:10px;max-height:290px;overflow:auto;padding:6px;background:#fff;border:1.8px solid var(--gr2);border-radius:9px 12px 8px 11px}
+.proposition{display:grid;grid-template-columns:minmax(0,1fr);gap:0 10px;width:100%;margin:0;padding:7px 10px;text-align:left;border-radius:7px;font:400 16px/1.35 var(--texte)}
+.proposition:hover,.proposition:focus-visible{background:var(--jaune)}
+.proposition__etq{font:400 12.5px/1.4 var(--texte);color:var(--bleu);text-transform:uppercase;letter-spacing:.04em}
+.proposition small{color:var(--gr2);font-size:13.5px;overflow-wrap:anywhere}
+.proposition--suite,.proposition--reprise{margin-bottom:4px;border:1.8px dashed var(--vert);background:var(--pv)}
+.proposition--reprise{border-color:var(--bleu);background:var(--pb)}
+.proposition--suite b,.proposition--reprise b{font:400 17px var(--main)}
+.creneau{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:8px 0}
+.creneau label{font:400 17px var(--texte)}
+
+/* ---------- pied de page ---------- */
+.pied{max-width:var(--maxw);margin:30px auto 0;padding:0 var(--gut) 40px}
+.pied__base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;padding-top:18px;border-top:1.5px dashed var(--gr3);font-size:14.5px;color:var(--gr2)}
+.pied__base a{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- petits écrans ---------- */
+@media (max-width:760px){
+  body{font-size:17px}
+  .afaire__deux{grid-template-columns:minmax(0,1fr)}
+  .afaire{padding:20px 18px 16px}
+  .seance{grid-template-columns:62px minmax(0,1fr);gap:0 12px;padding:12px 14px 12px 12px}
+  .seance__date{padding-right:10px}
+  .seance__num{font-size:36px}
+  .seance__jour{font-size:16px}
+  .seance__mois{font-size:14px}
+  .semaine__regle{margin-left:0;flex-basis:100%}
+  .dlg{padding:18px 16px 16px}
+  .dlg__pied{margin:16px -16px -16px;padding:12px 16px 16px;bottom:-16px}
+  .calendrier{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .entoure path{stroke-dashoffset:0}
+}
+@media print{
+  body{background:#fff;font-size:12pt}
+  .nav,.selecteurs,#acces-ens,.barre-ens,.btn,.lien-bouton,.semaine__regle,#filtres,.seance__outils,.calendrier-zone .legende,.suite,.evite,dialog{display:none!important}
+  .afaire,.resume,.seance{box-shadow:none;transform:none;break-inside:avoid}
+  .afaire::before{display:none}
+  .calendrier-zone{break-before:page}
+  a.item__texte::after{content:" (" attr(href) ")";font-size:10pt;color:var(--gr2)}
+}
+</style>
+</head>
+<body>
+<a class="evite" href="#contenu">Aller au cahier de texte</a>
+
+<header class="nav">
+  <a class="logo" id="logo" href="index.html" aria-label="2EMNB, retour à l’accueil du carnet">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l2.6-8.4L21.5 4.7l5.8 5.8L13.4 24.4z" fill="#f2c14e" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l2.6-8.4 5.8 5.8z" fill="#f1dfc0" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 27l1.2-3.9 2.7 2.7z" fill="#2a2a2a"/><path d="M18.6 7.6l5.8 5.8" stroke="#2a2a2a" stroke-width="1.4"/></svg>
+    <span><b id="logo-nom">2EMNB</b><small id="logo-sous">le cahier de texte</small></span>
+  </a>
+  <button class="btn btn--petit" type="button" id="acces-ens">Espace enseignant</button>
+  <a class="retour" id="retour" href="index.html"><span aria-hidden="true">←</span> Accueil du carnet</a>
+</header>
+
+<main id="contenu">
+  <h1>Le cahier de <span class="entoure">texte<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M20 46C14 14 160 0 188 26C212 50 140 80 60 72C10 66 2 40 34 18C56 6 96 6 124 9"/></svg></span></h1>
+  <p class="chapo"><strong>Qu’a-t-on fait en cours, et que faut-il faire pour la prochaine séance&nbsp;?</strong> Le travail en cours, puis le travail à faire&nbsp;: une <b>révision</b> et un <b>exercice</b>. Classe&nbsp;: <span id="chapo-classe"></span>.</p>
+
+  <div class="selecteurs">
+    <div class="selecteur" role="group" aria-label="Niveau" id="niveaux">
+      <span class="selecteur__titre">Niveau</span>
+      <button class="onglet" type="button" data-niveau="2emnb" aria-pressed="true">2EMNB</button>
+      <button class="onglet code-lisible" type="button" data-niveau="1aa" aria-pressed="false">1AA</button>
+    </div>
+    <div class="selecteur" id="groupes-zone">
+      <span class="selecteur__titre" id="t-groupes">Votre groupe</span>
+      <div class="selecteur" role="group" aria-labelledby="t-groupes" id="groupes">
+        <button class="onglet onglet--petit onglet--g1" type="button" data-groupe="G1" aria-pressed="false">Groupe 1</button>
+        <button class="onglet onglet--petit onglet--g2" type="button" data-groupe="G2" aria-pressed="false">Groupe 2</button>
+        <button class="onglet onglet--petit onglet--g3" type="button" data-groupe="G3" aria-pressed="false">Groupe 3</button>
+        <button class="onglet onglet--petit" type="button" data-groupe="" aria-pressed="false">Tous</button>
+      </div>
+      <p class="groupes-aide">Les trois groupes passent chacun une semaine entière avec M. Amat, à tour de rôle. Choisissez le vôtre : le cahier ne montrera que vos séances.</p>
+    </div>
+  </div>
+
+  <div id="bandeau" hidden></div>
+  <p class="msg" id="etat" role="status" aria-live="polite"></p>
+  <section id="resume" class="resume" aria-label="En ce moment"></section>
+  <section id="afaire" class="afaire" aria-label="Travail à faire" hidden></section>
+
+  <section aria-labelledby="t-seances">
+    <div class="liste-entete">
+      <h2 id="t-seances">Les séances</h2>
+      <div role="group" id="filtres" aria-label="Séances affichées">
+        <button class="onglet onglet--petit" type="button" data-vue="avenir" aria-pressed="true">À venir</button>
+        <button class="onglet onglet--petit" type="button" data-vue="passees" aria-pressed="false">Passées</button>
+        <button class="onglet onglet--petit" type="button" data-vue="toutes" aria-pressed="false">Toutes</button>
+      </div>
+    </div>
+    <div class="barre-ens" id="barre-ens" hidden>
+      <span>Espace enseignant</span>
+      <button class="btn btn--petit" type="button" id="btn-ajout">Ajouter une séance</button>
+      <button class="btn btn--petit" type="button" id="btn-creneaux">Créneaux de la classe</button>
+      <span class="espace"></span>
+      <button class="btn btn--petit" type="button" id="btn-deconnexion">Se déconnecter</button>
+    </div>
+    <div id="liste"></div>
+  </section>
+
+  <section class="calendrier-zone" aria-labelledby="t-cal">
+    <h2 id="t-cal">Le calendrier de l’année</h2>
+    <p class="lead">Les jours de cours, les vacances et les semaines de PFMP, de septembre à juillet. Un clic sur un jour de cours ouvre la séance.</p>
+    <div class="calendrier" id="calendrier"></div>
+    <ul class="legende" aria-label="Légende du calendrier">
+      <li><i class="l-g1"></i>jour de cours (la couleur est celle du groupe)</li>
+      <li><i class="l-vac"></i>vacances</li>
+      <li><i class="l-pfmp"></i>PFMP (en entreprise)</li>
+      <li><i class="l-ferie"></i>jour férié</li>
+      <li><i class="l-auj"></i>aujourd’hui</li>
+    </ul>
+  </section>
+</main>
+
+<dialog id="dlg-ens" class="petite" aria-labelledby="ens-titre">
+  <form class="dlg" id="form-ens" autocomplete="off">
+    <h2 id="ens-titre">Espace de l’enseignant</h2>
+    <p class="dlg__sous">Le code est vérifié par le script Google, jamais par cette page.</p>
+    <div class="champ"><label for="ens-code">Code</label><input id="ens-code" name="code" type="password" autocomplete="current-password" required></div>
+    <p class="msg" id="ens-msg" role="alert"></p>
+    <div class="dlg__pied"><button class="btn btn--plein" type="submit" id="ens-valider">Entrer</button><button class="btn" type="button" id="ens-annuler">Annuler</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlg-edit" aria-labelledby="ed-titre">
+  <div class="dlg">
+    <h2 id="ed-titre"></h2>
+    <p class="dlg__sous" id="ed-sous"></p>
+    <div id="ed-corps"></div>
+    <p class="msg" id="ed-msg" role="status" aria-live="polite"></p>
+    <div class="dlg__pied">
+      <button class="btn btn--plein" type="button" id="ed-enregistrer">Enregistrer</button>
+      <button class="btn" type="button" id="ed-fermer">Fermer</button>
+      <span class="espace"></span>
+      <button class="btn btn--petit" type="button" id="ed-effacer">Effacer cette séance</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-creneaux" aria-labelledby="cr-titre">
+  <div class="dlg">
+    <h2 id="cr-titre">Créneaux de la classe</h2>
+    <p class="dlg__sous">Les jours et les heures de cours de la semaine, valables toute l’année. Les vacances, les semaines de PFMP et les jours fériés sont retirés d’eux-mêmes.</p>
+    <div id="cr-liste"></div>
+    <button class="btn btn--petit" type="button" id="cr-ajouter">Ajouter un créneau</button>
+    <p class="msg" id="cr-msg" role="status" aria-live="polite"></p>
+    <div class="dlg__pied">
+      <button class="btn btn--plein" type="button" id="cr-enregistrer">Enregistrer</button>
+      <button class="btn" type="button" id="cr-fermer">Fermer</button>
+      <span class="espace"></span>
+      <button class="btn btn--petit" type="button" id="cr-retablir">Rétablir les créneaux d’origine</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-ajout" class="petite" aria-labelledby="aj-titre">
+  <form class="dlg" id="form-ajout" autocomplete="off">
+    <h2 id="aj-titre">Ajouter une séance</h2>
+    <p class="dlg__sous">Une séance en plus des créneaux habituels (rattrapage, sortie…).</p>
+    <div class="champ"><label for="aj-date">Date</label><input id="aj-date" type="date" required></div>
+    <div class="champ"><label for="aj-debut">De</label><input id="aj-debut" type="time" required><label for="aj-fin">à</label><input id="aj-fin" type="time" required></div>
+    <p class="msg" id="aj-msg" role="alert"></p>
+    <div class="dlg__pied"><button class="btn btn--plein" type="submit">Ajouter</button><button class="btn" type="button" id="aj-annuler">Annuler</button></div>
+  </form>
+</dialog>
+
+<footer class="pied">
+  <div class="pied__base"><span>© <span id="annee">2026</span> · 2EMNB — Lycée Urbain Vitry</span><span>Dessiné à la main · aucun cookie · <a href="licence.html">CC BY-NC-SA 4.0</a> <a class="pied__stat" href="stat.html" title="Statistiques de fréquentation (accès enseignant)" style="padding:0 .55em 1px;border:1.4px solid currentColor;border-radius:9px 11px 8px 10px;text-decoration:none">Stat</a></span><a href="#contenu">Haut de page ↑</a></div>
+</footer>
+
+<script>
+/* =====================================================================
+   Le cahier de texte du carnet : le calendrier de l'année (jours de cours, vacances, PFMP), le travail en cours et le travail à faire
+   (révision, exercice) de chaque séance. Les élèves LISENT ; l'enseignant ÉCRIT (son code est vérifié par le script Google, jamais ici).
+   Les textes de l'enseignant ne sont JAMAIS mis dans le HTML : tout passe par textContent (aucune injection possible).
+   ===================================================================== */
+(() => {
+'use strict';
+
+/* Le calendrier de l'année 2026-2027 et les créneaux de chaque niveau (lycée Urbain Vitry, Toulouse : zone C).
+   Sources :
+   - vacances : calendrier officiel de l'Éducation nationale 2026-2027, académie de Toulouse (data.education.gouv.fr) — du samedi de départ au dimanche de la veille de la reprise ;
+     elles coïncident avec les semaines jaunes du « CALENDRIER STAGES, PFMP, APPRENTISSAGES 2026-2027 V4 » du lycée ;
+   - jours fériés : calendrier.api.gouv.fr (Ascension jeudi 6 mai 2027) et « Pont de l'Ascension » (vendredi 7 mai, calendrier officiel) ;
+   - PFMP : « CALENDRIER STAGES, PFMP… V4 » du lycée, ligne « 2ème BAC · Métiers des études et de la modélisation numérique du bâtiment » (3 + 3 semaines)
+     et ligne « 1ère BAC · Technicien d'Études du Bâtiment option B Assistant en Architecture » (4 + 4 semaines) ; « Prépa PFMP » = semaines 42 et 45 pour la seconde ;
+   - créneaux de la 2EMNB : donnés par l'enseignant (mardi, jeudi, vendredi) ; salle 13.11 INFO et organisation « un groupe par semaine entière » : PDF « 2EMNB1 & 2EMNB2 — Classes, groupes et emplois du temps » (nouvelle organisation) ;
+     l'ORDRE du tourniquet et son point de départ viennent de l'enseignant (17/11/2026) : « j'ai le groupe 3 cette semaine (du 16 au 20 novembre), la semaine prochaine le groupe 1 » → G1 → G2 → G3
+     (le PDF notait G1 → G3 → G2 mais précisait : « si c'est l'inverse qui est voulu, le tableau du cycle est à inverser »).
+   Ce qui est ÉCRIT par l'enseignant dans la page (séances, groupe d'une semaine, créneaux d'une classe) prime sur ces valeurs. */
+const ANNEE = { debut: '2026-09-01', fin: '2027-07-02' };
+const VACANCES = [
+  { nom: 'Vacances de la Toussaint', du: '2026-10-17', au: '2026-11-01' },
+  { nom: 'Vacances de Noël', du: '2026-12-19', au: '2027-01-03' },
+  { nom: 'Vacances d’hiver', du: '2027-02-06', au: '2027-02-21' },
+  { nom: 'Vacances de printemps', du: '2027-04-03', au: '2027-04-18' }
+];
+const FERIES = {
+  '2026-11-11': 'Armistice', '2026-12-25': 'Noël', '2027-01-01': 'Jour de l’an', '2027-03-29': 'Lundi de Pâques',
+  '2027-05-06': 'Ascension', '2027-05-07': 'Pont de l’Ascension', '2027-05-17': 'Lundi de Pentecôte'
+};
+const NIVEAUX = {
+  '2emnb': {
+    nom: '2EMNB', sous: 'le carnet de la seconde', accueil: 'index.html', classe: 'Seconde Bac Pro EMNB',
+    creneaux: [{ j: 2, debut: '08:15', fin: '12:10' }, { j: 4, debut: '13:30', fin: '17:20' }, { j: 5, debut: '13:30', fin: '16:30' }],
+    salle: '13.11',
+    groupes: { cycle: ['G1', 'G2', 'G3'], ancre: { lundi: '2026-11-16', groupe: 'G3' }, noms: { G1: 'Groupe 1', G2: 'Groupe 2', G3: 'Groupe 3' } },
+    pfmp: [{ nom: 'PFMP 1', du: '2027-01-18', au: '2027-02-05' }, { nom: 'PFMP 2', du: '2027-06-07', au: '2027-06-25' }],
+    prepa: [{ nom: 'Préparation de la PFMP', du: '2026-10-12', au: '2026-10-16' }, { nom: 'Préparation de la PFMP', du: '2026-11-02', au: '2026-11-06' }]
+  },
+  '1aa': {
+    nom: '1AA', sous: 'le carnet de la première', accueil: '1aa.html', classe: 'Première Bac Pro TEB option B, assistant en architecture',
+    creneaux: [],
+    salle: '',
+    groupes: null,
+    pfmp: [{ nom: 'PFMP 1', du: '2027-01-11', au: '2027-02-05' }, { nom: 'PFMP 2', du: '2027-06-07', au: '2027-07-02' }],
+    prepa: []
+  }
+};
+const CATALOGUE = {"progression":{"2emnb":[{"id":"SQ01-1","code":"SQ01","projet":"Restaurant scolaire","sequence":"Séquence n°1","num":"Activité 1","titre":"Les acteurs de l’acte de construire","pb":"Quel est le rôle de chaque intervenant selon la phase du projet ?","supports":[{"nom":"Les acteurs","type":"wc","url":"acteurs-construire.html"},{"nom":"Missions et phases","type":"wc","url":"phases-missions.html"},{"nom":"ARC, ÉCO, GÉOM","type":"wc","url":"metiers.html"}]},{"id":"SQ01-2","code":"SQ01","projet":"Restaurant scolaire","sequence":"Séquence n°1","num":"Activité 2","titre":"Lire les plans d’un projet","pb":"Comment interpréter les différents plans pour en extraire les informations techniques ?","supports":[{"nom":"Lecture de plans","type":"wc","url":"lecture-de-plans.html"},{"nom":"Pièces graphiques","type":"wc","url":"https://profgcce1.wixsite.com/2-emnb/copie-de-retour-de-pfmp"}]},{"id":"SQ01-3","code":"SQ01","projet":"Restaurant scolaire","sequence":"Séquence n°1","num":"Activité 3","titre":"Le CCTP et la maquette numérique","pb":"Où trouver les informations techniques qui décrivent un ouvrage ?","supports":[{"nom":"PFMP","type":"sup","url":"https://profgcce1.wixsite.com/2-emnb/retour-de-pfmp"},{"nom":"CCTP","type":"wc","url":"cctp.html"},{"nom":"Maquette numérique","type":"wc","url":"maquette-numerique.html"}]},{"id":"SQ01-4","code":"SQ01","projet":"Restaurant scolaire","sequence":"Séquence n°1","num":"Activité 4","titre":"Rédiger des documents techniques","pb":"Comment déterminer les ouvrages qui composent les murs de façade ?","supports":[{"nom":"Description des ouvrages","type":"wc"},{"nom":"Murs","type":"sup","url":"murs.html"},{"nom":"Cloisons","type":"sup","url":"cloisons.html"},{"nom":"Planchers","type":"sup","url":"planchers.html"},{"nom":"Toitures","type":"sup","url":"toitures.html"}]},{"id":"SQ01-5","code":"SQ01","projet":"Restaurant scolaire","sequence":"Séquence n°1","num":"Activité 5","titre":"Urbanisme, permis, réglementation","pb":"Quelles règles un projet doit-il respecter pour obtenir son permis de construire ?","supports":[{"nom":"Urbanisme","type":"wc"},{"nom":"PLU","type":"wc","url":"plu.html"},{"nom":"Permis de construire","type":"wc","url":"https://profgcce1.wixsite.com/2-emnb/world-café-permis-de-construire"},{"nom":"Accessibilité","type":"sup","url":"accessibilite.html"},{"nom":"Sécurité incendie","type":"sup","url":"incendie-seismes.html"},{"nom":"Escaliers","type":"sup","url":"escaliers.html"}]},{"id":"SQ01-6","code":"SQ01","projet":"Restaurant scolaire","sequence":"Séquence n°1","num":"Activité 6","titre":"La maquette numérique en phase PRO","pb":"Comment la maquette donne-t-elle aux entreprises les informations pour métrer et chiffrer ?","supports":[{"nom":"Avant-métré","type":"wc","url":"avant-metre.html"},{"nom":"Nomenclature","type":"sup"},{"nom":"Export vers Excel","type":"wc"},{"nom":"Métré et quantitatif","type":"sup","url":"metre-quantitatif.html"},{"nom":"Avant-métré et BIM","type":"sup","url":"avant-metre-bim.html"}]},{"id":"SQ02-1","code":"SQ02","projet":"Maison Bose","sequence":"Séquence n°2","num":"Activité 1","titre":"Perspective à 1 point de fuite, perspective à deux points de fuite","pb":"Quelles méthodes de dessin traduisent fidèlement les volumes d’un projet ?","supports":[{"nom":"La perspective","type":"wc","url":"perspective.html"}]},{"id":"SQ02-2","code":"SQ02","projet":"Maison Bose","sequence":"Séquence n°2","num":"Activité 2","titre":"Le relevé architectural","pb":"Comment passer, avec rigueur, du relevé sur place à la représentation numérique ?","supports":[{"nom":"Le relevé","type":"sup","url":"releve-etat-des-lieux.html"},{"nom":"Méthode du relevé","type":"sup","url":"releve-methode.html"},{"nom":"Scanner 3D et nuage de points","type":"sup","url":"nuage-de-points.html"}]},{"id":"SQ02-3","code":"SQ02","projet":"Maison Bose","sequence":"Séquence n°2","num":"Activité 3","titre":"Exploiter un tableur","pb":"Comment exploiter un tableur ?","supports":[{"nom":"Excel","type":"wc","url":"excel.html"},{"nom":"Avant-métré","type":"wc","url":"avant-metre.html"}]},{"id":"SQ02-4","code":"SQ02","projet":"Maison Bose","sequence":"Séquence n°2","num":"Activité 4","titre":"Démarrer un projet sur Revit","pb":"Comment démarre-t-on un projet d’architecture sur Revit ?","supports":[{"nom":"Interface Revit","type":"sup"},{"nom":"Démarrer avec Revit","type":"sup"},{"nom":"TD1 · Maison Bose","type":"td","url":"revit-bose.html#td1"}]},{"id":"SQ02-5","code":"SQ02","projet":"Maison Bose","sequence":"Séquence n°2","num":"Activité 5","titre":"Modéliser les murs et les cloisons","pb":"Quelles manipulations clés définissent les propriétés des murs dans Revit ?","supports":[{"nom":"Famille mur architectural","type":"sup"},{"nom":"Type de mur","type":"sup"},{"nom":"TD2 · Maison Bose","type":"td","url":"revit-bose.html#td2"}]},{"id":"SQ02-6","code":"SQ02","projet":"Maison Bose","sequence":"Séquence n°2","num":"Activité 6","titre":"Modéliser les menuiseries","pb":"Comment la modélisation paramétrique des menuiseries gère-t-elle l’évolution des exigences ?","supports":[{"nom":"Insérer une nouvelle famille d’ouvertures","type":"sup"},{"nom":"Propriété d’occurrence et de type","type":"sup"},{"nom":"TD3 · Maison Bose","type":"td","url":"revit-bose.html#td3"}]},{"id":"SQ02-7","code":"SQ02","projet":"Maison Bose","sequence":"Séquence n°2","num":"Activité 7","titre":"Fondations et annotations","pb":"Comment modéliser les fondations et annoter la maquette ?","supports":[{"nom":"Fondations","type":"sup","url":"fondations.html"},{"nom":"Gros œuvre","type":"sup","url":"https://profgcce1.wixsite.com/2-emnb/world-café-gros-oeuvre"},{"nom":"Murs, maçonnerie, plancher","type":"sup"},{"nom":"TD4 · Maison Bose","type":"td","url":"revit-bose.html#td4"},{"nom":"TD5 · Maison Bose","type":"td","url":"revit-bose.html#td5"}]},{"id":"SQ03-1","code":"SQ03","projet":"Maison passive","sequence":"Séquence n°3","num":"Activité 1","titre":"Importer le projet dans Twinmotion","pb":"Comment préparer les matériaux et l’ambiance à partir du modèle Revit ?","supports":[{"nom":"TD1","type":"td"}]},{"id":"SQ03-2","code":"SQ03","projet":"Maison passive","sequence":"Séquence n°3","num":"Activité 2","titre":"Préparer la scène","pb":"Comment préparer les vues, l’ambiance et les objets de la scène ?","supports":[{"nom":"TD2","type":"td"}]},{"id":"SQ03-3","code":"SQ03","projet":"Maison passive","sequence":"Séquence n°3","num":"Activité 3","titre":"Élaborer le document de définition","pb":"Comment élaborer un document complémentaire de définition du projet ?","supports":[{"nom":"TD3","type":"td"}]},{"id":"SQ04-1","code":"SQ04","projet":"Le patio","sequence":"Séquence n°4","num":"Activité 1","titre":"Le plan de situation","pb":"Comment indiquer avec précision une implantation sur le terrain ?","supports":[]},{"id":"SQ04-2","code":"SQ04","projet":"Le patio","sequence":"Séquence n°4","num":"Activité 2","titre":"Le plan de masse","pb":"Comment reproduire le plan cadastral pour établir le plan de masse ?","supports":[]},{"id":"SQ04-3","code":"SQ04","projet":"Le patio","sequence":"Séquence n°4","num":"Activité 3","titre":"Relevé maison AFPA","pb":"Comment construire une maquette numérique à partir d’un relevé par scanner 3D ?","supports":[]}],"1aa":[{"id":"CH01-1","code":"CH01","projet":"École Jean Zay","sequence":"Chapitre 1","num":"Activité 1","titre":"Découvrir le projet","pb":"Où se situe l’école, que contient-elle et comment est-elle construite ?","supports":[{"nom":"Le projet Jean Zay","type":"sup","url":"jean-zay.html"}]},{"id":"CH02-1","code":"CH02","projet":"La variante du parking","sequence":"Chapitre 2","num":"Activité 1","titre":"Découvrir le sujet","pb":"Comment lire le sujet pièce par pièce, puis préparer le travail ?","supports":[{"nom":"Découvrir le sujet U22","type":"sup","url":"u22-jean-zay.html"}]}]},"pages":[{"url":"accessibilite.html","titre":"Accessibilité du cadre bâti","genre":"cours","parts":[{"n":1,"court":"Pourquoi","titre":"Pourquoi l’accessibilité ?"},{"n":2,"court":"Extérieur","titre":"Accès extérieur et cheminements"},{"n":3,"court":"Intérieur","titre":"Portes et circulation intérieure"},{"n":4,"court":"Sanitaires","titre":"Sanitaires et équipements"},{"n":5,"court":"Repères","titre":"Signalétique, information et coûts"}],"quiz":true},{"url":"acteurs-construire.html","titre":"Les acteurs de l’acte de construire","genre":"cours","parts":[{"n":1,"court":"MOA","titre":"Le maître d’ouvrage"},{"n":2,"court":"MOE","titre":"La maîtrise d’œuvre"},{"n":3,"court":"Entreprises","titre":"Les entreprises"},{"n":4,"court":"Contrôle","titre":"Contrôle, sécurité et garanties"}],"quiz":true},{"url":"animation-acte-de-construire.html","titre":"L’acte de construire en 90 secondes","genre":"synthese"},{"url":"animation-cctp-jumeau.html","titre":"Du CCTP au jumeau numérique en 90 secondes","genre":"synthese"},{"url":"animation-edd.html","titre":"EDD en 90 secondes","genre":"synthese"},{"url":"animation-lecture-de-plan.html","titre":"Lire un plan en 2 min 30","genre":"synthese"},{"url":"atelier-electrique.html","titre":"Atelier Électrique — table de manipulations","genre":"atelier"},{"url":"atelier-maquette.html","titre":"Atelier Maquette Numérique — découverte du BIM","genre":"atelier"},{"url":"atelier-photo.html","titre":"Atelier Photo — Alpha 6000","genre":"atelier"},{"url":"atelier-structure.html","titre":"Atelier Structure · banc d’essai du bâtiment","genre":"atelier"},{"url":"autour-de-revit.html","titre":"Autour de Revit","genre":"cours","parts":[{"n":1,"court":"Regarder","titre":"Bien regarder les vidéos"},{"n":2,"court":"Pratiquer","titre":"Passer à la pratique"}]},{"url":"avant-metre-bim.html","titre":"L’avant-métré, du papier au BIM","genre":"cours","parts":[{"n":1,"court":"Définition","titre":"Qu’est-ce que l’avant-métré ?"},{"n":2,"court":"Papier","titre":"La méthode traditionnelle"},{"n":3,"court":"Calculs","titre":"Les calculs géométriques essentiels"},{"n":4,"court":"BIM","titre":"La maquette numérique BIM"},{"n":5,"court":"Choisir","titre":"De la maquette à l’Excel, et choisir sa méthode"}],"quiz":true},{"url":"avant-metre.html","titre":"Métré et quantitatif","genre":"cours","parts":[{"n":1,"court":"Dimensions","titre":"Dimensions HO / DO"},{"n":2,"court":"Fouilles","titre":"Les fouilles"},{"n":3,"court":"Semelles","titre":"Semelles et soubassement"},{"n":4,"court":"Avant-métré","titre":"Avant-métré et prix"},{"n":5,"court":"Exercice","titre":"Mise en situation : plan BA01"}],"quiz":true},{"url":"bim-education.html","titre":"BIM Éducation","genre":"page"},{"url":"cctp.html","titre":"Le CCTP","genre":"cours","parts":[{"n":1,"court":"Comprendre","titre":"Comprendre le CCTP"},{"n":2,"court":"Lot 02","titre":"Lot 02 · Maçonnerie"},{"n":3,"court":"Lot 06","titre":"Lot 06 · Second œuvre"},{"n":4,"court":"Lot 10","titre":"Lot 10 · Enveloppe"},{"n":5,"court":"Coupe de mur","titre":"Synthèse · coupe de mur"}],"quiz":true},{"url":"claude.html","titre":"Découvrir Claude","genre":"cours","parts":[{"n":1,"court":"Comprendre","titre":"Un modèle de langage"},{"n":2,"court":"Entrer","titre":"Quatre portes pour entrer"},{"n":3,"court":"Agir","titre":"Ce que Claude touche et produit"},{"n":4,"court":"Régler","titre":"Les quatre réglages"},{"n":5,"court":"Étendre","titre":"Personnaliser et étendre"},{"n":6,"court":"Astuces","titre":"Trucs et astuces"}],"quiz":true},{"url":"cloisons.html","titre":"Les cloisons","genre":"cours","parts":[{"n":1,"court":"Distribution","titre":"Les cloisons de distribution"},{"n":2,"court":"Doublage","titre":"Les cloisons de doublage"},{"n":3,"court":"Séparation","titre":"Les cloisons de séparation"},{"n":4,"court":"Choisir","titre":"Comparer et choisir"}],"quiz":true},{"url":"escaliers.html","titre":"Les escaliers","genre":"cours","parts":[{"n":1,"court":"Vocabulaire","titre":"Le vocabulaire technique"},{"n":2,"court":"Blondel","titre":"La formule de Blondel et les normes"},{"n":3,"court":"Formes","titre":"Les formes d’escalier"},{"n":4,"court":"Calcul","titre":"Inclinaison et dimensionnement"}],"quiz":true},{"url":"excel.html","titre":"Exercices tableur","genre":"cours","parts":[{"n":1,"court":"Peinture","titre":"Métré de peinture"},{"n":2,"court":"Devis","titre":"Devis matériaux"},{"n":3,"court":"Fournisseurs","titre":"Comparaison de fournisseurs"},{"n":4,"court":"Planning","titre":"Planning de chantier"},{"n":5,"court":"Graphique","titre":"Graphique de répartition des coûts"},{"n":6,"court":"Synthèse","titre":"Fiche de synthèse chantier"}]},{"url":"explications.html","titre":"Explications","genre":"page"},{"url":"fondations.html","titre":"Les fondations superficielles","genre":"cours","parts":[{"n":1,"court":"Définition","titre":"Qu’est-ce qu’une fondation superficielle ?"},{"n":2,"court":"Types","titre":"Semelles isolées, semelles filantes, radiers"},{"n":3,"court":"Le sol","titre":"Reconnaître le sol"},{"n":4,"court":"Tassements","titre":"Tassements et nappe phréatique"},{"n":5,"court":"Gel, risques","titre":"Le gel et les sols à risque"},{"n":6,"court":"Concevoir","titre":"Concevoir et dimensionner"}],"quiz":true},{"url":"ia.html","titre":"L’intelligence artificielle","genre":"cours","parts":[{"n":1,"court":"Définition","titre":"De quoi parle-t-on ?"},{"n":2,"court":"Histoire","titre":"Une histoire de plus de 70 ans"},{"n":3,"court":"Générative","titre":"L’IA générative : comment ça marche ?"},{"n":4,"court":"Écologie","titre":"L’IA et la planète"}],"quiz":true},{"url":"incendie-seismes.html","titre":"Incendie et séismes","genre":"cours","parts":[{"n":1,"court":"Incendie","titre":"Les principes de sécurité incendie"},{"n":2,"court":"Classement","titre":"Classer les bâtiments : ERP et IGH"},{"n":3,"court":"Matériaux","titre":"Réaction et résistance au feu"},{"n":4,"court":"Séismes","titre":"Les règles parasismiques"},{"n":5,"court":"Règlement","titre":"La réglementation en France"}],"quiz":true},{"url":"jean-zay.html","titre":"Le projet Jean Zay","genre":"cours","parts":[{"n":1,"court":"Site","titre":"Où se trouve le projet"},{"n":2,"court":"Programme","titre":"Ce que contient le bâtiment"},{"n":3,"court":"Construction","titre":"Comment il est construit"},{"n":4,"court":"Dossier","titre":"Les pièces du dossier"}],"quiz":true,"niveaux":["1aa"]},{"url":"lecture-de-plans.html","titre":"Lecture de plans","genre":"cours","parts":[{"n":1,"court":"","titre":"Plan de situation"},{"n":2,"court":"","titre":"Plan de masse"},{"n":3,"court":"","titre":"Plans de niveaux"},{"n":4,"court":"","titre":"Plans de coupes"},{"n":5,"court":"","titre":"Plans de façades"}],"quiz":true},{"url":"maquette-albi.html","titre":"Les maisons groupées d’Albi en 3D","genre":"atelier"},{"url":"maquette-grand-palais.html","titre":"Le Grand Palais en 3D","genre":"atelier"},{"url":"maquette-notre-dame.html","titre":"Notre-Dame de Paris en 3D","genre":"atelier"},{"url":"maquette-numerique.html","titre":"Le BIM et la maquette numérique","genre":"cours","parts":[{"n":1,"court":"Maquette","titre":"La maquette numérique"},{"n":2,"court":"Acteurs","titre":"Les acteurs du BTP"},{"n":3,"court":"IFC","titre":"Le format IFC"},{"n":4,"court":"Interface","titre":"Interface BIMvision"},{"n":5,"court":"Pratique","titre":"Exploration BIMvision"}],"quiz":true},{"url":"metiers.html","titre":"Découvrir les métiers","genre":"cours","parts":[{"n":1,"court":"Architecte","titre":"L’architecte"},{"n":2,"court":"Économiste","titre":"L’économiste de la construction"},{"n":3,"court":"Géomètre","titre":"Le géomètre-expert"},{"n":4,"court":"Ensemble","titre":"Travailler ensemble"}],"quiz":true},{"url":"metre-quantitatif.html","titre":"Métré, avant-métré et quantitatif","genre":"cours","parts":[{"n":1,"court":"Définitions","titre":"Avant-métré, métré, quantitatif"},{"n":2,"court":"Méthode","titre":"La méthodologie du métré"},{"n":3,"court":"Exemple","titre":"Un exemple de calcul"},{"n":4,"court":"BIM","titre":"La maquette BIM au service du métré"},{"n":5,"court":"Synthèse","titre":"Synthèse et perspectives"}],"quiz":true},{"url":"murs.html","titre":"Les murs","genre":"cours","parts":[{"n":1,"court":"Nature","titre":"La nature des murs"},{"n":2,"court":"Fonctions","titre":"Les fonctions des murs"},{"n":3,"court":"Matériaux","titre":"Matériaux et modes de pose"},{"n":4,"court":"Blocs béton","titre":"Les blocs de béton manufacturés"},{"n":5,"court":"Pose des blocs","titre":"La pose des blocs"}],"quiz":true},{"url":"nuage-de-points.html","titre":"Le scanner 3D et le nuage de points","genre":"cours","parts":[{"n":1,"court":"Scanner","titre":"Le scanner laser Trimble X7"},{"n":2,"court":"Terrain","titre":"Sur le terrain avec la tablette"},{"n":3,"court":"RealWorks","titre":"Traiter le nuage avec RealWorks"},{"n":4,"court":"Revit","titre":"Le nuage de points dans Revit"},{"n":5,"court":"Panorama","titre":"Le panorama à 360° où l’on mesure"},{"n":6,"court":"Visuels","titre":"Créer des visuels avec le nuage"}],"quiz":true},{"url":"opinions-sans-savoir.html","titre":"L’ère des opinions sans savoir","genre":"cours","parts":[{"n":1,"court":"Opinions","titre":"Comment se forme un avis ?"},{"n":2,"court":"Bulles","titre":"Les bulles de filtre"},{"n":3,"court":"Dialogue","titre":"Quand on ne dialogue plus"},{"n":4,"court":"IA","titre":"L’IA, amplificateur du problème"},{"n":5,"court":"Démocratie","titre":"Un danger pour la démocratie"},{"n":6,"court":"Solutions","titre":"Retrouver un dialogue constructif"}],"quiz":true},{"url":"pas-a-pas.html","titre":"Découvrir le BIM en dessinant un bâtiment","genre":"cours","parts":[{"n":1,"court":"Écran","titre":"Reconnaître l’écran et regarder la maquette"},{"n":2,"court":"Murs","titre":"Tracer les murs et percer les ouvertures"},{"n":3,"court":"Sols","titre":"Sols, pièces, étage, escalier et toiture"},{"n":4,"court":"Structure","titre":"La structure porteuse et la descente de charges"},{"n":5,"court":"Le I du BIM","titre":"Le « I » du BIM : l’information, le métré et le prix"},{"n":6,"court":"Contrôle","titre":"Contrôler la maquette et lever les réserves"},{"n":7,"court":"Relevé","titre":"Dessiner par-dessus un relevé scanné"},{"n":8,"court":"Plans","titre":"Le dossier de plans : trait de coupe, cotation, feuille"},{"n":9,"court":"Vues ST","titre":"Les vues de structure et le chantier dans le temps"},{"n":10,"court":"Esquisse","titre":"L’esquisse : dessiner à la main avant de construire"},{"n":11,"court":"Solutions","titre":"Choisir une solution : le prix, le temps, la chaleur, le carbone"},{"n":12,"court":"Rendu","titre":"Rendre son travail : le dossier, le vecteur, le suivi"},{"n":13,"court":"Toiture","titre":"La toiture : pans, charpente et couverture"},{"n":14,"court":"Annexes","titre":"Annexes"}]},{"url":"perspective.html","titre":"La perspective architecturale","genre":"cours","parts":[{"n":1,"court":"Axonométrie","titre":"Perspective axonométrique"},{"n":2,"court":"Isométrie","titre":"Perspective isométrique"},{"n":3,"court":"1 point de fuite","titre":"Perspective à 1 point de fuite"},{"n":4,"court":"2 points de fuite","titre":"Perspective à 2 points de fuite"}],"quiz":true},{"url":"pfmp.html","titre":"Les PFMP 2026-2027","genre":"cours","parts":[{"n":1,"court":"Dates","titre":"Les dates de l’année"},{"n":2,"court":"Recherche","titre":"Trouver votre stage"},{"n":3,"court":"CV","titre":"Un CV qui donne envie"},{"n":4,"court":"Mail","titre":"Écrire à l’entreprise"},{"n":5,"court":"Suivi","titre":"Avant, pendant et après le stage"}],"quiz":true},{"url":"phases-missions.html","titre":"Les phases et les missions","genre":"cours","parts":[{"n":1,"court":"Acteurs","titre":"Qui fait quoi ?"},{"n":2,"court":"Conception","titre":"Du besoin au permis"},{"n":3,"court":"Missions","titre":"Les missions de la maîtrise d’œuvre"},{"n":4,"court":"Chantier","titre":"Construire et réceptionner"}],"quiz":true},{"url":"planchers.html","titre":"Les planchers","genre":"cours","parts":[{"n":1,"court":"Fonctions","titre":"Nature et fonctions des planchers"},{"n":2,"court":"Familles","titre":"Les familles de planchers"},{"n":3,"court":"Préparer","titre":"Planifier et préparer le chantier"},{"n":4,"court":"Mettre en œuvre","titre":"La mise en œuvre"},{"n":5,"court":"Contrôler","titre":"Béton, contrôles et finitions"},{"n":6,"court":"Comparer","titre":"Poutrelle-hourdis ou dalle pleine ?"}],"quiz":true},{"url":"planeur.html","titre":"Le vol du planeur","genre":"cours","parts":[{"n":1,"court":"Forces","titre":"Les forces du vol"},{"n":2,"court":"Profil","titre":"L’aile et son profil"},{"n":3,"court":"Incidence","titre":"L’incidence et le décrochage"},{"n":4,"court":"Appareil","titre":"Les pièces de l’appareil"},{"n":5,"court":"Ascendances","titre":"Monter sans moteur"}],"quiz":true},{"url":"plu.html","titre":"L’urbanisme et le PLU","genre":"cours","parts":[{"n":1,"court":"Urbanisme","titre":"L’urbanisme en France"},{"n":2,"court":"Composition","titre":"La composition du PLU"},{"n":3,"court":"Zonage","titre":"Le zonage du PLU"},{"n":4,"court":"Règlement","titre":"Lire et utiliser le PLU"},{"n":5,"court":"Permis","titre":"Du PLU au permis de construire"}],"quiz":true},{"url":"portfolio.html","titre":"Le portfolio","genre":"cours","parts":[{"n":1,"court":"Définition","titre":"Votre mémoire de lycéen"},{"n":2,"court":"Intérêt","titre":"Pourquoi c’est important"},{"n":3,"court":"Usage","titre":"Cinq minutes par jour"},{"n":4,"court":"Ma fiche","titre":"Une fiche pour écrire"}]},{"url":"prise-de-vue-photogrammetrie.html","titre":"Réussir la prise de vue en photogrammétrie","genre":"cours","parts":[{"n":1,"court":"Principe","titre":"Le principe de la triangulation"},{"n":2,"court":"Objet","titre":"Tourner autour d’un objet"},{"n":3,"court":"Pivoter","titre":"Au centre de la pièce, je tourne"},{"n":4,"court":"Se déplacer","titre":"En se déplaçant dans la pièce"},{"n":5,"court":"Surfaces","titre":"Surfaces, lumière et réglages"},{"n":6,"court":"Échelle","titre":"L’échelle et le contrôle"}],"quiz":true},{"url":"progression.html","titre":"La progression","genre":"cours","parts":[{"n":1,"court":"Démarche","titre":"Une démarche en quatre temps"},{"n":2,"court":"Séquence 1","titre":"Découvrir les acteurs, la programmation et les outils du projet"},{"n":3,"court":"Séquence 2","titre":"Représenter graphiquement un projet architectural"},{"n":4,"court":"Séquence 3","titre":"Modéliser numériquement un bâtiment en BIM — Maison LISA"},{"n":5,"court":"Fils rouges","titre":"Un fil rouge par spécialité"}]},{"url":"releve-drone.html","titre":"Le relevé par drone","genre":"cours","parts":[{"n":1,"court":"Le drone","titre":"Le drone, un outil de relevé encadré"},{"n":2,"court":"Capteurs","titre":"Les capteurs : ce que le drone voit"},{"n":3,"court":"Vols auto","titre":"Les vols automatisés"},{"n":4,"court":"Photogrammétrie","titre":"La photogrammétrie : mesurer avec des photos"},{"n":5,"court":"Prises de vues","titre":"La technique des prises de vues"},{"n":6,"court":"Logiciels","titre":"Assembler et nettoyer"},{"n":7,"court":"Utilisations","titre":"Le drone, pour quoi faire ?"},{"n":8,"court":"Revit","titre":"Le nuage de points dans Revit"},{"n":9,"court":"Architecte","titre":"L’architecte et son nuage de points"}],"quiz":true},{"url":"releve-etat-des-lieux.html","titre":"Le relevé et l’état des lieux","genre":"cours","parts":[{"n":1,"court":"Définition","titre":"Qu’est-ce qu’un relevé d’état des lieux ?"},{"n":2,"court":"Méthodes","titre":"Relevé direct, relevé indirect"},{"n":3,"court":"Organisation","titre":"S’organiser sur le terrain"},{"n":4,"court":"Restitution","titre":"La restitution graphique"},{"n":5,"court":"Livrables","titre":"Détails, spécifications et livrables"}],"quiz":true},{"url":"releve-methode.html","titre":"Méthodologie du relevé","genre":"cours","parts":[{"n":1,"court":"Préparer","titre":"Préparer le matériel et le support"},{"n":2,"court":"Croquis","titre":"Les premiers croquis à main levée"},{"n":3,"court":"Mesures","titre":"Prendre les mesures principales"},{"n":4,"court":"Notation","titre":"Noter, détailler, relever les niveaux"},{"n":5,"court":"Contrôle","titre":"Contrôler et relire avant de partir"}],"quiz":true},{"url":"revit-bose.html","titre":"TD Revit · la maison Bose","genre":"page","parts":[{"ancre":"td1","court":"TD1","titre":"TD1 · Maison Bose"},{"ancre":"td2","court":"TD2","titre":"TD2 · Maison Bose"},{"ancre":"td3","court":"TD3","titre":"TD3 · Maison Bose"},{"ancre":"td4","court":"TD4","titre":"TD4 · Maison Bose"},{"ancre":"td5","court":"TD5","titre":"TD5 · Maison Bose"}]},{"url":"sequence-structure.html","titre":"Découvrir la mécanique des structures","genre":"page"},{"url":"styles-architecturaux.html","titre":"Les styles architecturaux — cours interactif","genre":"page"},{"url":"syntheses.html","titre":"Synthèses","genre":"synthese"},{"url":"toitures.html","titre":"Les toitures","genre":"cours","parts":[{"n":1,"court":"Rôle","titre":"Rôle et types de toitures"},{"n":2,"court":"Charpente","titre":"La charpente"},{"n":3,"court":"Couverture","titre":"Les matériaux de couverture"},{"n":4,"court":"Faible pente","titre":"Faible pente et toitures-terrasses"},{"n":5,"court":"Étanchéité","titre":"L’étanchéité"}],"quiz":true},{"url":"u22-jean-zay.html","titre":"Découvrir le sujet U22","genre":"cours","parts":[{"n":1,"court":"Sujet","titre":"Lire le sujet"},{"n":2,"court":"Niveaux","titre":"Niveaux, épaisseurs et pente"},{"n":3,"court":"Parois","titre":"De quoi sont faits murs et toiture"},{"n":4,"court":"Plans","titre":"Construire le RDC et le R+1"},{"n":5,"court":"IFC","titre":"Placer les IFC et le quartier"},{"n":6,"court":"Rendu","titre":"Vues, feuille et contrôle"}],"quiz":true,"niveaux":["1aa"]}]};   // relevé dans les pages du carnet par extraire-catalogue.mjs (2026-11-17)
+
+/* ---------- petits outils ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const pad = n => String(n).padStart(2, '0');
+const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const NB = ' ';
+const dateDe = s => { const [a, m, j] = s.split('-').map(Number); return new Date(a, m - 1, j, 12); };
+const cle = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const plus = (s, n) => { const d = dateDe(s); d.setDate(d.getDate() + n); return cle(d); };
+const nJour = s => (dateDe(s).getDay() + 6) % 7 + 1;          // lundi = 1 … dimanche = 7
+const lundiDe = s => plus(s, 1 - nJour(s));
+const aujourdhui = () => cle(new Date());
+const dans = (s, du, au) => s >= du && s <= au;
+const jourMois = d => d.getDate() + (d.getDate() === 1 ? 'er' : '');
+const heure = h => { const [a, b] = h.split(':'); return (+a) + NB + 'h' + (b === '00' ? '' : NB + b); };   // « 8 h 15 », « 12 h »
+const plage = (d, f) => heure(d) + ' – ' + heure(f);
+const jourLong = s => { const d = dateDe(s); return JOURS[d.getDay()] + ' ' + jourMois(d) + ' ' + MOIS[d.getMonth()]; };
+const jourComplet = s => jourLong(s) + ' ' + dateDe(s).getFullYear();
+const duAu = (du, au) => {
+  const a = dateDe(du), b = dateDe(au);
+  return a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear() ? 'du ' + jourMois(a) + ' au ' + jourMois(b) + ' ' + MOIS[b.getMonth()] : 'du ' + jourMois(a) + ' ' + MOIS[a.getMonth()] + ' au ' + jourMois(b) + ' ' + MOIS[b.getMonth()];
+};
+const sansAccent = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const nettoyer = (s, max) => String(s || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+const URL_OK = /^(?:https:\/\/[A-Za-z0-9][^\s"'<>\\]{3,300}|[A-Za-z0-9][A-Za-z0-9_.\/-]{0,80}\.(?:html|pdf)(?:#[A-Za-z0-9_-]{1,40})?)$/;
+const copie = o => JSON.parse(JSON.stringify(o));
+const stocker = {
+  lire(k, defaut) { try { const v = localStorage.getItem(k); return v === null ? defaut : JSON.parse(v); } catch (e) { return defaut; } },
+  ecrire(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* stockage refusé : on continue sans */ } }
+};
+function h(tag, attrs, ...enfants) {   // construit un élément ; les textes passent TOUJOURS par des nœuds texte
+  const e = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (v === true) e.setAttribute(k, '');
+    else e.setAttribute(k, String(v));
+  }
+  for (const c of enfants.flat(2)) if (c !== null && c !== undefined && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return e;
+}
+const ajouter = (parent, ...enfants) => { for (const e of enfants.flat(2)) if (e) parent.append(e); return parent; };   // Element.append(null) écrirait « null » : on saute le vide
+function lien(u, contenu, classe) {   // un lien seulement s'il est permis (page du carnet ou https) ; sinon, simple texte
+  if (!u || !URL_OK.test(u)) return h('span', { class: classe }, contenu);
+  const ext = u.startsWith('https://');
+  return h('a', Object.assign({ href: u, class: classe }, ext ? { target: '_blank', rel: 'noopener noreferrer' } : {}), contenu);
+}
+
+/* ---------- l'état de la page ---------- */
+const ETIQUETTES = { activite: 'Activité', wc: 'World café', sup: 'Support de cours', td: 'TD', cours: 'Cours', partie: 'Partie de cours', quiz: 'Quiz', synthese: 'Synthèse', atelier: 'Atelier', page: 'Page' };
+const RUBRIQUES = [
+  { id: 'enCours', titre: 'Travail en cours', aide: 'Ce que l’on fait pendant la séance.' },
+  { id: 'revision', titre: 'À faire · Révision', aide: 'Ce qu’il faut relire ou revoir avant la prochaine séance.' },
+  { id: 'exercice', titre: 'À faire · Exercice', aide: 'Ce qu’il faut faire, entraîner ou terminer.' }
+];
+const S = {
+  niveau: '2emnb', groupe: '', vue: 'avenir', limite: 10,
+  donnees: { '2emnb': null, '1aa': null },   // { seances: {date: v}, semaines: {lundi: groupe}, creneaux: liste|null, recu: ms, hors: bool }
+  statut: 'chargement', message: '',
+  ens: false, mdp: '', geste: 0,
+  fait: stocker.lire('carnet-cdt-fait', {}),
+  pl: null
+};
+const urlService = () => (window.CARNET_STAT || {}).url || '';
+const cfg = () => NIVEAUX[S.niveau];
+
+/* ---------- le service Google ---------- */
+async function appeler(action, donnees) {
+  const url = urlService();
+  if (!url) throw Object.assign(new Error('pas de service'), { code: 'sans-service' });
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 25000);
+  try {
+    const rep = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action }, donnees)), signal: ctl.signal });
+    return await rep.json();
+  } finally { clearTimeout(t); }
+}
+const HEURE_OK = /^(?:[01]\d|2[0-3]):[0-5]\d$/, DATE_OK = /^\d{4}-\d{2}-\d{2}$/;
+function assainir(v) {   // un enregistrement lu dans la feuille : on ne garde que ce qui a la bonne forme (la feuille a pu être retouchée à la main)
+  const o = {};
+  if (typeof v.groupe === 'string' && /^G[1-3]$/.test(v.groupe)) o.groupe = v.groupe;
+  if (v.annulee === true) { o.annulee = true; if (typeof v.motif === 'string' && nettoyer(v.motif, 160)) o.motif = nettoyer(v.motif, 160); }
+  for (const r of ['enCours', 'revision', 'exercice']) {
+    if (!Array.isArray(v[r])) continue;
+    const l = v[r].filter(e => e && typeof e === 'object' && typeof e.t === 'string' && nettoyer(e.t, 160)).slice(0, 12).map(e => Object.assign({ t: nettoyer(e.t, 160) },
+      typeof e.u === 'string' && URL_OK.test(e.u) ? { u: e.u } : {}, typeof e.k === 'string' && /^[a-z][a-z0-9-]{0,11}$/.test(e.k) ? { k: e.k } : {}, typeof e.i === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.:#-]{0,59}$/.test(e.i) ? { i: e.i } : {}));
+    if (l.length) o[r] = l;
+  }
+  if (typeof v.remarque === 'string' && v.remarque.trim()) o.remarque = v.remarque.trim().slice(0, 600);
+  if (v.extra === true && HEURE_OK.test(v.debut) && HEURE_OK.test(v.fin) && v.debut < v.fin) { o.extra = true; o.debut = v.debut; o.fin = v.fin; }
+  return o;
+}
+function indexer(notes) {
+  const o = { seances: {}, semaines: {}, creneaux: null };
+  for (const n of Array.isArray(notes) ? notes : []) {
+    if (!n || !n.v || typeof n.v !== 'object' || Array.isArray(n.v)) continue;
+    const date = typeof n.date === 'string' && DATE_OK.test(n.date) && dans(n.date, ANNEE.debut, ANNEE.fin) ? n.date : '';
+    if (n.type === 'seance' && date) { const v = assainir(n.v); if (Object.keys(v).length) o.seances[date] = v; }
+    else if (n.type === 'semaine' && date && nJour(date) === 1 && typeof n.v.groupe === 'string' && /^G[1-3]$/.test(n.v.groupe)) o.semaines[date] = n.v.groupe;
+    else if (n.type === 'creneaux' && Array.isArray(n.v.liste)) {
+      const l = n.v.liste.filter(c => c && Number.isInteger(c.j) && c.j >= 1 && c.j <= 6 && HEURE_OK.test(c.debut) && HEURE_OK.test(c.fin) && c.debut < c.fin).map(c => ({ j: c.j, debut: c.debut, fin: c.fin }));
+      if (l.length === n.v.liste.length) o.creneaux = l;
+    }
+  }
+  return o;
+}
+async function charger(niveau, silencieux) {
+  const cleCache = 'carnet-cdt-cache-' + niveau;
+  if (!silencieux) { S.statut = 'chargement'; S.message = ''; }
+  try {
+    const rep = await appeler('cdt_lire', Object.assign({ niveau }, S.ens ? { mdp: S.mdp } : {}));
+    if (!rep || rep.ok !== true) {
+      if (rep && rep.erreur === 'action inconnue') { S.statut = 'ancien'; }
+      else if (rep && rep.erreur === 'mot de passe' && S.ens) { deconnecter('Le code n’est plus accepté : reconnectez-vous.'); return charger(niveau, silencieux); }
+      else { S.statut = 'erreur'; S.message = (rep && rep.message) || 'Le service du cahier a répondu une erreur.'; }
+      if (!S.donnees[niveau]) S.donnees[niveau] = null;
+    } else {
+      S.donnees[niveau] = Object.assign(indexer(rep.notes), { recu: Date.now(), hors: false });
+      S.statut = 'ok'; S.message = '';
+      stocker.ecrire(cleCache, { notes: rep.notes, recu: Date.now() });
+    }
+  } catch (e) {
+    if (e && e.code === 'sans-service') { S.statut = 'sans-service'; }
+    else {
+      const c = stocker.lire(cleCache, null);
+      if (c && c.notes) { S.donnees[niveau] = Object.assign(indexer(c.notes), { recu: c.recu, hors: true }); S.statut = 'hors-ligne'; }
+      else { S.statut = 'erreur'; S.message = 'Impossible de joindre le service du cahier. Vérifiez la connexion, puis réessayez.'; }
+    }
+  }
+}
+
+/* ---------- le calendrier : jours de cours, vacances, PFMP, fériés ---------- */
+function etatDuJour(niv, s) {   // → { type: 'vacances' | 'pfmp' | 'ferie' | 'we' | 'cours', nom }
+  const c = NIVEAUX[niv];
+  for (const v of VACANCES) if (dans(s, v.du, v.au)) return { type: 'vacances', nom: v.nom };
+  for (const p of c.pfmp) if (dans(s, p.du, p.au)) return { type: 'pfmp', nom: p.nom };
+  if (FERIES[s]) return { type: 'ferie', nom: FERIES[s] };
+  if (nJour(s) >= 6) return { type: 'we', nom: '' };
+  return { type: 'cours', nom: '' };
+}
+const prepaDe = (niv, s) => (NIVEAUX[niv].prepa || []).find(p => dans(s, p.du, p.au)) || null;
+function semaineScolaire(niv, lundi) {   // la classe a cours cette semaine-là (ni vacances ni PFMP sur toute la semaine)
+  for (let i = 0; i < 5; i++) { const t = etatDuJour(niv, plus(lundi, i)).type; if (t === 'cours' || t === 'ferie') return true; }
+  return false;
+}
+function groupesDesSemaines(niv, data, lundis) {   // le tourniquet : un groupe par semaine, dans l'ordre du cycle ; une semaine réglée par l'enseignant sert de repère
+  const g = NIVEAUX[niv].groupes; if (!g) return {};
+  const cyc = g.cycle, n = cyc.length, sco = lundis.filter(l => semaineScolaire(niv, l)), refs = [];
+  sco.forEach((l, i) => { const x = data.semaines[l]; if (x && cyc.includes(x)) refs.push([i, cyc.indexOf(x)]); });
+  if (!refs.length) { let i = sco.findIndex(l => l >= g.ancre.lundi); if (i < 0) i = 0; refs.push([i, cyc.indexOf(g.ancre.groupe)]); }
+  const res = {};
+  sco.forEach((l, i) => {
+    let ref = refs[0]; for (const r of refs) if (r[0] <= i) ref = r;
+    res[l] = cyc[(((ref[1] + i - ref[0]) % n) + n) % n];
+  });
+  return res;
+}
+function construirePlanning(niv) {
+  const c = NIVEAUX[niv], data = S.donnees[niv] || { seances: {}, semaines: {}, creneaux: null };
+  const crens = data.creneaux || c.creneaux;
+  const jours = []; for (let s = ANNEE.debut; s <= ANNEE.fin; s = plus(s, 1)) jours.push(s);
+  const lundis = [...new Set(jours.map(lundiDe))];
+  const groupes = groupesDesSemaines(niv, data, lundis);
+  const seances = [], parDate = {};
+  const ajouter = (s, plages, extra) => {
+    const rec = data.seances[s] || null, lu = lundiDe(s);
+    const o = { date: s, plages, rec, extra: !!extra, groupe: (rec && rec.groupe) || groupes[lu] || '', annulee: !!(rec && rec.annulee), prepa: prepaDe(niv, s) };
+    seances.push(o); parDate[s] = o;
+  };
+  const dates = new Set(Object.keys(data.seances));
+  for (const s of jours) {
+    if (etatDuJour(niv, s).type === 'cours') {
+      const pl = crens.filter(x => x.j === nJour(s)).map(x => [x.debut, x.fin]);
+      if (pl.length) { ajouter(s, pl, false); dates.delete(s); }
+    }
+  }
+  for (const s of [...dates].sort()) {   // une séance écrite par l'enseignant hors des créneaux (exceptionnelle, vacances, jour férié…)
+    const rec = data.seances[s];
+    ajouter(s, rec.debut && rec.fin ? [[rec.debut, rec.fin]] : [], true);
+  }
+  seances.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  const jourDeCours = new Set(crens.map(x => x.j));
+  const periodes = [];
+  for (const v of VACANCES) periodes.push({ type: 'vacances', nom: v.nom, du: v.du, au: v.au });
+  for (const p of c.pfmp) periodes.push({ type: 'pfmp', nom: p.nom, du: p.du, au: p.au });
+  for (const [s, nom] of Object.entries(FERIES)) {   // un jour férié n'est signalé que s'il tombe un jour de cours, hors vacances et PFMP
+    if (dans(s, ANNEE.debut, ANNEE.fin) && jourDeCours.has(nJour(s)) && etatDuJour(niv, s).type === 'ferie') periodes.push({ type: 'ferie', nom, du: s, au: s });
+  }
+  for (const p of c.prepa || []) periodes.push({ type: 'prepa', nom: p.nom, du: p.du, au: p.au });
+  periodes.sort((a, b) => (a.du < b.du ? -1 : a.du > b.du ? 1 : 0));
+  return { niv, seances, parDate, periodes, groupes, lundis, crens, data };
+}
+const groupeNom = g => (g && cfg().groupes ? cfg().groupes.noms[g] || g : '');
+const classeGroupe = g => (g ? 'g' + g.slice(1) : 'g0');
+const memeGroupe = s => !S.groupe || !s.groupe || s.groupe === S.groupe;
+const suivante = s => S.pl.seances.find(x => x.date > s.date && (!s.groupe || !x.groupe || x.groupe === s.groupe) && !x.annulee) || null;   // la séance suivante du MÊME groupe que s (le travail à faire est « pour » elle), même quand la liste montre tous les groupes
+
+/* ---------- les propositions tirées du site ---------- */
+const slug = s => sansAccent(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 24) || 'x';
+const court = (s, n = 160) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+function catalogue(niv) {   // tout ce que le site propose, à plat : { id, t, u, k, etq, ctx, famille }
+  const liste = [];
+  for (const a of CATALOGUE.progression[niv] || []) {
+    liste.push({ id: 'a:' + a.id, t: court(a.num + ' · ' + a.titre), k: 'activite', etq: 'Activité', ctx: a.code + ' · ' + a.projet, famille: 'progression', ordre: liste.length, pb: a.pb });
+    for (const sp of a.supports) liste.push({ id: 's:' + a.id + ':' + slug(sp.nom), t: court(sp.nom), u: sp.url, k: ETIQUETTES[sp.type] ? sp.type : 'sup', etq: ETIQUETTES[sp.type] || 'Support', ctx: a.code + ' · ' + a.num, famille: 'progression' });
+  }
+  for (const p of CATALOGUE.pages) {
+    if (p.niveaux && !p.niveaux.includes(niv)) continue;
+    liste.push({ id: 'p:' + p.url, t: court(p.titre), u: p.url, k: p.genre, etq: ETIQUETTES[p.genre] || 'Page', ctx: p.url, famille: 'pages' });
+    for (const x of p.parts || []) liste.push({ id: 'r:' + p.url + ':' + (x.ancre || x.n), t: court(p.titre + ' · ' + (x.court ? x.court + ' · ' : '') + x.titre), u: p.url + '#' + (x.ancre || 'atelier-' + x.n), k: 'partie', etq: 'Partie de cours', ctx: p.titre, famille: 'parties' });
+    if (p.quiz) liste.push({ id: 'q:' + p.url, t: court('Quiz « Je vérifie » · ' + p.titre), u: p.url + '#quiz', k: 'quiz', etq: 'Quiz', ctx: p.titre, famille: 'quiz' });
+  }
+  return liste;
+}
+const ORDRE_FAMILLES = { enCours: ['progression', 'pages', 'parties', 'quiz'], revision: ['pages', 'parties', 'progression', 'quiz'], exercice: ['quiz', 'progression', 'parties', 'pages'] };
+function chercher(niv, rub, requete) {
+  const mots = sansAccent(requete).split(/\s+/).filter(Boolean);
+  const ordre = ORDRE_FAMILLES[rub];
+  let l = catalogue(niv).filter(o => { const t = sansAccent(o.t + ' ' + o.ctx + ' ' + o.etq); return mots.every(m => t.includes(m)); });
+  if (rub === 'revision') l = l.filter(o => !(o.famille === 'progression' && o.k === 'activite' && !mots.length));
+  l.sort((a, b) => ordre.indexOf(a.famille) - ordre.indexOf(b.famille) || (a.ordre || 0) - (b.ordre || 0));
+  return l;
+}
+function suiteProposee(niv, date) {   // l'activité qui suit, dans la progression, la dernière traitée par ce groupe
+  const prog = (CATALOGUE.progression[niv] || []); if (!prog.length) return null;
+  const avant = S.pl.seances.filter(s => s.date < date && s.rec && (s.rec.enCours || []).some(e => (e.i || '').startsWith('a:')));
+  const memes = avant.filter(s => !s.groupe || s.groupe === (S.pl.parDate[date] || {}).groupe);
+  const ref = (memes.length ? memes : avant).pop();
+  if (!ref) return catalogue(niv).find(o => o.famille === 'progression' && o.k === 'activite') || null;
+  const dernier = ref.rec.enCours.filter(e => (e.i || '').startsWith('a:')).pop().i;
+  const k = prog.findIndex(a => 'a:' + a.id === dernier);
+  if (k < 0 || k + 1 >= prog.length) return null;
+  return catalogue(niv).find(o => o.id === 'a:' + prog[k + 1].id) || null;
+}
+function precedente(date) {   // la séance précédente de ce groupe qui a du travail en cours
+  const g = (S.pl.parDate[date] || {}).groupe;
+  return S.pl.seances.filter(s => s.date < date && s.rec && (s.rec.enCours || []).length && (!g || !s.groupe || s.groupe === g)).pop() || null;
+}
+
+/* ---------- l'affichage : la tête de page ---------- */
+function titreNiveau() {
+  const c = cfg();
+  document.title = 'Cahier de texte · ' + c.nom;
+  $('#logo-nom').textContent = c.nom; $('#logo-nom').className = c.nom === '1AA' ? 'code-lisible' : '';
+  $('#logo-sous').textContent = 'le cahier de texte';
+  const lg = $('#logo'); lg.setAttribute('href', c.accueil); lg.setAttribute('aria-label', c.nom + ', retour à l’accueil du carnet');
+  const rt = $('#retour'); rt.setAttribute('href', c.accueil);
+  $('#chapo-classe').textContent = c.classe;
+}
+function rendreNiveaux() {
+  $$('#niveaux button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.niveau === S.niveau)));
+}
+function rendreGroupes() {
+  const zone = $('#groupes-zone'), g = cfg().groupes;
+  zone.hidden = !g;
+  if (!g) return;
+  $$('#groupes button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.groupe === S.groupe)));
+}
+function plageSemaine(lundi) { return duAu(lundi, plus(lundi, 4)); }
+function rendreBandeau() {
+  const z = $('#bandeau'); z.replaceChildren(); z.hidden = true;
+  const dire = (txt, classe, ...plus) => { z.hidden = false; z.className = 'bandeau ' + classe; z.append(h('p', null, txt), ...plus); };
+  const nouveau = h('button', { class: 'btn btn--petit', type: 'button', onclick: async () => { await charger(S.niveau); rendreTout(); } }, 'Réessayer');
+  if (S.statut === 'chargement') dire('Chargement du cahier…', 'info');
+  else if (S.statut === 'ancien') dire('Le cahier de texte n’est pas encore ouvert : pour l’instant, seul le calendrier s’affiche.', 'info');   // l'élève n'a pas à savoir qu'il s'agit du script Google (l'enseignant, lui, est prévenu à la connexion)
+  else if (S.statut === 'sans-service') dire('Page ouverte hors du carnet en ligne : le calendrier s’affiche, mais pas ce que l’enseignant a écrit.', 'info');
+  else if (S.statut === 'erreur') dire(S.message || 'Le cahier n’a pas pu être lu.', 'alerte', nouveau);
+  else if (S.statut === 'hors-ligne') dire('Pas de connexion : voici le cahier tel qu’il était le ' + jourLong(cle(new Date(S.donnees[S.niveau].recu))) + '.', 'info', nouveau);
+}
+function rendreResume() {
+  const z = $('#resume'); z.replaceChildren();
+  const c = cfg(), pl = S.pl, auj = aujourdhui(), lundi = lundiDe(auj);
+  const g = c.groupes ? pl.groupes[lundi] : '';
+  if (c.groupes) {
+    if (g) z.append(h('p', { class: 'resume__ligne' }, 'Cette semaine (', plageSemaine(lundi), '), M. Amat est avec le ', h('b', { class: 'etq-groupe ' + classeGroupe(g) }, groupeNom(g).toLowerCase()), '.'));
+    else z.append(h('p', { class: 'resume__ligne' }, 'Pas de cours cette semaine (', plageSemaine(lundi), ').'));
+  }
+  const prochaine = pl.seances.find(s => s.date >= auj && memeGroupe(s) && !s.annulee);
+  if (c.groupes && !S.groupe) z.append(h('p', { class: 'resume__ligne' }, 'Choisissez votre groupe ci-dessus : le cahier n’affichera que vos séances.'));
+  else if (prochaine) {
+    const n = Math.round((dateDe(prochaine.date) - dateDe(auj)) / 864e5);
+    z.append(h('p', { class: 'resume__ligne' }, S.groupe ? 'Votre prochaine séance : ' : 'Prochaine séance : ', h('b', null, jourLong(prochaine.date)), prochaine.plages.length ? ', ' + prochaine.plages.map(p => plage(p[0], p[1])).join(' et ') : '', n === 0 ? ' (aujourd’hui)' : n === 1 ? ' (demain)' : ' (dans ' + n + ' jours)', '.'));
+  } else if (!pl.seances.length) z.append(h('p', { class: 'resume__ligne' }, 'Les jours et les heures de cours de cette classe ne sont pas encore renseignés', S.ens ? ' : utilisez « Créneaux de la classe ».' : '.'));
+  else z.append(h('p', { class: 'resume__ligne' }, 'Plus de séance prévue cette année.'));
+}
+
+/* ---------- le travail à faire (en haut de page) ---------- */
+const cleFait = (s, r, i) => S.niveau + '|' + s.date + '|' + r + '|' + i;
+function basculerFait(k, v) { if (v) S.fait[k] = 1; else delete S.fait[k]; stocker.ecrire('carnet-cdt-fait', S.fait); }
+function elementTravail(e, k, cochable, zone) {   // zone : 'a' (bloc « Travail à faire » du haut) ou 'c' (carte d'une séance) : un même devoir apparaît aux deux endroits, les id doivent rester uniques
+  const contenu = [lien(e.u, e.t, 'item__texte'), e.k && ETIQUETTES[e.k] && e.k !== 'libre' && e.u ? h('small', { class: 'item__etq' }, ETIQUETTES[e.k]) : null];
+  if (!cochable) return h('li', { class: 'item' }, contenu);
+  const id = 'fait-' + zone + '-' + k.replace(/[^A-Za-z0-9]/g, '_');
+  const c = h('input', { type: 'checkbox', id, 'data-cle': k, checked: !!S.fait[k], onchange: ev => { basculerFait(k, ev.target.checked); rendreAfaire(); rendreListe(); } });
+  return h('li', { class: 'item item--fait' + (S.fait[k] ? ' est-fait' : '') }, c, h('label', { for: id, class: 'item__contenu' }, contenu));
+}
+function listeTravail(s, rub, lettre, cochable, zone) {
+  const l = (s.rec && s.rec[rub]) || [];
+  return h('ul', { class: 'liste-travail' }, l.map((e, i) => elementTravail(e, cleFait(s, lettre, i), cochable, zone)));
+}
+function rendreAfaire() {
+  const z = $('#afaire'); z.replaceChildren();
+  const c = cfg(), auj = aujourdhui();
+  if (c.groupes && !S.groupe) { z.hidden = true; return; }
+  const ref = S.pl.seances.filter(s => s.date <= auj && memeGroupe(s) && !s.annulee && s.rec && ((s.rec.revision || []).length || (s.rec.exercice || []).length)).pop();
+  z.hidden = false;
+  if (!ref) {
+    z.append(h('h2', null, 'Travail à faire'), h('p', { class: 'vide' }, 'Rien à faire pour l’instant : aucune révision ni aucun exercice n’est indiqué.'));
+    return;
+  }
+  const suiv = suivante(ref);
+  z.append(h('h2', null, 'Travail à faire'),
+    h('p', { class: 'afaire__sous' }, 'Donné le ', jourComplet(ref.date), suiv ? ', pour la prochaine séance, le ' + jourLong(suiv.date) : '', '.'),
+    h('div', { class: 'afaire__deux' },
+      ((ref.rec.revision || []).length ? h('section', { class: 'afaire__bloc afaire__bloc--rev', 'aria-label': 'Révision' }, h('h3', null, 'Révision'), listeTravail(ref, 'revision', 'r', true, 'a')) : null),
+      ((ref.rec.exercice || []).length ? h('section', { class: 'afaire__bloc afaire__bloc--exo', 'aria-label': 'Exercice' }, h('h3', null, 'Exercice'), listeTravail(ref, 'exercice', 'e', true, 'a')) : null)));
+}
+
+/* ---------- la liste des séances ---------- */
+function blocsAffiches() {
+  const pl = S.pl, auj = aujourdhui();
+  const toutes = pl.seances.filter(memeGroupe);
+  let ss;
+  const dernieres = new Set();
+  if (S.vue === 'avenir') {
+    const der = toutes.filter(s => s.date < auj).pop();
+    ss = toutes.filter(s => s.date >= auj);
+    if (der) { dernieres.add(der.date); ss = [der, ...ss]; }
+  } else if (S.vue === 'passees') ss = toutes.filter(s => s.date < auj);
+  else ss = toutes;
+  const total = ss.length;
+  if (S.vue === 'avenir') ss = ss.slice(0, S.limite + (dernieres.size ? 1 : 0));
+  const finDate = ss.length ? ss[ss.length - 1].date : '';
+  let ps = pl.periodes.filter(p => S.vue === 'toutes' || (S.vue === 'avenir' ? p.au >= auj : p.au < auj));
+  if (S.vue === 'avenir' && total > ss.length) ps = ps.filter(p => p.du <= finDate);
+  if (S.vue === 'avenir' && !ss.length) ps = ps.filter(p => p.type !== 'prepa');
+  const els = [...ss.map(s => ({ k: 'seance', date: s.date, s })), ...ps.map(p => ({ k: 'periode', date: p.du, p }))];
+  els.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.k === 'periode' ? -1 : 1));
+  const blocs = []; let cur = null;
+  for (const e of els) {
+    if (e.k === 'periode') { blocs.push(e); cur = null; continue; }
+    const lu = lundiDe(e.date);
+    if (!cur || cur.lundi !== lu) { cur = { k: 'semaine', lundi: lu, seances: [] }; blocs.push(cur); }
+    cur.seances.push(e.s);
+  }
+  if (S.vue === 'passees') { blocs.reverse(); blocs.forEach(b => { if (b.seances) b.seances.reverse(); }); }
+  return { blocs, total, affichees: ss.length, dernieres };
+}
+function carteSeance(s, dernieres) {
+  const auj = aujourdhui(), rec = s.rec || {};
+  const passee = s.date < auj, aujourd = s.date === auj;
+  const vide = !(rec.enCours || []).length && !(rec.revision || []).length && !(rec.exercice || []).length && !rec.remarque;
+  const d = dateDe(s.date);
+  const classes = ['seance', classeGroupe(s.groupe), passee ? 'est-passee' : '', aujourd ? 'est-aujourdhui' : '', s.annulee ? 'est-annulee' : '', s.extra ? 'est-extra' : ''].filter(Boolean).join(' ');
+  const horaires = s.plages.length ? s.plages.map(p => plage(p[0], p[1])).join(' · ') : 'horaire non précisé';
+  const entete = h('header', { class: 'seance__date' },
+    h('span', { class: 'seance__jour' }, JOURS[d.getDay()]),
+    h('span', { class: 'seance__num' }, String(d.getDate())),
+    h('span', { class: 'seance__mois' }, MOIS[d.getMonth()]));
+  const meta = h('p', { class: 'seance__meta' }, h('span', null, horaires), cfg().salle && !s.extra ? h('span', null, 'salle ' + cfg().salle) : null,
+    s.groupe && cfg().groupes ? h('span', { class: 'etq-groupe ' + classeGroupe(s.groupe) }, groupeNom(s.groupe)) : null,
+    aujourd ? h('span', { class: 'etq etq--auj' }, 'aujourd’hui') : null,
+    dernieres.has(s.date) && passee ? h('span', { class: 'etq' }, 'dernière séance') : null,
+    s.extra ? h('span', { class: 'etq' }, 'séance exceptionnelle') : null,
+    s.prepa ? h('span', { class: 'etq etq--prepa' }, s.prepa.nom) : null);
+  const corps = h('div', { class: 'seance__corps' }, meta);
+  if (s.annulee) corps.append(h('p', { class: 'seance__annulee' }, h('b', null, 'Séance annulée'), rec.motif ? ' · ' + rec.motif : ''));
+  else {
+    const rub = (id, titre, lettre, cochable) => ((rec[id] || []).length ? h('section', { class: 'travail travail--' + id }, h('h4', null, titre), listeTravail(s, id, lettre, cochable, 'c')) : null);
+    ajouter(corps, rub('enCours', 'Travail en cours', 'c', false));
+    const suiv = suivante(s);
+    if ((rec.revision || []).length || (rec.exercice || []).length) corps.append(h('p', { class: 'seance__pour' }, 'À faire', suiv ? ' pour le ' + jourLong(suiv.date) : ' pour la prochaine séance', ' :'));
+    ajouter(corps, rub('revision', 'Révision', 'r', true), rub('exercice', 'Exercice', 'e', true));
+    if (rec.remarque) corps.append(h('p', { class: 'seance__remarque' }, rec.remarque));
+    if (vide) corps.append(h('p', { class: 'vide' }, passee ? 'Rien n’a été indiqué pour cette séance.' : 'Pas encore renseignée.'));
+  }
+  const art = h('article', { class: classes, 'data-date': s.date, 'data-groupe': s.groupe || '', id: 'seance-' + s.date }, entete, corps);
+  if (S.ens) corps.append(h('p', { class: 'seance__outils' }, h('button', { class: 'btn btn--petit', type: 'button', 'data-modifier': s.date, onclick: () => ouvrirEditeur(s.date) }, vide && !s.annulee ? 'Renseigner' : 'Modifier')));
+  return art;
+}
+function periodeBandeau(p) {
+  const txt = p.type === 'ferie' ? jourLong(p.du) + ' · ' + p.nom + ' : pas de cours' : p.nom + ' · ' + duAu(p.du, p.au);
+  const classe = 'periode periode--' + p.type;
+  const sous = p.type === 'pfmp' ? ' · la classe est en entreprise' : p.type === 'vacances' ? '' : p.type === 'prepa' ? ' · cours normaux' : '';
+  return h('div', { class: classe, role: 'note' }, h('span', null, txt + sous));
+}
+function enteteSemaine(b) {
+  const g = cfg().groupes ? S.pl.groupes[b.lundi] : '';
+  const reg = S.donnees[S.niveau] && S.donnees[S.niveau].semaines[b.lundi];
+  const t = h('h3', { class: 'semaine', 'data-lundi': b.lundi }, h('span', null, 'Semaine ' + plageSemaine(b.lundi)), g ? h('span', { class: 'etq-groupe ' + classeGroupe(g) }, groupeNom(g)) : null);
+  if (S.ens && cfg().groupes) {
+    const sel = h('select', { id: 'g-' + b.lundi, 'data-semaine': b.lundi, 'aria-label': 'Groupe de la semaine du ' + jourLong(b.lundi), onchange: ev => changerGroupe(b.lundi, ev.target.value) },
+      cfg().groupes.cycle.slice().sort().map(x => h('option', { value: x, selected: x === g }, groupeNom(x))));
+    t.append(h('span', { class: 'semaine__regle' }, h('label', { for: 'g-' + b.lundi }, 'Groupe de la semaine'), sel,
+      reg ? h('button', { class: 'lien-bouton', type: 'button', onclick: () => changerGroupe(b.lundi, '') }, 'rétablir') : null));
+  }
+  return t;
+}
+function rendreListe() {
+  const z = $('#liste'); z.replaceChildren();
+  const { blocs, total, affichees, dernieres } = blocsAffiches();
+  $$('#filtres [data-vue]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vue === S.vue)));
+  if (!blocs.length) { z.append(h('p', { class: 'vide' }, S.vue === 'passees' ? 'Aucune séance passée.' : 'Aucune séance à afficher.')); return; }
+  for (const b of blocs) {
+    if (b.k === 'periode') { z.append(periodeBandeau(b.p)); continue; }
+    const sect = h('section', { class: 'bloc-semaine' }, enteteSemaine(b));
+    for (const s of b.seances) sect.append(carteSeance(s, dernieres));
+    z.append(sect);
+  }
+  if (S.vue === 'avenir' && total > affichees) z.append(h('p', { class: 'suite' }, h('button', { class: 'btn btn--petit', type: 'button', id: 'plus-de-seances', onclick: () => { S.limite += 10; rendreListe(); } }, 'Afficher les séances suivantes (' + (total - affichees) + ' de plus)')));
+}
+
+/* ---------- le calendrier de l'année ---------- */
+function rendreCalendrier() {
+  const z = $('#calendrier'); z.replaceChildren();
+  const pl = S.pl, auj = aujourdhui(), g = S.groupe;
+  const mois = []; for (let d = dateDe(ANNEE.debut); cle(d) <= ANNEE.fin || d.getMonth() === dateDe(ANNEE.fin).getMonth(); d = new Date(d.getFullYear(), d.getMonth() + 1, 1, 12)) { mois.push(new Date(d.getFullYear(), d.getMonth(), 1, 12)); if (mois.length > 14) break; }
+  for (const m of mois) {
+    const grille = h('div', { class: 'mois__grille', role: 'group', 'aria-label': MOIS[m.getMonth()] + ' ' + m.getFullYear() });
+    for (const j of ['L', 'M', 'M', 'J', 'V', 'S', 'D']) grille.append(h('span', { class: 'mois__tete', 'aria-hidden': 'true' }, j));
+    const premier = (m.getDay() + 6) % 7;
+    for (let i = 0; i < premier; i++) grille.append(h('span', { class: 'jour jour--vide', 'aria-hidden': 'true' }));
+    const n = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+    for (let j = 1; j <= n; j++) {
+      const s = m.getFullYear() + '-' + pad(m.getMonth() + 1) + '-' + pad(j);
+      const hors = !dans(s, ANNEE.debut, ANNEE.fin);
+      const e = etatDuJour(S.niveau, s), se = pl.parDate[s];
+      const classes = ['jour'];
+      let titre = jourComplet(s);
+      if (hors) classes.push('jour--hors');
+      if (e.type === 'vacances') { classes.push('jour--vac'); titre += ' · ' + e.nom; }
+      else if (e.type === 'pfmp') { classes.push('jour--pfmp'); titre += ' · ' + e.nom + ' (en entreprise)'; }
+      else if (e.type === 'ferie') { classes.push('jour--ferie'); titre += ' · ' + e.nom; }
+      else if (e.type === 'we') classes.push('jour--we');
+      if (!hors && prepaDe(S.niveau, s) && e.type === 'cours') { classes.push('jour--prepa'); titre += ' · ' + prepaDe(S.niveau, s).nom; }
+      if (s === auj) classes.push('jour--auj');
+      const visible = se && memeGroupe(se);
+      if (se && !hors) {
+        classes.push('jour--cours', classeGroupe(se.groupe), visible ? 'jour--mien' : 'jour--autre');
+        titre += ' · ' + (se.annulee ? 'séance annulée' : se.plages.map(p => plage(p[0], p[1])).join(' et ') || 'séance') + (se.groupe && cfg().groupes ? ' · ' + groupeNom(se.groupe) : '');
+        if (se.rec && ((se.rec.enCours || []).length || (se.rec.revision || []).length || (se.rec.exercice || []).length)) classes.push('jour--rempli');
+      }
+      if (se && !hors && (visible || S.ens)) grille.append(h('button', { class: classes.join(' '), type: 'button', title: titre, 'aria-label': titre, 'data-date': s, onclick: () => aller(s) }, String(j)));
+      else grille.append(h('span', { class: classes.join(' '), title: titre, 'aria-hidden': 'true', 'data-date': s }, String(j)));   // les jours sans action sont décoratifs : la liste des séances (au-dessus) dit tout à un lecteur d'écran
+    }
+    z.append(h('section', { class: 'mois' }, h('h3', null, MOIS[m.getMonth()] + ' ' + m.getFullYear()), grille));
+  }
+}
+function aller(date) {   // un clic sur un jour du calendrier : la carte de la séance (l'éditeur pour l'enseignant)
+  if (S.ens) { ouvrirEditeur(date); return; }
+  const auj = aujourdhui();
+  if (S.vue === 'avenir' && date < auj) S.vue = 'passees';
+  if (S.vue === 'passees' && date >= auj) S.vue = 'avenir';
+  S.limite = Math.max(S.limite, 200);
+  rendreListe();
+  const c = document.getElementById('seance-' + date);
+  if (c) { c.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); c.classList.add('est-visee'); c.setAttribute('tabindex', '-1'); c.focus({ preventScroll: true }); setTimeout(() => c.classList.remove('est-visee'), 2200); }
+}
+
+/* ---------- l'espace enseignant : connexion ---------- */
+const delaiInactif = 30 * 60 * 1000;
+function geste() { S.geste = Date.now(); }
+function connecte(mdp) { S.ens = true; S.mdp = mdp; geste(); }
+function deconnecter(message) {
+  S.ens = false; S.mdp = '';
+  if (message) { S.statut = S.statut === 'ok' ? 'ok' : S.statut; dire(message); }
+  rendreTout();
+}
+function dire(msg, ok) { const e = $('#etat'); e.textContent = msg || ''; e.className = 'msg' + (ok ? ' ok' : ''); }
+function ouvrirConnexion() {
+  const d = $('#dlg-ens'); $('#ens-msg').textContent = ''; $('#ens-code').value = '';
+  if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+  $('#ens-code').focus();
+}
+async function validerConnexion(ev) {
+  ev.preventDefault();
+  const code = $('#ens-code').value, msg = $('#ens-msg'), bouton = $('#ens-valider');
+  if (!code) { msg.textContent = 'Saisissez votre code.'; return; }
+  msg.className = 'msg'; msg.textContent = 'Vérification…'; bouton.disabled = true;
+  try {
+    const rep = await appeler('cdt_lire', { niveau: S.niveau, mdp: code });
+    if (rep && rep.ok && rep.enseignant) {
+      connecte(code); $('#ens-code').value = ''; $('#dlg-ens').close();
+      S.donnees[S.niveau] = Object.assign(indexer(rep.notes), { recu: Date.now(), hors: false });
+      S.statut = 'ok'; rendreTout(); dire('Espace enseignant ouvert. Vous pouvez renseigner les séances.', true);
+    } else if (rep && rep.erreur === 'action inconnue') msg.textContent = 'Le script Google n’est pas à jour : il ne connaît pas encore le cahier de texte.';
+    else msg.textContent = (rep && rep.message) || 'Connexion refusée.';
+  } catch (e) { msg.textContent = e && e.code === 'sans-service' ? 'Cette page n’est pas reliée au service du carnet (ouverte hors ligne).' : 'Le service ne répond pas : réessayez dans un instant.'; }
+  finally { bouton.disabled = false; }
+}
+function rendreBarreEns() {
+  const b = $('#barre-ens'), acces = $('#acces-ens');
+  b.hidden = !S.ens; acces.hidden = S.ens;
+}
+
+/* ---------- l'enregistrement d'une séance ---------- */
+async function ecrireService(action, donnees) {
+  geste();
+  const rep = await appeler(action, Object.assign({ niveau: S.niveau, mdp: S.mdp }, donnees));
+  if (rep && !rep.ok && (rep.erreur === 'mot de passe' || rep.erreur === 'verrou')) { if (rep.erreur === 'mot de passe') deconnecter('Le code n’est plus accepté : reconnectez-vous.'); }
+  return rep;
+}
+function donneesNiveau() { return S.donnees[S.niveau] || (S.donnees[S.niveau] = { seances: {}, semaines: {}, creneaux: null, recu: Date.now(), hors: false }); }
+async function changerGroupe(lundi, groupe) {
+  const cle = 'semaine:' + S.niveau + ':' + lundi;
+  dire('Enregistrement…');
+  try {
+    const rep = groupe ? await ecrireService('cdt_ecrire', { cle, v: { groupe } }) : await ecrireService('cdt_supprimer', { cle });
+    if (!rep || !rep.ok) { dire((rep && rep.message) || 'Enregistrement refusé.'); rendreTout(); return; }
+    const d = donneesNiveau(); if (groupe) d.semaines[lundi] = groupe; else delete d.semaines[lundi];
+    rendreTout(); dire(groupe ? 'Groupe de la semaine du ' + jourLong(lundi) + ' : ' + groupeNom(groupe).toLowerCase() + '. Les semaines suivantes suivent l’ordre du cycle.' : 'Retour à l’ordre du cycle.', true);
+  } catch (e) { dire('Le service ne répond pas : rien n’a été enregistré.'); rendreTout(); }
+}
+
+/* ---------- l'éditeur d'une séance ---------- */
+let E = null;   // { date, v, sale, extra }
+function ouvrirEditeur(date) {
+  const s = S.pl.parDate[date] || null, rec = (donneesNiveau().seances[date]) || {};
+  E = { date, v: { annulee: !!rec.annulee, motif: rec.motif || '', enCours: copie(rec.enCours || []), revision: copie(rec.revision || []), exercice: copie(rec.exercice || []), remarque: rec.remarque || '' }, extra: rec.extra ? { debut: rec.debut, fin: rec.fin } : null, groupe: rec.groupe || '', sale: false, confirmerFermeture: false };
+  const d = $('#dlg-edit'), g = s ? s.groupe : '';
+  $('#ed-titre').textContent = jourComplet(date);
+  $('#ed-sous').textContent = [s && s.plages.length ? s.plages.map(p => plage(p[0], p[1])).join(' et ') : (E.extra ? plage(E.extra.debut, E.extra.fin) : 'horaire non précisé'), g && cfg().groupes ? groupeNom(g) : '', cfg().nom].filter(Boolean).join(' · ');
+  const corps = $('#ed-corps'); corps.replaceChildren();
+  corps.append(
+    h('div', { class: 'ed-annulation' },
+      h('label', { class: 'case' }, h('input', { type: 'checkbox', id: 'ed-annulee', checked: E.v.annulee, onchange: ev => { E.v.annulee = ev.target.checked; E.sale = true; majAnnulation(); } }), h('span', null, 'Séance annulée (pas de cours ce jour-là)')),
+      h('div', { class: 'champ', id: 'ed-motif-ligne' }, h('label', { for: 'ed-motif' }, 'Motif'), h('input', { id: 'ed-motif', type: 'text', maxlength: '160', value: E.v.motif, placeholder: 'Sortie, grève, absence du professeur…', oninput: ev => { E.v.motif = ev.target.value; E.sale = true; } }))),
+    ...RUBRIQUES.map(r => blocRubrique(r, date)),
+    h('div', { class: 'champ champ--bloc' }, h('label', { for: 'ed-remarque' }, 'Remarque (facultatif)'), h('textarea', { id: 'ed-remarque', rows: '3', maxlength: '600', placeholder: 'Matériel à apporter, consigne particulière…', oninput: ev => { E.v.remarque = ev.target.value; E.sale = true; } }, E.v.remarque)));
+  $('#ed-remarque').value = E.v.remarque;
+  $('#ed-msg').textContent = ''; $('#ed-msg').className = 'msg';
+  $('#ed-fermer').textContent = 'Fermer';
+  majAnnulation();
+  if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+  $('#ed-annulee').focus();
+}
+function majAnnulation() {
+  $('#ed-motif-ligne').hidden = !E.v.annulee;
+  $$('#ed-corps .rubrique').forEach(r => { r.classList.toggle('est-grise', E.v.annulee); $$('input,button', r).forEach(x => { x.disabled = E.v.annulee; }); });
+}
+function blocRubrique(r, date) {
+  const id = r.id;
+  const liste = h('ul', { class: 'puces', 'data-liste': id });
+  const sect = h('section', { class: 'rubrique', 'data-rub': id, 'aria-labelledby': 'rub-' + id },
+    h('h3', { id: 'rub-' + id }, r.titre), h('p', { class: 'rubrique__aide' }, r.aide), liste);
+  const rendrePuces = () => {
+    liste.replaceChildren(...E.v[id].map((e, i) => h('li', { class: 'puce' }, lien(e.u, e.t, 'puce__texte'),
+      e.k && ETIQUETTES[e.k] ? h('small', { class: 'item__etq' }, ETIQUETTES[e.k]) : null,
+      h('button', { class: 'puce__x', type: 'button', 'aria-label': 'Retirer « ' + e.t + ' »', onclick: () => { E.v[id].splice(i, 1); E.sale = true; rendrePuces(); } }, '×'))));
+    if (!E.v[id].length) liste.append(h('li', { class: 'vide' }, 'Rien pour l’instant.'));
+  };
+  const ajouterElement = e => {
+    if (E.v[id].length >= 12) { $('#ed-msg').textContent = 'Douze éléments au plus dans cette liste.'; return; }
+    if (E.v[id].some(x => x.t === e.t && (x.u || '') === (e.u || ''))) return;
+    E.v[id].push(e); E.sale = true; rendrePuces();
+  };
+  const saisie = h('input', { type: 'text', class: 'ajout__saisie', id: 'saisie-' + id, maxlength: '160', autocomplete: 'off', placeholder: 'Écrire un texte, ou chercher dans le site…', 'aria-label': 'Ajouter à « ' + r.titre + ' » : écrire un texte, ou chercher dans le site', 'aria-describedby': 'rub-' + id });
+  const props = h('div', { class: 'propositions', id: 'props-' + id, hidden: true, role: 'group', 'aria-label': 'Propositions du site' });
+  const ajoutTexte = () => { const t = nettoyer(saisie.value, 160); if (!t) return; ajouterElement({ t }); saisie.value = ''; rendrePropositions(); saisie.focus(); };
+  const rendrePropositions = () => {
+    const q = saisie.value, items = chercher(S.niveau, id, q);
+    props.replaceChildren();
+    const entetes = [];
+    if (id === 'enCours' && !q.trim()) {
+      const sug = suiteProposee(S.niveau, date), prec = precedente(date);
+      if (sug) entetes.push(h('button', { type: 'button', class: 'proposition proposition--suite', 'data-suite': sug.id, onclick: () => { ajouterElement({ t: sug.t, k: sug.k, i: sug.id }); rendrePropositions(); } }, h('b', null, 'Suite de la progression'), h('span', null, sug.t), h('small', null, sug.ctx)));
+      if (prec) entetes.push(h('button', { type: 'button', class: 'proposition proposition--reprise', 'data-reprise': prec.date, onclick: () => { for (const e of prec.rec.enCours) ajouterElement(copie(e)); rendrePropositions(); } }, h('b', null, 'Reprendre la séance précédente'), h('span', null, (prec.rec.enCours || []).map(e => e.t).join(' · ').slice(0, 120)), h('small', null, jourLong(prec.date))));
+    }
+    props.append(...entetes);
+    for (const o of items.slice(0, 40)) {
+      props.append(h('button', { type: 'button', class: 'proposition', 'data-id': o.id, onclick: () => { ajouterElement({ t: o.t, ...(o.u ? { u: o.u } : {}), k: o.k, i: o.id }); } }, h('span', { class: 'proposition__etq' }, o.etq), h('span', { class: 'proposition__t' }, o.t), h('small', null, o.ctx)));
+    }
+    if (items.length > 40) props.append(h('p', { class: 'vide' }, (items.length - 40) + ' autres propositions : précisez la recherche.'));
+    if (!items.length && q.trim()) props.append(h('p', { class: 'vide' }, 'Rien dans le site pour « ' + q.trim() + ' ». « Ajouter » garde votre texte tel quel.'));
+  };
+  saisie.addEventListener('input', () => { props.hidden = false; rendrePropositions(); });
+  saisie.addEventListener('focus', () => { props.hidden = false; rendrePropositions(); });
+  saisie.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); ajoutTexte(); }
+    else if (ev.key === 'ArrowDown') { const b = $('.proposition', props); if (b) { ev.preventDefault(); b.focus(); } }
+    else if (ev.key === 'Escape' && !props.hidden) { ev.stopPropagation(); props.hidden = true; }
+  });
+  props.addEventListener('keydown', ev => {
+    const bs = $$('.proposition', props), i = bs.indexOf(document.activeElement);
+    if (ev.key === 'ArrowDown' && i >= 0) { ev.preventDefault(); (bs[i + 1] || bs[i]).focus(); }
+    else if (ev.key === 'ArrowUp' && i >= 0) { ev.preventDefault(); if (i === 0) saisie.focus(); else bs[i - 1].focus(); }
+    else if (ev.key === 'Escape') { ev.stopPropagation(); props.hidden = true; saisie.focus(); }
+  });
+  const ajout = h('div', { class: 'ajout' }, saisie,
+    h('button', { class: 'btn btn--petit', type: 'button', 'data-ajout-texte': id, onclick: ajoutTexte }, 'Ajouter'),
+    h('button', { class: 'btn btn--petit', type: 'button', 'data-propositions': id, 'aria-expanded': 'false', onclick: ev => { props.hidden = !props.hidden; ev.currentTarget.setAttribute('aria-expanded', String(!props.hidden)); if (!props.hidden) rendrePropositions(); } }, 'Propositions du site'));
+  sect.append(ajout, props);
+  rendrePuces();
+  return sect;
+}
+async function enregistrerEditeur() {
+  const msg = $('#ed-msg'), btn = $('#ed-enregistrer');
+  const v = { annulee: E.v.annulee, motif: nettoyer(E.v.motif, 160), enCours: E.v.enCours, revision: E.v.revision, exercice: E.v.exercice, remarque: String(E.v.remarque || '').slice(0, 600).trim() };
+  if (E.extra) { v.extra = true; v.debut = E.extra.debut; v.fin = E.extra.fin; }
+  if (E.groupe) v.groupe = E.groupe;
+  msg.className = 'msg'; msg.textContent = 'Enregistrement…'; btn.disabled = true;
+  try {
+    const rep = await ecrireService('cdt_ecrire', { cle: 'seance:' + S.niveau + ':' + E.date, v });
+    if (!rep || !rep.ok) { msg.textContent = (rep && rep.message) || 'Enregistrement refusé.'; return; }
+    const d = donneesNiveau(); if (rep.supprime || !Object.keys(rep.v || {}).length) delete d.seances[E.date]; else d.seances[E.date] = rep.v;
+    E.sale = false; rendreTout();
+    msg.className = 'msg ok'; msg.textContent = rep.supprime ? 'Séance vidée.' : 'Enregistré à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '.';
+  } catch (e) { msg.textContent = 'Le service ne répond pas : rien n’a été enregistré. Réessayez.'; }
+  finally { btn.disabled = false; }
+}
+async function effacerSeance() {
+  const msg = $('#ed-msg'), b = $('#ed-effacer');
+  if (!b.dataset.confirme) { b.dataset.confirme = '1'; b.textContent = 'Confirmer : effacer cette séance'; return; }
+  msg.className = 'msg'; msg.textContent = 'Suppression…';
+  try {
+    const rep = await ecrireService('cdt_supprimer', { cle: 'seance:' + S.niveau + ':' + E.date });
+    if (!rep || !rep.ok) { msg.textContent = (rep && rep.message) || 'Suppression refusée.'; return; }
+    delete donneesNiveau().seances[E.date]; E.sale = false; rendreTout();
+    $('#dlg-edit').close(); dire('Séance du ' + jourLong(E.date) + ' effacée.', true);
+  } catch (e) { msg.textContent = 'Le service ne répond pas : rien n’a été supprimé.'; }
+}
+function fermerEditeur(ev) {
+  const b = $('#ed-fermer');
+  if (E && E.sale && !b.dataset.confirme) { if (ev) ev.preventDefault(); b.dataset.confirme = '1'; b.textContent = 'Fermer sans enregistrer ?'; return; }
+  $('#dlg-edit').close();
+}
+
+/* ---------- les créneaux de la classe, et une séance en plus ---------- */
+const NOMS_JOURS = ['', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+let CR = null;
+function ouvrirCreneaux() {
+  const d = donneesNiveau(); CR = copie(d.creneaux || cfg().creneaux);
+  $('#cr-titre').textContent = 'Créneaux de la ' + (cfg().nom === '1AA' ? '1AA' : '2EMNB');
+  $('#cr-msg').textContent = ''; $('#cr-msg').className = 'msg';
+  rendreCreneaux();
+  const dlg = $('#dlg-creneaux'); if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+}
+function rendreCreneaux() {
+  const z = $('#cr-liste'); z.replaceChildren();
+  CR.forEach((c, i) => z.append(h('div', { class: 'creneau', 'data-i': i },
+    h('select', { 'aria-label': 'Jour', onchange: ev => { c.j = +ev.target.value; } }, [1, 2, 3, 4, 5, 6].map(j => h('option', { value: j, selected: j === c.j }, NOMS_JOURS[j]))),
+    h('label', null, 'de ', h('input', { type: 'time', value: c.debut, 'aria-label': 'Début', onchange: ev => { c.debut = ev.target.value; } })),
+    h('label', null, 'à ', h('input', { type: 'time', value: c.fin, 'aria-label': 'Fin', onchange: ev => { c.fin = ev.target.value; } })),
+    h('button', { class: 'puce__x', type: 'button', 'aria-label': 'Retirer ce créneau', onclick: () => { CR.splice(i, 1); rendreCreneaux(); } }, '×'))));
+  if (!CR.length) z.append(h('p', { class: 'vide' }, 'Aucun créneau : le cahier n’affichera que les séances ajoutées à la main.'));
+}
+async function enregistrerCreneaux() {
+  const msg = $('#cr-msg'); msg.className = 'msg'; msg.textContent = 'Enregistrement…';
+  const liste = CR.map(c => ({ j: c.j, debut: c.debut, fin: c.fin }));
+  if (liste.some(c => !c.debut || !c.fin || c.debut >= c.fin)) { msg.textContent = 'Chaque créneau doit avoir un début et une fin, dans l’ordre.'; return; }
+  try {
+    const rep = await ecrireService('cdt_ecrire', { cle: 'creneaux:' + S.niveau, v: { liste } });
+    if (!rep || !rep.ok) { msg.textContent = (rep && rep.message) || 'Enregistrement refusé.'; return; }
+    donneesNiveau().creneaux = rep.v.liste; rendreTout(); $('#dlg-creneaux').close(); dire('Créneaux enregistrés.', true);
+  } catch (e) { msg.textContent = 'Le service ne répond pas : rien n’a été enregistré.'; }
+}
+async function retablirCreneaux() {
+  const msg = $('#cr-msg'); msg.className = 'msg'; msg.textContent = 'Un instant…';
+  try {
+    const rep = await ecrireService('cdt_supprimer', { cle: 'creneaux:' + S.niveau });
+    if (!rep || !rep.ok) { msg.textContent = (rep && rep.message) || 'Refusé.'; return; }
+    donneesNiveau().creneaux = null; rendreTout(); $('#dlg-creneaux').close(); dire('Créneaux d’origine rétablis.', true);
+  } catch (e) { msg.textContent = 'Le service ne répond pas.'; }
+}
+function ouvrirAjout() {
+  const dlg = $('#dlg-ajout'), a = $('#aj-date');
+  a.min = ANNEE.debut; a.max = ANNEE.fin; a.value = ''; $('#aj-debut').value = '14:00'; $('#aj-fin').value = '16:00';
+  $('#aj-msg').textContent = ''; $('#aj-msg').className = 'msg';
+  if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+  a.focus();
+}
+async function validerAjout(ev) {
+  ev.preventDefault();
+  const date = $('#aj-date').value, debut = $('#aj-debut').value, fin = $('#aj-fin').value, msg = $('#aj-msg');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !dans(date, ANNEE.debut, ANNEE.fin)) { msg.textContent = 'Choisissez une date de l’année scolaire.'; return; }
+  if (!debut || !fin || debut >= fin) { msg.textContent = 'Les heures doivent aller du début à la fin.'; return; }
+  const d = donneesNiveau();
+  if (d.seances[date] || (S.pl.parDate[date] && !S.pl.parDate[date].extra)) { $('#dlg-ajout').close(); ouvrirEditeur(date); return; }   // ce jour a déjà une séance : on l'ouvre
+  msg.className = 'msg'; msg.textContent = 'Enregistrement…';
+  try {
+    const rep = await ecrireService('cdt_ecrire', { cle: 'seance:' + S.niveau + ':' + date, v: { extra: true, debut, fin } });
+    if (!rep || !rep.ok) { msg.textContent = (rep && rep.message) || 'Enregistrement refusé.'; return; }
+    d.seances[date] = rep.v; rendreTout(); $('#dlg-ajout').close(); ouvrirEditeur(date);
+  } catch (e) { msg.textContent = 'Le service ne répond pas : rien n’a été enregistré.'; }
+}
+
+/* ---------- tout redessiner ---------- */
+function recalculer() { S.pl = construirePlanning(S.niveau); }
+function rendreTout() {
+  recalculer();
+  titreNiveau(); rendreNiveaux(); rendreGroupes(); rendreBandeau(); rendreResume(); rendreAfaire(); rendreBarreEns(); rendreListe(); rendreCalendrier();
+}
+
+/* ---------- le branchement ---------- */
+async function changerNiveau(niv) {
+  if (!NIVEAUX[niv] || niv === S.niveau) return;
+  S.niveau = niv; S.limite = 10; S.vue = 'avenir';
+  S.groupe = NIVEAUX[niv].groupes ? stocker.lire('carnet-cdt-groupe', '') : '';
+  stocker.ecrire('carnet-cdt-niveau', niv);
+  try { const u = new URL(location.href); u.searchParams.set('n', niv); history.replaceState(null, '', u); } catch (e) { /* adresse non modifiable : tant pis */ }
+  rendreTout();
+  if (!S.donnees[niv]) { await charger(niv); rendreTout(); }
+}
+function demarrer() {
+  const q = (new URLSearchParams(location.search).get('n') || '').toLowerCase();
+  S.niveau = NIVEAUX[q] ? q : (NIVEAUX[stocker.lire('carnet-cdt-niveau', '')] ? stocker.lire('carnet-cdt-niveau', '') : '2emnb');
+  S.groupe = NIVEAUX[S.niveau].groupes ? stocker.lire('carnet-cdt-groupe', '') : '';
+  if (S.groupe && !NIVEAUX[S.niveau].groupes.cycle.includes(S.groupe)) S.groupe = '';
+  $$('#niveaux button').forEach(b => b.addEventListener('click', () => changerNiveau(b.dataset.niveau)));
+  $$('#groupes button').forEach(b => b.addEventListener('click', () => { S.groupe = b.dataset.groupe; stocker.ecrire('carnet-cdt-groupe', S.groupe); S.limite = 10; rendreTout(); }));
+  $$('#filtres [data-vue]').forEach(b => b.addEventListener('click', () => { S.vue = b.dataset.vue; S.limite = 10; rendreListe(); }));
+  $('#acces-ens').addEventListener('click', ouvrirConnexion);
+  $('#form-ens').addEventListener('submit', validerConnexion);
+  $('#ens-annuler').addEventListener('click', () => $('#dlg-ens').close());
+  $('#btn-deconnexion').addEventListener('click', () => deconnecter('Espace enseignant fermé.'));
+  $('#btn-creneaux').addEventListener('click', ouvrirCreneaux);
+  $('#btn-ajout').addEventListener('click', ouvrirAjout);
+  $('#ed-enregistrer').addEventListener('click', enregistrerEditeur);
+  $('#ed-effacer').addEventListener('click', effacerSeance);
+  $('#ed-fermer').addEventListener('click', fermerEditeur);
+  $('#dlg-edit').addEventListener('cancel', ev => { if (E && E.sale && !$('#ed-fermer').dataset.confirme) { ev.preventDefault(); fermerEditeur(); } });
+  $('#dlg-edit').addEventListener('close', () => { delete $('#ed-fermer').dataset.confirme; delete $('#ed-effacer').dataset.confirme; $('#ed-effacer').textContent = 'Effacer cette séance'; E = null; });
+  $('#cr-ajouter').addEventListener('click', () => { CR.push({ j: 2, debut: '08:00', fin: '09:00' }); rendreCreneaux(); });
+  $('#cr-enregistrer').addEventListener('click', enregistrerCreneaux);
+  $('#cr-retablir').addEventListener('click', retablirCreneaux);
+  $('#cr-fermer').addEventListener('click', () => $('#dlg-creneaux').close());
+  $('#form-ajout').addEventListener('submit', validerAjout);
+  $('#aj-annuler').addEventListener('click', () => $('#dlg-ajout').close());
+  ['click', 'keydown', 'input'].forEach(t => document.addEventListener(t, () => { if (S.ens) geste(); }, true));
+  setInterval(() => { if (S.ens && Date.now() - S.geste > delaiInactif) deconnecter('Espace enseignant fermé après 30 minutes d’inactivité.'); }, 30000);
+  document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && S.donnees[S.niveau] && Date.now() - S.donnees[S.niveau].recu > 120000 && !$('#dlg-edit').open) { await charger(S.niveau, true); rendreTout(); } });
+  window.addEventListener('pagehide', () => { S.mdp = ''; });
+  rendreTout();
+  charger(S.niveau).then(rendreTout);
+  window.CAHIER = { aujourdhui, planning: () => S.pl, etatDuJour };   // pour les essais (jamais l'état entier : il contient le code de l'enseignant quand il est connecté)
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer); else demarrer();
+})();
+</script>
+<!--stat--><script src="stats.js"></script><!--/stat--></body>
+</html>
