@@ -423,6 +423,9 @@ a.puce__texte{color:var(--bleu);text-decoration:underline;text-decoration-style:
      l'ORDRE du tourniquet et son point de départ viennent de l'enseignant (17/11/2026) : « j'ai le groupe 3 cette semaine (du 16 au 20 novembre), la semaine prochaine le groupe 1 » → G1 → G2 → G3
      (le PDF notait G1 → G3 → G2 mais précisait : « si c'est l'inverse qui est voulu, le tableau du cycle est à inverser »).
    Ce qui est ÉCRIT par l'enseignant dans la page (séances, groupe d'une semaine, créneaux d'une classe) prime sur ces valeurs. */
+// L'adresse de l'application Web Google DU CAHIER (feuille Google « cahier de texte », son propre script Apps Script). Elle est distincte de celle du relevé et des évaluations (stats.js).
+// Elle finit par /exec (jamais /dev). Vide = le cahier n'est pas relié : le calendrier s'affiche seul.
+const URL_CAHIER = 'https://script.google.com/macros/s/AKfycby7Fwpe9vKtr1vRaR57ILhmIYGogj18w5yY-_QF2U8V2BPKvrADnsDpaF4dM1ExhCXV6A/exec';
 const ANNEE = { debut: '2026-09-01', fin: '2027-07-02' };
 const VACANCES = [
   { nom: 'Vacances de la Toussaint', du: '2026-10-17', au: '2026-11-01' },
@@ -519,7 +522,7 @@ const S = {
   fait: stocker.lire('carnet-cdt-fait', {}),
   pl: null
 };
-const urlService = () => (window.CARNET_STAT || {}).url || '';
+const urlService = () => URL_CAHIER || '';   // le service du cahier a sa propre adresse (sa propre feuille Google) : ce n'est pas celle du relevé de fréquentation (stats.js)
 const cfg = () => NIVEAUX[S.niveau];
 
 /* ---------- le service Google ---------- */
@@ -720,7 +723,7 @@ function rendreBandeau() {
   const nouveau = h('button', { class: 'btn btn--petit', type: 'button', onclick: async () => { await charger(S.niveau); rendreTout(); } }, 'Réessayer');
   if (S.statut === 'chargement') dire('Chargement du cahier…', 'info');
   else if (S.statut === 'ancien') dire('Le cahier de texte n’est pas encore ouvert : pour l’instant, seul le calendrier s’affiche.', 'info');   // l'élève n'a pas à savoir qu'il s'agit du script Google (l'enseignant, lui, est prévenu à la connexion)
-  else if (S.statut === 'sans-service') dire('Page ouverte hors du carnet en ligne : le calendrier s’affiche, mais pas ce que l’enseignant a écrit.', 'info');
+  else if (S.statut === 'sans-service') dire('Le cahier de texte n’est pas encore relié à son service : le calendrier s’affiche, mais pas ce que l’enseignant a écrit.', 'info');
   else if (S.statut === 'erreur') dire(S.message || 'Le cahier n’a pas pu être lu.', 'alerte', nouveau);
   else if (S.statut === 'hors-ligne') dire('Pas de connexion : voici le cahier tel qu’il était le ' + jourLong(cle(new Date(S.donnees[S.niveau].recu))) + '.', 'info', nouveau);
 }
