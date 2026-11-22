@@ -492,7 +492,7 @@ dialog.dlg-accueil .note-dlg{text-align:center}
   <div id="attente-voile"></div>
   <div id="attente-bas">
     <p id="attente-titre">Atelier Maquette Numérique</p>
-    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.89</span></p>
+    <p id="attente-txt">chargement <b id="attente-pct">0 %</b><span id="attente-ver">version 9.90</span></p>
     <div id="attente-licence" role="note">
       <p class="al-titre">Licence Creative Commons <b>CC BY-NC-SA 4.0</b></p>
       <p class="al-texte">Libre pour enseigner et apprendre, à trois conditions : citer l’auteur · pas d’usage commercial · partager les adaptations dans les mêmes conditions.</p>
@@ -1047,6 +1047,11 @@ const TOITURES = [
 const EPS_COUVERTURE = [0.02,0.05,0.08,0.10,0.12];   // tuiles, bac acier, ardoise…
 const EPS_CHEVRONS   = [0.06,0.08,0.10,0.12,0.16,0.22];
 const LARG_PORTES = [0.63,0.73,0.83,0.93,1.23];
+/* 9.90 : la porte de garage se propose dans le menu des portes, avec ses largeurs et son mécanisme */
+const LARG_GARAGE = [2.00,2.40,2.50,3.00,4.00,5.00];
+const MEC_GARAGE = [["sectionnelle","Sectionnelle (repli sous plafond)"],["basculante","Basculante (débordante)"]];
+/* une liste de largeurs qui contient toujours la valeur actuelle (sinon le menu affiche la première) */
+const listeAvecValeur = (L, v) => L.some(x => Math.abs(x - v) < 1e-9) ? L : L.concat([v]).sort((a, b) => a - b);
 const LARG_FEN = [0.60,0.80,1.00,1.20,1.40,1.60,1.80,2.00,2.40];
 const HAUT_FEN = [0.45,0.60,0.75,0.95,1.05,1.15,1.25,1.35,1.45,2.05,2.15];
 const MATERIAUX_MENUIS = ["Bois","PVC","Aluminium","Mixte bois-alu"];
@@ -4333,10 +4338,8 @@ function pointsCotation(){
     }
     for(const p of niv.planchers)
       for(const pt of p.points) add(pt[0], pt[1], "som", "sommet de plancher");
-    for(const t of niv.tremies){
-      add(t.x0, t.y0, "som", "trémie"); add(t.x1, t.y0, "som", "trémie");
-      add(t.x1, t.y1, "som", "trémie"); add(t.x0, t.y1, "som", "trémie");
-    }
+    for(const t of niv.tremies)
+      for(const q of pointsTremie(t)) add(q[0], q[1], "som", "trémie");      // 9.90 : rectangle ou contour libre
     for(const po of (niv.poteaux || [])){
       try { for(const p of quadPoteau(po)) add(p[0], p[1], "nu", "angle de poteau"); }
       catch(_e){ add(po.x, po.y, "axe", "axe du poteau"); }
@@ -5193,6 +5196,7 @@ function rotationSelection(){
         esc.ang = ((esc.ang || 0) + 3) % 4;
       }
       for(const t of n.tremies){
+        if(tremiePoly(t)){ t.points = t.points.map(pt => [cx + (pt[1]-cy), cy - (pt[0]-cx)]); continue; }
         const p0 = [cx + (t.y0-cy), cy - (t.x0-cx)];
         const p1 = [cx + (t.y1-cy), cy - (t.x1-cx)];
         t.x0 = Math.min(p0[0],p1[0]); t.x1 = Math.max(p0[0],p1[0]);
@@ -5232,6 +5236,7 @@ function symetrieSelection(verticale){
         esc.tourne = esc.tourne === "droite" ? "gauche" : "droite";
       }
       for(const t of n.tremies){
+        if(tremiePoly(t)){ t.points = t.points.map(pt => verticale ? [pt[0], 2*cy-pt[1]] : [2*cx-pt[0], pt[1]]); continue; }
         if(verticale){ const a2 = 2*cy-t.y1, b2 = 2*cy-t.y0; t.y0 = a2; t.y1 = b2; }
         else { const a2 = 2*cx-t.x1, b2 = 2*cx-t.x0; t.x0 = a2; t.x1 = b2; }
       }
@@ -9622,9 +9627,15 @@ function majPanneau(){
   }
   if(outil === "ouverture"){
     const o = choix.ouv;
+    const gar = o.type === "porte" && !!o.garage;      // 9.90 : la porte de garage est une porte, choisie ici
     html += '<div class="section"><h3>Ouverture à insérer</h3>' +
-      '<div class="ligne-prop"><label>Type</label><select id="o-type"><option value="porte"'+(o.type==="porte"?" selected":"")+'>Porte</option><option value="fenetre"'+(o.type==="fenetre"?" selected":"")+'>Fenêtre</option></select></div>' +
-      '<div class="ligne-prop"><label>Largeur nominale</label>' + selectHtml("o-l", o.type==="porte"?LARG_PORTES:LARG_FEN, o.l, fmtM) + '</div>' +
+      '<div class="ligne-prop"><label>Type</label><select id="o-type">' +
+        '<option value="porte"'+(o.type==="porte" && !gar?" selected":"")+'>Porte</option>' +
+        '<option value="garage"'+(gar?" selected":"")+'>Porte de garage</option>' +
+        '<option value="fenetre"'+(o.type==="fenetre"?" selected":"")+'>Fenêtre</option></select></div>' +
+      (gar ? '<div class="ligne-prop"><label>Mécanisme</label><select id="og-mec">' +
+        MEC_GARAGE.map(x => '<option value="'+x[0]+'"'+(o.garage===x[0]?" selected":"")+'>'+x[1]+'</option>').join("") + '</select></div>' : "") +
+      '<div class="ligne-prop"><label>Largeur nominale</label>' + selectHtml("o-l", gar?listeAvecValeur(LARG_GARAGE, o.l):o.type==="porte"?listeAvecValeur(LARG_PORTES, o.l):LARG_FEN, o.l, fmtM) + '</div>' +
       '<div class="ligne-prop"><label>Hauteur nominale</label>' + (o.type==="porte"
         ? '<b>2,04 m</b>' : selectHtml("o-h", HAUT_FEN, o.h, fmtM)) + '</div>' +
       (o.type==="fenetre" ? '<div class="ligne-prop"><label>Allège</label>' + selectHtml("o-allege",[0,0.2,0.4,0.6,0.8,0.9,0.95,1.0,1.1,1.2],o.allege,fmtM) + '</div>' : "") +
@@ -9634,7 +9645,11 @@ function majPanneau(){
         '</select></div>' : "") +
       '<div class="ligne-prop"><label>Matériau</label><select id="o-mat">' +
         MATERIAUX_MENUIS.map(m=>'<option'+(o.mat===m?" selected":"")+'>'+m+'</option>').join("") + '</select></div>' +
-      '<p class="note">Cliquer sur un mur du plan pour insérer la baie. Dimensions nominales = dimensions du tableau (NF DTU 36.5).</p></div>';
+      '<p class="note">Cliquer sur un mur du plan pour insérer la baie. Dimensions nominales = dimensions du tableau (NF DTU 36.5).</p>' +
+      (gar ? '<p class="note">Une porte de garage <b>ne bat pas</b> : on ne trace donc pas d’arc de battement mais un <b>rectangle en pointillé</b>, ' +
+        'l’emprise du tablier une fois ouvert. La <b>sectionnelle</b> se replie horizontalement sous le plafond sur toute la hauteur de la baie ; ' +
+        'la <b>basculante</b> pivote autour d’un axe haut et <b>déborde à l’extérieur</b> de 30 cm environ — à vérifier quand la porte donne sur le domaine public.</p>' : "") +
+      '</div>';
   }
 
   html += '<div class="section"><h3>Propriétés</h3><div id="props">' + htmlProprietes() + '</div></div>';
@@ -10435,11 +10450,18 @@ function htmlProprietes(){
   if(selection.tremieId){
     const t2 = tremieParId(selection.tremieId);
     if(!t2){ viderSel(); return ""; }
-    return '<div class="ligne-prop"><label>Élément</label><b>Trémie</b></div>' +
+    /* 9.90 : une trémie au contour n'a ni x0 ni x1 — l'emprise et la surface se lisent sur ses points */
+    const bbT = bboxTremie(t2), polyT = tremiePoly(t2);
+    const cotesT = polyT ? t2.points.map((q, k, a) => { const r = a[(k+1) % a.length]; return Math.hypot(r[0]-q[0], r[1]-q[1]); }) : [];
+    return '<div class="ligne-prop"><label>Élément</label><b>' + (polyT ? "Trémie au contour" : "Trémie") + '</b></div>' +
       '<div class="ligne-prop"><label>Niveau</label><b>' + echap(NIV().nom) + '</b></div>' +
-      '<div class="ligne-prop"><label>Dimensions</label><b>' +
-        (t2.x1-t2.x0).toFixed(2).replace(".",",") + ' × ' + (t2.y1-t2.y0).toFixed(2).replace(".",",") + ' m</b></div>' +
-      '<div class="ligne-prop"><label>Surface</label><b>' + ((t2.x1-t2.x0)*(t2.y1-t2.y0)).toFixed(2).replace(".",",") + ' m²</b></div>' +
+      '<div class="ligne-prop"><label>' + (polyT ? "Emprise" : "Dimensions") + '</label><b>' +
+        (bbT.x1-bbT.x0).toFixed(2).replace(".",",") + ' × ' + (bbT.y1-bbT.y0).toFixed(2).replace(".",",") + ' m</b></div>' +
+      (polyT ? '<div class="ligne-prop"><label>Limites</label><b>' + t2.points.length + ' côtés · ' +
+        cotesT.reduce((s2, v2) => s2 + v2, 0).toFixed(2).replace(".",",") + ' m de périmètre</b></div>' +
+        '<div class="ligne-prop"><label>Côtés</label><b style="font-weight:400;font-size:11px">' +
+        cotesT.slice(0, 12).map(v2 => v2.toFixed(2).replace(".",",")).join(" · ") + (cotesT.length > 12 ? " …" : "") + ' m</b></div>' : "") +
+      '<div class="ligne-prop"><label>Surface</label><b>' + surfaceTremie(t2).toFixed(2).replace(".",",") + ' m²</b></div>' +
       (t2.escalierId ? '<p class="note">Trémie créée automatiquement avec un escalier du niveau inférieur.</p>' : '') +
       '<p class="note">La trémie perce les planchers du niveau (coupe, axonométrie). Glisser pour déplacer.</p>' +
       '<button class="btn-plein btn-danger" data-action="effacer">Supprimer la trémie</button>';
@@ -10448,12 +10470,15 @@ function htmlProprietes(){
   if(!m){ viderSel(); return ""; }
   const o = ouvertureSel();
   if(o){
-    return '<div class="ligne-prop"><label>Élément</label><b>' + (o.type==="porte"?"Porte":"Fenêtre") + '</b></div>' +
-      '<div class="ligne-prop"><label>Largeur nominale</label>' + selectHtml("s-l", o.type==="porte"?LARG_PORTES:LARG_FEN, o.l, fmtM) + '</div>' +
+    return '<div class="ligne-prop"><label>Élément</label><b>' + (o.type==="porte" ? (o.garage ? "Porte de garage · " + o.garage : "Porte") : "Fenêtre") + '</b></div>' +
+      '<div class="ligne-prop"><label>Largeur nominale</label>' + selectHtml("s-l", o.type==="porte" ? listeAvecValeur(o.garage ? LARG_GARAGE : LARG_PORTES, o.l) : LARG_FEN, o.l, fmtM) + '</div>' +
       '<div class="ligne-prop"><label>Hauteur nominale</label>' + (o.type==="porte" ? "<b>2,04 m</b>"
         : selectHtml("s-h", HAUT_FEN, o.h, fmtM)) + '</div>' +
       (o.type==="fenetre" ? '<div class="ligne-prop"><label>Allège</label>' + selectHtml("s-allege",[0,0.2,0.4,0.6,0.8,0.9,0.95,1.0,1.1,1.2],o.allege,fmtM) + '</div>' : "") +
-      (o.type === "porte"
+      (o.type === "porte" && o.garage
+        ? '<p class="note" style="margin-top:0">Une porte de garage <b>ne bat pas</b> : le plan montre l\u2019emprise de son tablier en pointillé. ' +
+          'Son mécanisme (sectionnelle ou basculante) se choisit à la pose, dans « Ouverture à insérer ».</p>'
+        : o.type === "porte"
         ? '<div class="ligne-prop"><label>Ouverture</label><select id="s-sens-p">' +
           '<option value="pg"' + (!o.inv && o.main !== "d" ? " selected" : "") + '>Poussant gauche</option>' +
           '<option value="pd"' + (!o.inv && o.main === "d" ? " selected" : "") + '>Poussant droit</option>' +
@@ -10926,11 +10951,19 @@ function brancherPanneau(){
   // ouverture à insérer
   lie("o-vant", e => { choix.ouv.vantaux = +e.target.value; majTout(); });
   lie("o-type", e => {
-    choix.ouv.type = e.target.value;
-    if(choix.ouv.type === "porte"){ choix.ouv.l = 0.83; choix.ouv.h = 2.04; choix.ouv.allege = 0; }
-    else { choix.ouv.l = 1.20; choix.ouv.h = 1.25; choix.ouv.allege = 0.95; }
-    majPanneau();
+    const v = e.target.value;
+    if(v === "garage"){            // 9.90 : la porte de garage est proposée ici, avec les portes
+      choix.ouv.type = "porte"; choix.ouv.garage = choix.ouv.garage || "sectionnelle";
+      choix.ouv.l = 2.40; choix.ouv.h = 2.04; choix.ouv.allege = 0;
+      statut("Porte de garage : choisir le mécanisme et la largeur, puis cliquer sur un mur du plan.");
+    } else {
+      choix.ouv.type = v; delete choix.ouv.garage;
+      if(choix.ouv.type === "porte"){ choix.ouv.l = 0.83; choix.ouv.h = 2.04; choix.ouv.allege = 0; }
+      else { choix.ouv.l = 1.20; choix.ouv.h = 1.25; choix.ouv.allege = 0.95; }
+    }
+    majTout();
   });
+  lie("og-mec", e => { choix.ouv.garage = e.target.value; majTout(); });
   lie("o-l", e => choix.ouv.l = +e.target.value);
   lie("o-h", e => choix.ouv.h = +e.target.value);
   lie("o-allege", e => choix.ouv.allege = +e.target.value);
@@ -11506,8 +11539,15 @@ function fermerTremiePolygone(){
     statut("Tr\u00e9mie polygonale : il faut au moins trois sommets.");
     return;
   }
+  /* 9.90 : comme une toiture au contour, des limites qui se croisent ou enferment moins de 0,09 m² sont refusées */
+  const pts9 = traceTr.points.slice();
+  if((typeof ctSimple === "function" && !ctSimple(pts9)) || Math.abs(airePoly(pts9)) < 0.09){
+    traceTr = null; dessiner();
+    statut("Contour impossible : les limites se croisent, se confondent ou enferment moins de 0,09 m². Recommencer le tracé.");
+    return;
+  }
   pousserHistorique();
-  const t = {id:uid(), points:traceTr.points.slice()};
+  const t = {id:uid(), points:pts9};
   traceTr = null;
   NIV().tremies.push(t);
   selUnique({tremieId:t.id});
@@ -11930,7 +11970,8 @@ cv.addEventListener("mousedown", e => {
           if(e3) drag.groupe.push({escalierId:e3.id, o:{x:e3.x, y:e3.y}});
         } else if(s.tremieId){
           const t3 = tremieParId(s.tremieId);
-          if(t3) drag.groupe.push({tremieId:t3.id, o:{x0:t3.x0,y0:t3.y0,x1:t3.x1,y1:t3.y1}});
+          if(t3) drag.groupe.push({tremieId:t3.id, o:{x0:t3.x0,y0:t3.y0,x1:t3.x1,y1:t3.y1},
+                                   pts0: tremiePoly(t3) ? JSON.parse(JSON.stringify(t3.points)) : null});
         } else if(s.poteauId){
           const q = poteauParId(s.poteauId);
           if(q) drag.groupe.push({poteauId:q.id, o:{x:q.x, y:q.y}});
@@ -12118,14 +12159,22 @@ cv.addEventListener("mousedown", e => {
     if(choix.tremie.mode === "polygone"){
       /* même geste que pour une pièce : on clique les sommets, on ferme sur
          le premier — ou d'un double-clic */
-      if(!traceTr || !traceTr.points){ traceTr = {points:[[p.x,p.y]]}; dessiner(); return; }
+      if(!traceTr || !traceTr.points){
+        traceTr = {points:[[p.x,p.y]]}; dessiner();
+        statut("Premier sommet posé : cliquer les suivants, trait après trait (Maj garde l\u2019angle). Refermer sur le premier point, Entrée ou double-clic ; Retour arrière efface le dernier sommet.");
+        return;
+      }
       const prem = traceTr.points[0];
       if(traceTr.points.length >= 3 && dist(p.x,p.y,prem[0],prem[1]) < 0.35){
         fermerTremiePolygone(); return;
       }
       const pc = contraindreDepuisAncre(p.x, p.y, e.shiftKey);
       const der = traceTr.points[traceTr.points.length-1];
-      if(dist(pc.x,pc.y,der[0],der[1]) > 0.12) traceTr.points.push([pc.x,pc.y]);
+      if(dist(pc.x,pc.y,der[0],der[1]) > 0.12){
+        traceTr.points.push([pc.x,pc.y]);
+        statut("Sommet " + traceTr.points.length + " posé — côté de " + dist(pc.x,pc.y,der[0],der[1]).toFixed(2).replace(".",",") +
+               " m. Refermer : clic sur le premier point, Entrée ou double-clic ; Retour arrière efface le dernier sommet ; Échap abandonne.");
+      }
       dessiner();
       return;
     }
@@ -12162,6 +12211,7 @@ cv.addEventListener("mousedown", e => {
                h:o.type==="porte" ? 2.04 : o.h,
                allege:o.type==="porte" ? 0 : o.allege, mat:o.mat};
     if(o.type === "fenetre") n.vantaux = nVantaux(o);   // à la française : 1 ou 2 ouvrants
+    if(o.type === "porte" && o.garage) n.garage = o.garage;   // 9.90 : porte de garage, mécanisme choisi dans le panneau
     m.ouvertures.push(n);
     selUnique({murId:m.id, ouvId:n.id});
     majTout();
@@ -12415,7 +12465,10 @@ cv.addEventListener("mousemove", e => {
             if(e3){ e3.x = g.o.x+dx; e3.y = g.o.y+dy; }
           } else if(g.tremieId){
             const t3 = tremieParId(g.tremieId);
-            if(t3){ t3.x0 = g.o.x0+dx; t3.y0 = g.o.y0+dy; t3.x1 = g.o.x1+dx; t3.y1 = g.o.y1+dy; }
+            if(t3){
+              if(g.pts0) t3.points = g.pts0.map(q => [q[0]+dx, q[1]+dy]);      // 9.90 : un contour libre se déplace point par point
+              else { t3.x0 = g.o.x0+dx; t3.y0 = g.o.y0+dy; t3.x1 = g.o.x1+dx; t3.y1 = g.o.y1+dy; }
+            }
           } else if(g.poteauId){
             const q = poteauParId(g.poteauId);
             if(q){ q.x = g.o.x+dx; q.y = g.o.y+dy; }
@@ -14535,7 +14588,7 @@ function majCartouche(){
 function majStatutOutil(){
   const libelles = {selection:"Sélection", porteur:"Tracé mur porteur — " + PORTEURS[choix.porteur].nom,
     cloison:"Tracé cloison — " + CLOISONS[choix.cloison].nom,
-    ouverture:"Insertion " + (choix.ouv.type==="porte"?"porte":"fenêtre"),
+    ouverture:"Insertion " + (choix.ouv.type==="porte" ? (choix.ouv.garage ? "porte de garage" : "porte") : "fenêtre"),
     plancher:"Tracé de plancher — " + PLANCHERS[choix.plancher.type].nom,
     toiture:"Tracé d\u2019emprise de toiture",
     cote:"Cote " + (choix.cote.definitive ? "définitive" : "de construction"),
@@ -15514,12 +15567,12 @@ function dessinerAxo(w, h, zoomForce, nu){
       ctx.closePath(); ctx.stroke();
       if(_dessinST && !coupePlanZ && typeof stPlancher3D === "function") stPlancher3D(p, i, ptsP, zp, P);   // 9.63
       for(const t2 of trousA){
-        const c4 = [[t2.x0,t2.y0],[t2.x1,t2.y0],[t2.x1,t2.y1],[t2.x0,t2.y1]].map(pt => P(pt[0],pt[1],zp));
+        const c4 = pointsTremie(t2).map(pt => P(pt[0],pt[1],zp));      // 9.90 : rectangle ou contour libre
         ctx.strokeStyle = selTrem(t2.id) ? "#c8501e" : "#4a3c24";
         ctx.lineWidth = 1.1;
         ctx.beginPath();
         ctx.moveTo(c4[0][0], c4[0][1]);
-        for(let i2=1;i2<4;i2++) ctx.lineTo(c4[i2][0], c4[i2][1]);
+        for(let i2=1;i2<c4.length;i2++) ctx.lineTo(c4[i2][0], c4[i2][1]);
         ctx.closePath(); ctx.stroke();
       }
     }
@@ -21562,7 +21615,7 @@ function cadrerSurSelection(){
                           if(g) pt = g.filante ? [(g.x1+g.x2)/2, (g.y1+g.y2)/2] : [g.x, g.y]; }
   else if(s.pieceId){ const p = pieceParId(s.pieceId); if(p) pt = centrePiece(p); }
   else if(s.tremieId){ const t = NIV().tremies.find(x => x.id === s.tremieId);
-                       if(t) pt = [(t.x0+t.x1)/2, (t.y0+t.y1)/2]; }
+                       if(t){ const bb = bboxTremie(t); pt = [(bb.x0+bb.x1)/2, (bb.y0+bb.y1)/2]; } }
   else if(s.escalierId){ const e = escalierParId(s.escalierId);
                          if(e) pt = [e.x, e.y]; }
   if(!pt) return;
@@ -28680,6 +28733,7 @@ majPanneau = function(){
    LA PORTE DE GARAGE
    Ce n'est pas une porte qui bat : c'est un tablier qui se replie. Elle se
    règle donc par son MÉCANISME, et le plan montre l'emprise du tablier.
+   (9.90 : elle se choisit dans le menu des portes, à la pose.)
    ===================================================================== */
 function ouvertureParId(id){
   for(const n of S.niveaux) for(const m of n.murs){
@@ -28688,39 +28742,9 @@ function ouvertureParId(id){
   }
   return null;
 }
-const _majPanneauAvantGarage = majPanneau;
-majPanneau = function(){
-  const r = _majPanneauAvantGarage.apply(this, arguments);
-  const p = document.getElementById("panneau");
-  const s = (typeof selection !== "undefined" && selection) ? selection : null;
-  if(!p || !s || !s.ouvId) return r;
-  const t = ouvertureParId(s.ouvId);
-  if(!t || t.o.type !== "porte") return r;
-  const g = t.o.garage || "";
-  p.insertAdjacentHTML("beforeend",
-    '<div class="section"><h3>Porte de garage</h3>' +
-    '<div class="ligne-prop"><label>Mécanisme</label><select id="og-mec">' +
-    [["","Porte battante ordinaire"],
-     ["sectionnelle","Sectionnelle (repli sous plafond)"],
-     ["basculante","Basculante (débordante)"]]
-      .map(x => '<option value="' + x[0] + '"' + (g === x[0] ? " selected" : "") + '>' +
-                x[1] + '</option>').join("") + '</select></div>' +
-    '<p class="note">Une porte de garage <b>ne bat pas</b> : on ne trace donc pas d’arc de ' +
-    'battement mais un <b>rectangle en pointillé</b>, l’emprise du tablier une fois ouvert. ' +
-    'La <b>sectionnelle</b> se replie horizontalement sous le plafond sur toute la hauteur de ' +
-    'la baie ; la <b>basculante</b> pivote autour d’un axe haut et <b>déborde à l’extérieur</b> ' +
-    'de 30 cm environ — à vérifier quand la porte donne sur le domaine public.</p></div>');
-  const e = document.getElementById("og-mec");
-  if(e) e.onchange = () => {
-    pousserHistorique();
-    if(e.value) t.o.garage = e.value; else delete t.o.garage;
-    if(e.value && (t.o.l < 2.2)) statut("Porte de garage " + e.value +
-      " — largeur de " + Math.round(t.o.l*100) + " cm : 2,40 m est la largeur courante pour une voiture.");
-    else statut("Porte de garage : " + (e.value || "porte battante ordinaire") + ".");
-    majTout();
-  };
-  return r;
-};
+/* (9.90) La section « Porte de garage » des propriétés a disparu : la porte de garage se
+   choisit dans le menu des portes — panneau « Ouverture à insérer », Type = Porte de garage,
+   puis son mécanisme — et se pose comme n'importe quelle porte. */
 
 /* =====================================================================
    LES VÉRIFICATIONS D'ACCESSIBILITÉ
@@ -118910,7 +118934,7 @@ const C4_G = {
 };
 /* la porte de garage du projet fait 2,40 m ; si l'atelier ne propose pas cette
    largeur pour une porte, on accepte la plus large qu'il propose */
-const c4TolL = (O, o) => !!O.garage && o.l >= Math.min(O.l, Math.max(...LARG_PORTES)) - 0.011;
+const c4TolL = (O, o) => !!O.garage && o.l >= Math.min(O.l, Math.max(...LARG_GARAGE)) - 0.011;
 
 function c4Murs(){ return FT.etat(0, C4_FILTRE, "porteurs"); }
 function c4B(){ const cw = c4Murs(); return cw ? FT.etatBaies(0, C4_FILTRE, cw.off, c4TolL, "porteurs") : null; }
@@ -119089,12 +119113,11 @@ TQ.missions.ch4 = {
      },
      dit:() => {
        const l = c4Lignes("garage")[0];
-       const large = LARG_PORTES.includes(2.4) ? "" : " Ton atelier ne propose pas encore 2,40 m pour une porte : prends la plus large, le jeu l’accepte.";
        if(l && l.etat === "dims" && l.ecarts.includes("mécanisme"))
-         return "La porte est posée. Sélectionne-la (outil <b>Modifier</b>, clic sur la porte) : dans Propriétés, section « Porte de garage », choisis le mécanisme <b>Sectionnelle</b>.";
-       return "La <b>porte de garage</b> : une porte de 2,40 m dans le mur droit du garage, puis son mécanisme <b>sectionnel</b>." + large + c4DitPanneau();
+         return "La porte est posée, mais avec un autre mécanisme. Annule-la (Ctrl+Z), choisis le mécanisme <b>Sectionnelle</b> dans « Ouverture à insérer », puis pose-la de nouveau.";
+       return "La <b>porte de garage</b> : dans « Ouverture à insérer », règle Type = <b>Porte de garage</b>, mécanisme <b>Sectionnelle</b>, largeur 2,40 m, puis clique au centre du fantôme." + c4DitPanneau();
      },
-     indice:"Pose d’abord une porte au centre du fantôme. Puis sélectionne-la : la section « Porte de garage » apparaît dans Propriétés.",
+     indice:"Dans « Ouverture à insérer », Type = Porte de garage : le mécanisme et les largeurs de garage apparaissent. Pose la porte au centre du fantôme.",
      bravo:"Les 10 baies sont percées.",
      ok:() => c4Fait("garage")},
 
@@ -122093,6 +122116,347 @@ TQ.ok = true;
 })();
 
 /* ===== TWINQUEST : FIN DU MODULE GREFFÉ ===== */
+/* =====================================================================
+   MODULE 114 (v9.90) — QUATRE RETOUCHES DE JP
+   ---------------------------------------------------------------------
+   Demande de JP (22/11/2026) :
+     · la PORTE DE GARAGE se propose dans le menu des portes (panneau
+       « Ouverture à insérer », Type = Porte de garage, puis son mécanisme) ;
+       la section « Porte de garage » des propriétés est supprimée ;
+     · le NIVEAU d'un élément se change dans ses propriétés ;
+     · un MUR dessiné devient CLOISON, et inversement ;
+     · les LIMITES d'une TRÉMIE se dessinent comme celles d'une toiture :
+       bouton « Trémie contour », trait après trait.
+
+   Le module est fermé sur lui-même : ses noms ne rencontrent aucun const ni
+   let de l'atelier. Il se greffe sur majPanneau, le dernier de la chaîne.
+   ===================================================================== */
+(function(){
+  "use strict";
+
+  /* -------------------------------------------------------------------
+     114.1 · LE NIVEAU D'UN ÉLÉMENT SE CHANGE DANS SES PROPRIÉTÉS
+     Une sélection est toujours faite sur le niveau actif ; un objet vit dans
+     la liste de SON niveau (murs, planchers, poteaux…). Changer de niveau,
+     c'est le sortir de sa liste et le poser dans celle du niveau choisi — puis
+     faire de ce niveau le niveau actif, pour que l'élément reste là, sous les
+     yeux et sélectionné.
+     ------------------------------------------------------------------- */
+  var LISTES = [["murId", "murs"], ["plancherId", "planchers"], ["poteauId", "poteaux"],
+                ["poutreId", "poutres"], ["gcId", "gardecorps"], ["escalierId", "escaliers"],
+                ["tremieId", "tremies"], ["coteId", "cotes"], ["pieceId", "pieces"]];
+
+  function deplacable(s){
+    if(!s || s.ouvId) return false;                 // une baie suit son mur : elle n'a pas de niveau propre
+    if(s.toitureId) return true;
+    for(var q = 0; q < LISTES.length; q++) if(s[LISTES[q][0]]) return true;
+    return false;
+  }
+  /* où vit l'objet ? le niveau actif d'abord, puis les autres (une trémie vit parfois au niveau du dessus) */
+  function localiser(tab, id){
+    var ordre = [S.nivActif];
+    for(var i = 0; i < S.niveaux.length; i++) if(i !== S.nivActif) ordre.push(i);
+    for(var a = 0; a < ordre.length; a++){
+      var L = S.niveaux[ordre[a]][tab] || [];
+      for(var k = 0; k < L.length; k++) if(L[k].id === id) return {i:ordre[a], obj:L[k]};
+    }
+    return null;
+  }
+  function deplacerVersNiveau(sels, j){
+    if(!(j >= 0 && j < S.niveaux.length)) return {n:0, notes:[]};
+    var taches = [];
+    sels.forEach(function(s){
+      if(!deplacable(s)) return;
+      if(s.toitureId){
+        var t = toitureParId(s.toitureId);
+        if(t && t.niveau !== j) taches.push({cle:"toitureId", obj:t, sel:s});
+        return;
+      }
+      for(var q = 0; q < LISTES.length; q++){
+        var cle = LISTES[q][0];
+        if(!s[cle]) continue;
+        var h = localiser(LISTES[q][1], s[cle]);
+        if(h && h.i !== j) taches.push({cle:cle, tab:LISTES[q][1], h:h, sel:s});
+        return;
+      }
+    });
+    if(!taches.length) return {n:0, notes:[]};
+    pousserHistorique();
+    var cible = S.niveaux[j], nouvelles = [], notes = [], liees = [];
+    taches.forEach(function(tk){
+      nouvelles.push(tk.sel);
+      if(tk.cle === "toitureId"){ tk.obj.niveau = j; return; }
+      var src = S.niveaux[tk.h.i], o = tk.h.obj, rang = src[tk.tab].indexOf(o);
+      if(rang >= 0) src[tk.tab].splice(rang, 1);
+      if(!Array.isArray(cible[tk.tab])) cible[tk.tab] = [];
+      cible[tk.tab].push(o);
+      if(tk.cle === "murId" && o.hCible){
+        /* « jusqu'au niveau N » : on garde l'écart entre le pied du mur et sa tête */
+        var ecart = Math.max(0, o.hCible - (tk.h.i + 1));
+        o.hCible = Math.min(S.niveaux.length, j + 1 + ecart);
+      }
+      if(tk.cle === "tremieId") delete o.escalierId;      // déplacée à la main : déliée de son escalier
+      if(tk.cle === "escalierId"){
+        /* la trémie automatique de l'escalier perce le plancher du niveau d'au-dessus : elle suit */
+        S.niveaux.forEach(function(n){
+          n.tremies = (n.tremies || []).filter(function(t){
+            if(t.escalierId === o.id){ liees.push(t); return false; }
+            return true;
+          });
+        });
+      }
+    });
+    if(liees.length){
+      var sup = S.niveaux[j + 1];
+      if(sup){ sup.tremies = sup.tremies || []; liees.forEach(function(t){ sup.tremies.push(t); }); }
+      else notes.push("Plus de niveau au-dessus : la trémie de l’escalier est retirée.");
+    }
+    S.nivActif = j;
+    try { annulerTraces(); } catch(_e){}
+    selections = nouvelles.slice();
+    selection = nouvelles[nouvelles.length - 1] || null;
+    survolSel = null;
+    try { _cacheReperes = null; } catch(_e){}
+    majTout();
+    return {n:taches.length, notes:notes};
+  }
+  function optionsNiveaux(courant){
+    return S.niveaux.map(function(n, i){
+      var z = "";
+      try { z = ' title="Altitude du sol : ' + zNiveau(i).toFixed(2).replace(".", ",") + ' m"'; } catch(_e){}
+      return '<option value="' + i + '"' + z + (i === courant ? " selected" : "") + '>' + echap(n.nom) + '</option>';
+    }).join("");
+  }
+  /* le niveau où l'élément vit vraiment (une trémie peut vivre sous un autre niveau que le niveau actif) */
+  function niveauReel(s){
+    if(s.toitureId){ var t = toitureParId(s.toitureId); return t ? t.niveau : S.nivActif; }
+    for(var q = 0; q < LISTES.length; q++){
+      if(s[LISTES[q][0]]){ var h = localiser(LISTES[q][1], s[LISTES[q][0]]); return h ? h.i : S.nivActif; }
+    }
+    return S.nivActif;
+  }
+  function lierNiveau(sel){
+    sel.addEventListener("keydown", function(e){ e.stopPropagation(); });
+    sel.addEventListener("change", function(){
+      var j = +sel.value;
+      var r = deplacerVersNiveau(toutesSelections(), j);
+      if(!r.n){ sel.value = sel.getAttribute("data-courant"); return; }
+      statut(r.n + (r.n > 1 ? " éléments déplacés" : " élément déplacé") + " au niveau « " + S.niveaux[j].nom +
+             " » — c’est maintenant le niveau actif." + (r.notes.length ? " " + r.notes.join(" ") : ""));
+    });
+  }
+  function garnirNiveau(){
+    var pan = document.getElementById("panneau");
+    if(!pan || (typeof vue === "object" && vue && vue.mode === "cartouche")) return;
+    if(document.getElementById("m114-niveau")) return;
+    var L = toutesSelections();
+    if(!L.length || !L.some(deplacable)) return;
+    var props = document.getElementById("props");
+    if(!props) return;
+    var unique = L.length === 1;
+    if(unique && L[0].toitureId) return;                    // la toiture a déjà son « Niveau support »
+    var lignes = props.querySelectorAll(".ligne-prop"), ligneNiv = null;
+    for(var k = 0; k < lignes.length && !ligneNiv; k++){
+      var lab = lignes[k].querySelector("label");
+      if(lab && lab.textContent.trim() === "Niveau" && lignes[k].querySelector("b")) ligneNiv = lignes[k];
+    }
+    var courant = unique ? niveauReel(L[0]) : S.nivActif;
+    var select = '<select id="m114-niveau" data-courant="' + courant + '" title="Le niveau sur lequel l’élément est posé">' + optionsNiveaux(courant) + '</select>';
+    if(ligneNiv){
+      ligneNiv.querySelector("b").outerHTML = select;
+    } else if(lignes.length){
+      lignes[0].insertAdjacentHTML("afterend", '<div class="ligne-prop"><label>' + (unique ? "Niveau" : "Aller au niveau") + '</label>' + select + '</div>');
+    } else return;
+    if(!unique){
+      var s0 = document.getElementById("m114-niveau");
+      var ligne = s0.closest(".ligne-prop");
+      ligne.insertAdjacentHTML("afterend", '<p class="note" style="margin-top:0">Déplace les éléments sélectionnés vers le niveau choisi ; ' +
+        'les portes et fenêtres suivent leur mur.</p>');
+    }
+    lierNiveau(document.getElementById("m114-niveau"));
+  }
+
+  /* -------------------------------------------------------------------
+     114.2 · UN MUR DEVIENT CLOISON, ET INVERSEMENT
+     Un mur n'est « porteur » ou « cloison » que par sa catégorie (m.cat) et par
+     son type dans le catalogue de cette catégorie (m.type). On change donc les
+     deux : la catégorie, puis le type courant de l'outil — celui que l'on aurait
+     choisi en le dessinant. Le tracé, les baies, la hauteur ne bougent pas.
+     ------------------------------------------------------------------- */
+  function convertirMurs(sels, cat){
+    var murs = [];
+    sels.forEach(function(s){
+      if(!s || !s.murId || s.ouvId) return;
+      var m = murParId(s.murId);
+      if(m && m.cat !== cat && murs.indexOf(m) < 0) murs.push(m);
+    });
+    if(!murs.length) return 0;
+    pousserHistorique();
+    var liste = cat === "porteur" ? PORTEURS : CLOISONS;
+    var type = Math.max(0, Math.min(liste.length - 1, +(cat === "porteur" ? choix.porteur : choix.cloison) || 0));
+    var portent = 0;
+    murs.forEach(function(m){
+      if(m.cat === "porteur" &&
+         ((S.fondations || []).some(function(f){ return f.murId === m.id; }) ||
+          (S.soubassements || []).some(function(b){ return b.murId === m.id; }))) portent++;
+      m.cat = cat;
+      m.type = type;
+    });
+    try { _cacheReperes = null; } catch(_e){}
+    majTout();
+    var nom = liste[type].nom;
+    statut((murs.length > 1 ? murs.length + (cat === "cloison" ? " murs convertis en cloisons" : " cloisons converties en murs porteurs")
+                            : (cat === "cloison" ? "Mur converti en cloison" : "Cloison convertie en mur porteur")) +
+           " — type « " + nom + " », à changer dans le sélecteur de type. Le tracé et les baies sont conservés." +
+           (portent ? " Attention : " + portent + (portent > 1 ? " murs reposaient" : " mur reposait") +
+                      " sur une fondation ou un soubassement — une cloison ne porte rien." : ""));
+    return murs.length;
+  }
+  function garnirConversion(){
+    var pan = document.getElementById("panneau");
+    if(!pan || (typeof vue === "object" && vue && vue.mode === "cartouche")) return;
+    var L = toutesSelections();
+    if(!L.length) return;
+    var murs = L.filter(function(s){ return s && s.murId && !s.ouvId; });
+    if(!murs.length) return;
+    if(L.length === 1){
+      var st = pan.querySelector(".selecteur-type");
+      if(!st || document.getElementById("m114-cat")) return;
+      var m = murParId(murs[0].murId);
+      if(!m) return;
+      var fam = st.querySelector(".st-fam");
+      if(!fam) return;
+      fam.insertAdjacentHTML("afterend",
+        '<div class="st-cat"><label for="m114-cat">Catégorie</label><select id="m114-cat" ' +
+        'title="Un mur dessiné devient cloison, et inversement : le tracé et les baies sont conservés">' +
+        '<option value="porteur"' + (m.cat === "porteur" ? " selected" : "") + '>Mur porteur</option>' +
+        '<option value="cloison"' + (m.cat === "cloison" ? " selected" : "") + '>Cloison</option></select></div>');
+      var c = document.getElementById("m114-cat");
+      c.addEventListener("keydown", function(e){ e.stopPropagation(); });
+      c.addEventListener("change", function(){ convertirMurs(toutesSelections(), c.value); });
+      return;
+    }
+    /* sélection multiple : un bouton par sens de conversion */
+    var props = document.getElementById("props");
+    if(!props || props.querySelector("[data-m114-conv]")) return;
+    var nP = 0, nC = 0;
+    murs.forEach(function(s){ var m2 = murParId(s.murId); if(m2){ if(m2.cat === "porteur") nP++; else nC++; } });
+    var h = "";
+    if(nP) h += '<button class="btn-plein" data-m114-conv="cloison">Convertir ' + (nP > 1 ? "les " + nP + " murs porteurs" : "le mur porteur") + ' en ' + (nP > 1 ? "cloisons" : "cloison") + '</button>';
+    if(nC) h += '<button class="btn-plein" data-m114-conv="porteur">Convertir ' + (nC > 1 ? "les " + nC + " cloisons" : "la cloison") + ' en ' + (nC > 1 ? "murs porteurs" : "mur porteur") + '</button>';
+    var sup = props.querySelector('[data-action="effacer"]');
+    if(sup) sup.insertAdjacentHTML("beforebegin", h); else props.insertAdjacentHTML("beforeend", h);
+    props.querySelectorAll("[data-m114-conv]").forEach(function(b){
+      b.addEventListener("click", function(){ convertirMurs(toutesSelections(), b.getAttribute("data-m114-conv")); });
+    });
+  }
+
+  /* -------------------------------------------------------------------
+     114.3 · LES LIMITES D'UNE TRÉMIE SE DESSINENT COMME CELLES D'UNE TOITURE
+     La trémie savait déjà prendre un contour libre, mais ce mode se cachait dans
+     une liste déroulante. Elle a maintenant son bouton « Trémie contour » à côté
+     de « Trémie », et le même choix Contour / Rectangle dans son panneau que la
+     toiture. Entrée referme le contour, Retour arrière efface le dernier point.
+     ------------------------------------------------------------------- */
+  function modeContour(){ return !!choix.tremie && choix.tremie.mode === "polygone"; }
+
+  function marquerRuban(){
+    document.querySelectorAll('#toolbar .outil[data-outil="tremie"]').forEach(function(b){
+      var c = b.getAttribute("data-tr-bouton") === "contour";
+      b.classList.toggle("actif", outil === "tremie" && c === modeContour());
+    });
+  }
+  function installerBouton(){
+    var b0 = document.querySelector('#toolbar [data-outil="tremie"]');
+    if(!b0 || document.querySelector('[data-tr-bouton]')) return;
+    var b = document.createElement("button");
+    b.className = "rb outil";
+    b.setAttribute("data-outil", "tremie");
+    b.setAttribute("data-tr-bouton", "contour");
+    b.title = "Trémie contour : tracer les limites de la réservation trait après trait (Maj garde l’angle, Entrée ou double-clic referme) — pour un quart tournant, un palier, un U";
+    b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 5h10v6h6v8H4z" stroke-dasharray="3 2"/><path d="M4 5l10 6M14 5L4 11M14 11l6 8M20 11l-6 8"/></svg><span>Trémie contour</span>';
+    b0.parentNode.insertBefore(b, b0.nextSibling);
+    /* le code d'origine gère le clic de « Trémie » ; « Trémie contour » passe par lui, puis règle le mode */
+    b.addEventListener("click", function(){
+      choix.tremie = {mode:"polygone"};
+      b0.__trInterne = true;
+      try { b0.click(); } finally { b0.__trInterne = false; }
+      try { dernierOutilTrace = b; } catch(_e){}
+      majPanneau(); marquerRuban();
+      statut("Trémie au contour : cliquer les sommets, trait après trait (Maj garde l’angle). Refermer sur le premier point, Entrée ou double-clic.");
+    });
+    b0.addEventListener("click", function(){
+      if(b0.__trInterne) return;
+      choix.tremie = {mode:"rectangle"};
+      majPanneau(); marquerRuban();
+    });
+  }
+  function garnirOutilTremie(){
+    if(outil !== "tremie") return;
+    var pan = document.getElementById("panneau");
+    var sel = pan && pan.querySelector("#tr-mode");
+    if(!sel) return;
+    var ligne = sel.closest(".ligne-prop");
+    if(!ligne) return;
+    var contour = modeContour();
+    ligne.innerHTML = '<label>Tracé</label><span class="ct-modes">' +
+      '<button type="button" class="ct-mode' + (contour ? " actif" : "") + '" data-tr-mode="polygone" title="Les limites de la trémie : trait après trait">Contour</button>' +
+      '<button type="button" class="ct-mode' + (!contour ? " actif" : "") + '" data-tr-mode="rectangle" title="Deux coins opposés">Rectangle</button></span>';
+    var note = ligne.nextElementSibling;
+    if(contour && note && note.classList.contains("note"))
+      note.innerHTML = '<b>Tracer les limites</b> : cliquer les sommets, trait après trait (Maj garde l’angle). ' +
+        'Refermer en cliquant sur le point de départ — ou double-clic, ou <b>Entrée</b>. ' +
+        '<b>Retour arrière</b> efface le dernier sommet, <b>Échap</b> abandonne. ' +
+        'Les limites se tirent ensuite par leurs poignées. Un quart tournant, un palier de retour, un U : un seul contour.';
+    ligne.querySelectorAll("[data-tr-mode]").forEach(function(b){
+      b.onclick = function(e){
+        e.preventDefault();
+        choix.tremie = {mode:b.getAttribute("data-tr-mode")};
+        annulerTraces(); majTout(); marquerRuban();
+        statut(modeContour()
+          ? "Trémie au contour : cliquer les sommets, trait après trait. Refermer sur le premier point, Entrée ou double-clic."
+          : "Trémie rectangulaire : deux clics en diagonale.");
+      };
+    });
+  }
+  /* Entrée referme le contour, Retour arrière en efface le dernier point */
+  window.addEventListener("keydown", function(e){
+    if(outil !== "tremie" || !traceTr || !traceTr.points) return;
+    var tg = e.target;
+    if(tg && (tg.tagName === "INPUT" || tg.tagName === "SELECT" || tg.tagName === "TEXTAREA")) return;
+    if(e.key === "Enter"){
+      e.preventDefault(); e.stopPropagation();
+      fermerTremiePolygone();
+    } else if(e.key === "Backspace"){
+      e.preventDefault(); e.stopPropagation();
+      traceTr.points.pop();
+      if(!traceTr.points.length){ traceTr = null; statut("Contour abandonné."); }
+      else statut("Dernier sommet effacé : " + traceTr.points.length + (traceTr.points.length > 1 ? " sommets posés." : " sommet posé."));
+      dessiner();
+    }
+  }, true);
+
+  /* -------------------------------------------------------------------
+     La greffe : un seul majPanneau, le dernier de la chaîne
+     ------------------------------------------------------------------- */
+  var _majPanneauAvant114 = majPanneau;
+  majPanneau = function(){
+    var r = _majPanneauAvant114.apply(this, arguments);
+    try { garnirNiveau(); } catch(e){ try { console.warn("114 niveau", e); } catch(_e){} }
+    try { garnirConversion(); } catch(e){ try { console.warn("114 conversion", e); } catch(_e){} }
+    try { garnirOutilTremie(); marquerRuban(); } catch(e){ try { console.warn("114 trémie", e); } catch(_e){} }
+    return r;
+  };
+  try { installerBouton(); } catch(e){ try { console.warn("114 bouton", e); } catch(_e){} }
+
+  document.head.insertAdjacentHTML("beforeend", '<style>' +
+    '.selecteur-type .st-cat{display:flex;align-items:center;gap:6px;margin:0 0 5px}' +
+    '.selecteur-type .st-cat label{flex:0 0 auto;font-size:11px;color:var(--texte-doux)}' +
+    '.selecteur-type .st-cat select{flex:1;width:auto}' +
+    '</style>');
+})();
+
+/* ===== MODULE 114 : FIN ===== */
 </script>
 <style>
 /* ---- tutoriel d'outil + défis (v3.13) ---- */
