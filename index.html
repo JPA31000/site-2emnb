@@ -368,6 +368,9 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 .bento--applis .objet:nth-child(6){grid-column:3 / span 2;grid-row:3;flex-direction:row;align-items:flex-end;gap:18px;padding:22px 28px}
 .bento--applis .objet:nth-child(6) .objet__vis{order:2;align-self:stretch;min-height:150px;margin:0}
 .bento--applis .objet:nth-child(6) .objet__corps{max-width:50%}
+.bento--applis .objet:nth-child(7){grid-column:1 / span 2;grid-row:3;flex-direction:row;align-items:flex-end;gap:18px;padding:22px 28px}
+.bento--applis .objet:nth-child(7) .objet__vis{order:2;align-self:stretch;min-height:150px;margin:0}
+.bento--applis .objet:nth-child(7) .objet__corps{max-width:52%}
 .entete--suite{margin-top:clamp(64px,9vw,110px)}
 /* les dessins repris du site, en version crayon et lavis */
 .il{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:url(#crayon)}
@@ -383,6 +386,9 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
 :is(.objet,.linge):hover .il--cloud .cam{transform:translate(var(--dx),var(--dy))}
 .il--nuages .pano{opacity:.35;transform-box:fill-box;transform-origin:center;transition:transform .8s var(--e-out),opacity .5s}.il--nuages .haut{opacity:.45;transition:opacity .6s}
 :is(.objet,.linge):hover .il--nuages .pano{opacity:1;transform:scale(1.35) rotate(18deg)}:is(.objet,.linge):hover .il--nuages .haut{opacity:1}
+.il--dce .lien{opacity:.3;transition:opacity .6s}.il--dce .fam{opacity:0;transition:opacity .7s}.il--dce .dessus{transition:transform .9s var(--e-out)}
+:is(.objet,.linge):hover .il--dce .lien{opacity:1}:is(.objet,.linge):hover .il--dce .fam{opacity:1}
+:is(.objet,.linge):hover .il--dce .dessus{transform:translate(-5px,-4px) rotate(-2deg)}
 .il--model .cou{opacity:0}
 :is(.objet,.linge):hover .il--model .cou{opacity:1;transition-delay:calc(var(--i)*.14s)}
 :is(.objet,.linge):hover .il--model .buse{transform:translateY(-40px)}
@@ -505,7 +511,7 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
   .bento--applis{grid-template-rows:none;gap:30px}
   .bento--applis .objet:nth-child(n){grid-column:auto;grid-row:auto}
-  .bento--applis .objet:nth-child(1),.bento--applis .objet:nth-child(2){grid-column:span 2}
+  .bento--applis .objet:nth-child(1),.bento--applis .objet:nth-child(2),.bento--applis .objet:nth-child(7){grid-column:span 2}
   .pied__cols{grid-template-columns:1fr 1fr}
 }
 @media (max-width:900px){
@@ -537,10 +543,10 @@ a:hover .fleche-ronde{transform:rotate(-12deg) scale(1.08)}
   .objet--large{flex-direction:column;align-items:stretch;min-height:330px}
   .objet--large .objet__vis{order:0;margin:0 -4px 14px}
   .objet--large .objet__corps{max-width:none}
-  .bento--applis .objet:nth-child(1),.bento--applis .objet:nth-child(2){grid-column:auto}
-  .bento--applis .objet:nth-child(2),.bento--applis .objet:nth-child(6){flex-direction:column;align-items:stretch}
-  .bento--applis .objet:nth-child(2) .objet__vis,.bento--applis .objet:nth-child(6) .objet__vis{order:0;margin:0 -2px 12px}
-  .bento--applis .objet:nth-child(2) .objet__corps,.bento--applis .objet:nth-child(6) .objet__corps{max-width:none}
+  .bento--applis .objet:nth-child(1),.bento--applis .objet:nth-child(2),.bento--applis .objet:nth-child(7){grid-column:auto}
+  .bento--applis .objet:nth-child(2),.bento--applis .objet:nth-child(6),.bento--applis .objet:nth-child(7){flex-direction:column;align-items:stretch}
+  .bento--applis .objet:nth-child(2) .objet__vis,.bento--applis .objet:nth-child(6) .objet__vis,.bento--applis .objet:nth-child(7) .objet__vis{order:0;margin:0 -2px 12px}
+  .bento--applis .objet:nth-child(2) .objet__corps,.bento--applis .objet:nth-child(6) .objet__corps,.bento--applis .objet:nth-child(7) .objet__corps{max-width:none}
   .seq__meta{display:none}
   .pied__cols{grid-template-columns:1fr}
 }
@@ -949,6 +955,8 @@ const DONNEES = {
       resume: 'Un atelier de modélisation 3D avec ruban d’outils, fenêtre Propriétés et arborescence. Pose des solides, des courbes, des voxels sur le plateau, perce, fusionne, et regarde ta pièce dans une à quatre fenêtres : 3D, plan, face, côté, section. Contrôle d’impression et export STL. Un outil pédagogique, pas un logiciel professionnel.' },
     { nom: 'Atelier Nuages 3D', etiq: 'Nuages de points', groupe: 'applis', visuel: 'nuages', couleur: 'cyan', url: 'https://jpa31000.github.io/atelier-nuages-3d/',   // appli en ligne (dépôt atelier-nuages-3d)
       resume: 'Importe, visualise, assemble, nettoie et exporte des nuages de points (LAS, LAZ, E57, PLY, XYZ) avec leurs panoramiques 360°, directement dans le navigateur. Un outil pédagogique, pas un logiciel professionnel.' },
+    { nom: 'DCE Educ', etiq: 'Appel d’offres', groupe: 'applis', visuel: 'dce', couleur: 'violet', url: 'https://jpa31000.github.io/DCE_EDUC/',   // appli en ligne (dépôt DCE_EDUC, en majuscules)
+      resume: 'Étudie un dossier de consultation comme une entreprise : la maquette numérique IFC du projet est reliée, famille d’ouvrages par famille d’ouvrages, aux articles du CCTP et aux lignes du CDPGF. Compare les quantités du maître d’œuvre à celles mesurées sur la maquette. Ouvre l’exemple de l’école Fleurance ou dépose ton dossier. Un outil pédagogique, pas un logiciel professionnel.' },
     { nom: 'PFMP', etiq: 'Stages 2026-2027', visuel: 'pfmp', couleur: 'orange', url: 'pfmp.html',   // page du carnet (le dossier Drive des PFMP s’ouvre depuis la page)
       resume: 'Dates, CV, mail à l’entreprise, convention : tout pour préparer vos deux PFMP.' },
     { nom: 'Rendu', etiq: 'Dossier Drive', visuel: 'rendu', couleur: 'violet', url: 'https://drive.google.com/drive/folders/1nXNi4qjC1mdMxLex89h6b1lY2WjYfryr?usp=sharing',
@@ -1173,6 +1181,31 @@ const ILLUS = {
       <path class="c-cyan pts" d="${pts}" stroke-width="3" opacity=".55"/><path class="c-cyan haut" d="${haut}" stroke-width="3"/>
       ${station(52, 70)}${station(214, 62)}
       <text x="22" y="166">IMPORTER · ASSEMBLER · EXPORTER</text></svg>`;
+  },
+  dce() {
+    // à gauche, les pièces écrites (le CDPGF dessous, le CCTP dessus) ; à droite, la maquette IFC d'un petit bâtiment ;
+    // au survol, les liens article → ouvrage s'allument et la famille choisie (la toiture, les murs) se colore
+    const P = (s, t) => [+(140 + 56 * s).toFixed(1), +(114 + 26 * s - 36 * t).toFixed(1)];     // face gauche (s : longueur, t : hauteur)
+    const Q = (s, t) => [+(196 + 56 * s).toFixed(1), +(140 - 26 * s - 36 * t).toFixed(1)];     // face droite
+    const R1 = [168, 43], R2 = [224, 69], Lh = P(0, 1), Fh = P(1, 1), Rh = Q(1, 1), Bh = [196, 52];
+    const fen = (F, s0, s1, t0, t1) => chemin([F(s0, t0), F(s1, t0), F(s1, t1), F(s0, t1)], true);
+    let lignes = '', tab = '';
+    for (let i = 0; i < 6; i++) lignes += `M32 ${44 + i * 10}h${[44, 52, 38, 50, 46, 30][i]}`;
+    for (let i = 0; i < 6; i++) tab += `M46 ${62 + i * 11}h66`;
+    return `<svg class="il il--dce" viewBox="0 0 280 170" aria-hidden="true">
+      <g transform="rotate(5 80 88)"><rect class="c-dim f-fond" x="44" y="40" width="72" height="96" rx="2"/><path class="c-dim" d="${tab}M70 52V128M96 52V128"/></g>
+      <g class="dessus"><g transform="rotate(-4 58 74)"><rect class="c-violet f-fond" x="22" y="26" width="72" height="96" rx="2"/><path class="c-dim" d="${lignes}"/>
+        <path class="c-violet" d="M32 34h28" stroke-width="2.4"/><path class="c-violet f-violet" d="M28 60h62v9H28z"/></g></g>
+      <path class="f-blanc c-dim" d="${chemin([P(0, 0), P(1, 0), Fh, Lh], true)}"/>
+      <path class="f-blanc c-dim" d="${chemin([Q(0, 0), Q(1, 0), Rh, Fh], true)}"/>
+      <path class="c-dim" d="${chemin([Fh, Rh, R2], true)}"/>
+      <path class="c-violet" d="${chemin([Lh, Fh, R2, R1], true)}${chemin([Bh, R1, R2, Rh])}"/>
+      <path class="c-dim" d="${fen(P, .18, .38, .3, .72)}${fen(P, .58, .78, .3, .72)}${fen(Q, .3, .62, 0, .62)}"/>
+      <path class="fam f-violet c-violet" d="${chemin([Lh, Fh, R2, R1], true)}"/>
+      <path class="fam f-cyan c-cyan" d="${chemin([Q(0, 0), Q(1, 0), Rh, Fh], true)}"/>
+      <path class="lien c-violet" d="M92 62C122 40 148 44 ${(Lh[0] + R2[0]) / 2} ${(Lh[1] + R2[1]) / 2 + 2}" stroke-dasharray="4 4"/>
+      <path class="lien c-cyan" d="M114 106C150 122 196 126 ${Q(.45, .4).join(' ')}" stroke-dasharray="4 4"/>
+      <text x="22" y="166">CCTP · CDPGF · MAQUETTE IFC</text></svg>`;
   },
   model() {
     // une pièce imprimée couche par couche sur le plateau ; au survol, la buse monte et les couches du haut se déposent
